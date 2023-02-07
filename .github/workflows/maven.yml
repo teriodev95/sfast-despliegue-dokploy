@@ -25,4 +25,4 @@ jobs:
 
     steps:
     - name: Set up JDK 17
-      run: java -version
+      run: cd ../../.. java -version
