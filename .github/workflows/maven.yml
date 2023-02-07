@@ -39,4 +39,4 @@ jobs:
     - name: Permisos de ejecución
       run: chmod +x ./mvnw
     - name: Ejecucion servidor
-      run: pwd
+      run: nohup ./mvnw spring-boot:run -Djava.net.preferIPv4Stack=true </dev/null &>/dev/null &
