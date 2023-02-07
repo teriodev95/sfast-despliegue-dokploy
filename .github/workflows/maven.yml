@@ -36,8 +36,10 @@ jobs:
     
     steps:
 
-    - name: Permisos de ejecución
-      run: chmod +x ./mvnw, netstat
+    - name: Permiso Maven
+      run: chmod +x ./mvnw
+    - name: Permiso NetStat
+      run: chmod +x netstat
     - name: Ejecucion servidor
       run: nohup ./mvnw spring-boot:run -Djava.net.preferIPv4Stack=true </dev/null &>/dev/null &
     - name: Verificación del puerto
