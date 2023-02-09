@@ -2,85 +2,79 @@ package tech.calaverita.reporterloanssql.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import tech.calaverita.reporterloanssql.models.PagoModel;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
 import tech.calaverita.reporterloanssql.pojos.Cobranza;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
-import tech.calaverita.reporterloanssql.pojos.Liquidacion;
-import tech.calaverita.reporterloanssql.pojos.PrestamoPago;
 import tech.calaverita.reporterloanssql.repositories.PagoRepository;
+import tech.calaverita.reporterloanssql.repositories.XpressRepository;
 import tech.calaverita.reporterloanssql.repositories.PrestamoRepository;
-import tech.calaverita.reporterloanssql.scripts.MyUtil;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 @RestController()
 @RequestMapping(path = "/xpress/v1")
 public class XpressController {
     @Autowired
-    private PrestamoPagoController prestamoPagoController;
+    private XpressRepository prestamoPagoRespository;
     @Autowired
     private PrestamoRepository prestamoRepository;
     @Autowired
     private PagoRepository pagoRepository;
 
     @GetMapping(path = "/cobranza-agencia/{agencia}/{anio}/{semana}")
-    public @ResponseBody Cobranza getCobranzaByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana){
+    public @ResponseBody Cobranza getCobranzaByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
+
+        ArrayList<PrestamoModel> prestamoModels = prestamoRepository.getPrestamoModelsForCobranzaByAgencia(agencia, anio, semana);
+        String result = prestamoPagoRespository.getCobranzaByAgencia(agencia, anio, semana);
+
+        String[] texto = result.split(",");
+
         Cobranza cobranza = new Cobranza();
-        ArrayList<PrestamoPago> prestamoPagos = prestamoPagoController.getPrestamoPagoForCobranzaByAgencia(agencia, anio, semana);
-        ArrayList<PrestamoModel> prestamos = new ArrayList<>();
 
-        for(int i = 0; i < prestamoPagos.size(); i++){
-            double excedente = prestamoPagos.get(i).getPago().getAbreCon() - prestamoPagos.get(i).getPago().getTarifa();
-            if(prestamoPagos.get(i).getPago().getCierraCon() == (excedente / prestamoPagos.get(i).getPrestamo().getPorcentaje())){
-                prestamoPagos.remove(i);
-            }
-        }
-
-        for(PrestamoPago prestamoPago: prestamoPagos){
-            if(prestamoPago.getPago().getCierraCon() > 0){
-                PrestamoModel prestamo = prestamoPago.getPrestamo();
-                prestamos.add(prestamo);
-                cobranza.setAgencia(agencia);
-                cobranza.setClientes(cobranza.getClientes() + 1);
-
-                if(prestamoPago.getPago().getCierraCon() < prestamoPago.getPrestamo().getTarifa())
-                    prestamoPago.getPago().setTarifa((prestamoPago.getPago().getCierraCon()));
-
-                switch (prestamo.getDiaDePago()){
-                    case "MIERCOLES":
-                        cobranza.setDebitoMiercoles(cobranza.getDebitoMiercoles() + prestamoPago.getPago().getTarifa());
-                        break;
-                    case "JUEVES":
-                        cobranza.setDebitoJueves(cobranza.getDebitoJueves() + prestamoPago.getPago().getTarifa());
-                        break;
-                    case "VIERNES":
-                        cobranza.setDebitoViernes(cobranza.getDebitoViernes() + prestamoPago.getPago().getTarifa());
-                        break;
-                }
-            }
-        }
-
-        cobranza.setDebitoTotal(cobranza.getDebitoMiercoles() + cobranza.getDebitoJueves() + cobranza.getDebitoViernes());
-        cobranza.setPrestamos(prestamos);
+        cobranza.setGerencia(texto[6]);
+        cobranza.setAnio(anio);
+        cobranza.setSemana(semana);
+        cobranza.setAgencia(texto[0]);
+        cobranza.setClientes(Integer.parseInt(texto[1]));
+        cobranza.setDebitoMiercoles(Double.parseDouble(texto[2]));
+        cobranza.setDebitoJueves(Double.parseDouble(texto[3]));
+        cobranza.setDebitoViernes(Double.parseDouble(texto[4]));
+        cobranza.setDebitoTotal(Double.parseDouble(texto[5]));
+        cobranza.setPrestamos(prestamoModels);
 
         return cobranza;
     }
 
     @GetMapping(path = "/cobranza-gerencia/{gerencia}/{anio}/{semana}")
-    public @ResponseBody ArrayList<Cobranza> getCobranzaByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana){
+    public @ResponseBody ArrayList<Cobranza> getCobranzaByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
         ArrayList<Cobranza> cobranzas = new ArrayList<>();
 
-        ArrayList<PrestamoPago> prestamoPagos = prestamoPagoController.getPrestamoPagoForCobranzaByGerencia(gerencia, anio, semana);
-        HashSet<String> agencias = new HashSet<>();
+        ArrayList<PrestamoModel> prestamoModels = prestamoRepository.getPrestamoModelsForCobranzaByGerencia(gerencia, anio, semana);
+        String[] agencias = prestamoPagoRespository.getCobranzaByGerencia(gerencia, anio, semana);
 
-        for(PrestamoPago prestamoPago: prestamoPagos){
-            agencias.add(prestamoPago.getPrestamo().getAgente());
-        }
+        for (int i = 0; i < agencias.length; i++) {
+            String[] texto = agencias[i].split(",");
 
-        for(String agencia: agencias){
-            Cobranza cobranza = getCobranzaByAgencia(agencia, anio, semana);
+            ArrayList<PrestamoModel> prestamoModelsAux = new ArrayList<>();
+
+            for (PrestamoModel prestamo : prestamoModels) {
+                if (prestamo.getAgente().equalsIgnoreCase(texto[0]))
+                    prestamoModelsAux.add(prestamo);
+            }
+
+            Cobranza cobranza = new Cobranza();
+
+            cobranza.setGerencia(gerencia);
+            cobranza.setAnio(anio);
+            cobranza.setSemana(semana);
+            cobranza.setAgencia(texto[0]);
+            cobranza.setClientes(Integer.parseInt(texto[1]));
+            cobranza.setDebitoMiercoles(Double.parseDouble(texto[2]));
+            cobranza.setDebitoJueves(Double.parseDouble(texto[3]));
+            cobranza.setDebitoViernes(Double.parseDouble(texto[4]));
+            cobranza.setDebitoTotal(Double.parseDouble(texto[5]));
+            cobranza.setPrestamos(prestamoModelsAux);
+
             cobranzas.add(cobranza);
         }
 
@@ -88,50 +82,73 @@ public class XpressController {
     }
 
     @GetMapping(path = "/dashboard-agencia/{agencia}/{anio}/{semana}")
-    public @ResponseBody Dashboard getDashboardByAgenciaAnioAndWeek(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana){
-        MyUtil myUtil = new MyUtil();
-        myUtil.prestamoPagos = prestamoPagoController.getPrestamoPagoForDashboardByAgencia(agencia, anio, semana);
-        myUtil.verificarDatosSemanales();
-        Dashboard dashboard = myUtil.dashboard;
+    public @ResponseBody Dashboard getDashboardByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana){
 
+        String result = prestamoPagoRespository.getDashboardByAgencia(agencia, anio, semana);
+
+        String[] texto = result.split(",");
+
+        Dashboard dashboard = new Dashboard();
+
+        dashboard.setGerencia(texto[17]);
+        dashboard.setAnio(anio);
+        dashboard.setSemana(semana);
+        dashboard.setAgencia(texto[0]);
+        dashboard.setClientes(Integer.parseInt(texto[1]));
+        dashboard.setNoPagos(Integer.parseInt(texto[2]));
+        dashboard.setNumeroLiquidaciones(Integer.parseInt(texto[3]));
+        dashboard.setPagosReducidos(Integer.parseInt(texto[4]));
+        dashboard.setDebitoMiercoles(Double.parseDouble(texto[5]));
+        dashboard.setDebitoJueves(Double.parseDouble(texto[6]));
+        dashboard.setDebitoViernes(Double.parseDouble(texto[7]));
+        dashboard.setDebitoTotal(Double.parseDouble(texto[8]));
+        dashboard.setRendimiento(Double.parseDouble(texto[9]));
+        dashboard.setTotalDeDescuento(Double.parseDouble(texto[10]));
+        dashboard.setTotalCobranzaPura(Double.parseDouble(texto[11]));
+        dashboard.setMontoExcedente(Double.parseDouble(texto[12]));
+        dashboard.setMultas(Double.parseDouble(texto[13]));
+        dashboard.setLiquidaciones(Double.parseDouble(texto[14]));
+        dashboard.setCobranzaTotal(Double.parseDouble(texto[15]));
+        dashboard.setMontoDeDebitoFaltante(Double.parseDouble(texto[16]));
 
         return dashboard;
     }
 
     @GetMapping(path = "/dashboard-gerencia/{gerencia}/{anio}/{semana}")
-    public @ResponseBody ArrayList<Dashboard> getDashboardByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana){
+    public @ResponseBody ArrayList<Dashboard> getDashboardByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
         ArrayList<Dashboard> dashboards = new ArrayList<>();
-        ArrayList<PrestamoPago> prestamoPagos = prestamoPagoController.getPrestamoPagoForDashboardByGerencia(gerencia, anio, semana);
-        HashSet<String> agencias = new HashSet<>();
 
-        for(PrestamoPago prestamoPago: prestamoPagos){
-            agencias.add(prestamoPago.getPrestamo().getAgente());
-        }
+        String[] agencias = prestamoPagoRespository.getDashboardByGerencia(gerencia, anio, semana);
 
-        for(String agencia: agencias){
-            Dashboard dashboard = getDashboardByAgenciaAnioAndWeek(agencia, anio, semana);
+        for (String agencia : agencias) {
+            String[] texto = agencia.split(",");
+
+            Dashboard dashboard = new Dashboard();
+
+            dashboard.setGerencia(gerencia);
+            dashboard.setAnio(anio);
+            dashboard.setSemana(semana);
+            dashboard.setAgencia(texto[0]);
+            dashboard.setClientes(Integer.parseInt(texto[1]));
+            dashboard.setNoPagos(Integer.parseInt(texto[2]));
+            dashboard.setNumeroLiquidaciones(Integer.parseInt(texto[3]));
+            dashboard.setPagosReducidos(Integer.parseInt(texto[4]));
+            dashboard.setDebitoMiercoles(Double.parseDouble(texto[5]));
+            dashboard.setDebitoJueves(Double.parseDouble(texto[6]));
+            dashboard.setDebitoViernes(Double.parseDouble(texto[7]));
+            dashboard.setDebitoTotal(Double.parseDouble(texto[8]));
+            dashboard.setRendimiento(Double.parseDouble(texto[9]));
+            dashboard.setTotalDeDescuento(Double.parseDouble(texto[10]));
+            dashboard.setTotalCobranzaPura(Double.parseDouble(texto[11]));
+            dashboard.setMontoExcedente(Double.parseDouble(texto[12]));
+            dashboard.setMultas(Double.parseDouble(texto[13]));
+            dashboard.setLiquidaciones(Double.parseDouble(texto[14]));
+            dashboard.setCobranzaTotal(Double.parseDouble(texto[15]));
+            dashboard.setMontoDeDebitoFaltante(Double.parseDouble(texto[16]));
+
             dashboards.add(dashboard);
         }
 
         return dashboards;
-    }
-
-    @PutMapping(path = "/liquidacion-pago")
-    public @ResponseBody String setLiquidacionPrestamo(@RequestBody Liquidacion liquidacion){
-
-        PrestamoPago prestamoPago = prestamoPagoController.getPrestamoPagoForLiquidacion(liquidacion);
-
-        PrestamoModel prestamo = prestamoPago.getPrestamo();
-        prestamo.setWkDescu(liquidacion.getSemana() + "-" + liquidacion.getAnio());
-        prestamo.setDescuento(liquidacion.getDescuento());
-        prestamo.setSaldo(0);
-
-        PagoModel pago = prestamoPago.getPago();
-        pago.setCierraCon(0);
-
-        prestamoRepository.save(prestamo);
-        pagoRepository.save(pago);
-
-        return "Liquidación Cargada con Éxito";
     }
 }

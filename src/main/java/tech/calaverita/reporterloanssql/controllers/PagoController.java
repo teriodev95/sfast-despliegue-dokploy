@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.reporterloanssql.models.PagoModel;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
+import tech.calaverita.reporterloanssql.pojos.Liquidacion;
 import tech.calaverita.reporterloanssql.repositories.PagoRepository;
 import tech.calaverita.reporterloanssql.repositories.PrestamoRepository;
 
@@ -18,34 +19,17 @@ public class PagoController {
     @Autowired
     private PrestamoRepository prestamoRepository;
 
-    @GetMapping(path = "/dashboard-agencia/{agencia}/{anio}/{semana}")
-    public @ResponseBody ArrayList<PagoModel> getPagosForDashboard(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana){
-
-        return pagoRepository.getPagoModelsByAgenteAnioSemanaAndEsPrimerPago(agencia, anio, semana);
-    }
-
-    @GetMapping(path = "/dashboard-gerencia/{anio}/{semana}")
-    public @ResponseBody ArrayList<PagoModel> getPagosForDashboardByGerencia(@PathVariable("anio") int anio, @PathVariable("semana") int semana){
-
-        return pagoRepository.getPagoModelsByAnioAndSemana(anio, semana);
-    }
-
     @GetMapping(path = "/cobranza-agencia/{agencia}/{anio}/{semana}")
-    public @ResponseBody ArrayList<PagoModel> getPagosForCobranzaByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana){
+    public @ResponseBody ArrayList<PagoModel> getPagosCobranzaByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana){
+        ArrayList<PagoModel> pagos = pagoRepository.getPagoModelsByAgenciaAnioAndSemana(agencia, anio, semana);
 
-        return pagoRepository.getPagoModelsByAgenteAnioAndSemana(agencia, anio, semana - 1);
+        return pagos;
     }
 
-    @GetMapping(path = "/cobranza-gerencia/{anio}/{semana}")
-    public @ResponseBody ArrayList<PagoModel> getPagosForCobranzaByGerencia(@PathVariable("anio") int anio, @PathVariable("semana") int semana){
-
-        return pagoRepository.getPagoModelsByAnioAndSemana(anio, semana - 1);
-    }
-
-    @PostMapping(path = "create-one")
+    @PostMapping(path = "/create-one")
     public @ResponseBody String setPago(@RequestBody PagoModel pago){
 
-        PrestamoModel prestamo = prestamoRepository.getPrestamoModelsByPrestamoId(pago.getPrestamoId());
+        PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(pago.getPrestamoId());
 
         pago.setAbreCon(prestamo.getSaldo());
         pago.setCierraCon(prestamo.getSaldo() - pago.getMonto());
@@ -54,5 +38,21 @@ public class PagoController {
         pagoRepository.save(pago);
 
         return "Pago Insertado con Éxito";
+    }
+
+    @PutMapping(path = "/liquidacion-pago")
+    public @ResponseBody String setLiquidacionPrestamo(@RequestBody Liquidacion liquidacion){
+        PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(liquidacion.getPrestamoId());
+        prestamo.setWkDescu(liquidacion.getSemana() + "-" + liquidacion.getAnio());
+        prestamo.setDescuento(liquidacion.getDescuento());
+        prestamo.setSaldo(0);
+
+        PagoModel pago = pagoRepository.getPagoModelByPrestamoIdAnioAndSemana(liquidacion.getPrestamoId(), liquidacion.getAnio(), liquidacion.getSemana());
+        pago.setCierraCon(0);
+
+        prestamoRepository.save(prestamo);
+        pagoRepository.save(pago);
+
+        return "Liquidación Cargada con Éxito";
     }
 }

@@ -13,28 +13,5 @@ import java.util.ArrayList;
 @RestController
 @RequestMapping(path = "/xpress/v1/loans")
 public class PrestamoController {
-    @Autowired
-    private PrestamoRepository prestamoRepository;
 
-    @GetMapping(path = "/loans-by-pagos-and-agencia")
-    public @ResponseBody ArrayList<PrestamoModel> getPrestamosByPrestamoId(@RequestBody ArrayList<PagoModel> pagos){
-        ArrayList<PrestamoModel> prestamos = new ArrayList<>();
-
-        for(PagoModel pago: pagos){
-            prestamos.add(prestamoRepository.getPrestamoModelsByPrestamoId(pago.getPrestamoId()));
-        }
-
-        return prestamos;
-    }
-
-    @GetMapping(path = "/loans-by-pagos-and-gerencia/{gerencia}")
-    public @ResponseBody ArrayList<PrestamoModel> getPrestamosByGerencia(@RequestBody ArrayList<PagoModel> pagos, @PathVariable("gerencia") String gerencia){
-        ArrayList<PrestamoModel> prestamos = new ArrayList<>();
-
-        for(PagoModel pago: pagos){
-            prestamos.add(prestamoRepository.getPrestamoModelsByPrestamoIdAndGerencia(pago.getPrestamoId(), gerencia));
-        }
-
-        return prestamos;
-    }
 }

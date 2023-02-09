@@ -7,7 +7,10 @@ import java.util.ArrayList;
 
 @Data
 public class Cobranza {
+    private String gerencia;
     private String agencia;
+    private int anio;
+    private int semana;
     private int clientes;
     private double debitoMiercoles;
     private double debitoJueves;

@@ -9,9 +9,30 @@ import java.util.ArrayList;
 
 @Repository
 public interface PrestamoRepository extends CrudRepository<PrestamoModel, String> {
-    @Query("SELECT prestamo FROM PrestamoModel prestamo WHERE prestamo.prestamoId = :prestamoId")
-    PrestamoModel getPrestamoModelsByPrestamoId(String prestamoId);
+    @Query("SELECT pr " +
+            "FROM PrestamoModel pr " +
+            "WHERE pr.prestamoId = :prestamoId")
+    PrestamoModel getPrestamoModelByPrestamoId(String prestamoId);
 
-    @Query("SELECT prestamo FROM PrestamoModel prestamo WHERE prestamo.prestamoId = :prestamoId AND prestamo.gerencia = :gerencia")
-    PrestamoModel getPrestamoModelsByPrestamoIdAndGerencia(String prestamoId, String gerencia);
+    @Query("SELECT pr " +
+            "FROM PrestamoModel pr " +
+            "INNER JOIN PagoModel pa " +
+            "ON pr.prestamoId = pa.prestamoId " +
+            "WHERE pa.agente = :agencia " +
+            "AND pa.anio = :anio " +
+            "AND pa.semana = :semana - 1 " +
+            "AND pa.cierraCon > 0 " +
+            "AND pa.cierraCon <> pr.descuento ")
+    ArrayList<PrestamoModel> getPrestamoModelsForCobranzaByAgencia(String agencia, int anio, int semana);
+
+    @Query("SELECT pr " +
+            "FROM PrestamoModel pr " +
+            "INNER JOIN PagoModel pa " +
+            "ON pr.prestamoId = pa.prestamoId " +
+            "WHERE pr.gerencia = :gerencia " +
+            "AND pa.anio = :anio " +
+            "AND pa.semana = :semana - 1 " +
+            "AND pa.cierraCon > 0 " +
+            "AND pa.cierraCon <> pr.descuento ")
+    ArrayList<PrestamoModel> getPrestamoModelsForCobranzaByGerencia(String gerencia, int anio, int semana);
 }
