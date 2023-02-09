@@ -10,7 +10,7 @@ import tech.calaverita.reporterloanssql.repositories.PrestamoRepository;
 
 import java.util.ArrayList;
 
-@Controller
+@RestController
 @RequestMapping(path = "/xpress/v1/pays")
 public class PagoController {
     @Autowired
@@ -45,7 +45,7 @@ public class PagoController {
     @PostMapping(path = "create-one")
     public @ResponseBody String setPago(@RequestBody PagoModel pago){
 
-        PrestamoModel prestamo = prestamoRepository.getPrestamoModelsByPrestamoIdAndAgencia(pago.getPrestamoId(), pago.getAgente());
+        PrestamoModel prestamo = prestamoRepository.getPrestamoModelsByPrestamoId(pago.getPrestamoId());
 
         pago.setAbreCon(prestamo.getSaldo());
         pago.setCierraCon(prestamo.getSaldo() - pago.getMonto());

@@ -2,10 +2,14 @@ package tech.calaverita.reporterloanssql.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import tech.calaverita.reporterloanssql.models.PagoModel;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
 import tech.calaverita.reporterloanssql.pojos.Cobranza;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
+import tech.calaverita.reporterloanssql.pojos.Liquidacion;
 import tech.calaverita.reporterloanssql.pojos.PrestamoPago;
+import tech.calaverita.reporterloanssql.repositories.PagoRepository;
+import tech.calaverita.reporterloanssql.repositories.PrestamoRepository;
 import tech.calaverita.reporterloanssql.scripts.MyUtil;
 
 import java.util.ArrayList;
@@ -16,6 +20,10 @@ import java.util.HashSet;
 public class XpressController {
     @Autowired
     private PrestamoPagoController prestamoPagoController;
+    @Autowired
+    private PrestamoRepository prestamoRepository;
+    @Autowired
+    private PagoRepository pagoRepository;
 
     @GetMapping(path = "/cobranza-agencia/{agencia}/{anio}/{semana}")
     public @ResponseBody Cobranza getCobranzaByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana){
@@ -106,5 +114,24 @@ public class XpressController {
         }
 
         return dashboards;
+    }
+
+    @PutMapping(path = "/liquidacion-pago")
+    public @ResponseBody String setLiquidacionPrestamo(@RequestBody Liquidacion liquidacion){
+
+        PrestamoPago prestamoPago = prestamoPagoController.getPrestamoPagoForLiquidacion(liquidacion);
+
+        PrestamoModel prestamo = prestamoPago.getPrestamo();
+        prestamo.setWkDescu(liquidacion.getSemana() + "-" + liquidacion.getAnio());
+        prestamo.setDescuento(liquidacion.getDescuento());
+        prestamo.setSaldo(0);
+
+        PagoModel pago = prestamoPago.getPago();
+        pago.setCierraCon(0);
+
+        prestamoRepository.save(prestamo);
+        pagoRepository.save(pago);
+
+        return "Liquidación Cargada con Éxito";
     }
 }

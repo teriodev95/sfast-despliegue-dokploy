@@ -10,18 +10,18 @@ import tech.calaverita.reporterloanssql.repositories.PrestamoRepository;
 
 import java.util.ArrayList;
 
-@Controller
+@RestController
 @RequestMapping(path = "/xpress/v1/loans")
 public class PrestamoController {
     @Autowired
     private PrestamoRepository prestamoRepository;
 
     @GetMapping(path = "/loans-by-pagos-and-agencia")
-    public @ResponseBody ArrayList<PrestamoModel> getPrestamosByAgencia(@RequestBody ArrayList<PagoModel> pagos){
+    public @ResponseBody ArrayList<PrestamoModel> getPrestamosByPrestamoId(@RequestBody ArrayList<PagoModel> pagos){
         ArrayList<PrestamoModel> prestamos = new ArrayList<>();
 
         for(PagoModel pago: pagos){
-            prestamos.add(prestamoRepository.getPrestamoModelsByPrestamoIdAndAgencia(pago.getPrestamoId(), pago.getAgente()));
+            prestamos.add(prestamoRepository.getPrestamoModelsByPrestamoId(pago.getPrestamoId()));
         }
 
         return prestamos;

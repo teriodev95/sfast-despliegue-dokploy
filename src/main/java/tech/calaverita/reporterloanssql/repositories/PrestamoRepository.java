@@ -9,8 +9,8 @@ import java.util.ArrayList;
 
 @Repository
 public interface PrestamoRepository extends CrudRepository<PrestamoModel, String> {
-    @Query("SELECT prestamo FROM PrestamoModel prestamo WHERE prestamo.prestamoId = :prestamoId AND prestamo.agente = :agencia")
-    PrestamoModel getPrestamoModelsByPrestamoIdAndAgencia(String prestamoId, String agencia);
+    @Query("SELECT prestamo FROM PrestamoModel prestamo WHERE prestamo.prestamoId = :prestamoId")
+    PrestamoModel getPrestamoModelsByPrestamoId(String prestamoId);
 
     @Query("SELECT prestamo FROM PrestamoModel prestamo WHERE prestamo.prestamoId = :prestamoId AND prestamo.gerencia = :gerencia")
     PrestamoModel getPrestamoModelsByPrestamoIdAndGerencia(String prestamoId, String gerencia);
