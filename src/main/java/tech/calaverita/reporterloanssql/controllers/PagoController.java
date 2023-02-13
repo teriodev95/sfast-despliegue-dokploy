@@ -42,6 +42,7 @@ public class PagoController {
 
     @PutMapping(path = "/liquidacion-pago")
     public @ResponseBody String setLiquidacionPrestamo(@RequestBody Liquidacion liquidacion){
+
         PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(liquidacion.getPrestamoId());
         prestamo.setWkDescu(liquidacion.getSemana() + "-" + liquidacion.getAnio());
         prestamo.setDescuento(liquidacion.getDescuento());
