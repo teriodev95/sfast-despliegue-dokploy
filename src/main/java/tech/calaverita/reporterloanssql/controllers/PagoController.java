@@ -1,7 +1,8 @@
 package tech.calaverita.reporterloanssql.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.reporterloanssql.models.PagoModel;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
@@ -20,22 +21,25 @@ public class PagoController {
     private PrestamoRepository prestamoRepository;
 
     @GetMapping(path = "/cobranza-agencia/{agencia}/{anio}/{semana}")
-    public @ResponseBody ArrayList<PagoModel> getPagosCobranzaByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana){
+    public @ResponseBody ResponseEntity<ArrayList<PagoModel>> getPagosCobranzaByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
         ArrayList<PagoModel> pagos = pagoRepository.getPagoModelsByAgenciaAnioAndSemana(agencia, anio, semana);
 
-        return pagos;
+        if (pagos.isEmpty())
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        return new ResponseEntity<>(pagos, HttpStatus.OK);
     }
 
     @PostMapping(path = "/create-one")
-    public @ResponseBody String setPago(@RequestBody PagoModel pago){
+    public @ResponseBody ResponseEntity<String> setPago(@RequestBody PagoModel pago) {
 
-        if(pago.getPrestamoId().equalsIgnoreCase("") || pago.getPrestamoId().equalsIgnoreCase(null))
-            return "Debe ingresar el prestamoId";
+        if (pago.getPrestamoId().equalsIgnoreCase("") || pago.getPrestamoId().equalsIgnoreCase(null))
+            return new ResponseEntity<>("Debe ingresar el prestamoId", HttpStatus.BAD_REQUEST);
 
         PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(pago.getPrestamoId());
 
-        if(prestamo == null)
-            return "No Se Encontró Ningún Prestamo Con Ese prestamoId";
+        if (prestamo == null)
+            return new ResponseEntity<>("No Se Encontró Ningún Prestamo Con Ese prestamoId", HttpStatus.NOT_FOUND);
 
         pago.setAbreCon(prestamo.getSaldo());
         pago.setCierraCon(prestamo.getSaldo() - pago.getMonto());
@@ -43,23 +47,31 @@ public class PagoController {
 
         pagoRepository.save(pago);
 
-        return "Pago Insertado con Éxito";
+        return new ResponseEntity<>("Pago Insertado con Éxito", HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/liquidacion-pago")
-    public @ResponseBody String setLiquidacionPrestamo(@RequestBody Liquidacion liquidacion){
+    public @ResponseBody ResponseEntity<String> setLiquidacionPrestamo(@RequestBody Liquidacion liquidacion) {
 
         PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(liquidacion.getPrestamoId());
+
+        if (prestamo == null)
+            return new ResponseEntity<>("No Se Encontró Ningún Prestamo Con Ese PrestamoId", HttpStatus.NOT_FOUND);
+
         prestamo.setWkDescu(liquidacion.getSemana() + "-" + liquidacion.getAnio());
         prestamo.setDescuento(liquidacion.getDescuento());
         prestamo.setSaldo(0);
 
         PagoModel pago = pagoRepository.getPagoModelByPrestamoIdAnioAndSemana(liquidacion.getPrestamoId(), liquidacion.getAnio(), liquidacion.getSemana());
+
+        if (pago == null)
+            return new ResponseEntity<>("No Se Encontró Ningún Prestamo Con Esos Parametros", HttpStatus.NOT_FOUND);
+
         pago.setCierraCon(0);
 
         prestamoRepository.save(prestamo);
         pagoRepository.save(pago);
 
-        return "Liquidación Cargada con Éxito";
+        return new ResponseEntity<>("Liquidación Cargada con Éxito", HttpStatus.OK);
     }
 }

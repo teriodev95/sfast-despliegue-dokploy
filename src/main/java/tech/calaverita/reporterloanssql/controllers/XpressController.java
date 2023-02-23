@@ -4,16 +4,13 @@ import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.styledxmlparser.resolver.resource.UriResolver;
-import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.reporterloanssql.models.AsignacionModel;
+import tech.calaverita.reporterloanssql.models.PagoModel;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
 import tech.calaverita.reporterloanssql.pojos.Cobranza;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
@@ -23,10 +20,7 @@ import tech.calaverita.reporterloanssql.repositories.XpressRepository;
 import tech.calaverita.reporterloanssql.repositories.PrestamoRepository;
 import tech.calaverita.reporterloanssql.services.FileManagerService;
 
-import java.awt.*;
 import java.io.*;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,14 +42,20 @@ public class XpressController {
     private FileManagerService fileManagerService;
 
     @GetMapping(path = "/cobranza-agencia/{agencia}/{anio}/{semana}")
-    public @ResponseBody Cobranza getCobranzaByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
+    public @ResponseBody ResponseEntity<Cobranza> getCobranzaByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
+        Cobranza cobranza = new Cobranza();
 
         ArrayList<PrestamoModel> prestamoModels = prestamoRepository.getPrestamoModelsForCobranzaByAgencia(agencia, anio, semana);
+
+        if(prestamoModels.isEmpty())
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
         String result = prestamoPagoRespository.getCobranzaByAgencia(agencia, anio, semana);
 
-        String[] texto = result.split(",");
+        if(result.equalsIgnoreCase(null))
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        Cobranza cobranza = new Cobranza();
+        String[] texto = result.split(",");
 
         cobranza.setGerencia(texto[6]);
         cobranza.setAnio(anio);
@@ -68,15 +68,22 @@ public class XpressController {
         cobranza.setDebitoTotal(Double.parseDouble(texto[5]));
         cobranza.setPrestamos(prestamoModels);
 
-        return cobranza;
+        return new ResponseEntity<>(cobranza, HttpStatus.OK);
     }
 
     @GetMapping(path = "/cobranza-gerencia/{gerencia}/{anio}/{semana}")
-    public @ResponseBody ArrayList<Cobranza> getCobranzaByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
+    public @ResponseBody ResponseEntity<ArrayList<Cobranza>> getCobranzaByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
         ArrayList<Cobranza> cobranzas = new ArrayList<>();
 
         ArrayList<PrestamoModel> prestamoModels = prestamoRepository.getPrestamoModelsForCobranzaByGerencia(gerencia, anio, semana);
+
+        if(prestamoModels.isEmpty())
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
         String[] agencias = prestamoPagoRespository.getCobranzaByGerencia(gerencia, anio, semana);
+
+        if(agencias.length == 0)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         for (int i = 0; i < agencias.length; i++) {
             String[] texto = agencias[i].split(",");
@@ -104,17 +111,21 @@ public class XpressController {
             cobranzas.add(cobranza);
         }
 
-        return cobranzas;
+        return new ResponseEntity<>(cobranzas, HttpStatus.OK);
     }
 
     @GetMapping(path = "/dashboard-agencia/{agencia}/{anio}/{semana}")
-    public @ResponseBody Dashboard getDashboardByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana){
+    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
+        Dashboard dashboard = new Dashboard();
+
+        ArrayList<PagoModel> pagos = pagoRepository.getPagoModelsByAgenciaAnioAndSemana(agencia, anio, semana);
+        
+        if(pagos.isEmpty())
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         String result = prestamoPagoRespository.getDashboardByAgencia(agencia, anio, semana);
 
         String[] texto = result.split(",");
-
-        Dashboard dashboard = new Dashboard();
 
         dashboard.setGerencia(texto[17]);
         dashboard.setAnio(anio);
@@ -137,14 +148,17 @@ public class XpressController {
         dashboard.setCobranzaTotal(Double.parseDouble(texto[15]));
         dashboard.setMontoDeDebitoFaltante(Double.parseDouble(texto[16]));
 
-        return dashboard;
+        return new ResponseEntity<>(dashboard, HttpStatus.OK);
     }
 
     @GetMapping(path = "/dashboard-gerencia/{gerencia}/{anio}/{semana}")
-    public @ResponseBody ArrayList<Dashboard> getDashboardByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
+    public @ResponseBody ResponseEntity<ArrayList<Dashboard>> getDashboardByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
         ArrayList<Dashboard> dashboards = new ArrayList<>();
 
         String[] agencias = prestamoPagoRespository.getDashboardByGerencia(gerencia, anio, semana);
+
+        if(agencias.length == 0)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         for (String agencia : agencias) {
             String[] texto = agencia.split(",");
@@ -175,21 +189,17 @@ public class XpressController {
             dashboards.add(dashboard);
         }
 
-        return dashboards;
+        return new ResponseEntity<>(dashboards, HttpStatus.OK);
     }
 
     @GetMapping(path = "/balance-de-agencia/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<byte[]> getBalanceDeAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana){
-
+    public @ResponseBody ResponseEntity<ResponseEntity<byte[]>> getBalanceDeAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
         String uri = "src\\main\\java\\tech\\calaverita\\reporterloanssql\\resources\\balancesDeAgencias\\pdf\\balance-de-agencia_" + agencia + "_" + anio + "_" + semana + ".pdf";
         String fileName = "balance-de-agencia_" + agencia + "_" + anio + "_" + semana + ".pdf";
         File file = new File(uri);
 
-        if(file.exists())
-            return fileManagerService.getPdf(uri, fileName);
-
-//        if(ruta.exists())
-//            return uri;
+        if (file.exists())
+            return new ResponseEntity<>(fileManagerService.getPdf(uri, fileName), HttpStatus.OK);
 
         String html = "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
@@ -586,36 +596,37 @@ public class XpressController {
                 "\n" +
                 "</html>";
 
-        Dashboard dashboard = getDashboardByAgencia(agencia, anio, semana);
+        ResponseEntity<Dashboard> dashboard = getDashboardByAgencia(agencia, anio, semana);
+
         ArrayList<AsignacionModel> asignaciones = asignacionRepository.getAsignacionModelByAgenciaAnioAndSemana(agencia, anio, semana);
         Double asignacionesMonto = 0.0;
-        for(AsignacionModel asignacion: asignaciones){
-            asignacionesMonto =+ asignacion.getMonto();
+        for (AsignacionModel asignacion : asignaciones) {
+            asignacionesMonto = +asignacion.getMonto();
         }
 
         java.util.Date fecha = new Date();
 
-        html = html.replace("((gerente))", dashboard.getGerencia());
-        html = html.replace("((agencia))", dashboard.getAgencia());
+        html = html.replace("((gerente))", dashboard.getBody().getGerencia());
+        html = html.replace("((agencia))", dashboard.getBody().getAgencia());
         html = html.replace("((agente))", "Prueba de agente");
-        html = html.replace("((rendimiento))", String.valueOf(dashboard.getRendimiento()));
+        html = html.replace("((rendimiento))", String.valueOf(dashboard.getBody().getRendimiento()));
         html = html.replace("((nivel))", "Plata");
-        html = html.replace("((cobranzaPura))", String.valueOf(dashboard.getTotalCobranzaPura()));
-        html = html.replace("((montoExcedente))", String.valueOf(dashboard.getMontoExcedente()));
-        html = html.replace("((liquidaciones))", String.valueOf(dashboard.getLiquidaciones()));
-        html = html.replace("((multas))", String.valueOf(dashboard.getMultas()));
+        html = html.replace("((cobranzaPura))", String.valueOf(dashboard.getBody().getTotalCobranzaPura()));
+        html = html.replace("((montoExcedente))", String.valueOf(dashboard.getBody().getMontoExcedente()));
+        html = html.replace("((liquidaciones))", String.valueOf(dashboard.getBody().getLiquidaciones()));
+        html = html.replace("((multas))", String.valueOf(dashboard.getBody().getMultas()));
         html = html.replace("((otro1))", "Otros");
-        html = html.replace("((totalIngresos))", String.valueOf(dashboard.getCobranzaTotal()));
+        html = html.replace("((totalIngresos))", String.valueOf(dashboard.getBody().getCobranzaTotal()));
         html = html.replace("((comision))", "7%");
         html = html.replace("((bono))", "2%");
         html = html.replace("((semana))", String.valueOf(semana));
         html = html.replace("((anio))", String.valueOf(anio));
         html = html.replace("((dia))", String.valueOf(fecha.getDay()));
         html = html.replace("((mes))", String.valueOf(fecha.getMonth()));
-        html = html.replace("((clientes))", String.valueOf(dashboard.getClientes()));
-        html = html.replace("((pagosReducidos))", String.valueOf(dashboard.getPagosReducidos()));
-        html = html.replace("((noPagos))", String.valueOf(dashboard.getNoPagos()));
-        html = html.replace("((numeroLiquidaciones))", String.valueOf(dashboard.getNumeroLiquidaciones()));
+        html = html.replace("((clientes))", String.valueOf(dashboard.getBody().getClientes()));
+        html = html.replace("((pagosReducidos))", String.valueOf(dashboard.getBody().getPagosReducidos()));
+        html = html.replace("((noPagos))", String.valueOf(dashboard.getBody().getNoPagos()));
+        html = html.replace("((numeroLiquidaciones))", String.valueOf(dashboard.getBody().getNumeroLiquidaciones()));
         html = html.replace("((asignaciones))", String.valueOf(asignacionesMonto));
         html = html.replace("((otros2))", "Otros");
         html = html.replace("((otrosEgresos))", "0");
@@ -626,7 +637,7 @@ public class XpressController {
         html = html.replace("((bonos))", "0");
         html = html.replace("((bonosEgresos))", "0");
 
-        try{
+        try {
             Path path = Paths.get("src\\main\\java\\tech\\calaverita\\reporterloanssql\\resources\\balancesDeAgencias\\html\\balance-de-agencia_" + agencia + "_" + anio + "_" + semana + ".html");
             Files.writeString(path, html);
 
@@ -637,13 +648,13 @@ public class XpressController {
             FileInputStream fileInputStream = new FileInputStream("src\\main\\java\\tech\\calaverita\\reporterloanssql\\resources\\balancesDeAgencias\\html\\balance-de-agencia_" + agencia + "_" + anio + "_" + semana + ".html");
 
             HtmlConverter.convertToPdf(
-              fileInputStream,
-              pdfDocument
+                    fileInputStream,
+                    pdfDocument
             );
 
-        } catch (Exception e){
+        } catch (Exception e) {
 
         }
-        return fileManagerService.getPdf(uri, fileName);
+        return new ResponseEntity<>(fileManagerService.getPdf(uri, fileName), HttpStatus.CREATED);
     }
 }
