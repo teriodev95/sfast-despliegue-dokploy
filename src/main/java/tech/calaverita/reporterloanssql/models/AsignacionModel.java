@@ -19,6 +19,9 @@ public class AsignacionModel {
     private String gerencia;
     private int semana;
     private int anio;
+    private int quienRecibioUsuarioId;
+    private int quienEntregoUsuarioId;
+    private String log;
     private String createdAt;
     private String updatedAt;
 }

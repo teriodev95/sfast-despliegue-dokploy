@@ -29,7 +29,13 @@ public class PagoController {
     @PostMapping(path = "/create-one")
     public @ResponseBody String setPago(@RequestBody PagoModel pago){
 
+        if(pago.getPrestamoId().equalsIgnoreCase("") || pago.getPrestamoId().equalsIgnoreCase(null))
+            return "Debe ingresar el prestamoId";
+
         PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(pago.getPrestamoId());
+
+        if(prestamo == null)
+            return "No Se Encontró Ningún Prestamo Con Ese prestamoId";
 
         pago.setAbreCon(prestamo.getSaldo());
         pago.setCierraCon(prestamo.getSaldo() - pago.getMonto());
