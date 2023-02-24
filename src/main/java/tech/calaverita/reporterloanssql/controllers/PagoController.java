@@ -20,7 +20,7 @@ public class PagoController {
     @Autowired
     private PrestamoRepository prestamoRepository;
 
-    @GetMapping(path = "/cobranza-agencia/{agencia}/{anio}/{semana}")
+    @GetMapping(path = "/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<ArrayList<PagoModel>> getPagosCobranzaByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
         ArrayList<PagoModel> pagos = pagoRepository.getPagoModelsByAgenciaAnioAndSemana(agencia, anio, semana);
 

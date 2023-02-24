@@ -41,7 +41,7 @@ public class XpressController {
     @Autowired
     private FileManagerService fileManagerService;
 
-    @GetMapping(path = "/cobranza-agencia/{agencia}/{anio}/{semana}")
+    @GetMapping(path = "/cobranza/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<Cobranza> getCobranzaByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
         Cobranza cobranza = new Cobranza();
 
