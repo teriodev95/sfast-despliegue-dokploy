@@ -17,10 +17,10 @@ public class AsignacionModel {
     private Double monto;
     private String agencia;
     private String gerencia;
-    private int semana;
-    private int anio;
-    private int quienRecibioUsuarioId;
-    private int quienEntregoUsuarioId;
+    private Integer semana;
+    private Integer anio;
+    private Integer quienRecibioUsuarioId;
+    private Integer quienEntregoUsuarioId;
     private String log;
     private String createdAt;
     private String updatedAt;

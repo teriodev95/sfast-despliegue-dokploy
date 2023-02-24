@@ -11,6 +11,7 @@ import tech.calaverita.reporterloanssql.repositories.PagoRepository;
 import tech.calaverita.reporterloanssql.repositories.PrestamoRepository;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/xpress/v1/pays")
@@ -32,9 +33,13 @@ public class PagoController {
 
     @PostMapping(path = "/create-one")
     public @ResponseBody ResponseEntity<String> setPago(@RequestBody PagoModel pago) {
+        Optional<PagoModel> pagoAux = pagoRepository.findById(pago.getPagoId());
 
-        if (pago.getPrestamoId().equalsIgnoreCase("") || pago.getPrestamoId().equalsIgnoreCase(null))
-            return new ResponseEntity<>("Debe ingresar el prestamoId", HttpStatus.BAD_REQUEST);
+        if (pago.getPrestamoId() == null || pago.getPrestamoId().equalsIgnoreCase(""))
+            return new ResponseEntity<>("Debe Ingresar El prestamoId", HttpStatus.BAD_REQUEST);
+
+        if(!pagoAux.isEmpty())
+            return new ResponseEntity<>("El Pago Ya Existe", HttpStatus.CONFLICT);
 
         PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(pago.getPrestamoId());
 
@@ -60,14 +65,14 @@ public class PagoController {
 
         prestamo.setWkDescu(liquidacion.getSemana() + "-" + liquidacion.getAnio());
         prestamo.setDescuento(liquidacion.getDescuento());
-        prestamo.setSaldo(0);
+        prestamo.setSaldo(0.0);
 
         PagoModel pago = pagoRepository.getPagoModelByPrestamoIdAnioAndSemana(liquidacion.getPrestamoId(), liquidacion.getAnio(), liquidacion.getSemana());
 
         if (pago == null)
             return new ResponseEntity<>("No Se Encontró Ningún Prestamo Con Esos Parametros", HttpStatus.NOT_FOUND);
 
-        pago.setCierraCon(0);
+        pago.setCierraCon(0.0);
 
         prestamoRepository.save(prestamo);
         pagoRepository.save(pago);

@@ -13,24 +13,24 @@ public class PagoModel {
     @Column(name = "prestamoid")
     private String prestamoId;
     private String prestamo;
-    private double monto;
-    private int semana;
-    private int anio;
+    private Double monto;
+    private Integer semana;
+    private Integer anio;
     @Column(name = "esprimerpago")
-    private boolean esPrimerPago;
+    private Boolean esPrimerPago;
     @Column(name = "abrecon")
-    private double abreCon;
+    private Double abreCon;
     @Column(name = "cierracon")
-    private double cierraCon;
-    private double tarifa;
+    private Double cierraCon;
+    private Double tarifa;
     private String cliente;
     private String agente;
     private String tipo;
     private String creadoDesde;
     private String identificador;
     private String fechaPago;
-    private double lat;
-    private double lng;
+    private Double lat;
+    private Double lng;
     private String comentario;
     private String datosMigracion;
     private String createdAt;
