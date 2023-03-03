@@ -20,7 +20,7 @@ public class UsuarioController {
         Iterable<UsuarioModel> usuarios = usuarioRepository.findAll();
 
         if(!usuarios.iterator().hasNext())
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         return new ResponseEntity<>(usuarios, HttpStatus.OK);
     }
@@ -30,7 +30,7 @@ public class UsuarioController {
         Optional<UsuarioModel> usuario = usuarioRepository.findById(usuarioId);
 
         if(usuario.isEmpty())
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         return new ResponseEntity<>(usuario, HttpStatus.OK);
     }

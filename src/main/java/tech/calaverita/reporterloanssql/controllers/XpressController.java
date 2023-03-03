@@ -45,15 +45,16 @@ public class XpressController {
     public @ResponseBody ResponseEntity<Cobranza> getCobranzaByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
         Cobranza cobranza = new Cobranza();
 
+        cobranza.setAgencia(agencia);
+        cobranza.setAnio(anio);
+        cobranza.setSemana(semana);
+
         ArrayList<PrestamoModel> prestamoModels = prestamoRepository.getPrestamoModelsForCobranzaByAgencia(agencia, anio, semana);
 
         if(prestamoModels.isEmpty())
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(cobranza ,HttpStatus.NOT_FOUND);
 
         String result = prestamoPagoRespository.getCobranzaByAgencia(agencia, anio, semana);
-
-        if(result.equalsIgnoreCase(null))
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         String[] texto = result.split(",");
 
@@ -78,12 +79,12 @@ public class XpressController {
         ArrayList<PrestamoModel> prestamoModels = prestamoRepository.getPrestamoModelsForCobranzaByGerencia(gerencia, anio, semana);
 
         if(prestamoModels.isEmpty())
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         String[] agencias = prestamoPagoRespository.getCobranzaByGerencia(gerencia, anio, semana);
 
         if(agencias.length == 0)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         for (int i = 0; i < agencias.length; i++) {
             String[] texto = agencias[i].split(",");
@@ -121,7 +122,7 @@ public class XpressController {
         ArrayList<PagoModel> pagos = pagoRepository.getPagoModelsByAgenciaAnioAndSemana(agencia, anio, semana);
         
         if(pagos.isEmpty())
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         String result = prestamoPagoRespository.getDashboardByAgencia(agencia, anio, semana);
 
@@ -158,7 +159,7 @@ public class XpressController {
         String[] agencias = prestamoPagoRespository.getDashboardByGerencia(gerencia, anio, semana);
 
         if(agencias.length == 0)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         for (String agencia : agencias) {
             String[] texto = agencia.split(",");
@@ -598,7 +599,7 @@ public class XpressController {
 
         ResponseEntity<Dashboard> dashboard = getDashboardByAgencia(agencia, anio, semana);
 
-        ArrayList<AsignacionModel> asignaciones = asignacionRepository.getAsignacionModelByAgenciaAnioAndSemana(agencia, anio, semana);
+        ArrayList<AsignacionModel> asignaciones = asignacionRepository.getAsignacionesByAgenciaAnioAndSemana(agencia, anio, semana);
         Double asignacionesMonto = 0.0;
         for (AsignacionModel asignacion : asignaciones) {
             asignacionesMonto = +asignacion.getMonto();

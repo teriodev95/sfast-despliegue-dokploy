@@ -26,17 +26,20 @@ public class PagoController {
         ArrayList<PagoModel> pagos = pagoRepository.getPagoModelsByAgenciaAnioAndSemana(agencia, anio, semana);
 
         if (pagos.isEmpty())
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         return new ResponseEntity<>(pagos, HttpStatus.OK);
     }
 
     @PostMapping(path = "/create-one")
     public @ResponseBody ResponseEntity<String> setPago(@RequestBody PagoModel pago) {
+        if(pago.getPagoId() == null)
+            return new ResponseEntity<>("Debe Ingresar El 'pagoId'", HttpStatus.BAD_REQUEST);
+
         Optional<PagoModel> pagoAux = pagoRepository.findById(pago.getPagoId());
 
         if (pago.getPrestamoId() == null || pago.getPrestamoId().equalsIgnoreCase(""))
-            return new ResponseEntity<>("Debe Ingresar El prestamoId", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Debe Ingresar El 'prestamoId'", HttpStatus.BAD_REQUEST);
 
         if(!pagoAux.isEmpty())
             return new ResponseEntity<>("El Pago Ya Existe", HttpStatus.CONFLICT);
@@ -44,7 +47,7 @@ public class PagoController {
         PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(pago.getPrestamoId());
 
         if (prestamo == null)
-            return new ResponseEntity<>("No Se Encontró Ningún Prestamo Con Ese prestamoId", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("No Se Encontró Ningún Prestamo Con Ese 'prestamoId'", HttpStatus.NOT_FOUND);
 
         pago.setAbreCon(prestamo.getSaldo());
         pago.setCierraCon(prestamo.getSaldo() - pago.getMonto());
@@ -61,7 +64,7 @@ public class PagoController {
         PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(liquidacion.getPrestamoId());
 
         if (prestamo == null)
-            return new ResponseEntity<>("No Se Encontró Ningún Prestamo Con Ese PrestamoId", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("No Se Encontró Ningún Prestamo Con Ese 'PrestamoId'", HttpStatus.NOT_FOUND);
 
         prestamo.setWkDescu(liquidacion.getSemana() + "-" + liquidacion.getAnio());
         prestamo.setDescuento(liquidacion.getDescuento());
@@ -70,7 +73,7 @@ public class PagoController {
         PagoModel pago = pagoRepository.getPagoModelByPrestamoIdAnioAndSemana(liquidacion.getPrestamoId(), liquidacion.getAnio(), liquidacion.getSemana());
 
         if (pago == null)
-            return new ResponseEntity<>("No Se Encontró Ningún Prestamo Con Esos Parametros", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("No Se Encontró Ningún Pago Con Esos Parametros", HttpStatus.NOT_FOUND);
 
         pago.setCierraCon(0.0);
 
@@ -78,5 +81,15 @@ public class PagoController {
         pagoRepository.save(pago);
 
         return new ResponseEntity<>("Liquidación Cargada con Éxito", HttpStatus.OK);
+    }
+
+    @GetMapping(path = "history/{prestamoId}")
+    public @ResponseBody ResponseEntity<ArrayList<PagoModel>> getHistorialDePagos(@PathVariable("prestamoId") String prestamoId){
+        ArrayList<PagoModel> pagos = pagoRepository.getHistorialDePagos(prestamoId);
+
+        if (pagos.isEmpty())
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        return new ResponseEntity<>(pagos, HttpStatus.OK);
     }
 }

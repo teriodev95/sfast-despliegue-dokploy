@@ -24,17 +24,28 @@ public class AsignacionController {
         Iterable<AsignacionModel> asignaciones = asignacionRepository.findAll();
 
         if(!asignaciones.iterator().hasNext())
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         return new ResponseEntity<>(asignaciones, HttpStatus.OK);
     }
+
+    @GetMapping(path = "/{agencia}/{anio}/{semana}")
+    public @ResponseBody ResponseEntity<Iterable<AsignacionModel>> getAsignacionesByAgenciaAnioAndSemana(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana){
+        Iterable<AsignacionModel> asignaciones = asignacionRepository.getAsignacionesByAgenciaAnioAndSemana(agencia, anio, semana);
+
+        if(!asignaciones.iterator().hasNext())
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        return new ResponseEntity<>(asignaciones, HttpStatus.OK);
+    }
+
 
     @GetMapping(path = "/one/{asignacionId}")
     public @ResponseBody ResponseEntity<Optional<AsignacionModel>> getAsignacionById(@PathVariable("asignacionId") String id) {
         Optional<AsignacionModel> asignacion = asignacionRepository.findById(id);
 
         if(asignacion.isEmpty())
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         return new ResponseEntity<>(asignacion, HttpStatus.OK);
     }
