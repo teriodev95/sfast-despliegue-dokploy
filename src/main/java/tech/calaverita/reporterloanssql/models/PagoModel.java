@@ -1,5 +1,6 @@
 package tech.calaverita.reporterloanssql.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -35,5 +36,6 @@ public class PagoModel {
     private String datosMigracion;
     private String createdAt;
     private String updatedAt;
+    private String log;
 }
 
