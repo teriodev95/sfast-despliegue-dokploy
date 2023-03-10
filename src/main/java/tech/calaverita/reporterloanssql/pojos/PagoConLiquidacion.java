@@ -1,26 +1,18 @@
-package tech.calaverita.reporterloanssql.models;
+package tech.calaverita.reporterloanssql.pojos;
 
-import jakarta.persistence.*;
 import lombok.Data;
+import tech.calaverita.reporterloanssql.models.LiquidacionModel;
 
 @Data
-@Entity
-@Table(name = "pagos_v3")
-public class PagoModel {
-    @Id
-    @Column(name = "pagoid")
+public class PagoConLiquidacion {
     private String pagoId;
-    @Column(name = "prestamoid")
     private String prestamoId;
     private String prestamo;
     private Double monto;
     private Integer semana;
     private Integer anio;
-    @Column(name = "esprimerpago")
     private Boolean esPrimerPago;
-    @Column(name = "abrecon")
     private Double abreCon;
-    @Column(name = "cierracon")
     private Double cierraCon;
     private Double tarifa;
     private String cliente;
@@ -36,5 +28,5 @@ public class PagoModel {
     private String createdAt;
     private String updatedAt;
     private String log;
+    private LiquidacionModel infoLiquidacion;
 }
-

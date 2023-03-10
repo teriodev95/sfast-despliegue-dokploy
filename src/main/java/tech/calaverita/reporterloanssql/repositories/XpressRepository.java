@@ -42,15 +42,15 @@ public interface XpressRepository extends CrudRepository<PrestamoModel, String> 
     String[] getCobranzaByGerencia(String gerencia, int anio, int semana);
 
     @Query("SELECT pr.agente AS agencia, " +
-            "COUNT(pr.agente) AS clientes, " +
+//            "COUNT(pr.agente) AS clientes, " +
             "SUM(CASE WHEN pa.monto = 0 THEN 1 ELSE 0 END) AS noPagos, " +
             "SUM(CASE WHEN pr.descuento > 0 THEN 1 ELSE 0 END) AS numeroLiquidaciones, " +
             "SUM(CASE WHEN pa.monto < pr.tarifa AND pa.cierraCon > 0 AND pa.monto > 0 THEN 1 ELSE 0 END) AS pagosReducidos, " +
-            "SUM(CASE WHEN pr.diaDePago = 'MIERCOLES' THEN CASE WHEN pa.abreCon < pr.tarifa THEN pa.abreCon ELSE pr.tarifa END ELSE 0 END) AS debitoMiercoles, " +
-            "SUM(CASE WHEN pr.diaDePago = 'JUEVES' THEN CASE WHEN pa.abreCon < pr.tarifa THEN pa.abreCon ELSE pr.tarifa END ELSE 0 END) AS debitoJueves, " +
-            "SUM(CASE WHEN pr.diaDePago = 'VIERNES' THEN CASE WHEN pa.abreCon < pr.tarifa THEN pa.abreCon ELSE pr.tarifa END ELSE 0 END) AS debitoViernes, " +
-            "SUM(CASE WHEN pa.abreCon < pr.tarifa THEN pa.abreCon ELSE pr.tarifa END) AS debitoTotal, " +
-            "ROUND(((SUM(pa.monto) - SUM(CASE WHEN pa.monto > pr.tarifa THEN pa.monto - pr.tarifa ELSE 0 END)) / SUM(CASE WHEN pa.abreCon < pr.tarifa THEN pa.abreCon ELSE pr.tarifa END) * 100), 2) AS rendimiento, " +
+//            "SUM(CASE WHEN pr.diaDePago = 'MIERCOLES' THEN CASE WHEN pa.abreCon < pr.tarifa THEN pa.abreCon ELSE pr.tarifa END ELSE 0 END) AS debitoMiercoles, " +
+//            "SUM(CASE WHEN pr.diaDePago = 'JUEVES' THEN CASE WHEN pa.abreCon < pr.tarifa THEN pa.abreCon ELSE pr.tarifa END ELSE 0 END) AS debitoJueves, " +
+//            "SUM(CASE WHEN pr.diaDePago = 'VIERNES' THEN CASE WHEN pa.abreCon < pr.tarifa THEN pa.abreCon ELSE pr.tarifa END ELSE 0 END) AS debitoViernes, " +
+//            "SUM(CASE WHEN pa.abreCon < pr.tarifa THEN pa.abreCon ELSE pr.tarifa END) AS debitoTotal, " +
+//            "ROUND(((SUM(pa.monto) - SUM(CASE WHEN pa.monto > pr.tarifa THEN pa.monto - pr.tarifa ELSE 0 END)) / SUM(CASE WHEN pa.abreCon < pr.tarifa THEN pa.abreCon ELSE pr.tarifa END) * 100), 2) AS rendimiento, " +
             "SUM(CASE WHEN pr.descuento > 0 THEN pr.descuento ELSE 0 END) AS totalDeDescuento, " +
             "SUM(pa.monto) - SUM(CASE WHEN pa.monto > pr.tarifa THEN pa.monto - pr.tarifa ELSE 0 END) AS totalCobranzaPura, " +
             "SUM(CASE WHEN pa.monto > pr.tarifa THEN pa.monto - pr.tarifa ELSE 0 END) AS montoExcedente, " +
@@ -66,7 +66,7 @@ public interface XpressRepository extends CrudRepository<PrestamoModel, String> 
             "WHERE pa.agente = :agencia " +
             "AND pa.anio = :anio " +
             "AND pa.semana = :semana " +
-            "AND pa.esPrimerPago = false ")
+            "AND pa.esPrimerPago = false")
     String getDashboardByAgencia(String agencia, int anio, int semana);
 
     @Query("SELECT pr.agente AS agencia, " +

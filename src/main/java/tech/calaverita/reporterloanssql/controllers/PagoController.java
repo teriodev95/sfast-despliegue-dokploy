@@ -1,16 +1,22 @@
 package tech.calaverita.reporterloanssql.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import tech.calaverita.reporterloanssql.models.LiquidacionModel;
 import tech.calaverita.reporterloanssql.models.PagoModel;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
-import tech.calaverita.reporterloanssql.pojos.Liquidacion;
+import tech.calaverita.reporterloanssql.pojos.PagoConLiquidacion;
+import tech.calaverita.reporterloanssql.repositories.LiquidacionRepository;
 import tech.calaverita.reporterloanssql.repositories.PagoRepository;
 import tech.calaverita.reporterloanssql.repositories.PrestamoRepository;
+import tech.calaverita.reporterloanssql.helpers.PagoConLiquidacionUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
 
 @RestController
@@ -20,6 +26,9 @@ public class PagoController {
     private PagoRepository pagoRepository;
     @Autowired
     private PrestamoRepository prestamoRepository;
+
+    @Autowired
+    private LiquidacionRepository liquidacionRepository;
 
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<ArrayList<PagoModel>> getPagosByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
@@ -31,9 +40,15 @@ public class PagoController {
         return new ResponseEntity<>(pagos, HttpStatus.OK);
     }
 
+    /*
+        Dentro de este endpoint se puede recibir el pago con la liquidación,
+        si el pago mandado cuenta con liquidacion se hará el proceso correspondiente
+        para guardar dicha liquidacion y ajustar la propiedad cierraCon de pago,
+        si se manda solo el pago solo se realizará el proceso para guardar el pago.
+     */
     @PostMapping(path = "/create-one")
-    public @ResponseBody ResponseEntity<String> setPago(@RequestBody PagoModel pago) {
-        if(pago.getPagoId() == null)
+    public @ResponseBody ResponseEntity<String> setPago(@RequestBody PagoConLiquidacion pago) {
+        if (pago.getPagoId() == null)
             return new ResponseEntity<>("Debe Ingresar El 'pagoId'", HttpStatus.BAD_REQUEST);
 
         Optional<PagoModel> pagoAux = pagoRepository.findById(pago.getPagoId());
@@ -41,7 +56,7 @@ public class PagoController {
         if (pago.getPrestamoId() == null || pago.getPrestamoId().equalsIgnoreCase(""))
             return new ResponseEntity<>("Debe Ingresar El 'prestamoId'", HttpStatus.BAD_REQUEST);
 
-        if(!pagoAux.isEmpty())
+        if (!pagoAux.isEmpty())
             return new ResponseEntity<>("El Pago Ya Existe", HttpStatus.CONFLICT);
 
         PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(pago.getPrestamoId());
@@ -49,42 +64,55 @@ public class PagoController {
         if (prestamo == null)
             return new ResponseEntity<>("No Se Encontró Ningún Prestamo Con Ese 'prestamoId'", HttpStatus.NOT_FOUND);
 
-        pago.setAbreCon(prestamo.getSaldo());
-        pago.setCierraCon(prestamo.getSaldo() - pago.getMonto());
-        pago.setEsPrimerPago(false);
+        PagoModel pagoModel = PagoConLiquidacionUtil.getPagoModelFromPagoConLiquidacion(pago);
+        LiquidacionModel liquidacionModel = pago.getInfoLiquidacion();
 
-        pagoRepository.save(pago);
+        /*
+            A continuación se hace una validación para comprobar si el pago mandado lleva liquidación,
+            de ser así se hará el proceso dentro del if, sino se hará el proceso dentro del else.
+         */
+        if (liquidacionModel != null) {
+            liquidacionRepository.save(liquidacionModel);
+            liquidacionModel.setPagoId(pagoModel.getPagoId());
+            pagoModel.setAbreCon(prestamo.getSaldo());
+            pagoModel.setCierraCon(0.0);
+            pagoModel.setEsPrimerPago(false);
+        } else {
+            pagoModel.setAbreCon(prestamo.getSaldo());
+            pagoModel.setCierraCon(prestamo.getSaldo() - pago.getMonto());
+            pagoModel.setEsPrimerPago(false);
+        }
+
+        pagoRepository.save(pagoModel);
+
+        String payMessage = (PagoConLiquidacionUtil.getPayMessage(prestamo, pagoModel));
+        PagoConLiquidacionUtil.sendPayMessage(payMessage);
 
         return new ResponseEntity<>("Pago Insertado con Éxito", HttpStatus.CREATED);
     }
 
-    @PutMapping(path = "/liquidacion-pago")
-    public @ResponseBody ResponseEntity<String> setLiquidacionPrestamo(@RequestBody Liquidacion liquidacion) {
-
-        PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(liquidacion.getPrestamoId());
-
-        if (prestamo == null)
-            return new ResponseEntity<>("No Se Encontró Ningún Prestamo Con Ese 'PrestamoId'", HttpStatus.NOT_FOUND);
-
-        prestamo.setWkDescu(liquidacion.getSemana() + "-" + liquidacion.getAnio());
-        prestamo.setDescuento(liquidacion.getDescuento());
-        prestamo.setSaldo(0.0);
-
-        PagoModel pago = pagoRepository.getPagoModelByPrestamoIdAnioAndSemana(liquidacion.getPrestamoId(), liquidacion.getAnio(), liquidacion.getSemana());
-
-        if (pago == null)
-            return new ResponseEntity<>("No Se Encontró Ningún Pago Con Esos Parametros", HttpStatus.NOT_FOUND);
-
-        pago.setCierraCon(0.0);
-
-        prestamoRepository.save(prestamo);
-        pagoRepository.save(pago);
-
-        return new ResponseEntity<>("Liquidación Cargada con Éxito", HttpStatus.OK);
-    }
+//    @PutMapping(path = "/liquidacion-pago")
+//    public @ResponseBody ResponseEntity<String> setLiquidacionPrestamo(@RequestBody PagoConLiquidacion liquidacion) {
+//
+//        PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(liquidacion.getPrestamoId());
+//
+//        if (prestamo == null)
+//            return new ResponseEntity<>("No Se Encontró Ningún Prestamo Con Ese 'PrestamoId'", HttpStatus.NOT_FOUND);
+//
+//        prestamo.setWkDescu(liquidacion.getSemana() + "-" + liquidacion.getAnio());
+//        prestamo.setDescuento(liquidacion.getDescuento());
+//        prestamo.setSaldo(0.0);
+//
+//        liquidacion.getPago().setCierraCon(0.0);
+//
+//        prestamoRepository.save(prestamo);
+//        pagoRepository.save(liquidacion.getPago());
+//
+//        return new ResponseEntity<>("Liquidación Cargada con Éxito", HttpStatus.OK);
+//    }
 
     @GetMapping(path = "history/{prestamoId}")
-    public @ResponseBody ResponseEntity<ArrayList<PagoModel>> getHistorialDePagos(@PathVariable("prestamoId") String prestamoId){
+    public @ResponseBody ResponseEntity<ArrayList<PagoModel>> getHistorialDePagos(@PathVariable("prestamoId") String prestamoId) {
         ArrayList<PagoModel> pagos = pagoRepository.getHistorialDePagos(prestamoId);
 
         if (pagos.isEmpty())

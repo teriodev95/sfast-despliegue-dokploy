@@ -11,4 +11,7 @@ import java.util.ArrayList;
 public interface AsignacionRepository extends CrudRepository<AsignacionModel, String> {
     @Query("SELECT am FROM AsignacionModel am WHERE am.agencia = :agencia AND am.anio = :anio AND am.semana = :semana")
     ArrayList<AsignacionModel> getAsignacionesByAgenciaAnioAndSemana(String agencia, int anio, int semana);
+
+    @Query("SELECT SUM(am.monto) FROM AsignacionModel am WHERE am.agencia = :agencia AND am.anio = :anio AND am.semana = :semana")
+    Double getSumaDeAsigancionesByAgenciaAnioAndSemana(String agencia, int anio, int semana);
 }
