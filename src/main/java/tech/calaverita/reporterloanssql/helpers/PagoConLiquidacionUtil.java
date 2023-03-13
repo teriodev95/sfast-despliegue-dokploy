@@ -2,6 +2,7 @@ package tech.calaverita.reporterloanssql.helpers;
 
 import com.google.gson.Gson;
 import okhttp3.*;
+import org.springframework.web.client.HttpClientErrorException;
 import tech.calaverita.reporterloanssql.models.PagoModel;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
 import tech.calaverita.reporterloanssql.pojos.PagoConLiquidacion;
@@ -71,5 +72,10 @@ public class PagoConLiquidacionUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String getResponseDb(){
+
+        return "e.toString";
     }
 }

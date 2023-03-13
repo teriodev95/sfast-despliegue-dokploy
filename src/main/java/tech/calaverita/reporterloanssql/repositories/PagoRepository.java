@@ -18,4 +18,7 @@ public interface PagoRepository extends CrudRepository<PagoModel, String> {
 
     @Query("SELECT pa FROM PagoModel pa WHERE pa.prestamoId = :prestamoId ORDER BY pa.anio ASC, pa.semana ASC")
     ArrayList<PagoModel> getHistorialDePagos(String prestamoId);
+
+    @Query("SELECT SUM(pa.monto) FROM PagoModel pa WHERE pa.prestamoId = :prestamoId")
+    Double getSaldoFromPrestamoByPrestamoId(String prestamoId);
 }

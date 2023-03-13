@@ -1,10 +1,12 @@
 package tech.calaverita.reporterloanssql.controllers;
 
+import org.apache.http.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import tech.calaverita.reporterloanssql.models.LiquidacionModel;
 import tech.calaverita.reporterloanssql.models.PagoModel;
@@ -78,8 +80,8 @@ public class PagoController {
             pagoModel.setCierraCon(0.0);
             pagoModel.setEsPrimerPago(false);
         } else {
-            pagoModel.setAbreCon(prestamo.getSaldo());
-            pagoModel.setCierraCon(prestamo.getSaldo() - pago.getMonto());
+            pagoModel.setAbreCon(pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()));
+            pagoModel.setCierraCon(prestamo.getTotalAPagar() - (pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()) + pago.getMonto()));
             pagoModel.setEsPrimerPago(false);
         }
 
@@ -89,6 +91,77 @@ public class PagoController {
         PagoConLiquidacionUtil.sendPayMessage(payMessage);
 
         return new ResponseEntity<>("Pago Insertado con Éxito", HttpStatus.CREATED);
+    }
+
+    @PostMapping(path = "/create-many")
+    public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> setPagos(@RequestBody ArrayList<PagoConLiquidacion> pagos) {
+        ArrayList<HashMap<String, Object>> respuesta = new ArrayList<>();
+        
+        for(PagoConLiquidacion pago: pagos){
+            HashMap<String, Object> objeto = new HashMap<>();
+            String msg = "OK";
+            Boolean isOnline = true;
+            
+            if (pago.getPagoId() == null){
+                msg = "Debe Ingresar El 'pagoId'";
+                isOnline = false;
+            }
+
+            Optional<PagoModel> pagoAux = pagoRepository.findById(pago.getPagoId());
+
+            if (pago.getPrestamoId() == null || pago.getPrestamoId().equalsIgnoreCase("")){
+                msg = "Debe Ingresar El 'prestamoId'";
+                isOnline = false;
+            }
+
+            if (!pagoAux.isEmpty()){
+                msg = "El Pago Ya Existe";
+                isOnline = false;
+            }
+
+            PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(pago.getPrestamoId());
+
+            if (prestamo == null){
+                msg = "No Se Encontró Ningún Prestamo Con Ese 'prestamoId'";
+                isOnline = false;
+            }
+
+            PagoModel pagoModel = PagoConLiquidacionUtil.getPagoModelFromPagoConLiquidacion(pago);
+            LiquidacionModel liquidacionModel = pago.getInfoLiquidacion();
+
+        /*
+            A continuación se hace una validación para comprobar si el pago mandado lleva liquidación,
+            de ser así se hará el proceso dentro del if, sino se hará el proceso dentro del else.
+         */
+            if (liquidacionModel != null) {
+                liquidacionRepository.save(liquidacionModel);
+                liquidacionModel.setPagoId(pagoModel.getPagoId());
+                pagoModel.setAbreCon(prestamo.getSaldo());
+                pagoModel.setCierraCon(0.0);
+                pagoModel.setEsPrimerPago(false);
+            } else {
+                pagoModel.setAbreCon(pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()));
+                pagoModel.setCierraCon(prestamo.getTotalAPagar() - (pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()) + pago.getMonto()));
+                pagoModel.setEsPrimerPago(false);
+            }
+
+            try{
+                pagoRepository.save(pagoModel);
+            }catch (HttpClientErrorException e){
+                msg = e.toString();
+                isOnline = false;
+            }
+
+            objeto.put("id", pago.getPagoId());
+            objeto.put("isOnline", isOnline);
+            objeto.put("msg", msg);
+            respuesta.add(objeto);
+
+            String payMessage = (PagoConLiquidacionUtil.getPayMessage(prestamo, pagoModel));
+            PagoConLiquidacionUtil.sendPayMessage(payMessage);
+        }
+
+        return new ResponseEntity<>(respuesta, HttpStatus.OK);
     }
 
 //    @PutMapping(path = "/liquidacion-pago")

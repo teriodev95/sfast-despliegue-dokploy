@@ -4,11 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import tech.calaverita.reporterloanssql.models.AsignacionModel;
 import tech.calaverita.reporterloanssql.models.UsuarioModel;
 import tech.calaverita.reporterloanssql.repositories.AsignacionRepository;
 import tech.calaverita.reporterloanssql.repositories.UsuarioRepository;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
 
 @RestController
@@ -52,6 +55,11 @@ public class AsignacionController {
 
     @PostMapping(path = "/create-one")
     public @ResponseBody ResponseEntity<String> setAsignacion(@RequestBody AsignacionModel asignacion) {
+        Optional<AsignacionModel> asignacionAux = asignacionRepository.findById(asignacion.getAsignacionId());
+
+        if(!asignacionAux.isEmpty()){
+            return new ResponseEntity<>("La Asignación Ya Existe", HttpStatus.CONFLICT);
+        }
 
         Optional<UsuarioModel> usuarioModel = usuarioRepository.findById(asignacion.getQuienRecibioUsuarioId());
 
@@ -74,5 +82,61 @@ public class AsignacionController {
         asignacionRepository.save(asignacion);
 
         return new ResponseEntity<>("Asignación Creada con Éxito", HttpStatus.CREATED);
+    }
+
+    @PostMapping(path = "/create-many")
+    public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> setAsignaciones(@RequestBody ArrayList<AsignacionModel> asignaciones) {
+        ArrayList<HashMap<String, Object>> respuesta = new ArrayList<>();
+
+        for(AsignacionModel asignacion: asignaciones){
+            HashMap<String, Object> objeto = new HashMap<>();
+            String msg = "OK";
+            Boolean isOnline = true;
+
+            Optional<AsignacionModel> asignacionAux = asignacionRepository.findById(asignacion.getAsignacionId());
+
+            if(!asignacionAux.isEmpty()){
+                msg = "La Asignación Ya Existe";
+                isOnline = false;
+            }
+
+            Optional<UsuarioModel> usuarioModel = usuarioRepository.findById(asignacion.getQuienRecibioUsuarioId());
+
+            if (usuarioModel.isEmpty()) {
+                msg = "Debe ingresar un quienRecibioUsuarioId válido";
+                isOnline = false;
+            }
+
+            usuarioModel = usuarioRepository.findById(asignacion.getQuienEntregoUsuarioId());
+
+            if (usuarioModel.isEmpty()) {
+                msg = "Debe ingresar un quienEntregoUsuarioId válido";
+                isOnline = false;
+            }
+
+            if (!asignacion.getLog().contains("{")){
+                msg = "Debe ingresar un log con formato json";
+                isOnline = false;
+            }
+
+            if (!asignacion.getLog().contains("}")){
+                msg = "Debe ingresar un log con formato json";
+                isOnline = false;
+            }
+
+            try {
+                asignacionRepository.save(asignacion);
+            }catch (HttpClientErrorException e){
+                msg = e.toString();
+                isOnline = false;
+            }
+
+            objeto.put("id", asignacion.getAsignacionId());
+            objeto.put("isOnline", isOnline);
+            objeto.put("msg", msg);
+            respuesta.add(objeto);
+        }
+
+        return new ResponseEntity<>(respuesta, HttpStatus.OK);
     }
 }
