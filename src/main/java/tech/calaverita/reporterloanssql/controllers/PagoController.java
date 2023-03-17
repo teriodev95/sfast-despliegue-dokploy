@@ -76,12 +76,12 @@ public class PagoController {
         if (liquidacionModel != null) {
             liquidacionRepository.save(liquidacionModel);
             liquidacionModel.setPagoId(pagoModel.getPagoId());
-            pagoModel.setAbreCon(prestamo.getSaldo());
+            pagoModel.setAbreCon(prestamo.getTotalAPagar() - pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()));
             pagoModel.setCierraCon(0.0);
             pagoModel.setEsPrimerPago(false);
         } else {
-            pagoModel.setAbreCon(pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()));
-            pagoModel.setCierraCon(prestamo.getTotalAPagar() - (pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()) + pago.getMonto()));
+            pagoModel.setAbreCon(prestamo.getTotalAPagar() - pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()));
+            pagoModel.setCierraCon(pagoModel.getAbreCon() - pago.getMonto());
             pagoModel.setEsPrimerPago(false);
         }
 
@@ -136,12 +136,12 @@ public class PagoController {
             if (liquidacionModel != null) {
                 liquidacionRepository.save(liquidacionModel);
                 liquidacionModel.setPagoId(pagoModel.getPagoId());
-                pagoModel.setAbreCon(prestamo.getSaldo());
+                pagoModel.setAbreCon(prestamo.getTotalAPagar() - pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()));
                 pagoModel.setCierraCon(0.0);
                 pagoModel.setEsPrimerPago(false);
             } else {
-                pagoModel.setAbreCon(pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()));
-                pagoModel.setCierraCon(prestamo.getTotalAPagar() - (pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()) + pago.getMonto()));
+                pagoModel.setAbreCon(prestamo.getTotalAPagar() - pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()));
+                pagoModel.setCierraCon(pagoModel.getAbreCon() - pago.getMonto());
                 pagoModel.setEsPrimerPago(false);
             }
 
