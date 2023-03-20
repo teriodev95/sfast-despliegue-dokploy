@@ -104,26 +104,26 @@ public class PagoController {
             Boolean isOnline = true;
             
             if (pago.getPagoId() == null){
-                msgAux += "Debe Ingresar El 'pagoId' \n";
+                msgAux += "Debe Ingresar El 'pagoId'|";
                 isOnline = false;
             }
 
             Optional<PagoModel> pagoAux = pagoRepository.findById(pago.getPagoId());
 
             if (pago.getPrestamoId() == null || pago.getPrestamoId().equalsIgnoreCase("")){
-                msgAux += "Debe Ingresar El 'prestamoId' \n";
+                msgAux += "Debe Ingresar El 'prestamoId'|";
                 isOnline = false;
             }
 
             if (!pagoAux.isEmpty()){
-                msgAux += "El Pago Ya Existe \n";
+                msgAux += "El Pago Ya Existe|";
                 isOnline = false;
             }
 
             PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(pago.getPrestamoId());
 
             if (prestamo == null){
-                msgAux += "No Se Encontró Ningún Prestamo Con Ese 'prestamoId' \n";
+                msgAux += "No Se Encontró Ningún Prestamo Con Ese 'prestamoId'|";
                 isOnline = false;
             }
 
