@@ -97,37 +97,38 @@ public class AsignacionController {
             Optional<AsignacionModel> asignacionAux = asignacionRepository.findById(asignacion.getAsignacionId());
 
             if(!asignacionAux.isEmpty()){
-                msgAux += "La Asignación Ya Existe";
+                msgAux += "La Asignación Ya Existe \n";
                 isOnline = false;
             }
 
             Optional<UsuarioModel> usuarioModel = usuarioRepository.findById(asignacion.getQuienRecibioUsuarioId());
 
             if (usuarioModel.isEmpty()) {
-                msgAux += "Debe ingresar un quienRecibioUsuarioId válido";
+                msgAux += "Debe ingresar un quienRecibioUsuarioId válido \n";
                 isOnline = false;
             }
 
             usuarioModel = usuarioRepository.findById(asignacion.getQuienEntregoUsuarioId());
 
             if (usuarioModel.isEmpty()) {
-                msgAux += "Debe ingresar un quienEntregoUsuarioId válido";
+                msgAux += "Debe ingresar un quienEntregoUsuarioId válido \n";
                 isOnline = false;
             }
 
             if (!asignacion.getLog().contains("{")){
-                msgAux += "Debe ingresar un log con formato json";
+                msgAux += "Debe ingresar un log con formato json \n";
                 isOnline = false;
             }
 
             if (!asignacion.getLog().contains("}")){
-                msgAux += "Debe ingresar un log con formato json";
+                msgAux += "Debe ingresar un log con formato json \n";
                 isOnline = false;
             }
 
             try {
                 if(isOnline == true)
                     asignacionRepository.save(asignacion);
+                msg = msgAux;
             }catch (HttpClientErrorException e){
                 msg = e.toString();
                 isOnline = false;
