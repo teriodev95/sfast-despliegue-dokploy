@@ -125,7 +125,8 @@ public class AsignacionController {
             }
 
             try {
-                asignacionRepository.save(asignacion);
+                if(isOnline == true)
+                    asignacionRepository.save(asignacion);
             }catch (HttpClientErrorException e){
                 msg = e.toString();
                 isOnline = false;
