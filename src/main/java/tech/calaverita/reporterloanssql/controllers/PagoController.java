@@ -149,6 +149,7 @@ public class PagoController {
             try{
                 if(isOnline == true)
                     pagoRepository.save(pagoModel);
+                msg = msgAux;
             }catch (HttpClientErrorException e){
                 msg = e.toString();
                 isOnline = false;
