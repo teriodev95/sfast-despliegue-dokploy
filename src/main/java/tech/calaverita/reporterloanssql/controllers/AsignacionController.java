@@ -91,36 +91,37 @@ public class AsignacionController {
         for(AsignacionModel asignacion: asignaciones){
             HashMap<String, Object> objeto = new HashMap<>();
             String msg = "OK";
+            String msgAux = "";
             Boolean isOnline = true;
 
             Optional<AsignacionModel> asignacionAux = asignacionRepository.findById(asignacion.getAsignacionId());
 
             if(!asignacionAux.isEmpty()){
-                msg = "La Asignación Ya Existe";
+                msgAux += "La Asignación Ya Existe";
                 isOnline = false;
             }
 
             Optional<UsuarioModel> usuarioModel = usuarioRepository.findById(asignacion.getQuienRecibioUsuarioId());
 
             if (usuarioModel.isEmpty()) {
-                msg = "Debe ingresar un quienRecibioUsuarioId válido";
+                msgAux += "Debe ingresar un quienRecibioUsuarioId válido";
                 isOnline = false;
             }
 
             usuarioModel = usuarioRepository.findById(asignacion.getQuienEntregoUsuarioId());
 
             if (usuarioModel.isEmpty()) {
-                msg = "Debe ingresar un quienEntregoUsuarioId válido";
+                msgAux += "Debe ingresar un quienEntregoUsuarioId válido";
                 isOnline = false;
             }
 
             if (!asignacion.getLog().contains("{")){
-                msg = "Debe ingresar un log con formato json";
+                msgAux += "Debe ingresar un log con formato json";
                 isOnline = false;
             }
 
             if (!asignacion.getLog().contains("}")){
-                msg = "Debe ingresar un log con formato json";
+                msgAux += "Debe ingresar un log con formato json";
                 isOnline = false;
             }
 

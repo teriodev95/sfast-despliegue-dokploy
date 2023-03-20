@@ -100,29 +100,30 @@ public class PagoController {
         for(PagoConLiquidacion pago: pagos){
             HashMap<String, Object> objeto = new HashMap<>();
             String msg = "OK";
+            String msgAux = "";
             Boolean isOnline = true;
             
             if (pago.getPagoId() == null){
-                msg = "Debe Ingresar El 'pagoId'";
+                msgAux += "Debe Ingresar El 'pagoId' \n";
                 isOnline = false;
             }
 
             Optional<PagoModel> pagoAux = pagoRepository.findById(pago.getPagoId());
 
             if (pago.getPrestamoId() == null || pago.getPrestamoId().equalsIgnoreCase("")){
-                msg = "Debe Ingresar El 'prestamoId'";
+                msgAux += "Debe Ingresar El 'prestamoId' \n";
                 isOnline = false;
             }
 
             if (!pagoAux.isEmpty()){
-                msg = "El Pago Ya Existe";
+                msgAux += "El Pago Ya Existe \n";
                 isOnline = false;
             }
 
             PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(pago.getPrestamoId());
 
             if (prestamo == null){
-                msg = "No Se Encontró Ningún Prestamo Con Ese 'prestamoId'";
+                msgAux += "No Se Encontró Ningún Prestamo Con Ese 'prestamoId' \n";
                 isOnline = false;
             }
 
