@@ -9,12 +9,12 @@ import java.util.ArrayList;
 public class Cobranza {
     private String gerencia;
     private String agencia;
-    private int anio;
-    private int semana;
-    private int clientes;
-    private double debitoMiercoles;
-    private double debitoJueves;
-    private double debitoViernes;
-    private double debitoTotal;
+    private Integer anio;
+    private Integer semana;
+    private Integer clientes;
+    private Double debitoMiercoles;
+    private Double debitoJueves;
+    private Double debitoViernes;
+    private Double debitoTotal;
     private ArrayList<PrestamoModel> prestamos;
 }

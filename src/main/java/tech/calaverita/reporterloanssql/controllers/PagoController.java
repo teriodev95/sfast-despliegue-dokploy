@@ -1,13 +1,11 @@
 package tech.calaverita.reporterloanssql.controllers;
 
-import org.apache.http.HttpException;
+import okhttp3.Call;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 import tech.calaverita.reporterloanssql.models.LiquidacionModel;
 import tech.calaverita.reporterloanssql.models.PagoModel;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
@@ -15,7 +13,8 @@ import tech.calaverita.reporterloanssql.pojos.PagoConLiquidacion;
 import tech.calaverita.reporterloanssql.repositories.LiquidacionRepository;
 import tech.calaverita.reporterloanssql.repositories.PagoRepository;
 import tech.calaverita.reporterloanssql.repositories.PrestamoRepository;
-import tech.calaverita.reporterloanssql.helpers.PagoConLiquidacionUtil;
+import tech.calaverita.reporterloanssql.helpers.PagoUtil;
+import tech.calaverita.reporterloanssql.services.OdooService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,7 +65,7 @@ public class PagoController {
         if (prestamo == null)
             return new ResponseEntity<>("No Se Encontró Ningún Prestamo Con Ese 'prestamoId'", HttpStatus.NOT_FOUND);
 
-        PagoModel pagoModel = PagoConLiquidacionUtil.getPagoModelFromPagoConLiquidacion(pago);
+        PagoModel pagoModel = PagoUtil.getPagoModelFromPagoConLiquidacion(pago);
         LiquidacionModel liquidacionModel = pago.getInfoLiquidacion();
 
         /*
@@ -74,7 +73,6 @@ public class PagoController {
             de ser así se hará el proceso dentro del if, sino se hará el proceso dentro del else.
          */
         if (liquidacionModel != null) {
-            liquidacionRepository.save(liquidacionModel);
             liquidacionModel.setPagoId(pagoModel.getPagoId());
             pagoModel.setAbreCon(prestamo.getTotalAPagar() - pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()));
             pagoModel.setCierraCon(0.0);
@@ -85,10 +83,17 @@ public class PagoController {
             pagoModel.setEsPrimerPago(false);
         }
 
-        pagoRepository.save(pagoModel);
+        try{
+            pagoRepository.save(pagoModel);
+            PagoUtil.sendPayMessage(prestamo, pagoModel);
+//        OdooService.pagoCreateOne(pagoModel);
 
-        String payMessage = (PagoConLiquidacionUtil.getPayMessage(prestamo, pagoModel));
-        PagoConLiquidacionUtil.sendPayMessage(payMessage);
+            if(liquidacionModel != null) {
+                liquidacionRepository.save(liquidacionModel);
+            }
+        }catch(HttpClientErrorException e){
+            return new ResponseEntity<>(e.toString(), HttpStatus.CONFLICT);
+        }
 
         return new ResponseEntity<>("Pago Insertado con Éxito", HttpStatus.CREATED);
     }
@@ -96,13 +101,13 @@ public class PagoController {
     @PostMapping(path = "/create-many")
     public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> setPagos(@RequestBody ArrayList<PagoConLiquidacion> pagos) {
         ArrayList<HashMap<String, Object>> respuesta = new ArrayList<>();
-        
+
         for(PagoConLiquidacion pago: pagos){
             HashMap<String, Object> objeto = new HashMap<>();
             String msg = "OK";
             String msgAux = "";
             Boolean isOnline = true;
-            
+
             if (pago.getPagoId() == null){
                 msgAux += "Debe Ingresar El 'pagoId'|";
                 isOnline = false;
@@ -127,7 +132,7 @@ public class PagoController {
                 isOnline = false;
             }
 
-            PagoModel pagoModel = PagoConLiquidacionUtil.getPagoModelFromPagoConLiquidacion(pago);
+            PagoModel pagoModel = PagoUtil.getPagoModelFromPagoConLiquidacion(pago);
             LiquidacionModel liquidacionModel = pago.getInfoLiquidacion();
 
         /*
@@ -135,7 +140,6 @@ public class PagoController {
             de ser así se hará el proceso dentro del if, sino se hará el proceso dentro del else.
          */
             if (liquidacionModel != null) {
-                liquidacionRepository.save(liquidacionModel);
                 liquidacionModel.setPagoId(pagoModel.getPagoId());
                 pagoModel.setAbreCon(prestamo.getTotalAPagar() - pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()));
                 pagoModel.setCierraCon(0.0);
@@ -147,8 +151,14 @@ public class PagoController {
             }
 
             try{
-                if(isOnline == true)
+                if(isOnline == true){
                     pagoRepository.save(pagoModel);
+                    PagoUtil.sendPayMessage(prestamo, pagoModel);
+//                    OdooService.pagoCreateOne(pagoModel);
+
+                    if(liquidacionModel != null)
+                        liquidacionRepository.save(liquidacionModel);
+                }
                 else
                     msg = msgAux;
             }catch (HttpClientErrorException e){
@@ -160,9 +170,6 @@ public class PagoController {
             objeto.put("isOnline", isOnline);
             objeto.put("msg", msg);
             respuesta.add(objeto);
-
-            String payMessage = (PagoConLiquidacionUtil.getPayMessage(prestamo, pagoModel));
-            PagoConLiquidacionUtil.sendPayMessage(payMessage);
         }
 
         return new ResponseEntity<>(respuesta, HttpStatus.OK);

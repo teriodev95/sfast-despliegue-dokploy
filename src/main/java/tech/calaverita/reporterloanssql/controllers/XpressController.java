@@ -40,12 +40,23 @@ public class XpressController {
         cobranza.setAnio(anio);
         cobranza.setSemana(semana);
 
-        ArrayList<PrestamoModel> prestamoModels = prestamoRepository.getPrestamoModelsForCobranzaByAgencia(agencia, anio, semana);
+        int anioAux = anio;
+        int semanaAux = semana;
 
-        if (prestamoModels.isEmpty())
-            return new ResponseEntity<>(cobranza, HttpStatus.NOT_FOUND);
+        if(semana == 1){
+            anioAux -= 1;
+            semanaAux = 54;
+        }
 
-        String result = prestamoPagoRespository.getCobranzaByAgencia(agencia, anio, semana);
+        ArrayList<PrestamoModel> prestamoModels = prestamoRepository.getPrestamoModelsForCobranzaByAgencia(agencia, anioAux, semanaAux);
+
+        if (prestamoModels.isEmpty() && semanaAux == 54){
+            semanaAux = 53;
+            prestamoModels = prestamoRepository.getPrestamoModelsForCobranzaByAgencia(agencia, anioAux, semanaAux);
+        }else if(prestamoModels.isEmpty())
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        String result = prestamoPagoRespository.getCobranzaByAgencia(agencia, anioAux, semanaAux);
 
         String[] texto = result.split(",");
 
@@ -53,7 +64,7 @@ public class XpressController {
         cobranza.setAnio(anio);
         cobranza.setSemana(semana);
         cobranza.setAgencia(texto[0]);
-        cobranza.setClientes(Integer.parseInt(texto[1]));
+        cobranza.setClientes(prestamoPagoRespository.getClientesPorCobrarByAgenciaAnioAndSemana(agencia, anioAux, semanaAux));
         cobranza.setDebitoMiercoles(Double.parseDouble(texto[2]));
         cobranza.setDebitoJueves(Double.parseDouble(texto[3]));
         cobranza.setDebitoViernes(Double.parseDouble(texto[4]));
@@ -67,12 +78,23 @@ public class XpressController {
     public @ResponseBody ResponseEntity<ArrayList<Cobranza>> getCobranzaByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
         ArrayList<Cobranza> cobranzas = new ArrayList<>();
 
-        ArrayList<PrestamoModel> prestamoModels = prestamoRepository.getPrestamoModelsForCobranzaByGerencia(gerencia, anio, semana);
+        int anioAux = anio;
+        int semanaAux = semana;
 
-        if (prestamoModels.isEmpty())
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        if(semana == 1){
+            anioAux -= 1;
+            semanaAux = 54;
+        }
 
-        String[] agencias = prestamoPagoRespository.getCobranzaByGerencia(gerencia, anio, semana);
+        ArrayList<PrestamoModel> prestamoModels = prestamoRepository.getPrestamoModelsForCobranzaByGerencia(gerencia, anioAux, semanaAux);
+
+        if (prestamoModels.isEmpty() && semanaAux == 54){
+            semanaAux = 53;
+            prestamoModels = prestamoRepository.getPrestamoModelsForCobranzaByAgencia(gerencia, anioAux, semanaAux);
+        }else if(prestamoModels.isEmpty())
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        String[] agencias = prestamoPagoRespository.getCobranzaByGerencia(gerencia, anioAux, semanaAux);
 
         if (agencias.length == 0)
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -93,7 +115,7 @@ public class XpressController {
             cobranza.setAnio(anio);
             cobranza.setSemana(semana);
             cobranza.setAgencia(texto[0]);
-            cobranza.setClientes(Integer.parseInt(texto[1]));
+            cobranza.setClientes(prestamoPagoRespository.getClientesPorCobrarByAgenciaAnioAndSemana(texto[0], anioAux, semanaAux));
             cobranza.setDebitoMiercoles(Double.parseDouble(texto[2]));
             cobranza.setDebitoJueves(Double.parseDouble(texto[3]));
             cobranza.setDebitoViernes(Double.parseDouble(texto[4]));
@@ -144,6 +166,11 @@ public class XpressController {
         dashboard.setLiquidaciones(Double.parseDouble(texto[8]));
         dashboard.setCobranzaTotal(Double.parseDouble(texto[9]));
         dashboard.setMontoDeDebitoFaltante(Double.parseDouble(texto[10]));
+        dashboard.setClientesCobrados(prestamoPagoRespository.getClientesCobradosByAgenciaAnioAndSemana(agencia, anio, semana).toString() + '/' + cobranza.getBody().getClientes());
+        if(asignacionRepository.getSumaDeAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana) != null)
+            dashboard.setEfectivoEnCampo(dashboard.getCobranzaTotal() - asignacionRepository.getSumaDeAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana));
+        else
+            dashboard.setEfectivoEnCampo(dashboard.getCobranzaTotal());
 
         return new ResponseEntity<>(dashboard, HttpStatus.OK);
     }
@@ -159,6 +186,8 @@ public class XpressController {
 
         for (String agencia : agencias) {
             String[] texto = agencia.split(",");
+
+            ResponseEntity<Cobranza> cobranza = getCobranzaByAgencia(texto[0], anio, semana);
 
             Dashboard dashboard = new Dashboard();
 
@@ -182,6 +211,11 @@ public class XpressController {
             dashboard.setLiquidaciones(Double.parseDouble(texto[14]));
             dashboard.setCobranzaTotal(Double.parseDouble(texto[15]));
             dashboard.setMontoDeDebitoFaltante(Double.parseDouble(texto[16]));
+            dashboard.setClientesCobrados(prestamoPagoRespository.getClientesCobradosByAgenciaAnioAndSemana(agencia, anio, semana).toString() + '/' + cobranza.getBody().getClientes());
+            if(asignacionRepository.getSumaDeAsigancionesByAgenciaAnioAndSemana(texto[0], anio, semana) != null)
+                dashboard.setEfectivoEnCampo(dashboard.getCobranzaTotal() - asignacionRepository.getSumaDeAsigancionesByAgenciaAnioAndSemana(texto[0], anio, semana));
+            else
+                dashboard.setEfectivoEnCampo(dashboard.getCobranzaTotal());
 
             dashboards.add(dashboard);
         }

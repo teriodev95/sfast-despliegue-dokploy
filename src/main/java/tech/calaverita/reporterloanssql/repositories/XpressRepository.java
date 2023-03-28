@@ -5,10 +5,12 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
 
+import java.util.Optional;
+
 @Repository
 public interface XpressRepository extends CrudRepository<PrestamoModel, String> {
     @Query("SELECT pr.agente AS agencia, " +
-            "COUNT(pr.agente) AS clientes, " +
+            "COUNT(pr) AS clientes, " +
             "SUM(CASE WHEN pr.diaDePago = 'MIERCOLES' THEN CASE WHEN pa.cierraCon < pr.tarifa THEN pa.cierraCon ELSE pr.tarifa END ELSE 0 END) AS debitoMiercoles, " +
             "SUM(CASE WHEN pr.diaDePago = 'JUEVES' THEN CASE WHEN pa.cierraCon < pr.tarifa THEN pa.cierraCon ELSE pr.tarifa END ELSE 0 END) AS debitoJueves, " +
             "SUM(CASE WHEN pr.diaDePago = 'VIERNES' THEN CASE WHEN pa.cierraCon < pr.tarifa THEN pa.cierraCon ELSE pr.tarifa END ELSE 0 END) AS debitoViernes, " +
@@ -21,11 +23,12 @@ public interface XpressRepository extends CrudRepository<PrestamoModel, String> 
             "AND pa.anio = :anio " +
             "AND pa.semana = :semana - 1 " +
             "AND pa.cierraCon > 0 " +
-            "AND pa.cierraCon <> pr.descuento")
+            "AND pa.cierraCon <> pr.descuento " +
+            "distinct ")
     String getCobranzaByAgencia(String agencia, int anio, int semana);
 
     @Query("SELECT pr.agente AS agencia, " +
-            "COUNT(pr.agente) AS clientes, " +
+            "COUNT(pr) AS clientes, " +
             "SUM(CASE WHEN pr.diaDePago = 'MIERCOLES' THEN CASE WHEN pa.cierraCon < pr.tarifa THEN pa.cierraCon ELSE pr.tarifa END ELSE 0 END) AS debitoMiercoles, " +
             "SUM(CASE WHEN pr.diaDePago = 'JUEVES' THEN CASE WHEN pa.cierraCon < pr.tarifa THEN pa.cierraCon ELSE pr.tarifa END ELSE 0 END) AS debitoJueves, " +
             "SUM(CASE WHEN pr.diaDePago = 'VIERNES' THEN CASE WHEN pa.cierraCon < pr.tarifa THEN pa.cierraCon ELSE pr.tarifa END ELSE 0 END) AS debitoViernes, " +
@@ -86,7 +89,8 @@ public interface XpressRepository extends CrudRepository<PrestamoModel, String> 
             "SUM(CASE WHEN pr.descuento > 0 THEN pa.monto - pr.tarifa ELSE 0 END) AS liquidaciones, " +
             "SUM(pa.monto) AS cobranzaTotal, " +
             "SUM(CASE WHEN pa.monto < pr.tarifa AND pa.abreCon > pr.tarifa THEN pr.tarifa - pa.monto " +
-            "WHEN pa.abreCon < pr.tarifa AND pa.monto < pa.abreCon THEN pa.abreCon - pa.monto ELSE 0 END) AS montoDeDebitoFaltante " +
+            "WHEN pa.abreCon < pr.tarifa AND pa.monto < pa.abreCon THEN pa.abreCon - pa.monto ELSE 0 END) AS montoDeDebitoFaltante, " +
+            "COUNT(pr) AS clientesCobrados " +
             "FROM PrestamoModel pr " +
             "INNER JOIN PagoModel pa " +
             "ON pr.prestamoId = pa.prestamoId " +
@@ -96,4 +100,25 @@ public interface XpressRepository extends CrudRepository<PrestamoModel, String> 
             "AND pa.esPrimerPago = false " +
             "GROUP BY pa.agente")
     String[] getDashboardByGerencia(String gerencia, int anio, int semana);
+
+    @Query("SELECT COUNT(distinct pr.prestamoId) AS clientesPorCobrar " +
+            "FROM PrestamoModel pr " +
+            "INNER JOIN PagoModel pa " +
+            "ON pr.prestamoId = pa.prestamoId " +
+            "WHERE pa.agente = :agencia " +
+            "AND pa.anio = :anio " +
+            "AND pa.semana = :semana - 1 " +
+            "AND pa.cierraCon > 0 " +
+            "AND pa.cierraCon <> pr.descuento")
+    Integer getClientesPorCobrarByAgenciaAnioAndSemana(String agencia, int anio, int semana);
+
+    @Query("SELECT COUNT(distinct pr.prestamoId) AS clientesCobrados " +
+            "FROM PrestamoModel pr " +
+            "INNER JOIN PagoModel pa " +
+            "ON pr.prestamoId = pa.prestamoId " +
+            "WHERE pa.agente = :agencia " +
+            "AND pa.anio = :anio " +
+            "AND pa.semana = :semana " +
+            "AND pa.esPrimerPago = false")
+    Integer getClientesCobradosByAgenciaAnioAndSemana(String agencia, int anio, int semana);
 }
