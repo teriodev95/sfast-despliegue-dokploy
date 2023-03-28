@@ -166,7 +166,7 @@ public class XpressController {
         dashboard.setLiquidaciones(Double.parseDouble(texto[8]));
         dashboard.setCobranzaTotal(Double.parseDouble(texto[9]));
         dashboard.setMontoDeDebitoFaltante(Double.parseDouble(texto[10]));
-        dashboard.setClientesCobrados(prestamoPagoRespository.getClientesCobradosByAgenciaAnioAndSemana(agencia, anio, semana).toString() + '/' + cobranza.getBody().getClientes());
+        dashboard.setClientesCobrados(prestamoPagoRespository.getClientesCobradosByAgenciaAnioAndSemana(agencia, anio, semana));
         if(asignacionRepository.getSumaDeAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana) != null)
             dashboard.setEfectivoEnCampo(dashboard.getCobranzaTotal() - asignacionRepository.getSumaDeAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana));
         else
@@ -211,7 +211,7 @@ public class XpressController {
             dashboard.setLiquidaciones(Double.parseDouble(texto[14]));
             dashboard.setCobranzaTotal(Double.parseDouble(texto[15]));
             dashboard.setMontoDeDebitoFaltante(Double.parseDouble(texto[16]));
-            dashboard.setClientesCobrados(prestamoPagoRespository.getClientesCobradosByAgenciaAnioAndSemana(agencia, anio, semana).toString() + '/' + cobranza.getBody().getClientes());
+            dashboard.setClientesCobrados(prestamoPagoRespository.getClientesCobradosByAgenciaAnioAndSemana(agencia, anio, semana));
             if(asignacionRepository.getSumaDeAsigancionesByAgenciaAnioAndSemana(texto[0], anio, semana) != null)
                 dashboard.setEfectivoEnCampo(dashboard.getCobranzaTotal() - asignacionRepository.getSumaDeAsigancionesByAgenciaAnioAndSemana(texto[0], anio, semana));
             else

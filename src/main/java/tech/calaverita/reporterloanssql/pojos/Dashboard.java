@@ -6,10 +6,10 @@ import lombok.Data;
 public class Dashboard {
     private String gerencia;
     private String agencia;
-    private String clientesCobrados;
     private Integer anio;
     private Integer semana;
     private Integer clientes;
+    private Integer clientesCobrados;
     private Integer noPagos;
     private Integer numeroLiquidaciones;
     private Integer pagosReducidos;
