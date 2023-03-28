@@ -23,8 +23,7 @@ public interface XpressRepository extends CrudRepository<PrestamoModel, String> 
             "AND pa.anio = :anio " +
             "AND pa.semana = :semana - 1 " +
             "AND pa.cierraCon > 0 " +
-            "AND pa.cierraCon <> pr.descuento " +
-            "distinct ")
+            "AND pa.cierraCon <> pr.descuento")
     String getCobranzaByAgencia(String agencia, int anio, int semana);
 
     @Query("SELECT pr.agente AS agencia, " +
