@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Primary;
 
 @Data
 @Entity
-@Table(name = "prestamos_v2")
+@Table(name = "prestamos_saldo_y_cobrado_calculados")
 public class PrestamoModel {
     @Id
     @Column(name = "prestamoid")

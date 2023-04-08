@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "pagos_v3")
+@Table(name = "pagos_agrupados")
 public class PagoModel {
     @Id
     @Column(name = "pagoid")
