@@ -57,7 +57,7 @@ public interface XpressRepository extends CrudRepository<PrestamoModel, String> 
             "SUM(pa.monto) - SUM(CASE WHEN pa.monto > pr.tarifa THEN pa.monto - pr.tarifa ELSE 0 END) AS totalCobranzaPura, " +
             "SUM(CASE WHEN pa.monto > pa.tarifa AND (SELECT COUNT(*) FROM LiquidacionModel li WHERE li.pagoId = pa.pagoId) = 0 THEN pa.monto - pa.tarifa ELSE 0 END) AS montoExcedente, " +
             "SUM(pr.multas) AS multas, " +
-            "(SELECT IFNULL(SUM(li.descuentoEnDinero), 0) FROM LiquidacionModel li INNER JOIN PagoVistaModel pa ON li.pagoId = pa.pagoId WHERE pa.agente = :agencia AND li.anio = :anio AND li.semana = :semana) AS liquidaciones, " +
+            "(SELECT IFNULL(SUM(li.liquidoCon - pa.tarifa), 0) FROM LiquidacionModel li INNER JOIN PagoVistaModel pa ON li.pagoId = pa.pagoId WHERE pa.agente = :agencia AND li.anio = :anio AND li.semana = :semana) AS liquidaciones, " +
             "SUM(pa.monto) AS cobranzaTotal, " +
             "SUM(CASE WHEN pa.monto < pr.tarifa AND pa.abreCon > pr.tarifa THEN pr.tarifa - pa.monto " +
             "WHEN pa.abreCon < pr.tarifa AND pa.monto < pa.abreCon THEN pa.abreCon - pa.monto ELSE 0 END) AS montoDeDebitoFaltante," +
