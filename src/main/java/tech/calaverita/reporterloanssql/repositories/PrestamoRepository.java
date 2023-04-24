@@ -16,23 +16,22 @@ public interface PrestamoRepository extends CrudRepository<PrestamoModel, String
 
     @Query("SELECT pr " +
             "FROM PrestamoModel pr " +
-            "INNER JOIN PagoModel pa " +
+            "INNER JOIN PagoVistaModel pa " +
             "ON pr.prestamoId = pa.prestamoId " +
             "WHERE pa.agente = :agencia " +
             "AND pa.anio = :anio " +
             "AND pa.semana = :semana - 1 " +
             "AND pa.cierraCon > 0 " +
-            "AND pa.cierraCon <> pr.descuento ")
-    ArrayList<PrestamoModel> getPrestamoModelsForCobranzaByAgencia(String agencia, int anio, int semana);
+            "AND pa.cierraCon <> pr.descuento")
+    ArrayList<PrestamoModel> getPrestamosToCobranza(String agencia, int anio, int semana);
 
     @Query("SELECT pr " +
             "FROM PrestamoModel pr " +
-            "INNER JOIN PagoModel pa " +
+            "INNER JOIN PagoVistaModel pa " +
             "ON pr.prestamoId = pa.prestamoId " +
-            "WHERE pr.gerencia = :gerencia " +
+            "WHERE pa.agente = :agencia " +
             "AND pa.anio = :anio " +
-            "AND pa.semana = :semana - 1 " +
-            "AND pa.cierraCon > 0 " +
-            "AND pa.cierraCon <> pr.descuento ")
-    ArrayList<PrestamoModel> getPrestamoModelsForCobranzaByGerencia(String gerencia, int anio, int semana);
+            "AND pa.semana = :semana " +
+            "AND pa.esPrimerPago = false")
+    ArrayList<PrestamoModel> getPrestamosToDashboard(String agencia, int anio, int semana);
 }

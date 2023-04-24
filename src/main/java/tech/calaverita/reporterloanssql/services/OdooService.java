@@ -1,12 +1,14 @@
 package tech.calaverita.reporterloanssql.services;
 
 import com.google.gson.Gson;
+import org.springframework.stereotype.Service;
 import retrofit2.Call;
 import tech.calaverita.reporterloanssql.models.PagoModel;
 import tech.calaverita.reporterloanssql.pojos.odoo.OdooRequest;
 import tech.calaverita.reporterloanssql.pojos.odoo.OdooResponse;
 import tech.calaverita.reporterloanssql.retrofit.RetrofitOdoo;
 
+@Service
 public class OdooService {
     public static void pagoCreateOne(PagoModel pagoModel){
         OdooRequest odooResponse = new OdooRequest(pagoModel);

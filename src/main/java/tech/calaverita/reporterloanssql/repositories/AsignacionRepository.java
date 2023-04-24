@@ -14,4 +14,11 @@ public interface AsignacionRepository extends CrudRepository<AsignacionModel, St
 
     @Query("SELECT SUM(am.monto) FROM AsignacionModel am WHERE am.agencia = :agencia AND am.anio = :anio AND am.semana = :semana")
     Double getSumaDeAsigancionesByAgenciaAnioAndSemana(String agencia, int anio, int semana);
+
+    @Query("SELECT asi " +
+            "FROM AsignacionModel asi " +
+            "WHERE asi.agencia = :agencia " +
+            "AND asi.anio = :anio " +
+            "AND asi.semana = :semana")
+    ArrayList<AsignacionModel> getAsignacionesToDashboard(String agencia, int anio, int semana);
 }
