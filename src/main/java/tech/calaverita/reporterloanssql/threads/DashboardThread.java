@@ -281,7 +281,16 @@ public class DashboardThread implements Runnable {
     }
 
     public void getTotalCobranzaPura() {
-        objectsContainer.getDashboard().setTotalCobranzaPura(objectsContainer.getDashboard().getCobranzaTotal() - objectsContainer.getDashboard().getMontoExcedente());
+        double totalCobranzaPura = objectsContainer.getDashboard().getCobranzaTotal() - objectsContainer.getDashboard().getMontoExcedente();
+
+        if (objectsContainer.getDashboard().getLiquidaciones() != null) {
+            if (objectsContainer.getDashboard().getLiquidaciones() > 0) {
+                totalCobranzaPura -= objectsContainer.getDashboard().getLiquidaciones();
+            }
+        }
+
+        objectsContainer.getDashboard().setTotalCobranzaPura(totalCobranzaPura);
+
     }
 
     public void getMontoDeDebitoFaltante() {
