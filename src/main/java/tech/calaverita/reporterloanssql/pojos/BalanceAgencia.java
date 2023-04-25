@@ -2,7 +2,6 @@ package tech.calaverita.reporterloanssql.pojos;
 
 import lombok.Data;
 import org.springframework.http.ResponseEntity;
-import tech.calaverita.reporterloanssql.controllers.UsuarioController;
 import tech.calaverita.reporterloanssql.models.UsuarioModel;
 
 @Data

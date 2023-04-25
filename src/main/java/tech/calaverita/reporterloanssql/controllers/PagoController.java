@@ -1,11 +1,11 @@
 package tech.calaverita.reporterloanssql.controllers;
 
-import okhttp3.Call;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
+import tech.calaverita.reporterloanssql.helpers.PagoUtil;
 import tech.calaverita.reporterloanssql.models.LiquidacionModel;
 import tech.calaverita.reporterloanssql.models.PagoModel;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
@@ -13,8 +13,6 @@ import tech.calaverita.reporterloanssql.pojos.PagoConLiquidacion;
 import tech.calaverita.reporterloanssql.repositories.LiquidacionRepository;
 import tech.calaverita.reporterloanssql.repositories.PagoRepository;
 import tech.calaverita.reporterloanssql.repositories.PrestamoRepository;
-import tech.calaverita.reporterloanssql.helpers.PagoUtil;
-import tech.calaverita.reporterloanssql.services.OdooService;
 
 import java.util.ArrayList;
 import java.util.HashMap;

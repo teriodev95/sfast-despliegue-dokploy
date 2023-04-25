@@ -2,7 +2,6 @@ package tech.calaverita.reporterloanssql.services;
 
 import com.google.gson.Gson;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.retrofit.RetrofitOdoo;
 
 @Service
 public class Singleton {

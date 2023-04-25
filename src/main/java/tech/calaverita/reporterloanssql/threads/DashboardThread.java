@@ -1,18 +1,16 @@
 package tech.calaverita.reporterloanssql.threads;
 
-import tech.calaverita.reporterloanssql.pojos.Dashboard;
-import tech.calaverita.reporterloanssql.pojos.Models;
-import tech.calaverita.reporterloanssql.pojos.Repositories;
+import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
+import tech.calaverita.reporterloanssql.services.RepositoriesContainer;
 
 public class DashboardThread implements Runnable {
-    public Repositories repositories;
-    public Models models;
-    public Dashboard dashboard;
+    public RepositoriesContainer repositoriesContainer;
+    public ObjectsContainer objectsContainer;
     public int opc;
 
-    public DashboardThread(Repositories repositories, Models models, int opc) {
-        this.repositories = repositories;
-        this.models = models;
+    public DashboardThread(RepositoriesContainer repositoriesContainer, ObjectsContainer objectsContainer, int opc) {
+        this.repositoriesContainer = repositoriesContainer;
+        this.objectsContainer = objectsContainer;
         this.opc = opc;
     }
 
@@ -95,44 +93,44 @@ public class DashboardThread implements Runnable {
     }
 
     public void getPrestamosToCobranza() {
-        models.setPrestamosToCobranza(repositories.getPrestamoRepository().getPrestamosToCobranza(models.getDashboard().getAgencia(), models.getDashboard().getAnio(), models.getDashboard().getSemana()));
+        objectsContainer.setPrestamosToCobranza(repositoriesContainer.getPrestamoRepository().getPrestamosToCobranza(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
     public void getPrestamosToDashboard() {
-        models.setPrestamosToDashboard(repositories.getPrestamoRepository().getPrestamosToDashboard(models.getDashboard().getAgencia(), models.getDashboard().getAnio(), models.getDashboard().getSemana()));
+        objectsContainer.setPrestamosToDashboard(repositoriesContainer.getPrestamoRepository().getPrestamosToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
     public void getPagosToCobranza() {
-        models.setPagosVistaToCobranza(repositories.getPagoRepository().getPagosToCobranza(models.getDashboard().getAgencia(), models.getDashboard().getAnio(), models.getDashboard().getSemana()));
+        objectsContainer.setPagosVistaToCobranza(repositoriesContainer.getPagoRepository().getPagosToCobranza(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
     public void getPagosToDashboard() {
-        models.setPagosVistaToDashboard(repositories.getPagoRepository().getPagosToDashboard(models.getDashboard().getAgencia(), models.getDashboard().getAnio(), models.getDashboard().getSemana()));
+        objectsContainer.setPagosVistaToDashboard(repositoriesContainer.getPagoRepository().getPagosToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
     public void getLiquidacionesBd() {
-        models.setLiquidaciones(repositories.getLiquidacionRepository().getLiquidacionesToDashboard(models.getDashboard().getAgencia(), models.getDashboard().getAnio(), models.getDashboard().getSemana()));
-        models.setPagosOfLiquidaciones(repositories.getPagoRepository().getPagosOfLiquidacionesToDashboard(models.getDashboard().getAgencia(), models.getDashboard().getAnio(), models.getDashboard().getSemana()));
+        objectsContainer.setLiquidaciones(repositoriesContainer.getLiquidacionRepository().getLiquidacionesToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        objectsContainer.setPagosOfLiquidaciones(repositoriesContainer.getPagoRepository().getPagosOfLiquidacionesToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
     public void getAsignaciones() {
-        models.setAsignaciones(repositories.getAsignacionRepository().getAsignacionesToDashboard(models.getDashboard().getAgencia(), models.getDashboard().getAnio(), models.getDashboard().getSemana()));
+        objectsContainer.setAsignaciones(repositoriesContainer.getAsignacionRepository().getAsignacionesToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
     public void getAgencia() {
-        models.getDashboard().setGerencia(models.getPrestamosToCobranza().get(0).getGerencia());
+        objectsContainer.getDashboard().setGerencia(objectsContainer.getPrestamosToCobranza().get(0).getGerencia());
     }
 
     public void getClientes() {
-        models.getDashboard().setClientes(models.getPrestamosToCobranza().size());
+        objectsContainer.getDashboard().setClientes(objectsContainer.getPrestamosToCobranza().size());
     }
 
     public void getClientesCobrados() {
-        models.getDashboard().setClientesCobrados(models.getPagosVistaToDashboard().size());
+        objectsContainer.getDashboard().setClientesCobrados(objectsContainer.getPagosVistaToDashboard().size());
     }
 
     public void getNumeroDeLiquidaciones() {
-        models.getDashboard().setNumeroLiquidaciones(models.getLiquidaciones().size());
+        objectsContainer.getDashboard().setNumeroLiquidaciones(objectsContainer.getLiquidaciones().size());
     }
 
     public void getMultas() {
@@ -142,167 +140,173 @@ public class DashboardThread implements Runnable {
     public void getNoPagos() {
         int noPagos = 0;
 
-        for (int i = 0; i < models.getPagosVistaToDashboard().size(); i++) {
-            if (models.getPagosVistaToDashboard().get(i).getMonto() == 0) {
+        for (int i = 0; i < objectsContainer.getPagosVistaToDashboard().size(); i++) {
+            if (objectsContainer.getPagosVistaToDashboard().get(i).getMonto() == 0) {
                 noPagos++;
             }
         }
-        models.getDashboard().setNoPagos(noPagos);
+        objectsContainer.getDashboard().setNoPagos(noPagos);
     }
 
     public void getPagosReducidos() {
         int pagosReducidos = 0;
 
-        for (int i = 0; i < models.getPagosVistaToDashboard().size(); i++) {
-            if (models.getPagosVistaToDashboard().get(i).getAbreCon() < models.getPagosVistaToDashboard().get(i).getTarifa()) {
-                if (models.getPagosVistaToDashboard().get(i).getMonto() < models.getPagosVistaToDashboard().get(i).getAbreCon()) {
+        for (int i = 0; i < objectsContainer.getPagosVistaToDashboard().size(); i++) {
+            if (objectsContainer.getPagosVistaToDashboard().get(i).getAbreCon() < objectsContainer.getPagosVistaToDashboard().get(i).getTarifa()) {
+                if (objectsContainer.getPagosVistaToDashboard().get(i).getMonto() < objectsContainer.getPagosVistaToDashboard().get(i).getAbreCon()) {
                     pagosReducidos++;
                 }
             } else {
-                if (models.getPagosVistaToDashboard().get(i).getMonto() < models.getPagosVistaToDashboard().get(i).getTarifa()) {
+                if (objectsContainer.getPagosVistaToDashboard().get(i).getMonto() < objectsContainer.getPagosVistaToDashboard().get(i).getTarifa()) {
                     pagosReducidos++;
                 }
             }
         }
 
-        models.getDashboard().setPagosReducidos(pagosReducidos);
+        objectsContainer.getDashboard().setPagosReducidos(pagosReducidos);
     }
 
     public void getDebitoMiercoles() {
         double debitoMiercoles = 0;
 
-        for (int i = 0; i < models.getPrestamosToCobranza().size(); i++) {
-            if (models.getPrestamosToCobranza().get(i).getDiaDePago().equals("MIERCOLES")) {
-                if (models.getPagosVistaToCobranza().get(i).getCierraCon() < models.getPrestamosToCobranza().get(i).getTarifa())
-                    debitoMiercoles += models.getPagosVistaToCobranza().get(i).getCierraCon();
+        for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
+            if (objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("MIERCOLES")) {
+                if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
+                    debitoMiercoles += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
                 else
-                    debitoMiercoles += models.getPrestamosToCobranza().get(i).getTarifa();
+                    debitoMiercoles += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
             }
 
-            models.getDashboard().setDebitoMiercoles(debitoMiercoles);
+            objectsContainer.getDashboard().setDebitoMiercoles(debitoMiercoles);
         }
     }
 
     public void getDebitoJueves() {
         double debitoJueves = 0;
 
-        for (int i = 0; i < models.getPrestamosToCobranza().size(); i++) {
-            if (models.getPrestamosToCobranza().get(i).getDiaDePago().equals("JUEVES")) {
-                if (models.getPagosVistaToCobranza().get(i).getCierraCon() < models.getPrestamosToCobranza().get(i).getTarifa())
-                    debitoJueves += models.getPagosVistaToCobranza().get(i).getCierraCon();
+        for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
+            if (objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("JUEVES")) {
+                if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
+                    debitoJueves += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
                 else
-                    debitoJueves += models.getPrestamosToCobranza().get(i).getTarifa();
+                    debitoJueves += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
             }
 
-            models.getDashboard().setDebitoJueves(debitoJueves);
+            objectsContainer.getDashboard().setDebitoJueves(debitoJueves);
         }
     }
 
     public void getDebitoViernes() {
         double debitoViernes = 0;
 
-        for (int i = 0; i < models.getPrestamosToCobranza().size(); i++) {
-            if (models.getPrestamosToCobranza().get(i).getDiaDePago().equals("VIERNES")) {
-                if (models.getPagosVistaToCobranza().get(i).getCierraCon() < models.getPrestamosToCobranza().get(i).getTarifa())
-                    debitoViernes += models.getPagosVistaToCobranza().get(i).getCierraCon();
+        for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
+            if (objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("VIERNES")) {
+                if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
+                    debitoViernes += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
                 else
-                    debitoViernes += models.getPrestamosToCobranza().get(i).getTarifa();
+                    debitoViernes += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
             }
 
-            models.getDashboard().setDebitoViernes(debitoViernes);
+            objectsContainer.getDashboard().setDebitoViernes(debitoViernes);
         }
     }
 
     public void getDebitoTotal() {
         double debitoTotal = 0;
 
-        for (int i = 0; i < models.getPrestamosToCobranza().size(); i++) {
-            if (models.getPagosVistaToCobranza().get(i).getCierraCon() < models.getPrestamosToCobranza().get(i).getTarifa())
-                debitoTotal += models.getPagosVistaToCobranza().get(i).getCierraCon();
+        for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
+            if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
+                debitoTotal += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
             else
-                debitoTotal += models.getPrestamosToCobranza().get(i).getTarifa();
+                debitoTotal += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
 
-            models.getDashboard().setDebitoTotal(debitoTotal);
+            objectsContainer.getDashboard().setDebitoTotal(debitoTotal);
         }
     }
 
     public void getTotalDeDescuento() {
         double totalDeDescuento = 0;
 
-        if (models.getLiquidaciones() != null) {
-            if (!models.getLiquidaciones().isEmpty()) {
-                for (int i = 0; i < models.getLiquidaciones().size(); i++) {
-                    totalDeDescuento += models.getLiquidaciones().get(i).getDescuentoEnDinero();
+        if (objectsContainer.getLiquidaciones() != null) {
+            if (!objectsContainer.getLiquidaciones().isEmpty()) {
+                for (int i = 0; i < objectsContainer.getLiquidaciones().size(); i++) {
+                    totalDeDescuento += objectsContainer.getLiquidaciones().get(i).getDescuentoEnDinero();
                 }
             }
         }
 
-        models.getDashboard().setTotalDeDescuento(totalDeDescuento);
+        objectsContainer.getDashboard().setTotalDeDescuento(totalDeDescuento);
     }
 
     public void getMontoExcedente() {
         double montoExcedente = 0;
 
-        for (int i = 0; i < models.getPagosVistaToDashboard().size(); i++) {
-            if (models.getPagosVistaToDashboard().get(i).getMonto() > models.getPagosVistaToDashboard().get(i).getTarifa()) {
-                montoExcedente += models.getPagosVistaToDashboard().get(i).getMonto() - models.getPagosVistaToDashboard().get(i).getTarifa();
+        for (int i = 0; i < objectsContainer.getPagosVistaToDashboard().size(); i++) {
+            if (objectsContainer.getPagosVistaToDashboard().get(i).getMonto() > objectsContainer.getPagosVistaToDashboard().get(i).getTarifa()) {
+                montoExcedente += objectsContainer.getPagosVistaToDashboard().get(i).getMonto() - objectsContainer.getPagosVistaToDashboard().get(i).getTarifa();
             }
         }
 
-        models.getDashboard().setMontoExcedente(montoExcedente);
+        if (objectsContainer.getDashboard().getLiquidaciones() != null) {
+            if (objectsContainer.getDashboard().getLiquidaciones() > 0) {
+                montoExcedente -= objectsContainer.getDashboard().getLiquidaciones();
+            }
+        }
+
+        objectsContainer.getDashboard().setMontoExcedente(montoExcedente);
     }
 
     public void getLiquidaciones() {
         double liquidaciones = 0;
 
-        if (models.getLiquidaciones() != null) {
-            if (!models.getLiquidaciones().isEmpty()) {
-                for (int i = 0; i < models.getLiquidaciones().size(); i++) {
-                    liquidaciones += models.getLiquidaciones().get(i).getLiquidoCon() - models.getPagosOfLiquidaciones().get(i).getTarifa();
+        if (objectsContainer.getLiquidaciones() != null) {
+            if (!objectsContainer.getLiquidaciones().isEmpty()) {
+                for (int i = 0; i < objectsContainer.getLiquidaciones().size(); i++) {
+                    liquidaciones += objectsContainer.getLiquidaciones().get(i).getLiquidoCon() - objectsContainer.getPagosOfLiquidaciones().get(i).getTarifa();
                 }
             }
         }
 
-        models.getDashboard().setLiquidaciones(liquidaciones);
+        objectsContainer.getDashboard().setLiquidaciones(liquidaciones);
     }
 
     public void getCobranzaTotal() {
         double cobranzaTotal = 0;
 
-        for (int i = 0; i < models.getPagosVistaToDashboard().size(); i++) {
-            cobranzaTotal += models.getPagosVistaToDashboard().get(i).getMonto();
+        for (int i = 0; i < objectsContainer.getPagosVistaToDashboard().size(); i++) {
+            cobranzaTotal += objectsContainer.getPagosVistaToDashboard().get(i).getMonto();
         }
 
-        models.getDashboard().setCobranzaTotal(cobranzaTotal);
+        objectsContainer.getDashboard().setCobranzaTotal(cobranzaTotal);
     }
 
     public void getTotalCobranzaPura() {
-        models.getDashboard().setTotalCobranzaPura(models.getDashboard().getCobranzaTotal() - models.getDashboard().getMontoExcedente());
+        objectsContainer.getDashboard().setTotalCobranzaPura(objectsContainer.getDashboard().getCobranzaTotal() - objectsContainer.getDashboard().getMontoExcedente());
     }
 
     public void getMontoDeDebitoFaltante() {
-        models.getDashboard().setMontoDeDebitoFaltante(models.getDashboard().getDebitoTotal() - models.getDashboard().getTotalCobranzaPura());
+        objectsContainer.getDashboard().setMontoDeDebitoFaltante(objectsContainer.getDashboard().getDebitoTotal() - objectsContainer.getDashboard().getTotalCobranzaPura());
     }
 
     public void getEfectivoEnCampo() {
         double asignaciones = 0;
 
-        if (models.getAsignaciones() != null) {
-            if (!models.getAsignaciones().isEmpty()) {
-                for (int i = 0; i < models.getAsignaciones().size(); i++) {
-                    asignaciones += models.getAsignaciones().get(i).getMonto();
+        if (objectsContainer.getAsignaciones() != null) {
+            if (!objectsContainer.getAsignaciones().isEmpty()) {
+                for (int i = 0; i < objectsContainer.getAsignaciones().size(); i++) {
+                    asignaciones += objectsContainer.getAsignaciones().get(i).getMonto();
                 }
             }
         }
 
-        double efectivoEnCampo = models.getDashboard().getCobranzaTotal() - asignaciones;
+        double efectivoEnCampo = objectsContainer.getDashboard().getCobranzaTotal() - asignaciones;
 
-        models.getDashboard().setEfectivoEnCampo((double) Math.round(efectivoEnCampo * 100.0) / 100.0);
+        objectsContainer.getDashboard().setEfectivoEnCampo((double) Math.round(efectivoEnCampo * 100.0) / 100.0);
     }
 
     public void getRendmiento() {
-        double rendimiento = models.getDashboard().getTotalCobranzaPura() / models.getDashboard().getDebitoTotal() * 100;
+        double rendimiento = objectsContainer.getDashboard().getTotalCobranzaPura() / objectsContainer.getDashboard().getDebitoTotal() * 100;
 
-        models.getDashboard().setRendimiento((Math.round(rendimiento * 100.0) / 100.0));
+        objectsContainer.getDashboard().setRendimiento((Math.round(rendimiento * 100.0) / 100.0));
     }
 }

@@ -6,7 +6,7 @@ import tech.calaverita.reporterloanssql.models.*;
 import java.util.ArrayList;
 
 @Data
-public class Models {
+public class ObjectsContainer {
     private Cobranza cobranza;
     private Dashboard dashboard;
     private ArrayList<PrestamoModel> prestamosToCobranza;

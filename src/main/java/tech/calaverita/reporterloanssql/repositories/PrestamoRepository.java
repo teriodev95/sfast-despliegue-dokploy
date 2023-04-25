@@ -21,8 +21,7 @@ public interface PrestamoRepository extends CrudRepository<PrestamoModel, String
             "WHERE pa.agente = :agencia " +
             "AND pa.anio = :anio " +
             "AND pa.semana = :semana - 1 " +
-            "AND pa.cierraCon > 0 " +
-            "AND pa.cierraCon <> pr.descuento")
+            "AND pa.cierraCon > 0")
     ArrayList<PrestamoModel> getPrestamosToCobranza(String agencia, int anio, int semana);
 
     @Query("SELECT pr " +

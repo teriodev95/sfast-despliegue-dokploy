@@ -1,8 +1,10 @@
 package tech.calaverita.reporterloanssql.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
-import org.springframework.context.annotation.Primary;
 
 @Data
 @Entity

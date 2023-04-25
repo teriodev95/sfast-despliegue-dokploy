@@ -1,17 +1,13 @@
 package tech.calaverita.reporterloanssql.helpers;
 
 import okhttp3.*;
-import retrofit2.Call;
 import org.json.JSONException;
+import org.json.JSONObject;
 import tech.calaverita.reporterloanssql.models.PagoModel;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
-import tech.calaverita.reporterloanssql.pojos.odoo.OdooRequest;
-import tech.calaverita.reporterloanssql.pojos.odoo.OdooResponse;
 import tech.calaverita.reporterloanssql.pojos.PagoConLiquidacion;
 
 import java.io.IOException;
-import org.json.JSONObject;
-import tech.calaverita.reporterloanssql.retrofit.RetrofitOdoo;
 
 public class PagoUtil {
     public static PagoModel getPagoModelFromPagoConLiquidacion(PagoConLiquidacion pagoConLiquidacion){
