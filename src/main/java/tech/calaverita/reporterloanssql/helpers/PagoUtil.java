@@ -99,7 +99,7 @@ public class PagoUtil {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url("https://n8n.terio.xyz/webhook/91557792-c1f3-442c-88ed-bdee5407d4ce")
+                .url("https://fast-n8n.terio.xyz/webhook/91557792-c1f3-442c-88ed-bdee5407d4ce")
 //                .url("https://heavy-cow-23.hooks.n8n.cloud/webhook-test/93866ec9-652f-4c92-8314-e3f05a4ce6f7")
                 .post(getPayMessage(prestamo, pago))
                 .build();
