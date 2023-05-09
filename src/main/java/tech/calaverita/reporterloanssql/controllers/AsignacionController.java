@@ -5,10 +5,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
+import retrofit2.Call;
 import tech.calaverita.reporterloanssql.models.AsignacionModel;
 import tech.calaverita.reporterloanssql.models.UsuarioModel;
+import tech.calaverita.reporterloanssql.pojos.xms.AsignacionBody;
+import tech.calaverita.reporterloanssql.pojos.xms.AsignacionList;
+import tech.calaverita.reporterloanssql.pojos.xms.ResponseBodyXms;
 import tech.calaverita.reporterloanssql.repositories.AsignacionRepository;
 import tech.calaverita.reporterloanssql.repositories.UsuarioRepository;
+import tech.calaverita.reporterloanssql.retrofit.RetrofitOdoo;
+import tech.calaverita.reporterloanssql.services.RetrofitOdooService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,33 +27,34 @@ public class AsignacionController {
     AsignacionRepository asignacionRepository;
     @Autowired
     UsuarioRepository usuarioRepository;
+    @Autowired
+    RetrofitOdooService retrofitOdooService;
 
     @GetMapping(path = "/all")
     public @ResponseBody ResponseEntity<Iterable<AsignacionModel>> getAsignaciones() {
         Iterable<AsignacionModel> asignaciones = asignacionRepository.findAll();
 
-        if(!asignaciones.iterator().hasNext())
+        if (!asignaciones.iterator().hasNext())
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         return new ResponseEntity<>(asignaciones, HttpStatus.OK);
     }
 
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Iterable<AsignacionModel>> getAsignacionesByAgenciaAnioAndSemana(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana){
+    public @ResponseBody ResponseEntity<Iterable<AsignacionModel>> getAsignacionesByAgenciaAnioAndSemana(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
         Iterable<AsignacionModel> asignaciones = asignacionRepository.getAsignacionesByAgenciaAnioAndSemana(agencia, anio, semana);
 
-        if(!asignaciones.iterator().hasNext())
+        if (!asignaciones.iterator().hasNext())
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         return new ResponseEntity<>(asignaciones, HttpStatus.OK);
     }
 
-
     @GetMapping(path = "/one/{asignacionId}")
     public @ResponseBody ResponseEntity<Optional<AsignacionModel>> getAsignacionById(@PathVariable("asignacionId") String id) {
         Optional<AsignacionModel> asignacion = asignacionRepository.findById(id);
 
-        if(asignacion.isEmpty())
+        if (asignacion.isEmpty())
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         return new ResponseEntity<>(asignacion, HttpStatus.OK);
@@ -55,9 +62,11 @@ public class AsignacionController {
 
     @PostMapping(path = "/create-one")
     public @ResponseBody ResponseEntity<String> setAsignacion(@RequestBody AsignacionModel asignacion) {
+        String session = "session_id=76d814874514726176f0615260848da2aab725ea";
+
         Optional<AsignacionModel> asignacionAux = asignacionRepository.findById(asignacion.getAsignacionId());
 
-        if(!asignacionAux.isEmpty()){
+        if (!asignacionAux.isEmpty()) {
             return new ResponseEntity<>("La Asignación Ya Existe", HttpStatus.CONFLICT);
         }
 
@@ -81,14 +90,19 @@ public class AsignacionController {
 
         asignacionRepository.save(asignacion);
 
+        Call<ResponseBodyXms> call = RetrofitOdoo.getInstance().getApi().asignacionCreateOne(session, new AsignacionBody(new AsignacionList(asignacion)));
+        retrofitOdooService.sendCall(call);
+
         return new ResponseEntity<>("Asignación Creada con Éxito", HttpStatus.CREATED);
     }
 
     @PostMapping(path = "/create-many")
     public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> setAsignaciones(@RequestBody ArrayList<AsignacionModel> asignaciones) {
+        String session = "session_id=76d814874514726176f0615260848da2aab725ea";
+
         ArrayList<HashMap<String, Object>> respuesta = new ArrayList<>();
 
-        for(AsignacionModel asignacion: asignaciones){
+        for (AsignacionModel asignacion : asignaciones) {
             HashMap<String, Object> objeto = new HashMap<>();
             String msg = "OK";
             String msgAux = "";
@@ -96,7 +110,7 @@ public class AsignacionController {
 
             Optional<AsignacionModel> asignacionAux = asignacionRepository.findById(asignacion.getAsignacionId());
 
-            if(!asignacionAux.isEmpty()){
+            if (!asignacionAux.isEmpty()) {
                 msgAux += "La Asignación Ya Existe|";
                 isOnline = false;
             }
@@ -115,22 +129,25 @@ public class AsignacionController {
                 isOnline = false;
             }
 
-            if (!asignacion.getLog().contains("{")){
+            if (!asignacion.getLog().contains("{")) {
                 msgAux += "Debe ingresar un log con formato json|";
                 isOnline = false;
             }
 
-            if (!asignacion.getLog().contains("}")){
+            if (!asignacion.getLog().contains("}")) {
                 msgAux += "Debe ingresar un log con formato json|";
                 isOnline = false;
             }
 
             try {
-                if(isOnline == true)
+                if (isOnline == true) {
                     asignacionRepository.save(asignacion);
-                else
+
+                    Call<ResponseBodyXms> call = RetrofitOdoo.getInstance().getApi().asignacionCreateOne(session, new AsignacionBody(new AsignacionList(asignacion)));
+                    retrofitOdooService.sendCall(call);
+                } else
                     msg = msgAux;
-            }catch (HttpClientErrorException e){
+            } catch (HttpClientErrorException e) {
                 msg = e.toString();
                 isOnline = false;
             }

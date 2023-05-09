@@ -11,7 +11,7 @@ public class PagoList {
 
     }
     public PagoList(PagoModel pago) {
-        pagos.add(pago);
+        this.pagos.add(pago);
     }
     private ArrayList<PagoModel> pagos = new ArrayList<>();
 }
