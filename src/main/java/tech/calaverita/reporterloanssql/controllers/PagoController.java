@@ -5,14 +5,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
+import retrofit2.Call;
 import tech.calaverita.reporterloanssql.helpers.PagoUtil;
 import tech.calaverita.reporterloanssql.models.LiquidacionModel;
 import tech.calaverita.reporterloanssql.models.PagoModel;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
 import tech.calaverita.reporterloanssql.pojos.PagoConLiquidacion;
+import tech.calaverita.reporterloanssql.pojos.xms.LiquidacionBody;
+import tech.calaverita.reporterloanssql.pojos.xms.PagoBody;
+import tech.calaverita.reporterloanssql.pojos.xms.PagoList;
+import tech.calaverita.reporterloanssql.pojos.xms.ResponseBodyXms;
 import tech.calaverita.reporterloanssql.repositories.LiquidacionRepository;
 import tech.calaverita.reporterloanssql.repositories.PagoRepository;
 import tech.calaverita.reporterloanssql.repositories.PrestamoRepository;
+import tech.calaverita.reporterloanssql.retrofit.RetrofitOdoo;
+import tech.calaverita.reporterloanssql.services.RetrofitOdooService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,9 +32,10 @@ public class PagoController {
     private PagoRepository pagoRepository;
     @Autowired
     private PrestamoRepository prestamoRepository;
-
     @Autowired
     private LiquidacionRepository liquidacionRepository;
+    @Autowired
+    RetrofitOdooService retrofitOdooService;
 
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<ArrayList<PagoModel>> getPagosByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
@@ -46,7 +54,9 @@ public class PagoController {
         si se manda solo el pago solo se realizará el proceso para guardar el pago.
      */
     @PostMapping(path = "/create-one")
-    public @ResponseBody ResponseEntity<String> setPago(@RequestBody PagoConLiquidacion pago) {
+    public @ResponseBody ResponseEntity<String> createPago(@RequestBody PagoConLiquidacion pago) {
+        String session = "session_id=76d814874514726176f0615260848da2aab725ea";
+
         if (pago.getPagoId() == null)
             return new ResponseEntity<>("Debe Ingresar El 'pagoId'", HttpStatus.BAD_REQUEST);
 
@@ -58,7 +68,7 @@ public class PagoController {
         if (!pagoAux.isEmpty())
             return new ResponseEntity<>("El Pago Ya Existe", HttpStatus.CONFLICT);
 
-        PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(pago.getPrestamoId());
+        PrestamoModel prestamo = prestamoRepository.getPrestamoByPrestamoId(pago.getPrestamoId());
 
         if (prestamo == null)
             return new ResponseEntity<>("No Se Encontró Ningún Prestamo Con Ese 'prestamoId'", HttpStatus.NOT_FOUND);
@@ -75,6 +85,9 @@ public class PagoController {
             pagoModel.setAbreCon(prestamo.getTotalAPagar() - pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()));
             pagoModel.setCierraCon(0.0);
             pagoModel.setEsPrimerPago(false);
+
+            Call<ResponseBodyXms> call = RetrofitOdoo.getInstance().getApi().liquidacionCreateOne(session, new LiquidacionBody(liquidacionModel));
+            retrofitOdooService.sendCall(call);
         } else {
             pagoModel.setAbreCon(prestamo.getTotalAPagar() - pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()));
             pagoModel.setCierraCon(pagoModel.getAbreCon() - pago.getMonto());
@@ -84,7 +97,9 @@ public class PagoController {
         try{
             pagoRepository.save(pagoModel);
             PagoUtil.sendPayMessage(prestamo, pagoModel);
-//        OdooService.pagoCreateOne(pagoModel);
+
+            Call<ResponseBodyXms> call = RetrofitOdoo.getInstance().getApi().pagoCreateOne(session, new PagoBody(new PagoList(pagoModel)));
+            retrofitOdooService.sendCall(call);
 
             if(liquidacionModel != null) {
                 liquidacionRepository.save(liquidacionModel);
@@ -97,7 +112,9 @@ public class PagoController {
     }
 
     @PostMapping(path = "/create-many")
-    public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> setPagos(@RequestBody ArrayList<PagoConLiquidacion> pagos) {
+    public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> createPagos(@RequestBody ArrayList<PagoConLiquidacion> pagos) {
+        String session = "session_id=76d814874514726176f0615260848da2aab725ea";
+
         ArrayList<HashMap<String, Object>> respuesta = new ArrayList<>();
 
         for(PagoConLiquidacion pago: pagos){
@@ -123,7 +140,7 @@ public class PagoController {
                 isOnline = false;
             }
 
-            PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(pago.getPrestamoId());
+            PrestamoModel prestamo = prestamoRepository.getPrestamoByPrestamoId(pago.getPrestamoId());
 
             if (prestamo == null){
                 msgAux += "No Se Encontró Ningún Prestamo Con Ese 'prestamoId'|";
@@ -142,6 +159,9 @@ public class PagoController {
                 pagoModel.setAbreCon(prestamo.getTotalAPagar() - pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()));
                 pagoModel.setCierraCon(0.0);
                 pagoModel.setEsPrimerPago(false);
+
+                Call<ResponseBodyXms> call = RetrofitOdoo.getInstance().getApi().liquidacionCreateOne(session, new LiquidacionBody(liquidacionModel));
+                retrofitOdooService.sendCall(call);
             } else {
                 pagoModel.setAbreCon(prestamo.getTotalAPagar() - pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()));
                 pagoModel.setCierraCon(pagoModel.getAbreCon() - pago.getMonto());
@@ -152,7 +172,9 @@ public class PagoController {
                 if(isOnline == true){
                     pagoRepository.save(pagoModel);
                     PagoUtil.sendPayMessage(prestamo, pagoModel);
-//                    OdooService.pagoCreateOne(pagoModel);
+
+                    Call<ResponseBodyXms> call = RetrofitOdoo.getInstance().getApi().pagoCreateOne(session, new PagoBody(new PagoList(pagoModel)));
+                    retrofitOdooService.sendCall(call);
 
                     if(liquidacionModel != null)
                         liquidacionRepository.save(liquidacionModel);

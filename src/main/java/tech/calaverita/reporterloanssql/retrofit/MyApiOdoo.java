@@ -2,8 +2,10 @@ package tech.calaverita.reporterloanssql.retrofit;
 
 import retrofit2.Call;
 import retrofit2.http.*;
-import tech.calaverita.reporterloanssql.pojos.odoo.OdooRequest;
-import tech.calaverita.reporterloanssql.pojos.odoo.OdooResponse;
+import tech.calaverita.reporterloanssql.models.LiquidacionModel;
+import tech.calaverita.reporterloanssql.pojos.xms.LiquidacionBody;
+import tech.calaverita.reporterloanssql.pojos.xms.PagoBody;
+import tech.calaverita.reporterloanssql.pojos.xms.ResponseBodyXms;
 
 public interface MyApiOdoo {
 
@@ -13,11 +15,11 @@ public interface MyApiOdoo {
 //    @POST("pays/create-one")
 //    Call<ResponseBody> pagoCreateOne(@Body PagoRealm pago);
 
-//    @PUT("pays/liquidacion-pago")
-//    Call<ResponseBody> liquidacionCreateOne(@Body Liquidacion liquidacion);
+    @POST("api/v1/prestamos/liquidacion")
+    Call<ResponseBodyXms> liquidacionCreateOne(@Header("Cookie") String userCookie, @Body LiquidacionBody liquidacion);
 
-    @POST("prestamo/pago")
-    Call<OdooResponse> pagoCreateOne(@Header("Cookie") String userCookie, @Body OdooRequest odooResponse);
+    @POST("api/v1/prestamos/pagos")
+    Call<ResponseBodyXms> pagoCreateOne(@Header("Cookie") String userCookie, @Body PagoBody pago);
 
 //    @POST("common/login")
 //    Call<OdooResponse> loginToOdoo(@Body OdooRequest odooRequest);

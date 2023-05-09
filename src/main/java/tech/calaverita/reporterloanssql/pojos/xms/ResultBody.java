@@ -1,9 +1,9 @@
-package tech.calaverita.reporterloanssql.pojos.odoo;
+package tech.calaverita.reporterloanssql.pojos.xms;
 
 import lombok.Data;
 
 @Data
-public class OdooResult {
+public class ResultBody {
     private Integer code;
     private String message;
     private Integer data;

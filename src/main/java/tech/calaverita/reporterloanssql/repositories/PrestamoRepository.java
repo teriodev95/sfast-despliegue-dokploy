@@ -12,7 +12,7 @@ public interface PrestamoRepository extends CrudRepository<PrestamoModel, String
     @Query("SELECT pr " +
             "FROM PrestamoModel pr " +
             "WHERE pr.prestamoId = :prestamoId")
-    PrestamoModel getPrestamoModelByPrestamoId(String prestamoId);
+    PrestamoModel getPrestamoByPrestamoId(String prestamoId);
 
     @Query("SELECT pr " +
             "FROM PrestamoModel pr " +
