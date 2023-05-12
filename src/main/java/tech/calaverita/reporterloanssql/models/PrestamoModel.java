@@ -74,4 +74,5 @@ public class PrestamoModel {
     private String seguridad;
     private String depuracion;
     private String folioDePagare;
+    private Double saldoAlIniciarSemana;
 }
