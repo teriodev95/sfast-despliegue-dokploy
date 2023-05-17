@@ -39,5 +39,6 @@ public class PagoModel {
     private String createdAt;
     private String updatedAt;
     private String log;
+    private String quienPago;
 }
 
