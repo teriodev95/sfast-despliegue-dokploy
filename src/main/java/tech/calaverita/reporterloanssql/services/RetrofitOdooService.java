@@ -4,8 +4,7 @@ import org.springframework.stereotype.Service;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import tech.calaverita.reporterloanssql.pojos.xms.ResponseBodyXms;
-import tech.calaverita.reporterloanssql.retrofit.RetrofitResponse;
+import tech.calaverita.reporterloanssql.retrofit.pojos.ResponseBodyXms;
 
 @Service
 public class RetrofitOdooService {
@@ -13,7 +12,7 @@ public class RetrofitOdooService {
         call.enqueue(new Callback<ResponseBodyXms>() {
             @Override
             public void onResponse(Call<ResponseBodyXms> call, Response<ResponseBodyXms> response) {
-                System.out.println(response.body().toString());
+
             }
 
             @Override

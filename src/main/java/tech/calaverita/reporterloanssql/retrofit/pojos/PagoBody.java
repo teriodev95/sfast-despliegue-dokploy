@@ -1,7 +1,6 @@
-package tech.calaverita.reporterloanssql.pojos.xms;
+package tech.calaverita.reporterloanssql.retrofit.pojos;
 
 import lombok.Data;
-import tech.calaverita.reporterloanssql.models.PagoModel;
 
 @Data
 public class PagoBody {

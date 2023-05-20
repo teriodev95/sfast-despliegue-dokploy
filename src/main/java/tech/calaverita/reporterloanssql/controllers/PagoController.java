@@ -7,17 +7,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import retrofit2.Call;
 import tech.calaverita.reporterloanssql.helpers.PagoUtil;
-import tech.calaverita.reporterloanssql.models.LiquidacionModel;
-import tech.calaverita.reporterloanssql.models.PagoModel;
-import tech.calaverita.reporterloanssql.models.PrestamoModel;
+import tech.calaverita.reporterloanssql.models.*;
 import tech.calaverita.reporterloanssql.pojos.PagoConLiquidacion;
-import tech.calaverita.reporterloanssql.pojos.xms.LiquidacionBody;
-import tech.calaverita.reporterloanssql.pojos.xms.PagoBody;
-import tech.calaverita.reporterloanssql.pojos.xms.PagoList;
-import tech.calaverita.reporterloanssql.pojos.xms.ResponseBodyXms;
-import tech.calaverita.reporterloanssql.repositories.LiquidacionRepository;
-import tech.calaverita.reporterloanssql.repositories.PagoRepository;
-import tech.calaverita.reporterloanssql.repositories.PrestamoRepository;
+import tech.calaverita.reporterloanssql.repositories.*;
+import tech.calaverita.reporterloanssql.retrofit.pojos.LiquidacionBody;
+import tech.calaverita.reporterloanssql.retrofit.pojos.PagoBody;
+import tech.calaverita.reporterloanssql.retrofit.pojos.PagoList;
+import tech.calaverita.reporterloanssql.retrofit.pojos.ResponseBodyXms;
 import tech.calaverita.reporterloanssql.retrofit.RetrofitOdoo;
 import tech.calaverita.reporterloanssql.services.RetrofitOdooService;
 
@@ -29,13 +25,17 @@ import java.util.Optional;
 @RequestMapping(path = "/xpress/v1/pays")
 public class PagoController {
     @Autowired
-    private PagoRepository pagoRepository;
+    PagoRepository pagoRepository;
     @Autowired
-    private PrestamoRepository prestamoRepository;
+    PrestamoRepository prestamoRepository;
     @Autowired
-    private LiquidacionRepository liquidacionRepository;
+    LiquidacionRepository liquidacionRepository;
     @Autowired
     RetrofitOdooService retrofitOdooService;
+    @Autowired
+    GerenciaRepository gerenciaRepository;
+    @Autowired
+    AgenciaRepository agenciaRepository;
 
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<ArrayList<PagoModel>> getPagosByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
@@ -96,7 +96,10 @@ public class PagoController {
 
         try{
             pagoRepository.save(pagoModel);
-            PagoUtil.sendPayMessage(prestamo, pagoModel);
+
+            AgenciaModel agencia = agenciaRepository.getAgenciaModelByAgenciaId(pago.getAgente());
+            GerenciaModel gerencia = gerenciaRepository.getGerenciaModelByGerenciaId(agencia.getGerenciaId());
+            PagoUtil.sendPayMessage(prestamo, pagoModel, gerencia);
 
             Call<ResponseBodyXms> call = RetrofitOdoo.getInstance().getApi().pagoCreateOne(session, new PagoBody(new PagoList(pagoModel)));
             retrofitOdooService.sendCall(call);
@@ -171,7 +174,10 @@ public class PagoController {
             try{
                 if(isOnline == true){
                     pagoRepository.save(pagoModel);
-                    PagoUtil.sendPayMessage(prestamo, pagoModel);
+
+                    AgenciaModel agencia = agenciaRepository.getAgenciaModelByAgenciaId(pago.getAgente());
+                    GerenciaModel gerencia = gerenciaRepository.getGerenciaModelByGerenciaId(agencia.getGerenciaId());
+                    PagoUtil.sendPayMessage(prestamo, pagoModel, gerencia);
 
                     Call<ResponseBodyXms> call = RetrofitOdoo.getInstance().getApi().pagoCreateOne(session, new PagoBody(new PagoList(pagoModel)));
                     retrofitOdooService.sendCall(call);

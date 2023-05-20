@@ -9,7 +9,6 @@ import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.helpers.CobranzaUtil;
 import tech.calaverita.reporterloanssql.helpers.DashboardUtil;
-import tech.calaverita.reporterloanssql.services.FileManagerService;
 import tech.calaverita.reporterloanssql.services.RepositoriesContainer;
 
 import java.util.ArrayList;
@@ -19,8 +18,6 @@ import java.util.ArrayList;
 public class XpressController {
     @Autowired
     private RepositoriesContainer repositoriesContainer;
-    @Autowired
-    private FileManagerService fileManagerService;
     ObjectsContainer[] objectsContainers;
 
     @GetMapping(path = "/cobranza/{agencia}/{anio}/{semana}")

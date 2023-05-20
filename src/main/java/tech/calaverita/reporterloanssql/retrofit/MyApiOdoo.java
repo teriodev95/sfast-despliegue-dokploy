@@ -1,13 +1,11 @@
 package tech.calaverita.reporterloanssql.retrofit;
 
 import retrofit2.Call;
-import retrofit2.Response;
 import retrofit2.http.*;
-import tech.calaverita.reporterloanssql.models.LiquidacionModel;
-import tech.calaverita.reporterloanssql.pojos.xms.AsignacionBody;
-import tech.calaverita.reporterloanssql.pojos.xms.LiquidacionBody;
-import tech.calaverita.reporterloanssql.pojos.xms.PagoBody;
-import tech.calaverita.reporterloanssql.pojos.xms.ResponseBodyXms;
+import tech.calaverita.reporterloanssql.retrofit.pojos.AsignacionBody;
+import tech.calaverita.reporterloanssql.retrofit.pojos.LiquidacionBody;
+import tech.calaverita.reporterloanssql.retrofit.pojos.PagoBody;
+import tech.calaverita.reporterloanssql.retrofit.pojos.ResponseBodyXms;
 
 public interface MyApiOdoo {
 

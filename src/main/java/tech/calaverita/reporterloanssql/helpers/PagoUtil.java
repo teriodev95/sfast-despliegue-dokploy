@@ -3,6 +3,7 @@ package tech.calaverita.reporterloanssql.helpers;
 import okhttp3.*;
 import org.json.JSONException;
 import org.json.JSONObject;
+import tech.calaverita.reporterloanssql.models.GerenciaModel;
 import tech.calaverita.reporterloanssql.models.PagoModel;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
 import tech.calaverita.reporterloanssql.pojos.PagoConLiquidacion;
@@ -74,9 +75,25 @@ public class PagoUtil {
         return jsonPago;
     }
 
-    public static RequestBody getPayMessage(PrestamoModel prestamo, PagoModel pago){
+    public static JSONObject getJsonObjectOfGerencia(GerenciaModel gerenciaModel){
+        JSONObject jsonGerencia = new JSONObject();
+
+        try {
+            jsonGerencia.put("gerenciaId", gerenciaModel.getGerenciaId());
+            jsonGerencia.put("status", gerenciaModel.getStatus());
+            jsonGerencia.put("chatIdPagos", gerenciaModel.getChatIdPagos());
+            jsonGerencia.put("chatIdNumeros", gerenciaModel.getChatIdNumeros());
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        return jsonGerencia;
+    }
+
+    public static RequestBody getPayMessage(PrestamoModel prestamo, PagoModel pago, GerenciaModel gerencia){
         JSONObject infoPago = new JSONObject();
         JSONObject jsonPago = getJsonObjectOfPago(pago);
+        JSONObject jsonGerencia = getJsonObjectOfGerencia(gerencia);
 
         try {
             infoPago.put("nombresCliente", prestamo.getNombres());
@@ -86,6 +103,7 @@ public class PagoUtil {
             infoPago.put("telefonoAval", prestamo.getTelefonoAval());
             infoPago.put("tipoPago", pago.getTipo());
             infoPago.put("pago", jsonPago);
+            infoPago.put("gerencia", jsonGerencia);
         }catch (JSONException e){
             e.printStackTrace();
         }
@@ -95,13 +113,13 @@ public class PagoUtil {
         return requestBody;
     }
 
-    public static void sendPayMessage(PrestamoModel prestamo, PagoModel pago){
+    public static void sendPayMessage(PrestamoModel prestamo, PagoModel pago, GerenciaModel gerencia){
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
                 .url("https://fast-n8n.terio.xyz/webhook/91557792-c1f3-442c-88ed-bdee5407d4ce")
-//                .url("https://heavy-cow-23.hooks.n8n.cloud/webhook-test/93866ec9-652f-4c92-8314-e3f05a4ce6f7")
-                .post(getPayMessage(prestamo, pago))
+//                .url("https://yfspvm3deal7jebp1s2andy5.hooks.n8n.cloud/webhook-test/93866ec9-652f-4c92-8314-e3f05a4ce6f7")
+                .post(getPayMessage(prestamo, pago, gerencia))
                 .build();
 
         try {

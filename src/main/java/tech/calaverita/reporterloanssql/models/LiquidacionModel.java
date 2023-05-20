@@ -8,12 +8,12 @@ import lombok.Data;
 @Table(name = "liquidaciones")
 public class LiquidacionModel {
     @Id
-    @Column(name = "liquidacionID")
+    @Column(name = "liquidacionid")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer liquidacionId;
-    @Column(name = "prestamoID")
+    @Column(name = "prestamoid")
     private String prestamoId;
-    @Column(name = "pagoID")
+    @Column(name = "pagoid")
     private String pagoId;
     private Integer anio;
     private Integer semana;
