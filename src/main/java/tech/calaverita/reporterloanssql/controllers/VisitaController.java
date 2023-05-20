@@ -42,7 +42,7 @@ public class VisitaController {
         return new ResponseEntity<>(visitaModel, HttpStatus.OK);
     }
 
-    @GetMapping(path = "?prestamo_id={prestamoId}")
+    @GetMapping(path = "/prestamo_id/{prestamoId}")
     public ResponseEntity<ArrayList<VisitaModel>> getVisitaModelsByPrestamoId(@PathVariable(name = "prestamoId") String prestamoId) {
         ArrayList<VisitaModel> visitaModels = visitaService.getVisitaModelsByPrestamoId(prestamoId);
 
