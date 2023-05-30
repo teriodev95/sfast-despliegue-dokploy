@@ -39,5 +39,9 @@ public class CobranzaUtil implements Runnable {
         threads[5].start();
         threads[6].start();
         threads[7].start();
+
+        while(objectsContainer.getCobranza().getDebitoTotal() == null){
+            
+        }
     }
 }

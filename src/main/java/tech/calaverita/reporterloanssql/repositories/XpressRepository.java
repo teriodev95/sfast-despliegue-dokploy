@@ -9,15 +9,16 @@ import java.util.ArrayList;
 
 @Repository
 public interface XpressRepository extends CrudRepository<PrestamoModel, String> {
-    @Query("SELECT DISTINCT(pa.agente)" +
+    @Query("SELECT DISTINCT(pr.agente)" +
             "FROM PrestamoModel pr " +
-            "INNER JOIN PagoVistaModel pa " +
-            "ON pr.prestamoId = pa.prestamoId " +
             "WHERE pr.gerencia = :gerencia " +
-            "AND pa.anio = :anio " +
-            "AND pa.semana = :semana " +
             "ORDER BY pr.agente")
-    ArrayList<String> getAgenciasByGerencia(String gerencia, int anio, int semana);
+    ArrayList<String> getAgenciasByGerencia(String gerencia);
+
+    @Query("SELECT DISTINCT(pr.gerencia)" +
+            "FROM PrestamoModel pr " +
+            "ORDER BY pr.gerencia")
+    ArrayList<String> getGerencias();
 
     @Query("SELECT pr.agente AS agencia, " +
             "COUNT(pr) AS clientes, " +

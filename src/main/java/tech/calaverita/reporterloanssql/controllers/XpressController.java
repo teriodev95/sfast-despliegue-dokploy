@@ -9,9 +9,13 @@ import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.helpers.CobranzaUtil;
 import tech.calaverita.reporterloanssql.helpers.DashboardUtil;
+import tech.calaverita.reporterloanssql.services.PagoService;
+import tech.calaverita.reporterloanssql.services.PrestamoService;
 import tech.calaverita.reporterloanssql.services.RepositoriesContainer;
+import tech.calaverita.reporterloanssql.services.XpressService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @RestController()
 @RequestMapping(path = "/xpress/v1")
@@ -39,7 +43,7 @@ public class XpressController {
 
     @GetMapping(path = "/cobranza-gerencia/{gerencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<Cobranza[]> getCobranzaByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
-        ArrayList<String> agencias = repositoriesContainer.getXpressRepository().getAgenciasByGerencia(gerencia, anio, semana);
+        ArrayList<String> agencias = repositoriesContainer.getXpressRepository().getAgenciasByGerencia(gerencia);
 
         Thread[] threads = new Thread[agencias.size()];
         Cobranza[] cobranzas = new Cobranza[agencias.size()];
@@ -87,7 +91,7 @@ public class XpressController {
 
     @GetMapping(path = "/dashboard-gerencia/{gerencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<Dashboard[]> getDashboardByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
-        ArrayList<String> agencias = repositoriesContainer.getXpressRepository().getAgenciasByGerencia(gerencia, anio, semana);
+        ArrayList<String> agencias = repositoriesContainer.getXpressRepository().getAgenciasByGerencia(gerencia);
 
         Thread[] threads = new Thread[agencias.size()];
         Dashboard[] dashboards = new Dashboard[agencias.size()];

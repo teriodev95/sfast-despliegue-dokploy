@@ -9,29 +9,29 @@ import java.util.ArrayList;
 
 @Service
 public class VisitaService {
-    private final VisitaRepository visitaRepository;
+    private static VisitaRepository visitaRepository;
 
     @Autowired
     public VisitaService(VisitaRepository visitaRepository){
-        this.visitaRepository = visitaRepository;
+        VisitaService.visitaRepository = visitaRepository;
     }
 
-    public ArrayList<VisitaModel> getVisitaModels(){
+    public static ArrayList<VisitaModel> getVisitaModels(){
 
         return visitaRepository.getVisitaModels();
     }
 
-    public VisitaModel getVisitaModelByVisitaId(String visitaId){
+    public static VisitaModel getVisitaModelByVisitaId(String visitaId){
 
         return visitaRepository.getVisitaModelByVisitaId(visitaId);
     }
 
-    public ArrayList<VisitaModel> getVisitaModelsByPrestamoId(String prestamoId){
+    public static ArrayList<VisitaModel> getVisitaModelsByPrestamoId(String prestamoId){
 
         return visitaRepository.getVisitaModelsByPrestamoId(prestamoId);
     }
 
-    public void createVisitaModel(VisitaModel visitaModel){
+    public static void createVisitaModel(VisitaModel visitaModel){
         visitaRepository.save(visitaModel);
     }
 }

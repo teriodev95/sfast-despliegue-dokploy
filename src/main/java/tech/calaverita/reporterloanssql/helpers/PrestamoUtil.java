@@ -10,7 +10,7 @@ import tech.calaverita.reporterloanssql.services.PrestamoService;
 
 @Component
 public class PrestamoUtil {
-    private static PrestamoService prestamoService = null;
+    private static PrestamoService prestamoService;
 
     @Autowired
     private PrestamoUtil(PrestamoService prestamoService) {

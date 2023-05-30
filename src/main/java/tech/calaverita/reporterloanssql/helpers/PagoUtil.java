@@ -3,14 +3,25 @@ package tech.calaverita.reporterloanssql.helpers;
 import okhttp3.*;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import tech.calaverita.reporterloanssql.models.GerenciaModel;
 import tech.calaverita.reporterloanssql.models.PagoModel;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
 import tech.calaverita.reporterloanssql.pojos.PagoConLiquidacion;
+import tech.calaverita.reporterloanssql.services.PagoService;
 
 import java.io.IOException;
 
+@Component
 public class PagoUtil {
+    private static PagoService pagoService;
+
+    @Autowired
+    private PagoUtil(PagoService pagoService){
+        PagoUtil.pagoService = pagoService;
+    }
+
     public static PagoModel getPagoModelFromPagoConLiquidacion(PagoConLiquidacion pagoConLiquidacion){
         PagoModel pagoModel = new PagoModel();
 
@@ -128,5 +139,11 @@ public class PagoUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean isPagoMigracion(String prestamoId, int anio, int semana){
+        PagoModel pagoModel = PagoService.getPagoMigracionByAgenteAnioAndSemana(prestamoId, anio, semana);
+
+        return pagoModel != null;
     }
 }

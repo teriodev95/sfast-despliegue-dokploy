@@ -12,15 +12,8 @@ import java.util.ArrayList;
 
 @Component
 public class VisitaUtil {
-    private static VisitaService visitaService;
-
-    @Autowired
-    public VisitaUtil(VisitaService visitaService) {
-        VisitaUtil.visitaService = visitaService;
-    }
-
     public static boolean isVisita(String visitaId) {
-        VisitaModel visitaModel = visitaService.getVisitaModelByVisitaId(visitaId);
+        VisitaModel visitaModel = VisitaService.getVisitaModelByVisitaId(visitaId);
 
         return visitaModel != null;
     }

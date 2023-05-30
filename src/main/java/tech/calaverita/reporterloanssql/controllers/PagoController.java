@@ -15,6 +15,7 @@ import tech.calaverita.reporterloanssql.retrofit.pojos.PagoBody;
 import tech.calaverita.reporterloanssql.retrofit.pojos.PagoList;
 import tech.calaverita.reporterloanssql.retrofit.pojos.ResponseBodyXms;
 import tech.calaverita.reporterloanssql.retrofit.RetrofitOdoo;
+import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.RetrofitOdooService;
 
 import java.util.ArrayList;
@@ -67,6 +68,10 @@ public class PagoController {
 
         if (!pagoAux.isEmpty())
             return new ResponseEntity<>("El Pago Ya Existe", HttpStatus.CONFLICT);
+
+        if(PagoUtil.isPagoMigracion(pago.getPrestamoId(), pago.getAnio(), pago.getSemana())){
+            return new ResponseEntity<>("El Pago cuenta con migración", HttpStatus.CONFLICT);
+        }
 
         PrestamoModel prestamo = prestamoRepository.getPrestamoByPrestamoId(pago.getPrestamoId());
 
@@ -143,6 +148,11 @@ public class PagoController {
                 isOnline = false;
             }
 
+            if(PagoUtil.isPagoMigracion(pago.getPrestamoId(), pago.getAnio(), pago.getSemana())){
+                msgAux += "El Pago cuenta con migración|";
+                isOnline = false;
+            }
+
             PrestamoModel prestamo = prestamoRepository.getPrestamoByPrestamoId(pago.getPrestamoId());
 
             if (prestamo == null){
@@ -201,27 +211,7 @@ public class PagoController {
         return new ResponseEntity<>(respuesta, HttpStatus.OK);
     }
 
-//    @PutMapping(path = "/liquidacion-pago")
-//    public @ResponseBody ResponseEntity<String> setLiquidacionPrestamo(@RequestBody PagoConLiquidacion liquidacion) {
-//
-//        PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(liquidacion.getPrestamoId());
-//
-//        if (prestamo == null)
-//            return new ResponseEntity<>("No Se Encontró Ningún Prestamo Con Ese 'PrestamoId'", HttpStatus.NOT_FOUND);
-//
-//        prestamo.setWkDescu(liquidacion.getSemana() + "-" + liquidacion.getAnio());
-//        prestamo.setDescuento(liquidacion.getDescuento());
-//        prestamo.setSaldo(0.0);
-//
-//        liquidacion.getPago().setCierraCon(0.0);
-//
-//        prestamoRepository.save(prestamo);
-//        pagoRepository.save(liquidacion.getPago());
-//
-//        return new ResponseEntity<>("Liquidación Cargada con Éxito", HttpStatus.OK);
-//    }
-
-    @GetMapping(path = "history/{prestamoId}")
+    @GetMapping(path = "/history/{prestamoId}")
     public @ResponseBody ResponseEntity<ArrayList<PagoModel>> getHistorialDePagos(@PathVariable("prestamoId") String prestamoId) {
         ArrayList<PagoModel> pagos = pagoRepository.getHistorialDePagos(prestamoId);
 

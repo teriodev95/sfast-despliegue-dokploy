@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 @Repository
 public interface PagoRepository extends CrudRepository<PagoModel, String> {
-    @Query("SELECT pa FROM PagoModel pa WHERE pa.prestamoId = :prestamoId AND pa.anio = :anio AND pa.semana = :semana")
+    @Query("SELECT pa FROM PagoModel pa WHERE pa.prestamoId = :prestamoId AND pa.anio = :anio AND pa.semana = :semana GROUP BY pa.prestamoId, pa.anio, pa.semana")
     PagoModel getPagoModelByPrestamoIdAnioAndSemana(String prestamoId, int anio, int semana);
 
     @Query("SELECT pa FROM PagoModel pa WHERE pa.agente = :agencia AND pa.anio = :anio AND pa.semana = :semana AND pa.esPrimerPago = false")
@@ -50,4 +50,12 @@ public interface PagoRepository extends CrudRepository<PagoModel, String> {
             "AND li.anio = :anio " +
             "AND li.semana = :semana")
     ArrayList<PagoModel> getPagosOfLiquidacionesToDashboard(String agencia, int anio, int semana);
+
+    @Query("SELECT pa " +
+            "FROM PagoModel pa " +
+            "WHERE pa.prestamoId = :prestamoId " +
+            "AND pa.anio = :anio " +
+            "AND pa.semana = :semana " +
+            "AND pa.creadoDesde = 'Migracion'")
+    PagoModel getPagoMigracionByAgenteAnioAndSemana(String prestamoId, int anio, int semana);
 }

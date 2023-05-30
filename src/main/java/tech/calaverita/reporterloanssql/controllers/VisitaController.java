@@ -53,7 +53,7 @@ public class VisitaController {
         return new ResponseEntity<>(visitaModels, HttpStatus.OK);
     }
 
-    @PostMapping(path = "create_one")
+    @PostMapping(path = "/create_one")
     public ResponseEntity<String> createVisitaModel(@RequestBody VisitaModel visitaModel) {
 
         ResponseEntity<String> responseEntity = VisitaUtil.checkVisit(visitaModel);
