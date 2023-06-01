@@ -69,6 +69,7 @@ public class XpressController {
         return new ResponseEntity<>(cobranzas, HttpStatus.OK);
     }
 
+    @CrossOrigin
     @GetMapping(path = "/dashboard-agencia/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
         Dashboard dashboard = new Dashboard();

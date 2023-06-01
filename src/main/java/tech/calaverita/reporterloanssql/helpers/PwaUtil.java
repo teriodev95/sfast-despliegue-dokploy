@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class PwaUtil {
     public static ArrayList<PrestamoCobranzaPwa> getPrestamoCobranzaPwasFromPrestamoModelsAndPagoModels(String agencia, int anio, int semana) {
-        ArrayList<PrestamoModel> prestamoModels = PrestamoService.getPrestamoModelsByAgenciaAnioAndSemanaToDashboard(agencia, anio, semana);
+        ArrayList<PrestamoModel> prestamoModels = PrestamoService.getPrestamoModelsByAgenciaAnioAndSemanaToCobranza(agencia, anio, semana);
         ArrayList<PrestamoCobranzaPwa> prestamoCobranzaPwas = new ArrayList<>();
 
         Thread[] threads = new Thread[prestamoModels.size()];

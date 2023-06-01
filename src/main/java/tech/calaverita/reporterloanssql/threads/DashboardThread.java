@@ -93,11 +93,11 @@ public class DashboardThread implements Runnable {
     }
 
     public void getPrestamosToCobranza() {
-        objectsContainer.setPrestamosToCobranza(repositoriesContainer.getPrestamoRepository().getPrestamosToCobranza(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        objectsContainer.setPrestamosToCobranza(repositoriesContainer.getPrestamoRepository().getPrestamosToCobranzaByAgenciaAnioAndSemana(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
     public void getPrestamosToDashboard() {
-        objectsContainer.setPrestamosToDashboard(repositoriesContainer.getPrestamoRepository().getPrestamosToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        objectsContainer.setPrestamosToDashboard(repositoriesContainer.getPrestamoRepository().getPrestamosToDashboardByAgenciaAnioAndSemana(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
     public void getPagosToCobranza() {

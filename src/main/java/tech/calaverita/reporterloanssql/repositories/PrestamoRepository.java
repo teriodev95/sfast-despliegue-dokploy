@@ -22,7 +22,7 @@ public interface PrestamoRepository extends CrudRepository<PrestamoModel, String
             "AND pa.anio = :anio " +
             "AND pa.semana = :semana - 1 " +
             "AND pa.cierraCon > 0")
-    ArrayList<PrestamoModel> getPrestamosToCobranza(String agencia, int anio, int semana);
+    ArrayList<PrestamoModel> getPrestamosToCobranzaByAgenciaAnioAndSemana(String agencia, int anio, int semana);
 
     @Query("SELECT pr " +
             "FROM PrestamoModel pr " +
@@ -32,5 +32,5 @@ public interface PrestamoRepository extends CrudRepository<PrestamoModel, String
             "AND pa.anio = :anio " +
             "AND pa.semana = :semana " +
             "AND pa.esPrimerPago = false")
-    ArrayList<PrestamoModel> getPrestamosToDashboard(String agencia, int anio, int semana);
+    ArrayList<PrestamoModel> getPrestamosToDashboardByAgenciaAnioAndSemana(String agencia, int anio, int semana);
 }

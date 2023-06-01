@@ -9,6 +9,7 @@ public class PrestamoCobranzaPwa {
     private String prestamoId;
     private Double tarifa;
     private Double cobradoEnLaSemana = 0.0;
+    private String diaDePago;
     private Enum<CobranzaStatusPwa> status;
     private String fechaUltimoPago = "";
     private Double totalAPagar;
