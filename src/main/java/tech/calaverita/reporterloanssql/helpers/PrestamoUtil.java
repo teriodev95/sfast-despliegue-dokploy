@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import retrofit2.Response;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
 import tech.calaverita.reporterloanssql.services.PrestamoService;
 

@@ -4,21 +4,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
-
-import java.util.ArrayList;
+import tech.calaverita.reporterloanssql.models.UsuarioModel;
 
 @Repository
 public interface XpressRepository extends CrudRepository<PrestamoModel, String> {
-    @Query("SELECT DISTINCT(pr.agente)" +
-            "FROM PrestamoModel pr " +
-            "WHERE pr.gerencia = :gerencia " +
-            "ORDER BY pr.agente")
-    ArrayList<String> getAgenciasByGerencia(String gerencia);
-
-    @Query("SELECT DISTINCT(pr.gerencia)" +
-            "FROM PrestamoModel pr " +
-            "ORDER BY pr.gerencia")
-    ArrayList<String> getGerencias();
+    @Query("SELECT usu " +
+            "FROM UsuarioModel usu " +
+            "WHERE usu.usuario = :username " +
+            "AND usu.pin = :password")
+    UsuarioModel login(String username, String password);
 
     @Query("SELECT pr.agente AS agencia, " +
             "COUNT(pr) AS clientes, " +

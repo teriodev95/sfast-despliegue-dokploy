@@ -8,7 +8,7 @@ import tech.calaverita.reporterloanssql.retrofit.pojos.ResponseBodyXms;
 
 @Service
 public class RetrofitOdooService {
-    public void sendCall(Call<ResponseBodyXms> call){
+    public void sendCall(Call<ResponseBodyXms> call) {
         call.enqueue(new Callback<ResponseBodyXms>() {
             @Override
             public void onResponse(Call<ResponseBodyXms> call, Response<ResponseBodyXms> response) {

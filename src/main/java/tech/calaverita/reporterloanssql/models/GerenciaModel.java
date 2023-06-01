@@ -18,4 +18,6 @@ public class GerenciaModel {
     private String chatIdPagos;
     @Column(name = "chatidnumeros")
     private String chatIdNumeros;
+    @Column(name = "seguridadid")
+    private Integer seguridadId;
 }

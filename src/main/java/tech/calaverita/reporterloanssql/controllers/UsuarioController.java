@@ -19,7 +19,7 @@ public class UsuarioController {
     public @ResponseBody ResponseEntity<Iterable<UsuarioModel>> getAllUsers() {
         Iterable<UsuarioModel> usuarios = usuarioRepository.findAll();
 
-        if(!usuarios.iterator().hasNext())
+        if (!usuarios.iterator().hasNext())
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         return new ResponseEntity<>(usuarios, HttpStatus.OK);
@@ -29,7 +29,7 @@ public class UsuarioController {
     public @ResponseBody ResponseEntity<Optional<UsuarioModel>> getOneUser(@PathVariable("usuarioId") Integer usuarioId) {
         Optional<UsuarioModel> usuario = usuarioRepository.findById(usuarioId);
 
-        if(usuario.isEmpty())
+        if (usuario.isEmpty())
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         return new ResponseEntity<>(usuario, HttpStatus.OK);

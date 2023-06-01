@@ -15,7 +15,7 @@ public class PrestamoController {
     PrestamoRepository prestamoRepository;
 
     @GetMapping(path = "/{id}")
-    public PrestamoModel getPrestamoByPrestamoId(@PathVariable("id") String prestamoId){
+    public PrestamoModel getPrestamoByPrestamoId(@PathVariable("id") String prestamoId) {
 
         return prestamoRepository.getPrestamoByPrestamoId(prestamoId);
     }

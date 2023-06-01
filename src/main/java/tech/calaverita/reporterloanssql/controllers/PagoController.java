@@ -10,12 +10,11 @@ import tech.calaverita.reporterloanssql.helpers.PagoUtil;
 import tech.calaverita.reporterloanssql.models.*;
 import tech.calaverita.reporterloanssql.pojos.PagoConLiquidacion;
 import tech.calaverita.reporterloanssql.repositories.*;
+import tech.calaverita.reporterloanssql.retrofit.RetrofitOdoo;
 import tech.calaverita.reporterloanssql.retrofit.pojos.LiquidacionBody;
 import tech.calaverita.reporterloanssql.retrofit.pojos.PagoBody;
 import tech.calaverita.reporterloanssql.retrofit.pojos.PagoList;
 import tech.calaverita.reporterloanssql.retrofit.pojos.ResponseBodyXms;
-import tech.calaverita.reporterloanssql.retrofit.RetrofitOdoo;
-import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.RetrofitOdooService;
 
 import java.util.ArrayList;
@@ -69,7 +68,7 @@ public class PagoController {
         if (!pagoAux.isEmpty())
             return new ResponseEntity<>("El Pago Ya Existe", HttpStatus.CONFLICT);
 
-        if(PagoUtil.isPagoMigracion(pago.getPrestamoId(), pago.getAnio(), pago.getSemana())){
+        if (PagoUtil.isPagoMigracion(pago.getPrestamoId(), pago.getAnio(), pago.getSemana())) {
             return new ResponseEntity<>("El Pago cuenta con migración", HttpStatus.CONFLICT);
         }
 
@@ -99,7 +98,7 @@ public class PagoController {
             pagoModel.setEsPrimerPago(false);
         }
 
-        try{
+        try {
             pagoRepository.save(pagoModel);
 
             AgenciaModel agencia = agenciaRepository.getAgenciaModelByAgenciaId(pago.getAgente());
@@ -109,10 +108,10 @@ public class PagoController {
             Call<ResponseBodyXms> call = RetrofitOdoo.getInstance().getApi().pagoCreateOne(session, new PagoBody(new PagoList(pagoModel)));
             retrofitOdooService.sendCall(call);
 
-            if(liquidacionModel != null) {
+            if (liquidacionModel != null) {
                 liquidacionRepository.save(liquidacionModel);
             }
-        }catch(HttpClientErrorException e){
+        } catch (HttpClientErrorException e) {
             return new ResponseEntity<>(e.toString(), HttpStatus.CONFLICT);
         }
 
@@ -125,37 +124,37 @@ public class PagoController {
 
         ArrayList<HashMap<String, Object>> respuesta = new ArrayList<>();
 
-        for(PagoConLiquidacion pago: pagos){
+        for (PagoConLiquidacion pago : pagos) {
             HashMap<String, Object> objeto = new HashMap<>();
             String msg = "OK";
             String msgAux = "";
             Boolean isOnline = true;
 
-            if (pago.getPagoId() == null){
+            if (pago.getPagoId() == null) {
                 msgAux += "Debe Ingresar El 'pagoId'|";
                 isOnline = false;
             }
 
             Optional<PagoModel> pagoAux = pagoRepository.findById(pago.getPagoId());
 
-            if (pago.getPrestamoId() == null || pago.getPrestamoId().equalsIgnoreCase("")){
+            if (pago.getPrestamoId() == null || pago.getPrestamoId().equalsIgnoreCase("")) {
                 msgAux += "Debe Ingresar El 'prestamoId'|";
                 isOnline = false;
             }
 
-            if (!pagoAux.isEmpty()){
+            if (!pagoAux.isEmpty()) {
                 msgAux += "El Pago Ya Existe|";
                 isOnline = false;
             }
 
-            if(PagoUtil.isPagoMigracion(pago.getPrestamoId(), pago.getAnio(), pago.getSemana())){
+            if (PagoUtil.isPagoMigracion(pago.getPrestamoId(), pago.getAnio(), pago.getSemana())) {
                 msgAux += "El Pago cuenta con migración|";
                 isOnline = false;
             }
 
             PrestamoModel prestamo = prestamoRepository.getPrestamoByPrestamoId(pago.getPrestamoId());
 
-            if (prestamo == null){
+            if (prestamo == null) {
                 msgAux += "No Se Encontró Ningún Prestamo Con Ese 'prestamoId'|";
                 isOnline = false;
             }
@@ -181,8 +180,8 @@ public class PagoController {
                 pagoModel.setEsPrimerPago(false);
             }
 
-            try{
-                if(isOnline == true){
+            try {
+                if (isOnline == true) {
                     pagoRepository.save(pagoModel);
 
                     AgenciaModel agencia = agenciaRepository.getAgenciaModelByAgenciaId(pago.getAgente());
@@ -192,12 +191,11 @@ public class PagoController {
                     Call<ResponseBodyXms> call = RetrofitOdoo.getInstance().getApi().pagoCreateOne(session, new PagoBody(new PagoList(pagoModel)));
                     retrofitOdooService.sendCall(call);
 
-                    if(liquidacionModel != null)
+                    if (liquidacionModel != null)
                         liquidacionRepository.save(liquidacionModel);
-                }
-                else
+                } else
                     msg = msgAux;
-            }catch (HttpClientErrorException e){
+            } catch (HttpClientErrorException e) {
                 msg = e.toString();
                 isOnline = false;
             }

@@ -4,18 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.calaverita.reporterloanssql.helpers.CobranzaUtil;
+import tech.calaverita.reporterloanssql.helpers.DashboardUtil;
 import tech.calaverita.reporterloanssql.pojos.Cobranza;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
-import tech.calaverita.reporterloanssql.helpers.CobranzaUtil;
-import tech.calaverita.reporterloanssql.helpers.DashboardUtil;
-import tech.calaverita.reporterloanssql.services.PagoService;
-import tech.calaverita.reporterloanssql.services.PrestamoService;
 import tech.calaverita.reporterloanssql.services.RepositoriesContainer;
-import tech.calaverita.reporterloanssql.services.XpressService;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 @RestController()
 @RequestMapping(path = "/xpress/v1")
@@ -43,13 +39,13 @@ public class XpressController {
 
     @GetMapping(path = "/cobranza-gerencia/{gerencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<Cobranza[]> getCobranzaByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
-        ArrayList<String> agencias = repositoriesContainer.getXpressRepository().getAgenciasByGerencia(gerencia);
+        ArrayList<String> agencias = repositoriesContainer.getAgenciaRepository().getAgenciasByGerencia(gerencia);
 
         Thread[] threads = new Thread[agencias.size()];
         Cobranza[] cobranzas = new Cobranza[agencias.size()];
         objectsContainers = new ObjectsContainer[agencias.size()];
 
-        for(int i = 0; i < agencias.size(); i++){
+        for (int i = 0; i < agencias.size(); i++) {
             cobranzas[i] = new Cobranza();
             objectsContainers[i] = new ObjectsContainer();
 
@@ -61,12 +57,13 @@ public class XpressController {
             threads[i] = new Thread(new CobranzaUtil(repositoriesContainer, objectsContainers[i]));
         }
 
-        for(int i = 0; i < agencias.size(); i++){
+        for (int i = 0; i < agencias.size(); i++) {
             threads[i].start();
         }
 
-        for(int i = 0; i < agencias.size(); i++){
-            while(threads[i].isAlive()){}
+        for (int i = 0; i < agencias.size(); i++) {
+            while (threads[i].isAlive()) {
+            }
         }
 
         return new ResponseEntity<>(cobranzas, HttpStatus.OK);
@@ -91,13 +88,13 @@ public class XpressController {
 
     @GetMapping(path = "/dashboard-gerencia/{gerencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<Dashboard[]> getDashboardByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
-        ArrayList<String> agencias = repositoriesContainer.getXpressRepository().getAgenciasByGerencia(gerencia);
+        ArrayList<String> agencias = repositoriesContainer.getAgenciaRepository().getAgenciasByGerencia(gerencia);
 
         Thread[] threads = new Thread[agencias.size()];
         Dashboard[] dashboards = new Dashboard[agencias.size()];
         objectsContainers = new ObjectsContainer[agencias.size()];
 
-        for(int i = 0; i < agencias.size(); i++){
+        for (int i = 0; i < agencias.size(); i++) {
             dashboards[i] = new Dashboard();
             objectsContainers[i] = new ObjectsContainer();
 
@@ -109,12 +106,13 @@ public class XpressController {
             threads[i] = new Thread(new DashboardUtil(repositoriesContainer, objectsContainers[i]));
         }
 
-        for(int i = 0; i < agencias.size(); i++){
+        for (int i = 0; i < agencias.size(); i++) {
             threads[i].start();
         }
 
-        for(int i = 0; i < agencias.size(); i++){
-            while(threads[i].isAlive()){}
+        for (int i = 0; i < agencias.size(); i++) {
+            while (threads[i].isAlive()) {
+            }
         }
 
         return new ResponseEntity<>(dashboards, HttpStatus.OK);

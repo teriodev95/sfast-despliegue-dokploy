@@ -10,8 +10,10 @@ public class PagoList {
     public PagoList() {
 
     }
+
     public PagoList(PagoModel pago) {
         this.pagos.add(pago);
     }
+
     private ArrayList<PagoModel> pagos = new ArrayList<>();
 }

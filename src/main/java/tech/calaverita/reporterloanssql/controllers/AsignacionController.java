@@ -8,12 +8,12 @@ import org.springframework.web.client.HttpClientErrorException;
 import retrofit2.Call;
 import tech.calaverita.reporterloanssql.models.AsignacionModel;
 import tech.calaverita.reporterloanssql.models.UsuarioModel;
-import tech.calaverita.reporterloanssql.retrofit.pojos.AsignacionBody;
-import tech.calaverita.reporterloanssql.retrofit.pojos.AsignacionList;
-import tech.calaverita.reporterloanssql.retrofit.pojos.ResponseBodyXms;
 import tech.calaverita.reporterloanssql.repositories.AsignacionRepository;
 import tech.calaverita.reporterloanssql.repositories.UsuarioRepository;
 import tech.calaverita.reporterloanssql.retrofit.RetrofitOdoo;
+import tech.calaverita.reporterloanssql.retrofit.pojos.AsignacionBody;
+import tech.calaverita.reporterloanssql.retrofit.pojos.AsignacionList;
+import tech.calaverita.reporterloanssql.retrofit.pojos.ResponseBodyXms;
 import tech.calaverita.reporterloanssql.services.RetrofitOdooService;
 
 import java.util.ArrayList;

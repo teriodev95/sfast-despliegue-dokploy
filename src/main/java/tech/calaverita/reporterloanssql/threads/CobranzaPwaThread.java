@@ -6,7 +6,7 @@ import tech.calaverita.reporterloanssql.models.PrestamoModel;
 import tech.calaverita.reporterloanssql.pojos.PrestamoCobranzaPwa;
 import tech.calaverita.reporterloanssql.services.PagoService;
 
-public class CobranzaPwaThread implements Runnable{
+public class CobranzaPwaThread implements Runnable {
     PrestamoModel prestamoModel;
     PrestamoCobranzaPwa prestamoCobranzaPwa;
     int anio;
@@ -24,7 +24,7 @@ public class CobranzaPwaThread implements Runnable{
         getMontoStatusAndPorcentaje(prestamoModel, prestamoCobranzaPwa, anio, semana);
     }
 
-    public void getMontoStatusAndPorcentaje(PrestamoModel prestamoModel, PrestamoCobranzaPwa prestamoCobranzaPwa, int anio, int semana){
+    public void getMontoStatusAndPorcentaje(PrestamoModel prestamoModel, PrestamoCobranzaPwa prestamoCobranzaPwa, int anio, int semana) {
         PagoModel pagoModel = PagoService.getPagoByPrestamoIdAnioAndSemana(prestamoModel.getPrestamoId(), anio, semana);
 
         prestamoCobranzaPwa.setNombre(prestamoModel.getNombres() + " " + prestamoModel.getApellidoPaterno() + " " + prestamoModel.getApellidoMaterno());

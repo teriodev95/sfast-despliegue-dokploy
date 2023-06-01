@@ -10,16 +10,17 @@ import java.util.ArrayList;
 @Service
 public class PrestamoService {
     private static PrestamoRepository prestamoRepository;
+
     @Autowired
     public PrestamoService(PrestamoRepository prestamoRepository) {
         PrestamoService.prestamoRepository = prestamoRepository;
     }
 
-    public PrestamoModel getPrestamoModelByPrestamoId(String prestamoId){
+    public PrestamoModel getPrestamoModelByPrestamoId(String prestamoId) {
         return prestamoRepository.getPrestamoByPrestamoId(prestamoId);
     }
 
-    public static ArrayList<PrestamoModel> getPrestamoModelsByAgenciaAnioAndSemanaToDashboard(String agencia, int anio, int semana){
+    public static ArrayList<PrestamoModel> getPrestamoModelsByAgenciaAnioAndSemanaToDashboard(String agencia, int anio, int semana) {
         return prestamoRepository.getPrestamosToDashboard(agencia, anio, semana);
     }
 }

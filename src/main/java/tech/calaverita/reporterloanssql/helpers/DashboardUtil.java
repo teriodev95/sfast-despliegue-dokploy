@@ -8,10 +8,11 @@ public class DashboardUtil implements Runnable {
     public RepositoriesContainer repositoriesContainer;
     public ObjectsContainer objectsContainer;
 
-    public DashboardUtil(RepositoriesContainer repositoriesContainer, ObjectsContainer objectsContainer){
+    public DashboardUtil(RepositoriesContainer repositoriesContainer, ObjectsContainer objectsContainer) {
         this.repositoriesContainer = repositoriesContainer;
         this.objectsContainer = objectsContainer;
     }
+
     @Override
     public void run() {
         Thread[] threads = new Thread[24];

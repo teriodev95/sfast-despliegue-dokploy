@@ -24,7 +24,7 @@ public class VisitaController {
     public ResponseEntity<ArrayList<VisitaModel>> getVisitaModels() {
         ArrayList<VisitaModel> visitaModels = visitaService.getVisitaModels();
 
-        if(visitaModels.isEmpty()){
+        if (visitaModels.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -32,10 +32,10 @@ public class VisitaController {
     }
 
     @GetMapping(path = "/{visitaId}")
-    public ResponseEntity<VisitaModel> getVisitaModelByVisitaId(@PathVariable(name = "visitaId") String visitaId){
+    public ResponseEntity<VisitaModel> getVisitaModelByVisitaId(@PathVariable(name = "visitaId") String visitaId) {
         VisitaModel visitaModel = visitaService.getVisitaModelByVisitaId(visitaId);
 
-        if(visitaModel == null){
+        if (visitaModel == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -46,7 +46,7 @@ public class VisitaController {
     public ResponseEntity<ArrayList<VisitaModel>> getVisitaModelsByPrestamoId(@PathVariable(name = "prestamoId") String prestamoId) {
         ArrayList<VisitaModel> visitaModels = visitaService.getVisitaModelsByPrestamoId(prestamoId);
 
-        if(visitaModels.isEmpty()){
+        if (visitaModels.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -58,7 +58,7 @@ public class VisitaController {
 
         ResponseEntity<String> responseEntity = VisitaUtil.checkVisit(visitaModel);
 
-        if(responseEntity.getStatusCode().is2xxSuccessful()){
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
             visitaService.createVisitaModel(visitaModel);
         } else {
             return responseEntity;

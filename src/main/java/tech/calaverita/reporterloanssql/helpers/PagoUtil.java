@@ -18,11 +18,11 @@ public class PagoUtil {
     private static PagoService pagoService;
 
     @Autowired
-    private PagoUtil(PagoService pagoService){
+    private PagoUtil(PagoService pagoService) {
         PagoUtil.pagoService = pagoService;
     }
 
-    public static PagoModel getPagoModelFromPagoConLiquidacion(PagoConLiquidacion pagoConLiquidacion){
+    public static PagoModel getPagoModelFromPagoConLiquidacion(PagoConLiquidacion pagoConLiquidacion) {
         PagoModel pagoModel = new PagoModel();
 
         pagoModel.setPagoId(pagoConLiquidacion.getPagoId());
@@ -52,7 +52,7 @@ public class PagoUtil {
         return pagoModel;
     }
 
-    public static JSONObject getJsonObjectOfPago(PagoModel pago){
+    public static JSONObject getJsonObjectOfPago(PagoModel pago) {
         JSONObject jsonPago = new JSONObject();
 
         try {
@@ -79,14 +79,14 @@ public class PagoUtil {
             jsonPago.put("createdAt", pago.getCreatedAt());
             jsonPago.put("updatedAt", pago.getUpdatedAt());
             jsonPago.put("log", pago.getLog());
-        }catch (JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
         return jsonPago;
     }
 
-    public static JSONObject getJsonObjectOfGerencia(GerenciaModel gerenciaModel){
+    public static JSONObject getJsonObjectOfGerencia(GerenciaModel gerenciaModel) {
         JSONObject jsonGerencia = new JSONObject();
 
         try {
@@ -94,14 +94,14 @@ public class PagoUtil {
             jsonGerencia.put("status", gerenciaModel.getStatus());
             jsonGerencia.put("chatIdPagos", gerenciaModel.getChatIdPagos());
             jsonGerencia.put("chatIdNumeros", gerenciaModel.getChatIdNumeros());
-        }catch (JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
         return jsonGerencia;
     }
 
-    public static RequestBody getPayMessage(PrestamoModel prestamo, PagoModel pago, GerenciaModel gerencia){
+    public static RequestBody getPayMessage(PrestamoModel prestamo, PagoModel pago, GerenciaModel gerencia) {
         JSONObject infoPago = new JSONObject();
         JSONObject jsonPago = getJsonObjectOfPago(pago);
         JSONObject jsonGerencia = getJsonObjectOfGerencia(gerencia);
@@ -115,7 +115,7 @@ public class PagoUtil {
             infoPago.put("tipoPago", pago.getTipo());
             infoPago.put("pago", jsonPago);
             infoPago.put("gerencia", jsonGerencia);
-        }catch (JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
@@ -124,7 +124,7 @@ public class PagoUtil {
         return requestBody;
     }
 
-    public static void sendPayMessage(PrestamoModel prestamo, PagoModel pago, GerenciaModel gerencia){
+    public static void sendPayMessage(PrestamoModel prestamo, PagoModel pago, GerenciaModel gerencia) {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
@@ -141,7 +141,7 @@ public class PagoUtil {
         }
     }
 
-    public static boolean isPagoMigracion(String prestamoId, int anio, int semana){
+    public static boolean isPagoMigracion(String prestamoId, int anio, int semana) {
         PagoModel pagoModel = PagoService.getPagoMigracionByAgenteAnioAndSemana(prestamoId, anio, semana);
 
         return pagoModel != null;

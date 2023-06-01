@@ -2,6 +2,7 @@ package tech.calaverita.reporterloanssql.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tech.calaverita.reporterloanssql.models.UsuarioModel;
 import tech.calaverita.reporterloanssql.repositories.XpressRepository;
 
 import java.util.ArrayList;
@@ -15,11 +16,7 @@ public class XpressService {
         XpressService.xpressRepository = xpressRepository;
     }
 
-    public static ArrayList<String> getAgenciasByGerencia(String gerencia) {
-        return xpressRepository.getAgenciasByGerencia(gerencia);
-    }
-
-    public static ArrayList<String> getGerencias(){
-        return xpressRepository.getGerencias();
+    public static UsuarioModel login(String username, String password){
+        return xpressRepository.login(username, password);
     }
 }

@@ -1,14 +1,10 @@
 package tech.calaverita.reporterloanssql.helpers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import tech.calaverita.reporterloanssql.models.PrestamoModel;
 import tech.calaverita.reporterloanssql.models.VisitaModel;
 import tech.calaverita.reporterloanssql.services.VisitaService;
-
-import java.util.ArrayList;
 
 @Component
 public class VisitaUtil {
@@ -35,13 +31,13 @@ public class VisitaUtil {
 
         if (visitaModel.getVisitaId() == null || visitaModel.getVisitaId().equals("")) {
             responseEntity = new ResponseEntity<>("Debe ingresar un visitaId válido", HttpStatus.BAD_REQUEST);
-        } else if (VisitaUtil.isVisita(visitaModel.getVisitaId())){
+        } else if (VisitaUtil.isVisita(visitaModel.getVisitaId())) {
             responseEntity = VisitaUtil.checkVisitaModelByVisitaId(visitaModel.getVisitaId());
         }
 
         if (visitaModel.getPrestamoId() == null || visitaModel.getPrestamoId().equals("")) {
             responseEntity = new ResponseEntity<>("Debe ingresar un prestamoId válido", HttpStatus.BAD_REQUEST);
-        }else if(!PrestamoUtil.isPrestamo(visitaModel.getPrestamoId())){
+        } else if (!PrestamoUtil.isPrestamo(visitaModel.getPrestamoId())) {
             responseEntity = PrestamoUtil.checkPrestamoByPrestamoId(visitaModel.getPrestamoId());
         }
 

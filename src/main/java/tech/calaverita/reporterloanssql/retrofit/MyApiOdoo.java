@@ -1,11 +1,14 @@
 package tech.calaverita.reporterloanssql.retrofit;
 
 import retrofit2.Call;
-import retrofit2.http.*;
+import retrofit2.http.Body;
+import retrofit2.http.Header;
+import retrofit2.http.POST;
 import tech.calaverita.reporterloanssql.retrofit.pojos.AsignacionBody;
 import tech.calaverita.reporterloanssql.retrofit.pojos.LiquidacionBody;
 import tech.calaverita.reporterloanssql.retrofit.pojos.PagoBody;
 import tech.calaverita.reporterloanssql.retrofit.pojos.ResponseBodyXms;
+import tech.calaverita.reporterloanssql.security.AuthCredentials;
 
 public interface MyApiOdoo {
 
@@ -23,4 +26,7 @@ public interface MyApiOdoo {
 
     @POST("api/v1/asignaciones")
     Call<ResponseBodyXms> asignacionCreateOne(@Header("Cookie") String userCookie, @Body AsignacionBody asignacion);
+
+    @POST("login")
+    Call<ResponseBodyXms> login(@Body AuthCredentials authCredentials);
 }

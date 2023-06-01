@@ -1,6 +1,5 @@
 package tech.calaverita.reporterloanssql.helpers;
 
-import org.springframework.stereotype.Component;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
 import tech.calaverita.reporterloanssql.pojos.PrestamoCobranzaPwa;
 import tech.calaverita.reporterloanssql.services.PrestamoService;

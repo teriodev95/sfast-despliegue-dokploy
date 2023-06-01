@@ -13,7 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 
-public class BalanceAgenciaScript{
+public class BalanceAgenciaScript {
     public static final Rectangle personalizado = new RectangleReadOnly(800.0F, 400.0F);
 
     public static BalanceAgencia balanceAgencia;

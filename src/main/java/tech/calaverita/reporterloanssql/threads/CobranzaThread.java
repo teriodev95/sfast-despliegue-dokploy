@@ -1,6 +1,5 @@
 package tech.calaverita.reporterloanssql.threads;
 
-import tech.calaverita.reporterloanssql.pojos.Cobranza;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.services.RepositoriesContainer;
 
