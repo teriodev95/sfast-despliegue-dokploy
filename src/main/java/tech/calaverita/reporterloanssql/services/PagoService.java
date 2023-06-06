@@ -3,6 +3,7 @@ package tech.calaverita.reporterloanssql.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tech.calaverita.reporterloanssql.models.PagoModel;
+import tech.calaverita.reporterloanssql.models.PagoVistaModel;
 import tech.calaverita.reporterloanssql.repositories.PagoRepository;
 
 import java.util.ArrayList;
@@ -24,7 +25,11 @@ public class PagoService {
         return pagoRepository.getPagoModelByPrestamoIdAnioAndSemana(prestamoId, anio, semana);
     }
 
-    public static ArrayList<PagoModel> getPagoModelByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
+    public static ArrayList<PagoModel> getPagoModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
         return pagoRepository.getPagoModelsByAgenciaAnioAndSemana(agencia, anio, semana);
+    }
+
+    public static ArrayList<PagoVistaModel> getPagoVistaModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
+        return pagoRepository.getPagoVistaModelsByAgenciaAnioAndSemana(agencia, anio, semana);
     }
 }

@@ -16,6 +16,9 @@ public interface PagoRepository extends CrudRepository<PagoModel, String> {
     @Query("SELECT pa FROM PagoModel pa WHERE pa.agente = :agencia AND pa.anio = :anio AND pa.semana = :semana AND pa.esPrimerPago = false")
     ArrayList<PagoModel> getPagoModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana);
 
+    @Query("SELECT pa FROM PagoVistaModel pa WHERE pa.agente = :agencia AND pa.anio = :anio AND pa.semana = :semana AND pa.esPrimerPago = false")
+    ArrayList<PagoVistaModel> getPagoVistaModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana);
+
     @Query("SELECT pa FROM PagoModel pa WHERE pa.prestamoId = :prestamoId ORDER BY pa.anio ASC, pa.semana ASC")
     ArrayList<PagoModel> getHistorialDePagos(String prestamoId);
 

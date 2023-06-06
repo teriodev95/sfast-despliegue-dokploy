@@ -1,16 +1,16 @@
-package tech.calaverita.reporterloanssql.pojos;
+package tech.calaverita.reporterloanssql.pojos.PWA;
 
 import lombok.Data;
-import tech.calaverita.reporterloanssql.enums.CobranzaStatusPwa;
+import tech.calaverita.reporterloanssql.enums.CobranzaStatusPWA;
 
 @Data
-public class PrestamoCobranzaPwa {
+public class PrestamoCobranzaPWA {
     private String nombre;
     private String prestamoId;
     private Double tarifa;
     private Double cobradoEnLaSemana = 0.0;
     private String diaDePago;
-    private Enum<CobranzaStatusPwa> status;
+    private Enum<CobranzaStatusPWA> status;
     private String fechaUltimoPago = "";
     private Double totalAPagar;
     private Double pagado;

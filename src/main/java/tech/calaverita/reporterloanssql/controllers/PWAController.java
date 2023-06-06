@@ -4,11 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.calaverita.reporterloanssql.helpers.PwaUtil;
+import tech.calaverita.reporterloanssql.helpers.PWAUtil;
 import tech.calaverita.reporterloanssql.models.CalendarioModel;
 import tech.calaverita.reporterloanssql.models.UsuarioModel;
-import tech.calaverita.reporterloanssql.pojos.CobranzaPwa;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
+import tech.calaverita.reporterloanssql.pojos.PWA.CobranzaPWA;
+import tech.calaverita.reporterloanssql.pojos.PWA.HistoricoPWA;
 import tech.calaverita.reporterloanssql.security.AuthCredentials;
 import tech.calaverita.reporterloanssql.services.*;
 
@@ -19,7 +20,7 @@ import java.util.Date;
 @CrossOrigin
 @RestController
 @RequestMapping("/xpress/v1/pwa")
-public class PwaController {
+public class PWAController {
     @Autowired
     private RepositoriesContainer repositoriesContainer;
     ObjectsContainer[] objectsContainers;
@@ -53,10 +54,10 @@ public class PwaController {
     }
 
     @GetMapping("/cobranza/{agencia}/{anio}/{semana}")
-    public ResponseEntity<CobranzaPwa> getCobranzaByAgenciaAnioAndSemana(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
-        CobranzaPwa cobranzaPwa = new CobranzaPwa();
+    public ResponseEntity<CobranzaPWA> getCobranzaByAgenciaAnioAndSemana(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
+        CobranzaPWA cobranzaPwa = new CobranzaPWA();
 
-        cobranzaPwa.setCobranza(PwaUtil.getPrestamoCobranzaPwasFromPrestamoModelsAndPagoModels(agencia, anio, semana));
+        cobranzaPwa.setCobranza(PWAUtil.getPrestamoCobranzaPwasFromPrestamoModelsAndPagoModels(agencia, anio, semana));
 
         return new ResponseEntity<>(cobranzaPwa, HttpStatus.OK);
     }
@@ -68,5 +69,17 @@ public class PwaController {
         CalendarioModel calendarioModel = CalendarioService.getSemanaActualXpressByFechaActual(fechaActual);
 
         return new ResponseEntity<>(calendarioModel, HttpStatus.OK);
+    }
+
+    @GetMapping("/historico/{agencia}/{anio}/{semana}")
+    public ResponseEntity<HistoricoPWA> getHistorico(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
+        HistoricoPWA historicoPWA = new HistoricoPWA();
+        historicoPWA.setHistorico(PWAUtil.getPagoHistoricoPWAsFromPagoVistaModels(agencia, anio, semana));
+
+        if (historicoPWA.getHistorico().isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(historicoPWA, HttpStatus.OK);
     }
 }

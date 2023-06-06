@@ -1,6 +1,6 @@
 package tech.calaverita.reporterloanssql.enums;
 
-public enum CobranzaStatusPwa {
+public enum CobranzaStatusPWA {
     Completado,
     Parcial,
     Pendiente,
