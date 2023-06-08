@@ -42,7 +42,7 @@ public class VisitaController {
         return new ResponseEntity<>(visitaModel, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/prestamo_id/{prestamoId}")
+    @GetMapping(path = "/prestamo-id/{prestamoId}")
     public ResponseEntity<ArrayList<VisitaModel>> getVisitaModelsByPrestamoId(@PathVariable(name = "prestamoId") String prestamoId) {
         ArrayList<VisitaModel> visitaModels = visitaService.getVisitaModelsByPrestamoId(prestamoId);
 
@@ -53,7 +53,7 @@ public class VisitaController {
         return new ResponseEntity<>(visitaModels, HttpStatus.OK);
     }
 
-    @PostMapping(path = "/create_one")
+    @PostMapping(path = "/create-one")
     public ResponseEntity<String> createVisitaModel(@RequestBody VisitaModel visitaModel) {
 
         ResponseEntity<String> responseEntity = VisitaUtil.checkVisit(visitaModel);
