@@ -1,9 +1,6 @@
 package tech.calaverita.reporterloanssql.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
@@ -75,4 +72,6 @@ public class PrestamoModel {
     private String depuracion;
     private String folioDePagare;
     private Double saldoAlIniciarSemana;
+    @Transient
+    private Double porcentajeCobrado;
 }

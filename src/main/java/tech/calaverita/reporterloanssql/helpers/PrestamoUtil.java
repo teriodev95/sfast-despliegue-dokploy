@@ -34,4 +34,12 @@ public class PrestamoUtil {
         return responseEntity;
     }
 
+    public static PrestamoModel asignarPorcentajeCobrado(PrestamoModel prestamoModel) {
+        Double totalAPagar = prestamoModel.getTotalAPagar();
+        Double cobrado = prestamoModel.getCobrado();
+
+        prestamoModel.setPorcentajeCobrado(Math.round(cobrado / totalAPagar * 100.0) / 100.0 * 100);
+
+        return prestamoModel;
+    }
 }

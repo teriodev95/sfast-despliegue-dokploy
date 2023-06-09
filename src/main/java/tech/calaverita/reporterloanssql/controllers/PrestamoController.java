@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.calaverita.reporterloanssql.helpers.PrestamoUtil;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
 import tech.calaverita.reporterloanssql.repositories.PrestamoRepository;
 
@@ -21,6 +22,8 @@ public class PrestamoController {
         if (prestamoModel == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+
+        PrestamoUtil.asignarPorcentajeCobrado(prestamoModel);
 
         return new ResponseEntity<>(prestamoModel, HttpStatus.OK);
     }
