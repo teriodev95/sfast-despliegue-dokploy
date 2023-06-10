@@ -21,10 +21,10 @@ public class PrestamoService {
     }
 
     public static ArrayList<PrestamoModel> getPrestamoModelsByAgenciaAnioAndSemanaToDashboard(String agencia, int anio, int semana) {
-        return prestamoRepository.getPrestamosToDashboardByAgenciaAnioAndSemana(agencia, anio, semana);
+        return prestamoRepository.getPrestamosByAgenciaAnioAndSemanaToDashboard(agencia, anio, semana);
     }
 
     public static ArrayList<PrestamoModel> getPrestamoModelsByAgenciaAnioAndSemanaToCobranza(String agencia, int anio, int semana) {
-        return prestamoRepository.getPrestamosToCobranzaByAgenciaAnioAndSemana(agencia, anio, semana);
+        return prestamoRepository.getPrestamosByAgenciaAnioAndSemanaToCobranza(agencia, anio, semana);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.reporterloanssql.helpers.PWAUtil;
 import tech.calaverita.reporterloanssql.models.CalendarioModel;
+import tech.calaverita.reporterloanssql.models.GerenciaModel;
 import tech.calaverita.reporterloanssql.models.UsuarioModel;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.pojos.PWA.CobranzaPWA;
@@ -24,6 +25,17 @@ public class PWAController {
     @Autowired
     private RepositoriesContainer repositoriesContainer;
     ObjectsContainer[] objectsContainers;
+
+    @GetMapping("/gerencias")
+    public ResponseEntity<ArrayList<GerenciaModel>> getGerenciaModels(){
+        ArrayList<GerenciaModel> gerenciaModels = GerenciaService.getGerenciaModels();
+
+        if(gerenciaModels.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(gerenciaModels, HttpStatus.OK);
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthCredentials login) {
@@ -47,9 +59,14 @@ public class PWAController {
         return new ResponseEntity<>(agencias, HttpStatus.OK);
     }
 
-    @GetMapping("/gerencias/{seguridad}")
-    public ResponseEntity<ArrayList<String>> getGerenciasBySeguridad(@PathVariable("seguridad") String seguridad) {
-        ArrayList<String> gerencias = GerenciaService.getGerenciasBySeguridad(seguridad);
+    @GetMapping("/gerencias/{filtro}")
+    public ResponseEntity<ArrayList<String>> getGerenciasBySeguridad(@PathVariable("filtro") String filtro) {
+        ArrayList<String> gerencias = GerenciaService.getGerenciasBySeguridad(filtro).isEmpty() ? GerenciaService.getGerenciasByRegional(filtro) : GerenciaService.getGerenciasBySeguridad(filtro);
+
+        if(gerencias.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
         return new ResponseEntity<>(gerencias, HttpStatus.OK);
     }
 

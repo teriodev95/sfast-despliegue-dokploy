@@ -17,87 +17,39 @@ public class DashboardThread implements Runnable {
     @Override
     public void run() {
         switch (opc) {
-            case 0:
-                getPrestamosToCobranza();
-                break;
-            case 1:
-                getPrestamosToDashboard();
-                break;
-            case 2:
-                getPagosToCobranza();
-                break;
-            case 3:
-                getPagosToDashboard();
-                break;
-            case 4:
-                getLiquidacionesBd();
-                break;
-            case 5:
-                getAsignaciones();
-                break;
-            case 6:
-                getAgencia();
-                break;
-            case 7:
-                getClientes();
-                break;
-            case 8:
-                getDebitoMiercoles();
-                break;
-            case 9:
-                getDebitoJueves();
-                break;
-            case 10:
-                getDebitoViernes();
-                break;
-            case 11:
-                getDebitoTotal();
-                break;
-            case 12:
-                getLiquidaciones();
-                break;
-            case 13:
-                getNumeroDeLiquidaciones();
-                break;
-            case 14:
-                getTotalDeDescuento();
-                break;
-            case 15:
-                getClientesCobrados();
-                break;
-            case 16:
-                getNoPagos();
-                break;
-            case 17:
-                getPagosReducidos();
-                break;
-            case 18:
-                getMontoExcedente();
-                break;
-            case 19:
-                getCobranzaTotal();
-                break;
-            case 20:
-                getTotalCobranzaPura();
-                break;
-            case 21:
-                getEfectivoEnCampo();
-                break;
-            case 22:
-                getRendmiento();
-                break;
-            case 23:
-                getMontoDeDebitoFaltante();
-                break;
+            case 0 -> getPrestamosToCobranza();
+            case 1 -> getPrestamosToDashboard();
+            case 2 -> getPagosToCobranza();
+            case 3 -> getPagosToDashboard();
+            case 4 -> getLiquidacionesBd();
+            case 5 -> getAsignaciones();
+            case 6 -> getAgencia();
+            case 7 -> getClientes();
+            case 8 -> getDebitoMiercoles();
+            case 9 -> getDebitoJueves();
+            case 10 -> getDebitoViernes();
+            case 11 -> getDebitoTotal();
+            case 12 -> getLiquidaciones();
+            case 13 -> getNumeroDeLiquidaciones();
+            case 14 -> getTotalDeDescuento();
+            case 15 -> getClientesCobrados();
+            case 16 -> getNoPagos();
+            case 17 -> getPagosReducidos();
+            case 18 -> getMontoExcedente();
+            case 19 -> getCobranzaTotal();
+            case 20 -> getTotalCobranzaPura();
+            case 21 -> getEfectivoEnCampo();
+            case 22 -> getRendmiento();
+            case 23 -> getMontoDeDebitoFaltante();
         }
     }
 
     public void getPrestamosToCobranza() {
-        objectsContainer.setPrestamosToCobranza(repositoriesContainer.getPrestamoRepository().getPrestamosToCobranzaByAgenciaAnioAndSemana(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        objectsContainer.setPrestamosToCobranza(repositoriesContainer.getPrestamoRepository().getPrestamosByAgenciaAnioAndSemanaToCobranza(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
     public void getPrestamosToDashboard() {
-        objectsContainer.setPrestamosToDashboard(repositoriesContainer.getPrestamoRepository().getPrestamosToDashboardByAgenciaAnioAndSemana(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        objectsContainer.setPrestamosToDashboard(repositoriesContainer.getPrestamoRepository().getPrestamosByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
     public void getPagosToCobranza() {

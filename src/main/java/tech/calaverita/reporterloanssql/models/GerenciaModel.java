@@ -20,4 +20,6 @@ public class GerenciaModel {
     private String chatIdNumeros;
     @Column(name = "seguridadid")
     private Integer seguridadId;
+    @Column(name = "sucursalid")
+    private Integer sucursalId;
 }
