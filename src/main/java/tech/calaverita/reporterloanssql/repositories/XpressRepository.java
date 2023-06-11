@@ -8,12 +8,6 @@ import tech.calaverita.reporterloanssql.models.UsuarioModel;
 
 @Repository
 public interface XpressRepository extends CrudRepository<PrestamoModel, String> {
-    @Query("SELECT usu " +
-            "FROM UsuarioModel usu " +
-            "WHERE usu.usuario = :username " +
-            "AND usu.pin = :password")
-    UsuarioModel login(String username, String password);
-
     @Query("SELECT pr.agente AS agencia, " +
             "COUNT(pr) AS clientes, " +
             "SUM(CASE WHEN pr.diaDePago = 'MIERCOLES' THEN CASE WHEN pa.cierraCon < pr.tarifa THEN pa.cierraCon ELSE pr.tarifa END ELSE 0 END) AS debitoMiercoles, " +

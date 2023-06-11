@@ -15,8 +15,4 @@ public class XpressService {
     public XpressService(XpressRepository xpressRepository) {
         XpressService.xpressRepository = xpressRepository;
     }
-
-    public static UsuarioModel login(String username, String password){
-        return xpressRepository.login(username, password);
-    }
 }

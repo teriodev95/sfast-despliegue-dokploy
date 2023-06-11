@@ -7,5 +7,8 @@ import tech.calaverita.reporterloanssql.models.SucursalModel;
 
 @Repository
 public interface SucursalRepository extends CrudRepository<SucursalModel, Integer> {
-
+    @Query("SELECT suc " +
+            "FROM SucursalModel suc " +
+            "WHERE suc.sucursalId = :sucursalId")
+    SucursalModel findOneBySucursalId(int sucursalId);
 }

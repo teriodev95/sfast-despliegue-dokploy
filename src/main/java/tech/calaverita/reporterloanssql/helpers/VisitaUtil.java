@@ -2,11 +2,9 @@ package tech.calaverita.reporterloanssql.helpers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import tech.calaverita.reporterloanssql.models.VisitaModel;
 import tech.calaverita.reporterloanssql.services.VisitaService;
 
-@Component
 public class VisitaUtil {
     public static boolean isVisita(String visitaId) {
         VisitaModel visitaModel = VisitaService.getVisitaModelByVisitaId(visitaId);

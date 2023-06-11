@@ -102,7 +102,7 @@ public class PagoController {
             pagoRepository.save(pagoModel);
 
             AgenciaModel agencia = agenciaRepository.getAgenciaModelByAgenciaId(pago.getAgente());
-            GerenciaModel gerencia = gerenciaRepository.getGerenciaModelByGerenciaId(agencia.getGerenciaId());
+            GerenciaModel gerencia = gerenciaRepository.findOneByGerenciaId(agencia.getGerenciaId());
             PagoUtil.sendPayMessage(prestamo, pagoModel, gerencia);
 
             Call<ResponseBodyXms> call = RetrofitOdoo.getInstance().getApi().pagoCreateOne(session, new PagoBody(new PagoList(pagoModel)));
@@ -185,7 +185,7 @@ public class PagoController {
                     pagoRepository.save(pagoModel);
 
                     AgenciaModel agencia = agenciaRepository.getAgenciaModelByAgenciaId(pago.getAgente());
-                    GerenciaModel gerencia = gerenciaRepository.getGerenciaModelByGerenciaId(agencia.getGerenciaId());
+                    GerenciaModel gerencia = gerenciaRepository.findOneByGerenciaId(agencia.getGerenciaId());
                     PagoUtil.sendPayMessage(prestamo, pagoModel, gerencia);
 
                     Call<ResponseBodyXms> call = RetrofitOdoo.getInstance().getApi().pagoCreateOne(session, new PagoBody(new PagoList(pagoModel)));

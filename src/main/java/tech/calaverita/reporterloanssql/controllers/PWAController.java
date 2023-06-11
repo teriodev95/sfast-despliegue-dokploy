@@ -39,7 +39,7 @@ public class PWAController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthCredentials login) {
-        UsuarioModel usuarioModel = XpressService.login(login.getUsername(), login.getPassword());
+        UsuarioModel usuarioModel = UsuarioService.findOneByUsuarioAndPin(login.getUsername(), login.getPassword());
 
         if (usuarioModel == null) {
             return new ResponseEntity<>("Usuario y/o contraseña incorrecto", HttpStatus.BAD_REQUEST);
@@ -61,7 +61,7 @@ public class PWAController {
 
     @GetMapping("/gerencias/{filtro}")
     public ResponseEntity<ArrayList<String>> getGerenciasBySeguridad(@PathVariable("filtro") String filtro) {
-        ArrayList<String> gerencias = GerenciaService.getGerenciasBySeguridad(filtro).isEmpty() ? GerenciaService.getGerenciasByRegional(filtro) : GerenciaService.getGerenciasBySeguridad(filtro);
+        ArrayList<String> gerencias = GerenciaService.findManyBySeguridad(filtro).isEmpty() ? GerenciaService.findManyByRegional(filtro) : GerenciaService.findManyBySeguridad(filtro);
 
         if(gerencias.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

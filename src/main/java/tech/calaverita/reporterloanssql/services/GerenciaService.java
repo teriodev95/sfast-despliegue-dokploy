@@ -18,12 +18,12 @@ public class GerenciaService {
         GerenciaService.gerenciaRepository = gerenciaRepository;
     }
 
-    public static ArrayList<String> getGerenciasBySeguridad(String seguridad) {
-        return gerenciaRepository.getGerenciasBySeguridad(seguridad);
+    public static ArrayList<String> findManyBySeguridad(String seguridad) {
+        return gerenciaRepository.findManyBySeguridad(seguridad);
     }
 
-    public static ArrayList<String> getGerenciasByRegional(String regional) {
-        return gerenciaRepository.getGerenciasByRegional(regional);
+    public static ArrayList<String> findManyByRegional(String regional) {
+        return gerenciaRepository.findManyByRegional(regional);
     }
 
     public static ArrayList<GerenciaModel> getGerenciaModels(){
@@ -32,5 +32,9 @@ public class GerenciaService {
 
     public static ArrayList<String> getGerencias() {
         return gerenciaRepository.getGerencias();
+    }
+
+    public static GerenciaModel findOneByGerenciaId(String gerenciaId){
+        return gerenciaRepository.findOneByGerenciaId(gerenciaId);
     }
 }

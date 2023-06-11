@@ -6,10 +6,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.reporterloanssql.helpers.CobranzaUtil;
 import tech.calaverita.reporterloanssql.helpers.DashboardUtil;
+import tech.calaverita.reporterloanssql.helpers.XpressUtil;
+import tech.calaverita.reporterloanssql.models.UsuarioModel;
 import tech.calaverita.reporterloanssql.pojos.Cobranza;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
+import tech.calaverita.reporterloanssql.pojos.LoginResponse;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
+import tech.calaverita.reporterloanssql.security.AuthCredentials;
 import tech.calaverita.reporterloanssql.services.RepositoriesContainer;
+import tech.calaverita.reporterloanssql.services.UsuarioService;
 
 import java.util.ArrayList;
 
@@ -19,6 +24,24 @@ public class XpressController {
     @Autowired
     private RepositoriesContainer repositoriesContainer;
     ObjectsContainer[] objectsContainers;
+
+    @PostMapping(path = "/login")
+    public @ResponseBody ResponseEntity<?> login(@RequestBody AuthCredentials login) {
+        UsuarioModel usuarioModel = UsuarioService.findOneByUsuarioAndPin(login.getUsername(), login.getPassword());
+        LoginResponse loginResponse = new LoginResponse();
+
+        if (usuarioModel == null) {
+            return new ResponseEntity<>("Usuario y/o contraseña incorrecto", HttpStatus.BAD_REQUEST);
+        }
+
+        loginResponse.setSolicitante(usuarioModel);
+
+        if (usuarioModel.getTipo().equals("Agente")) {
+            XpressUtil.setInvolucradosLoginResponse(loginResponse);
+        }
+
+        return new ResponseEntity<>(loginResponse, HttpStatus.OK);
+    }
 
     @GetMapping(path = "/cobranza/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<Cobranza> getCobranzaByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
