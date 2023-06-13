@@ -1,4 +1,4 @@
-package tech.calaverita.reporterloanssql.pojos.PWA;
+package tech.calaverita.reporterloanssql.pojos.pwa;
 
 import lombok.Data;
 import tech.calaverita.reporterloanssql.enums.CobranzaStatusPWA;

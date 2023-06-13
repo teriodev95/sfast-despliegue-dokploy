@@ -4,7 +4,7 @@ import tech.calaverita.reporterloanssql.enums.CobranzaStatusPWA;
 import tech.calaverita.reporterloanssql.models.CalendarioModel;
 import tech.calaverita.reporterloanssql.models.PagoModel;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
-import tech.calaverita.reporterloanssql.pojos.PWA.PrestamoCobranzaPWA;
+import tech.calaverita.reporterloanssql.pojos.pwa.PrestamoCobranzaPWA;
 import tech.calaverita.reporterloanssql.services.CalendarioService;
 import tech.calaverita.reporterloanssql.services.PagoService;
 

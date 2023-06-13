@@ -4,16 +4,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.calaverita.reporterloanssql.helpers.PWAUtil;
+import tech.calaverita.reporterloanssql.helpers.DashboardPorDiaUtil;
+import tech.calaverita.reporterloanssql.helpers.pwa.PWAUtil;
 import tech.calaverita.reporterloanssql.models.CalendarioModel;
 import tech.calaverita.reporterloanssql.models.GerenciaModel;
 import tech.calaverita.reporterloanssql.models.UsuarioModel;
+import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
-import tech.calaverita.reporterloanssql.pojos.PWA.CobranzaPWA;
-import tech.calaverita.reporterloanssql.pojos.PWA.HistoricoPWA;
+import tech.calaverita.reporterloanssql.pojos.pwa.CobranzaPWA;
+import tech.calaverita.reporterloanssql.pojos.pwa.HistoricoPWA;
 import tech.calaverita.reporterloanssql.security.AuthCredentials;
 import tech.calaverita.reporterloanssql.services.*;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,10 +30,10 @@ public class PWAController {
     ObjectsContainer[] objectsContainers;
 
     @GetMapping("/gerencias")
-    public ResponseEntity<ArrayList<GerenciaModel>> getGerenciaModels(){
+    public ResponseEntity<ArrayList<GerenciaModel>> getGerenciaModels() {
         ArrayList<GerenciaModel> gerenciaModels = GerenciaService.getGerenciaModels();
 
-        if(gerenciaModels.isEmpty()){
+        if (gerenciaModels.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -63,7 +66,7 @@ public class PWAController {
     public ResponseEntity<ArrayList<String>> getGerenciasBySeguridad(@PathVariable("filtro") String filtro) {
         ArrayList<String> gerencias = GerenciaService.findManyBySeguridad(filtro).isEmpty() ? GerenciaService.findManyByRegional(filtro) : GerenciaService.findManyBySeguridad(filtro);
 
-        if(gerencias.isEmpty()){
+        if (gerencias.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -98,5 +101,36 @@ public class PWAController {
         }
 
         return new ResponseEntity<>(historicoPWA, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/dashboard-fecha/{agencia}/{dia}-{mes}-{anio}")
+    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgencia(@PathVariable("agencia") String agencia, @PathVariable("dia") String dia, @PathVariable("mes") String mes, @PathVariable("anio") String anio) {
+        Dashboard dashboard = new Dashboard();
+        ObjectsContainer objectsContainer = new ObjectsContainer();
+
+        dashboard.setAgencia(agencia);
+
+        if(dia.length() == 1){
+            dia = "0" + dia;
+        }
+
+        if(mes.length() == 1){
+            mes = "0" + mes;
+        }
+
+        objectsContainer.setDashboard(dashboard);
+        objectsContainer.setFechaPago(anio + "-" + mes + "-" + dia);
+
+        try{
+            objectsContainer.setDia(new SimpleDateFormat("EEEE").format(new SimpleDateFormat("yyyy-MM-dd").parse(objectsContainer.getFechaPago())));
+        }catch (ParseException e){
+
+        }
+
+        DashboardPorDiaUtil dashboardPorDiaUtil = new DashboardPorDiaUtil(repositoriesContainer, objectsContainer);
+
+        dashboardPorDiaUtil.run();
+
+        return new ResponseEntity<>(objectsContainer.getDashboard(), HttpStatus.OK);
     }
 }

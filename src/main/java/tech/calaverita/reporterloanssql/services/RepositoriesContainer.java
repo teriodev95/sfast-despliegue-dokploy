@@ -17,4 +17,5 @@ public class RepositoriesContainer {
     private XpressRepository xpressRepository;
     private GerenciaRepository gerenciaRepository;
     private AgenciaRepository agenciaRepository;
+    private CalendarioRepository calendarioRepository;
 }

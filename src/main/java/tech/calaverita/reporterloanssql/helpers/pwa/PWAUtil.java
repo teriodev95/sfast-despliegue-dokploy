@@ -1,16 +1,16 @@
-package tech.calaverita.reporterloanssql.helpers;
+package tech.calaverita.reporterloanssql.helpers.pwa;
 
 import tech.calaverita.reporterloanssql.models.PagoModel;
 import tech.calaverita.reporterloanssql.models.PagoVistaModel;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
-import tech.calaverita.reporterloanssql.pojos.PWA.PagoHistoricoPWA;
-import tech.calaverita.reporterloanssql.pojos.PWA.PagoPWA;
-import tech.calaverita.reporterloanssql.pojos.PWA.PrestamoCobranzaPWA;
+import tech.calaverita.reporterloanssql.pojos.pwa.PagoHistoricoPWA;
+import tech.calaverita.reporterloanssql.pojos.pwa.PagoPWA;
+import tech.calaverita.reporterloanssql.pojos.pwa.PrestamoCobranzaPWA;
 import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.PrestamoService;
 import tech.calaverita.reporterloanssql.threads.CobranzaPWAThread;
-import tech.calaverita.reporterloanssql.threads.PagoHistoricoPWAThread;
-import tech.calaverita.reporterloanssql.threads.PagoPWAThread;
+import tech.calaverita.reporterloanssql.threads.pwa.PagoHistoricoPWAThread;
+import tech.calaverita.reporterloanssql.threads.pwa.PagoPWAThread;
 
 import java.util.ArrayList;
 

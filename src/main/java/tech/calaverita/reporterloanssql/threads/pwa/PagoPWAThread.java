@@ -1,7 +1,7 @@
-package tech.calaverita.reporterloanssql.threads;
+package tech.calaverita.reporterloanssql.threads.pwa;
 
 import tech.calaverita.reporterloanssql.models.PagoModel;
-import tech.calaverita.reporterloanssql.pojos.PWA.PagoPWA;
+import tech.calaverita.reporterloanssql.pojos.pwa.PagoPWA;
 
 public class PagoPWAThread implements Runnable {
     PagoModel pagoModel;

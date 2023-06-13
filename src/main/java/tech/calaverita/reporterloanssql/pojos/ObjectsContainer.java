@@ -7,12 +7,16 @@ import java.util.ArrayList;
 
 @Data
 public class ObjectsContainer {
+    private String fechaPago;
+    private String dia;
+    private CalendarioModel calendarioModel;
     private Cobranza cobranza;
     private Dashboard dashboard;
     private ArrayList<PrestamoModel> prestamosToCobranza;
     private ArrayList<PagoVistaModel> pagosVistaToCobranza;
     private ArrayList<PrestamoModel> prestamosToDashboard;
     private ArrayList<PagoVistaModel> pagosVistaToDashboard;
+    private ArrayList<PagoModel> pagoModelsToDashboard;
     private ArrayList<PagoModel> pagos;
     private ArrayList<Cobranza> cobranzas;
     private ArrayList<Dashboard> dashboards;

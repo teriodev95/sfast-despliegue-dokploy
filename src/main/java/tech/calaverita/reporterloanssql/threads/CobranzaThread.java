@@ -59,7 +59,7 @@ public class CobranzaThread implements Runnable {
     }
 
     public void getPagos() {
-        objectsContainer.setPagosVistaToCobranza(repositoriesContainer.getPagoRepository().getPagosToCobranza(objectsContainer.getCobranza().getAgencia(), objectsContainer.getCobranza().getAnio(), objectsContainer.getCobranza().getSemana()));
+        objectsContainer.setPagosVistaToCobranza(repositoriesContainer.getPagoRepository().getPagosByAgenciaAnioAndSemanaToCobranza(objectsContainer.getCobranza().getAgencia(), objectsContainer.getCobranza().getAnio(), objectsContainer.getCobranza().getSemana()));
     }
 
     public void getDebitoMiercoles() {

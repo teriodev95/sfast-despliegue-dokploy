@@ -41,6 +41,7 @@ public class DashboardThread implements Runnable {
             case 21 -> getEfectivoEnCampo();
             case 22 -> getRendmiento();
             case 23 -> getMontoDeDebitoFaltante();
+            case 24 -> getMultas();
         }
     }
 
@@ -53,16 +54,16 @@ public class DashboardThread implements Runnable {
     }
 
     public void getPagosToCobranza() {
-        objectsContainer.setPagosVistaToCobranza(repositoriesContainer.getPagoRepository().getPagosToCobranza(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        objectsContainer.setPagosVistaToCobranza(repositoriesContainer.getPagoRepository().getPagosByAgenciaAnioAndSemanaToCobranza(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
     public void getPagosToDashboard() {
-        objectsContainer.setPagosVistaToDashboard(repositoriesContainer.getPagoRepository().getPagosToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        objectsContainer.setPagosVistaToDashboard(repositoriesContainer.getPagoRepository().getPagosByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
     public void getLiquidacionesBd() {
-        objectsContainer.setLiquidaciones(repositoriesContainer.getLiquidacionRepository().getLiquidacionesToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
-        objectsContainer.setPagosOfLiquidaciones(repositoriesContainer.getPagoRepository().getPagosOfLiquidacionesToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        objectsContainer.setLiquidaciones(repositoriesContainer.getLiquidacionRepository().getLiquidacionesByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        objectsContainer.setPagosOfLiquidaciones(repositoriesContainer.getPagoRepository().getPagosOfLiquidacionesByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
     public void getAsignaciones() {
@@ -86,7 +87,7 @@ public class DashboardThread implements Runnable {
     }
 
     public void getMultas() {
-
+        objectsContainer.getDashboard().setMultas(0.0);
     }
 
     public void getNoPagos() {

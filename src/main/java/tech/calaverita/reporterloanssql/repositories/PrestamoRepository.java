@@ -33,4 +33,13 @@ public interface PrestamoRepository extends CrudRepository<PrestamoModel, String
             "AND pa.semana = :semana " +
             "AND pa.esPrimerPago = false")
     ArrayList<PrestamoModel> getPrestamosByAgenciaAnioAndSemanaToDashboard(String agencia, int anio, int semana);
+
+    @Query("SELECT distinct(pr)" +
+            "FROM PrestamoModel pr " +
+            "INNER JOIN PagoModel pa " +
+            "ON pr.prestamoId = pa.prestamoId " +
+            "WHERE pa.agente = :agencia " +
+            "AND pa.fechaPago like :fechaPago% " +
+            "AND pa.esPrimerPago = false")
+    ArrayList<PrestamoModel> getPrestamosByAgenciaAndFechaPagoToDashboard(String agencia, String fechaPago);
 }

@@ -33,7 +33,7 @@ public interface PagoRepository extends CrudRepository<PagoModel, String> {
             "AND pa.anio = :anio " +
             "AND pa.semana = :semana - 1 " +
             "AND pa.cierraCon > 0")
-    ArrayList<PagoVistaModel> getPagosToCobranza(String agencia, int anio, int semana);
+    ArrayList<PagoVistaModel> getPagosByAgenciaAnioAndSemanaToCobranza(String agencia, int anio, int semana);
 
     @Query("SELECT pa " +
             "FROM PrestamoModel pr " +
@@ -43,7 +43,16 @@ public interface PagoRepository extends CrudRepository<PagoModel, String> {
             "AND pa.anio = :anio " +
             "AND pa.semana = :semana " +
             "AND pa.esPrimerPago = false")
-    ArrayList<PagoVistaModel> getPagosToDashboard(String agencia, int anio, int semana);
+    ArrayList<PagoVistaModel> getPagosByAgenciaAnioAndSemanaToDashboard(String agencia, int anio, int semana);
+
+    @Query("SELECT pa " +
+            "FROM PrestamoModel pr " +
+            "INNER JOIN PagoModel pa " +
+            "ON pr.prestamoId = pa.prestamoId " +
+            "WHERE pa.agente = :agencia " +
+            "AND pa.fechaPago like :fechaPago% " +
+            "AND pa.esPrimerPago = false")
+    ArrayList<PagoModel> getPagosByAgenciaAndFechaPagoToDashboard(String agencia, String fechaPago);
 
     @Query("SELECT pa " +
             "FROM PagoModel pa " +
@@ -52,7 +61,15 @@ public interface PagoRepository extends CrudRepository<PagoModel, String> {
             "WHERE pa.agente = :agencia " +
             "AND li.anio = :anio " +
             "AND li.semana = :semana")
-    ArrayList<PagoModel> getPagosOfLiquidacionesToDashboard(String agencia, int anio, int semana);
+    ArrayList<PagoModel> getPagosOfLiquidacionesByAgenciaAnioAndSemanaToDashboard(String agencia, int anio, int semana);
+
+    @Query("SELECT pa " +
+            "FROM PagoModel pa " +
+            "INNER JOIN LiquidacionModel li " +
+            "ON li.pagoId = pa.pagoId " +
+            "WHERE pa.agente = :agencia " +
+            "AND pa.fechaPago like :fechaPago%")
+    ArrayList<PagoModel> getPagosOfLiquidacionesByAgenciaAndFechaPagoToDashboard(String agencia, String fechaPago);
 
     @Query("SELECT pa " +
             "FROM PagoModel pa " +

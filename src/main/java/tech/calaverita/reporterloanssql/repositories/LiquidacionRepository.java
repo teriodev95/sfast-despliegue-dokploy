@@ -14,5 +14,13 @@ public interface LiquidacionRepository extends CrudRepository<LiquidacionModel, 
             "WHERE pa.agente = :agencia " +
             "AND li.anio = :anio " +
             "AND li.semana = :semana")
-    ArrayList<LiquidacionModel> getLiquidacionesToDashboard(String agencia, int anio, int semana);
+    ArrayList<LiquidacionModel> getLiquidacionesByAgenciaAnioAndSemanaToDashboard(String agencia, int anio, int semana);
+
+    @Query("SELECT li " +
+            "FROM LiquidacionModel li " +
+            "INNER JOIN PagoVistaModel pa " +
+            "ON li.pagoId = pa.pagoId " +
+            "WHERE pa.agente = :agencia " +
+            "AND pa.fechaPago like :fechaPago%")
+    ArrayList<LiquidacionModel> getLiquidacionesByAgenciaAndFechaPagoToDashboard(String agencia, String fechaPago);
 }
