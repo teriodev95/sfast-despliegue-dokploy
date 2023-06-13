@@ -78,9 +78,9 @@ public class DashboardPorDiaPWAThread implements Runnable {
 
     public void getClientes() {
         switch (objectsContainer.getDia()) {
-            case "miércoles" -> objectsContainer.getDashboard().setClientes(getClientesMiercoles());
-            case "jueves" -> objectsContainer.getDashboard().setClientes(getClientesJueves());
-            case "viernes" -> objectsContainer.getDashboard().setClientes(getClientesViernes());
+            case "miércoles", "Miércoles", "wednesday", "Wednesday" -> objectsContainer.getDashboard().setClientes(getClientesMiercoles());
+            case "jueves", "Jueves", "thursday", "Thursday" -> objectsContainer.getDashboard().setClientes(getClientesJueves());
+            case "viernes", "Viernes", "friday", "Friday" -> objectsContainer.getDashboard().setClientes(getClientesViernes());
             default -> objectsContainer.getDashboard().setClientes(null);
         }
     }
