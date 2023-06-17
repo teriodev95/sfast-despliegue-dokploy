@@ -48,6 +48,7 @@ public class PagoUtil {
         pagoModel.setCreatedAt(pagoConLiquidacion.getCreatedAt());
         pagoModel.setUpdatedAt(pagoConLiquidacion.getUpdatedAt());
         pagoModel.setLog(pagoConLiquidacion.getLog());
+        pagoModel.setQuienPago(pagoConLiquidacion.getQuienPago());
 
         return pagoModel;
     }
