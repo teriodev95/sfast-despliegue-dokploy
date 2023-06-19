@@ -80,6 +80,7 @@ public class PagoUtil {
             jsonPago.put("createdAt", pago.getCreatedAt());
             jsonPago.put("updatedAt", pago.getUpdatedAt());
             jsonPago.put("log", pago.getLog());
+            jsonPago.put("quienPago", pago.getQuienPago());
         } catch (JSONException e) {
             e.printStackTrace();
         }
