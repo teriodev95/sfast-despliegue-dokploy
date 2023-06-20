@@ -209,10 +209,9 @@ public class PagoController {
         return new ResponseEntity<>(respuesta, HttpStatus.OK);
     }
 
-    @CrossOrigin
     @GetMapping(path = "/history/{prestamoId}")
-    public @ResponseBody ResponseEntity<ArrayList<PagoModel>> getHistorialDePagos(@PathVariable("prestamoId") String prestamoId) {
-        ArrayList<PagoModel> pagos = pagoRepository.getHistorialDePagos(prestamoId);
+    public @ResponseBody ResponseEntity<ArrayList<PagoVistaModel>> getHistorialDePagos(@PathVariable("prestamoId") String prestamoId) {
+        ArrayList<PagoVistaModel> pagos = pagoRepository.getHistorialDePagosToApp(prestamoId);
 
         if (pagos.isEmpty())
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

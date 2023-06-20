@@ -1,4 +1,4 @@
-package tech.calaverita.reporterloanssql.threads;
+package tech.calaverita.reporterloanssql.threads.pwa;
 
 import tech.calaverita.reporterloanssql.enums.CobranzaStatusPWA;
 import tech.calaverita.reporterloanssql.models.CalendarioModel;

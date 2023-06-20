@@ -3,12 +3,14 @@ package tech.calaverita.reporterloanssql.helpers.pwa;
 import tech.calaverita.reporterloanssql.models.PagoModel;
 import tech.calaverita.reporterloanssql.models.PagoVistaModel;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
+import tech.calaverita.reporterloanssql.models.VisitaModel;
 import tech.calaverita.reporterloanssql.pojos.pwa.PagoHistoricoPWA;
 import tech.calaverita.reporterloanssql.pojos.pwa.PagoPWA;
 import tech.calaverita.reporterloanssql.pojos.pwa.PrestamoCobranzaPWA;
 import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.PrestamoService;
-import tech.calaverita.reporterloanssql.threads.CobranzaPWAThread;
+import tech.calaverita.reporterloanssql.services.VisitaService;
+import tech.calaverita.reporterloanssql.threads.pwa.CobranzaPWAThread;
 import tech.calaverita.reporterloanssql.threads.pwa.PagoHistoricoPWAThread;
 import tech.calaverita.reporterloanssql.threads.pwa.PagoPWAThread;
 
@@ -68,7 +70,7 @@ public class PWAUtil {
         ArrayList<PagoVistaModel> pagoVistaModels = PagoService.getPagoVistaModelsByAgenciaAnioAndSemana(agencia, anio, semana);
         ArrayList<PagoHistoricoPWA> pagoHistoricoPWAs = new ArrayList<>();
         ArrayList<PagoModel> pagoModels = PagoService.getPagoModelsByAgenciaAnioAndSemana(agencia, anio, semana);
-        ;
+        ArrayList<VisitaModel> visitaModels = VisitaService.findVisitaModelsByAgenciaAnioAndSemana(agencia, anio, semana);
 
         Thread[] threads = new Thread[pagoVistaModels.size()];
         int indice = 0;
@@ -78,7 +80,7 @@ public class PWAUtil {
 
             pagoHistoricoPWAs.add(pagoHistoricoPWA);
 
-            threads[indice] = new Thread(new PagoHistoricoPWAThread(pagoVistaModel, pagoHistoricoPWA, pagoModels));
+            threads[indice] = new Thread(new PagoHistoricoPWAThread(pagoVistaModel, pagoHistoricoPWA, pagoModels, visitaModels));
             threads[indice].start();
             indice++;
         }

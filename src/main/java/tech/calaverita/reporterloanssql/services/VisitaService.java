@@ -17,21 +17,26 @@ public class VisitaService {
     }
 
     public static ArrayList<VisitaModel> getVisitaModels() {
-
         return visitaRepository.getVisitaModels();
     }
 
     public static VisitaModel getVisitaModelByVisitaId(String visitaId) {
-
         return visitaRepository.getVisitaModelByVisitaId(visitaId);
     }
 
     public static ArrayList<VisitaModel> getVisitaModelsByPrestamoId(String prestamoId) {
-
         return visitaRepository.getVisitaModelsByPrestamoId(prestamoId);
     }
 
     public static void createVisitaModel(VisitaModel visitaModel) {
         visitaRepository.save(visitaModel);
+    }
+
+    public static ArrayList<VisitaModel> findVisitaModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana){
+        return visitaRepository.findVisitaModelsByAgenciaAnioAndSemana(agencia, anio, semana);
+    }
+
+    public static ArrayList<VisitaModel> findVisitaModelsByPrestamoIdAnioAndSemana(String prestamoId, int anio, int semana){
+        return visitaRepository.findVisitaModelsByPrestamoIdAnioAndSemana(prestamoId, anio, semana);
     }
 }

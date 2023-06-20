@@ -32,4 +32,8 @@ public class PagoService {
     public static ArrayList<PagoVistaModel> getPagoVistaModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
         return pagoRepository.getPagoVistaModelsByAgenciaAnioAndSemana(agencia, anio, semana);
     }
+
+    public static ArrayList<PagoVistaModel> getHistorialDePagosToPGS(String prestamoId){
+        return pagoRepository.getHistorialDePagosToPGS(prestamoId);
+    }
 }

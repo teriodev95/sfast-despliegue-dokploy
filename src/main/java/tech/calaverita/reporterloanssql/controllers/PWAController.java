@@ -6,9 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.reporterloanssql.helpers.DashboardPorDiaUtil;
 import tech.calaverita.reporterloanssql.helpers.pwa.PWAUtil;
-import tech.calaverita.reporterloanssql.models.CalendarioModel;
-import tech.calaverita.reporterloanssql.models.GerenciaModel;
-import tech.calaverita.reporterloanssql.models.UsuarioModel;
+import tech.calaverita.reporterloanssql.models.*;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.pojos.pwa.CobranzaPWA;
@@ -27,7 +25,6 @@ import java.util.Date;
 public class PWAController {
     @Autowired
     private RepositoriesContainer repositoriesContainer;
-    ObjectsContainer[] objectsContainers;
 
     @GetMapping("/gerencias")
     public ResponseEntity<ArrayList<GerenciaModel>> getGerenciaModels() {
@@ -132,5 +129,15 @@ public class PWAController {
         dashboardPorDiaUtil.run();
 
         return new ResponseEntity<>(objectsContainer.getDashboard(), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/history/{prestamoId}")
+    public @ResponseBody ResponseEntity<ArrayList<PagoVistaModel>> getHistorialDePagos(@PathVariable("prestamoId") String prestamoId) {
+        ArrayList<PagoVistaModel> pagos = PagoService.getHistorialDePagosToPGS(prestamoId);
+
+        if (pagos.isEmpty())
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        return new ResponseEntity<>(pagos, HttpStatus.OK);
     }
 }
