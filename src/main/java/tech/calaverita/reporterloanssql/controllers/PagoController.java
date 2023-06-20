@@ -39,7 +39,7 @@ public class PagoController {
 
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<ArrayList<PagoModel>> getPagosByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
-        ArrayList<PagoModel> pagos = pagoRepository.getPagoModelsByAgenciaAnioAndSemana(agencia, anio, semana);
+        ArrayList<PagoModel> pagos = pagoRepository.findPagoModelsByAgenciaAnioAndSemana(agencia, anio, semana);
 
         if (pagos.isEmpty())
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -209,6 +209,7 @@ public class PagoController {
         return new ResponseEntity<>(respuesta, HttpStatus.OK);
     }
 
+    @CrossOriging
     @GetMapping(path = "/history/{prestamoId}")
     public @ResponseBody ResponseEntity<ArrayList<PagoVistaModel>> getHistorialDePagos(@PathVariable("prestamoId") String prestamoId) {
         ArrayList<PagoVistaModel> pagos = pagoRepository.getHistorialDePagosToApp(prestamoId);

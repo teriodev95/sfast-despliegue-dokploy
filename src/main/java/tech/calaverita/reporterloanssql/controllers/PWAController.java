@@ -6,7 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.reporterloanssql.helpers.DashboardPorDiaUtil;
 import tech.calaverita.reporterloanssql.helpers.pwa.PWAUtil;
-import tech.calaverita.reporterloanssql.models.*;
+import tech.calaverita.reporterloanssql.models.CalendarioModel;
+import tech.calaverita.reporterloanssql.models.GerenciaModel;
+import tech.calaverita.reporterloanssql.models.UsuarioModel;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.pojos.pwa.CobranzaPWA;
@@ -88,18 +90,6 @@ public class PWAController {
         return new ResponseEntity<>(calendarioModel, HttpStatus.OK);
     }
 
-    @GetMapping("/historico/{agencia}/{anio}/{semana}")
-    public ResponseEntity<HistoricoPWA> getHistorico(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
-        HistoricoPWA historicoPWA = new HistoricoPWA();
-        historicoPWA.setHistorico(PWAUtil.getPagoHistoricoPWAsFromPagoVistaModels(agencia, anio, semana));
-
-        if (historicoPWA.getHistorico().isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-
-        return new ResponseEntity<>(historicoPWA, HttpStatus.OK);
-    }
-
     @GetMapping(path = "/dashboard-fecha/{agencia}/{dia}-{mes}-{anio}")
     public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgencia(@PathVariable("agencia") String agencia, @PathVariable("dia") String dia, @PathVariable("mes") String mes, @PathVariable("anio") String anio) {
         Dashboard dashboard = new Dashboard();
@@ -107,20 +97,20 @@ public class PWAController {
 
         dashboard.setAgencia(agencia);
 
-        if(dia.length() == 1){
+        if (dia.length() == 1) {
             dia = "0" + dia;
         }
 
-        if(mes.length() == 1){
+        if (mes.length() == 1) {
             mes = "0" + mes;
         }
 
         objectsContainer.setDashboard(dashboard);
         objectsContainer.setFechaPago(anio + "-" + mes + "-" + dia);
 
-        try{
+        try {
             objectsContainer.setDia(new SimpleDateFormat("EEEE").format(new SimpleDateFormat("yyyy-MM-dd").parse(objectsContainer.getFechaPago())));
-        }catch (ParseException e){
+        } catch (ParseException e) {
 
         }
 
@@ -131,13 +121,15 @@ public class PWAController {
         return new ResponseEntity<>(objectsContainer.getDashboard(), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/history/{prestamoId}")
-    public @ResponseBody ResponseEntity<ArrayList<PagoVistaModel>> getHistorialDePagos(@PathVariable("prestamoId") String prestamoId) {
-        ArrayList<PagoVistaModel> pagos = PagoService.getHistorialDePagosToPGS(prestamoId);
+    @GetMapping("/historial/{prestamoId}")
+    public ResponseEntity<HistoricoPWA> getHistorial(@PathVariable("prestamoId") String prestamoId) {
+        HistoricoPWA historicoPWA = new HistoricoPWA();
+        historicoPWA.setHistorico(PWAUtil.getPagoHistoricoPWAsFromPagoVistaModelsByPrestamoId(prestamoId));
 
-        if (pagos.isEmpty())
+        if (historicoPWA.getHistorico().isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
 
-        return new ResponseEntity<>(pagos, HttpStatus.OK);
+        return new ResponseEntity<>(historicoPWA, HttpStatus.OK);
     }
 }

@@ -5,6 +5,7 @@ import tech.calaverita.reporterloanssql.models.PagoModel;
 import tech.calaverita.reporterloanssql.models.PagoVistaModel;
 import tech.calaverita.reporterloanssql.models.VisitaModel;
 import tech.calaverita.reporterloanssql.pojos.pwa.PagoHistoricoPWA;
+import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.VisitaService;
 
 import java.util.ArrayList;
@@ -13,13 +14,10 @@ public class PagoHistoricoPWAThread implements Runnable {
     PagoVistaModel pagoVistaModel;
     PagoHistoricoPWA pagoHistoricoPWA;
     ArrayList<PagoModel> pagoModels;
-    ArrayList<VisitaModel> visitaModels;
 
-    public PagoHistoricoPWAThread(PagoVistaModel pagoVistaModel, PagoHistoricoPWA pagoHistoricoPWA, ArrayList<PagoModel> pagoModels, ArrayList<VisitaModel> visitaModels) {
+    public PagoHistoricoPWAThread(PagoVistaModel pagoVistaModel, PagoHistoricoPWA pagoHistoricoPWA) {
         this.pagoVistaModel = pagoVistaModel;
         this.pagoHistoricoPWA = pagoHistoricoPWA;
-        this.pagoModels = pagoModels;
-        this.visitaModels = visitaModels;
     }
 
     @Override
@@ -38,24 +36,8 @@ public class PagoHistoricoPWAThread implements Runnable {
         pagoHistoricoPWA.setCliente(pagoVistaModel.getCliente());
         pagoHistoricoPWA.setAgente(pagoVistaModel.getAgente());
         pagoHistoricoPWA.setIdentificador(pagoVistaModel.getIdentificador());
-
-        ArrayList<PagoModel> pagoModelsAux = new ArrayList<>();
-        ArrayList<VisitaModel> visitaModelsAux = new ArrayList<>();
-
-        for (PagoModel pagoModel : pagoModels) {
-            if (pagoModel.getPrestamoId().equals(pagoHistoricoPWA.getPrestamoId())) {
-                pagoModelsAux.add(pagoModel);
-            }
-        }
-
-        for (VisitaModel visitaModel : visitaModels) {
-            if (visitaModel.getPrestamoId().equals(pagoHistoricoPWA.getPrestamoId())) {
-                visitaModelsAux.add(visitaModel);
-            }
-        }
-
-        pagoHistoricoPWA.setPagos(PWAUtil.getPagoPWAsFromPagoModels(pagoModelsAux));
-        pagoHistoricoPWA.setVisitas(visitaModelsAux);
+        pagoHistoricoPWA.setPagos(PWAUtil.getPagoPWAsFromPagoModels(PagoService.findPagoModelsByPrestamoIdAnioAndSemana(pagoHistoricoPWA.getPrestamoId(), pagoHistoricoPWA.getAnio(), pagoHistoricoPWA.getSemana())));
+        pagoHistoricoPWA.setVisitas(VisitaService.findVisitaModelsByPrestamoIdAnioAndSemana(pagoHistoricoPWA.getPrestamoId(), pagoHistoricoPWA.getAnio(), pagoHistoricoPWA.getSemana()));
     }
 
 }

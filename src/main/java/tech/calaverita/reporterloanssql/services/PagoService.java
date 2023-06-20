@@ -25,15 +25,27 @@ public class PagoService {
         return pagoRepository.getPagoModelByPrestamoIdAnioAndSemana(prestamoId, anio, semana);
     }
 
-    public static ArrayList<PagoModel> getPagoModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
-        return pagoRepository.getPagoModelsByAgenciaAnioAndSemana(agencia, anio, semana);
+    public static ArrayList<PagoModel> findPagoModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
+        return pagoRepository.findPagoModelsByAgenciaAnioAndSemana(agencia, anio, semana);
     }
 
-    public static ArrayList<PagoVistaModel> getPagoVistaModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
-        return pagoRepository.getPagoVistaModelsByAgenciaAnioAndSemana(agencia, anio, semana);
+    public static ArrayList<PagoModel> findPagoModelsByPrestamoId(String prestamoId) {
+        return pagoRepository.findPagoModelsByPrestamoId(prestamoId);
     }
 
-    public static ArrayList<PagoVistaModel> getHistorialDePagosToPGS(String prestamoId){
+    public static ArrayList<PagoVistaModel> findPagoVistaModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
+        return pagoRepository.findPagoVistaModelsByAgenciaAnioAndSemana(agencia, anio, semana);
+    }
+
+    public static ArrayList<PagoVistaModel> findPagoVistaModelsByPrestamoId(String prestamoId) {
+        return pagoRepository.findPagoVistaModelsByPrestamoId(prestamoId);
+    }
+
+    public static ArrayList<PagoModel> findPagoModelsByPrestamoIdAnioAndSemana(String prestamoId, int anio, int semana) {
+        return pagoRepository.findPagoModelsByPrestamoIdAnioAndSemana(prestamoId, anio, semana);
+    }
+
+    public static ArrayList<PagoVistaModel> getHistorialDePagosToPGS(String prestamoId) {
         return pagoRepository.getHistorialDePagosToPGS(prestamoId);
     }
 }

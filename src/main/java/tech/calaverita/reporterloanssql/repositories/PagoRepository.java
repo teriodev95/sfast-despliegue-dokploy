@@ -14,10 +14,19 @@ public interface PagoRepository extends CrudRepository<PagoModel, String> {
     PagoModel getPagoModelByPrestamoIdAnioAndSemana(String prestamoId, int anio, int semana);
 
     @Query("SELECT pa FROM PagoModel pa WHERE pa.agente = :agencia AND pa.anio = :anio AND pa.semana = :semana AND pa.esPrimerPago = false")
-    ArrayList<PagoModel> getPagoModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana);
+    ArrayList<PagoModel> findPagoModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana);
+
+    @Query("SELECT pa FROM PagoModel pa WHERE pa.prestamoId = :prestamoId AND pa.esPrimerPago = false")
+    ArrayList<PagoModel> findPagoModelsByPrestamoId(String prestamoId);
+
+    @Query("SELECT pa FROM PagoModel pa WHERE pa.prestamoId = :prestamoId AND pa.anio = :anio AND pa.semana = :semana AND pa.esPrimerPago = false")
+    ArrayList<PagoModel> findPagoModelsByPrestamoIdAnioAndSemana(String prestamoId, int anio, int semana);
 
     @Query("SELECT pa FROM PagoVistaModel pa WHERE pa.agente = :agencia AND pa.anio = :anio AND pa.semana = :semana AND pa.esPrimerPago = false")
-    ArrayList<PagoVistaModel> getPagoVistaModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana);
+    ArrayList<PagoVistaModel> findPagoVistaModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana);
+
+    @Query("SELECT pa FROM PagoVistaModel pa WHERE pa.prestamoId = :prestamoId AND pa.esPrimerPago = false ORDER BY pa.anio DESC, pa.semana DESC")
+    ArrayList<PagoVistaModel> findPagoVistaModelsByPrestamoId(String prestamoId);
 
     @Query("SELECT pa FROM PagoVistaModel pa WHERE pa.prestamoId = :prestamoId ORDER BY pa.anio ASC, pa.semana ASC")
     ArrayList<PagoVistaModel> getHistorialDePagosToApp(String prestamoId);
