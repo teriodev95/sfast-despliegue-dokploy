@@ -121,7 +121,7 @@ public class PWAController {
         return new ResponseEntity<>(objectsContainer.getDashboard(), HttpStatus.OK);
     }
 
-    @GetMapping("/historial/{prestamoId}")
+    @GetMapping("/historico/{prestamoId}")
     public ResponseEntity<HistoricoPWA> getHistorial(@PathVariable("prestamoId") String prestamoId) {
         HistoricoPWA historicoPWA = new HistoricoPWA();
         historicoPWA.setHistorico(PWAUtil.getPagoHistoricoPWAsFromPagoVistaModelsByPrestamoId(prestamoId));
