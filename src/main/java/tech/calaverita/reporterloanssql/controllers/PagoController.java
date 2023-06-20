@@ -209,7 +209,7 @@ public class PagoController {
         return new ResponseEntity<>(respuesta, HttpStatus.OK);
     }
 
-    @CrossOriging
+    @CrossOrigin
     @GetMapping(path = "/history/{prestamoId}")
     public @ResponseBody ResponseEntity<ArrayList<PagoVistaModel>> getHistorialDePagos(@PathVariable("prestamoId") String prestamoId) {
         ArrayList<PagoVistaModel> pagos = pagoRepository.getHistorialDePagosToApp(prestamoId);
