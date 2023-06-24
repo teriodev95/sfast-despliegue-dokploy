@@ -31,6 +31,18 @@
 <!--		</dependency>-->
 
 		<dependency>
+			<groupId>io.sentry</groupId>
+			<artifactId>sentry-spring-boot-starter-jakarta</artifactId>
+			<version>6.23.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.sentry</groupId>
+			<artifactId>sentry-logback</artifactId>
+			<version>6.23.0</version>
+		</dependency>
+
+		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
 			<version>0.11.5</version>
@@ -128,6 +140,40 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>io.sentry</groupId>
+				<artifactId>sentry-maven-plugin</artifactId>
+				<version>0.0.2</version>
+				<configuration>
+					<!-- for showing output of sentry-cli -->
+					<debugSentryCli>true</debugSentryCli>
+
+					<!-- download the latest sentry-cli and provide path to it here -->
+					<!-- download it here: https://github.com/getsentry/sentry-cli/releases -->
+					<!-- minimum required version is 2.17.3 -->
+					<sentryCliExecutablePath>/path/to/sentry-cli</sentryCliExecutablePath>
+
+					<org>___ORG_SLUG___</org>
+
+					<project>___PROJECT_SLUG___</project>
+
+					<!-- in case you're self hosting, provide the URL here -->
+<!--					<url>http://localhost:8080/</url>-->
+
+					<!-- provide your auth token via SENTRY_AUTH_TOKEN environment variable -->
+					<!-- you can find it in Sentry UI: Settings > Account > API > Auth Tokens -->
+					<!--suppress UnresolvedMavenProperty -->
+					<authToken>${env.SENTRY_AUTH_TOKEN}</authToken>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>uploadSourceBundle</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

@@ -1,18 +1,18 @@
 package tech.calaverita.reporterloanssql.helpers.pwa;
 
-import tech.calaverita.reporterloanssql.models.PagoModel;
-import tech.calaverita.reporterloanssql.models.PagoVistaModel;
-import tech.calaverita.reporterloanssql.models.PrestamoModel;
+import tech.calaverita.reporterloanssql.models.*;
 import tech.calaverita.reporterloanssql.pojos.pwa.PagoHistoricoPWA;
 import tech.calaverita.reporterloanssql.pojos.pwa.PagoPWA;
 import tech.calaverita.reporterloanssql.pojos.pwa.PrestamoCobranzaPWA;
 import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.PrestamoService;
+import tech.calaverita.reporterloanssql.services.UsuarioService;
 import tech.calaverita.reporterloanssql.threads.pwa.CobranzaPWAThread;
 import tech.calaverita.reporterloanssql.threads.pwa.PagoHistoricoPWAThread;
 import tech.calaverita.reporterloanssql.threads.pwa.PagoPWAThread;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class PWAUtil {
     public static ArrayList<PrestamoCobranzaPWA> getPrestamoCobranzaPwasFromPrestamoModelsAndPagoModels(String agencia, int anio, int semana) {
@@ -87,5 +87,25 @@ public class PWAUtil {
         }
 
         return pagoHistoricoPWAs;
+    }
+
+    public static ArrayList<HashMap<String, Object>> getAsignacionModelsPWA(ArrayList<AsignacionModel> asignacionModels){
+        ArrayList<HashMap<String, Object>> asignacionModelsPWA = new ArrayList<>();
+
+        for(AsignacionModel asignacionModel : asignacionModels){
+            UsuarioModel usuarioModel = UsuarioService.findOneByUsuarioId(asignacionModel.getQuienRecibioUsuarioId());
+
+            HashMap<String, Object> recibioHashMap = new HashMap<>();
+            recibioHashMap.put("usuario", usuarioModel.getUsuario());
+            recibioHashMap.put("tipo", usuarioModel.getTipo());
+
+            HashMap<String, Object> responseHashMap = new HashMap<>();
+            responseHashMap.put("asignacion", asignacionModel);
+            responseHashMap.put("recibio", recibioHashMap);
+
+            asignacionModelsPWA.add(responseHashMap);
+        }
+
+        return asignacionModelsPWA;
     }
 }

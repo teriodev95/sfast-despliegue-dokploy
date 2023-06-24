@@ -42,7 +42,7 @@ public class AsignacionController {
 
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<Iterable<AsignacionModel>> getAsignacionesByAgenciaAnioAndSemana(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
-        Iterable<AsignacionModel> asignaciones = asignacionRepository.getAsignacionesByAgenciaAnioAndSemana(agencia, anio, semana);
+        Iterable<AsignacionModel> asignaciones = asignacionRepository.findManyByAgenciaAnioAndSemana(agencia, anio, semana);
 
         if (!asignaciones.iterator().hasNext())
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

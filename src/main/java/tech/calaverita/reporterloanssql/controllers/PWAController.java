@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.reporterloanssql.helpers.DashboardPorDiaUtil;
 import tech.calaverita.reporterloanssql.helpers.pwa.PWAUtil;
+import tech.calaverita.reporterloanssql.models.AsignacionModel;
 import tech.calaverita.reporterloanssql.models.CalendarioModel;
 import tech.calaverita.reporterloanssql.models.GerenciaModel;
 import tech.calaverita.reporterloanssql.models.UsuarioModel;
@@ -20,6 +21,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 @CrossOrigin
 @RestController
@@ -131,5 +133,18 @@ public class PWAController {
         }
 
         return new ResponseEntity<>(historicoPWA, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/{agencia}/{anio}/{semana}")
+    public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> getAsignacionesByAgenciaAnioAndSemana(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
+        ArrayList<AsignacionModel> asignacionModels = AsignacionService.findManyByAgenciaAnioAndSemana(agencia, anio, semana);
+
+        if (asignacionModels.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        ArrayList<HashMap<String, Object>> asignacionModelsPWA = PWAUtil.getAsignacionModelsPWA(asignacionModels);
+
+        return new ResponseEntity<>(asignacionModelsPWA, HttpStatus.OK);
     }
 }
