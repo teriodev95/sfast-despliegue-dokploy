@@ -92,12 +92,17 @@ public class PWAController {
         return new ResponseEntity<>(calendarioModel, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/dashboard-fecha/{agencia}/{dia}-{mes}-{anio}")
-    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgencia(@PathVariable("agencia") String agencia, @PathVariable("dia") String dia, @PathVariable("mes") String mes, @PathVariable("anio") String anio) {
+    @GetMapping(path = "/dashboard-fecha/{agencia}/{fecha}")
+    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgencia(@PathVariable("agencia") String agencia, @PathVariable("fecha") String fecha) {
         Dashboard dashboard = new Dashboard();
         ObjectsContainer objectsContainer = new ObjectsContainer();
 
         dashboard.setAgencia(agencia);
+
+        String[] fechaArray = fecha.split("-");
+        String dia = fechaArray[0];
+        String mes = fechaArray[1];
+        String anio = fechaArray[2];
 
         if (dia.length() == 1) {
             dia = "0" + dia;
@@ -139,7 +144,7 @@ public class PWAController {
     public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> getAsignacionesByAgenciaAnioAndSemana(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
         ArrayList<AsignacionModel> asignacionModels = AsignacionService.findManyByAgenciaAnioAndSemana(agencia, anio, semana);
 
-        if (asignacionModels.isEmpty()){
+        if (asignacionModels.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
