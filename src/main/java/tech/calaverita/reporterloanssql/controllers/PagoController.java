@@ -37,6 +37,7 @@ public class PagoController {
     @Autowired
     AgenciaRepository agenciaRepository;
 
+    @CrossOrigin
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<ArrayList<PagoModel>> getPagosByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
         ArrayList<PagoModel> pagos = pagoRepository.findPagoModelsByAgenciaAnioAndSemana(agencia, anio, semana);
