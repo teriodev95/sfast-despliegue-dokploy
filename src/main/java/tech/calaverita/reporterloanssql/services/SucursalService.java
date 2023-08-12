@@ -14,7 +14,7 @@ public class SucursalService {
         SucursalService.sucursalRepository = sucursalRepository;
     }
 
-    public static SucursalModel findOneBySucursalId(int sucursalId) {
+    public static SucursalModel findOneBySucursalId(String sucursalId) {
         return sucursalRepository.findOneBySucursalId(sucursalId);
     }
 }

@@ -10,5 +10,5 @@ public interface SucursalRepository extends CrudRepository<SucursalModel, Intege
     @Query("SELECT suc " +
             "FROM SucursalModel suc " +
             "WHERE suc.sucursalId = :sucursalId")
-    SucursalModel findOneBySucursalId(int sucursalId);
+    SucursalModel findOneBySucursalId(String sucursalId);
 }

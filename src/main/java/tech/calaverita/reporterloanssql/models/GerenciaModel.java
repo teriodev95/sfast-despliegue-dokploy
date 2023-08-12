@@ -21,5 +21,5 @@ public class GerenciaModel {
     @Column(name = "seguridadid")
     private Integer seguridadId;
     @Column(name = "sucursalid")
-    private Integer sucursalId;
+    private String sucursalId;
 }

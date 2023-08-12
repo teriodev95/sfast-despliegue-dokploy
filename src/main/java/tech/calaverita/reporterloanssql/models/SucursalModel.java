@@ -8,9 +8,8 @@ import lombok.Data;
 @Table(name = "sucursales")
 public class SucursalModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sucursalid")
-    private Integer sucursalId;
+    private String sucursalId;
     private String nombre;
     @Column(name = "regionalid")
     private Integer regionalId;

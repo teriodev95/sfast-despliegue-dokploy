@@ -26,6 +26,7 @@ public class PrestamoModel {
     private String noDeContrato;
     private String agente;
     private String gerencia;
+    private String sucursal;
     private Integer semana;
     private Integer anio;
     private Integer plazo;
