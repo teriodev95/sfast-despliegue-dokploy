@@ -6,10 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.reporterloanssql.helpers.DashboardPorDiaUtil;
 import tech.calaverita.reporterloanssql.helpers.pwa.PWAUtil;
-import tech.calaverita.reporterloanssql.models.AsignacionModel;
-import tech.calaverita.reporterloanssql.models.CalendarioModel;
-import tech.calaverita.reporterloanssql.models.GerenciaModel;
-import tech.calaverita.reporterloanssql.models.UsuarioModel;
+import tech.calaverita.reporterloanssql.models.*;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.pojos.pwa.CobranzaPWA;
@@ -22,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 
 @CrossOrigin
 @RestController
@@ -64,14 +62,33 @@ public class PWAController {
     }
 
     @GetMapping("/gerencias/{filtro}")
-    public ResponseEntity<ArrayList<String>> getGerenciasBySeguridad(@PathVariable("filtro") String filtro) {
-        ArrayList<String> gerencias = GerenciaService.findManyBySeguridad(filtro).isEmpty() ? GerenciaService.findManyByRegional(filtro) : GerenciaService.findManyBySeguridad(filtro);
+    public ResponseEntity<ArrayList<String>> getGerenciaIdsByUsuario(@PathVariable("filtro") String filtro) {
+        UsuarioModel usuarioModel;
 
-        if (gerencias.isEmpty()) {
+        try {
+            usuarioModel = UsuarioService.findOneByUsuario(filtro);
+        } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
+        ArrayList<String> gerencias = UsuarioGerenciaService.getGerenciaIdsByUsuarioId(usuarioModel.getUsuarioId());
+
         return new ResponseEntity<>(gerencias, HttpStatus.OK);
+    }
+
+    @GetMapping("/sucursales/{filtro}")
+    public ResponseEntity<SucursalModel> getSucursalIdByUsuario(@PathVariable("filtro") String filtro) {
+        UsuarioModel usuarioModel;
+
+        try {
+            usuarioModel = UsuarioService.findOneByUsuario(filtro);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        String sucursalId = UsuarioSucursalService.getSucursalIdByUsuarioId(usuarioModel.getUsuarioId());
+        SucursalModel sucursalModel = SucursalService.findOneBySucursalId(sucursalId);
+        return new ResponseEntity<>(sucursalModel, HttpStatus.OK);
     }
 
     @GetMapping("/cobranza/{agencia}/{anio}/{semana}")
