@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tech.calaverita.reporterloanssql.repositories.UsuarioSucursalRepository;
 
+import java.util.ArrayList;
+
 @Service
 public class UsuarioSucursalService {
     private static UsuarioSucursalRepository usuarioSucursalRepository;
@@ -13,7 +15,7 @@ public class UsuarioSucursalService {
         UsuarioSucursalService.usuarioSucursalRepository = usuarioSucursalRepository;
     }
 
-    public static String getSucursalIdByUsuarioId(int usuarioId) {
-        return usuarioSucursalRepository.getSucursalIdByUsuarioId(usuarioId);
+    public static ArrayList<String> getSucursalIdsByUsuarioId(int usuarioId) {
+        return usuarioSucursalRepository.getSucursalIdsByUsuarioId(usuarioId);
     }
 }

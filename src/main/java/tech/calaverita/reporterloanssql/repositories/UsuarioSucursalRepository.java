@@ -10,5 +10,5 @@ import java.util.ArrayList;
 @Repository
 public interface UsuarioSucursalRepository extends CrudRepository<UsuarioSucursalModel, Integer> {
     @Query("SELECT usm.sucursalId FROM UsuarioSucursalModel usm WHERE usm.usuarioId = :usuarioId")
-    String getSucursalIdByUsuarioId(int usuarioId);
+    ArrayList<String> getSucursalIdsByUsuarioId(int usuarioId);
 }

@@ -34,4 +34,7 @@ public interface GerenciaRepository extends CrudRepository<GerenciaModel, String
             "FROM GerenciaModel ger " +
             "ORDER BY ger.gerenciaId")
     ArrayList<String> getGerencias();
+
+    @Query("SELECT ger.gerenciaId FROM GerenciaModel ger WHERE ger.sucursalId = :sucursalId")
+    ArrayList<String> getGerenciaIdsBySucursalId(String sucursalId);
 }

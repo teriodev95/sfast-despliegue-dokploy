@@ -37,4 +37,8 @@ public class GerenciaService {
     public static GerenciaModel findOneByGerenciaId(String gerenciaId){
         return gerenciaRepository.findOneByGerenciaId(gerenciaId);
     }
+
+    public static ArrayList<String> getGerenciaIdsBySucursalId(String sucursalId){
+        return gerenciaRepository.getGerenciaIdsBySucursalId(sucursalId);
+    }
 }

@@ -28,7 +28,7 @@ public class PWAController {
     @Autowired
     private RepositoriesContainer repositoriesContainer;
 
-    @GetMapping("/gerencias")
+    @GetMapping(path = "/gerencias")
     public ResponseEntity<ArrayList<GerenciaModel>> getGerenciaModels() {
         ArrayList<GerenciaModel> gerenciaModels = GerenciaService.getGerenciaModels();
 
@@ -39,7 +39,7 @@ public class PWAController {
         return new ResponseEntity<>(gerenciaModels, HttpStatus.OK);
     }
 
-    @PostMapping("/login")
+    @PostMapping(path = "/login")
     public ResponseEntity<?> login(@RequestBody AuthCredentials login) {
         UsuarioModel usuarioModel = UsuarioService.findOneByUsuarioAndPin(login.getUsername(), login.getPassword());
 
@@ -50,7 +50,7 @@ public class PWAController {
         return new ResponseEntity<>(usuarioModel, HttpStatus.OK);
     }
 
-    @GetMapping("/agencias/{gerencia}")
+    @GetMapping(path = "/agencias/{gerencia}")
     public ResponseEntity<ArrayList<String>> getAgenciasByGerencia(@PathVariable("gerencia") String gerencia) {
         ArrayList<String> agencias = AgenciaService.getAgenciasByGerencia(gerencia);
 
@@ -61,7 +61,7 @@ public class PWAController {
         return new ResponseEntity<>(agencias, HttpStatus.OK);
     }
 
-    @GetMapping("/gerencias/{filtro}")
+    @GetMapping(path = "/gerencias/{filtro}")
     public ResponseEntity<ArrayList<String>> getGerenciaIdsByUsuario(@PathVariable("filtro") String filtro) {
         UsuarioModel usuarioModel;
 
@@ -76,22 +76,73 @@ public class PWAController {
         return new ResponseEntity<>(gerencias, HttpStatus.OK);
     }
 
-    @GetMapping("/sucursales/{filtro}")
-    public ResponseEntity<SucursalModel> getSucursalIdByUsuario(@PathVariable("filtro") String filtro) {
+    @GetMapping(path = "/gerencias/usuarios/{usuario}")
+    public ResponseEntity<HashMap<String ,ArrayList<String>>> getGerenciaIdsFromSucursalByUsuario(@PathVariable("usuario") String usuario) {
         UsuarioModel usuarioModel;
+        HashMap<String, ArrayList<String>> sucursalGerencias = new HashMap<>();
 
         try {
-            usuarioModel = UsuarioService.findOneByUsuario(filtro);
+            usuarioModel = UsuarioService.findOneByUsuario(usuario);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        String sucursalId = UsuarioSucursalService.getSucursalIdByUsuarioId(usuarioModel.getUsuarioId());
-        SucursalModel sucursalModel = SucursalService.findOneBySucursalId(sucursalId);
-        return new ResponseEntity<>(sucursalModel, HttpStatus.OK);
+        ArrayList<String> sucursales = UsuarioSucursalService.getSucursalIdsByUsuarioId(usuarioModel.getUsuarioId());
+        ArrayList<String> gerencias = UsuarioGerenciaService.getGerenciaIdsByUsuarioId(usuarioModel.getUsuarioId());
+
+        for(String sucursal : sucursales){
+            ArrayList<String> gerenciasSucursal = GerenciaService.getGerenciaIdsBySucursalId(sucursal);
+
+            for(String gerencia : gerenciasSucursal){
+                for(String gerenciaAux : gerencias){
+                    int contador = 0;
+                    if(!gerencia.equals(gerenciaAux)){
+                        contador++;
+                    }
+                    if(contador == gerenciaAux.length()){
+                        gerenciasSucursal.remove(gerencia);
+                    }
+                }
+            }
+
+            sucursalGerencias.put(sucursal, gerenciasSucursal);
+        }
+
+        return new ResponseEntity<>(sucursalGerencias, HttpStatus.OK);
     }
 
-    @GetMapping("/cobranza/{agencia}/{anio}/{semana}")
+    @GetMapping(path = "/gerencias/sucursales/{id}")
+    public ResponseEntity<ArrayList<String>> getGerenciaIdsBySucursalId(@PathVariable("id") String id) {
+        ArrayList<String> gerencias = GerenciaService.getGerenciaIdsBySucursalId(id);
+
+        if(gerencias.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(gerencias, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/sucursales/usuarios/{usuario}")
+    public ResponseEntity<ArrayList<SucursalModel>> getSucursalIdByUsuario(@PathVariable("usuario") String usuario) {
+        UsuarioModel usuarioModel;
+        ArrayList<SucursalModel> sucursalModels = new ArrayList<>();
+
+        try {
+            usuarioModel = UsuarioService.findOneByUsuario(usuario);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        ArrayList<String> sucursalIds = UsuarioSucursalService.getSucursalIdsByUsuarioId(usuarioModel.getUsuarioId());
+
+        for(String sucursalId : sucursalIds){
+            sucursalModels.add(SucursalService.findOneBySucursalId(sucursalId));
+        }
+
+        return new ResponseEntity<>(sucursalModels, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/cobranza/{agencia}/{anio}/{semana}")
     public ResponseEntity<CobranzaPWA> getCobranzaByAgenciaAnioAndSemana(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
         CobranzaPWA cobranzaPwa = new CobranzaPWA();
 
@@ -100,7 +151,7 @@ public class PWAController {
         return new ResponseEntity<>(cobranzaPwa, HttpStatus.OK);
     }
 
-    @GetMapping("/semana_actual")
+    @GetMapping(path = "/semana_actual")
     public ResponseEntity<CalendarioModel> getSemanaActual() {
         String fechaActual = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
@@ -145,7 +196,7 @@ public class PWAController {
         return new ResponseEntity<>(objectsContainer.getDashboard(), HttpStatus.OK);
     }
 
-    @GetMapping("/historico/{prestamoId}")
+    @GetMapping(path = "/historico/{prestamoId}")
     public ResponseEntity<HistoricoPWA> getHistorial(@PathVariable("prestamoId") String prestamoId) {
         HistoricoPWA historicoPWA = new HistoricoPWA();
         historicoPWA.setHistorico(PWAUtil.getPagoHistoricoPWAsFromPagoVistaModelsByPrestamoId(prestamoId));
