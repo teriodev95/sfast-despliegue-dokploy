@@ -87,14 +87,14 @@ public class PWAController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        ArrayList<String> sucursales = UsuarioSucursalService.getSucursalIdsByUsuarioId(usuarioModel.getUsuarioId());
-        ArrayList<String> gerencias = UsuarioGerenciaService.getGerenciaIdsByUsuarioId(usuarioModel.getUsuarioId());
+        ArrayList<String> sucursalIds = UsuarioSucursalService.getSucursalIdsByUsuarioId(usuarioModel.getUsuarioId());
+        ArrayList<String> gerenciaIds = UsuarioGerenciaService.getGerenciaIdsByUsuarioId(usuarioModel.getUsuarioId());
 
-        for(String sucursal : sucursales){
-            ArrayList<String> gerenciasSucursal = GerenciaService.getGerenciaIdsBySucursalId(sucursal);
+        for(String sucursalId : sucursalIds){
+            ArrayList<String> gerenciasSucursal = GerenciaService.getGerenciaIdsBySucursalId(sucursalId);
 
             for(String gerencia : gerenciasSucursal){
-                for(String gerenciaAux : gerencias){
+                for(String gerenciaAux : gerenciaIds){
                     int contador = 0;
                     if(!gerencia.equals(gerenciaAux)){
                         contador++;
@@ -105,7 +105,8 @@ public class PWAController {
                 }
             }
 
-            sucursalGerencias.put(sucursal, gerenciasSucursal);
+            SucursalModel sucursalModel = SucursalService.findOneBySucursalId(sucursalId);
+            sucursalGerencias.put(sucursalModel.getNombre(), gerenciasSucursal);
         }
 
         return new ResponseEntity<>(sucursalGerencias, HttpStatus.OK);
