@@ -10,8 +10,8 @@ import java.util.ArrayList;
 
 @Repository
 public interface PagoRepository extends CrudRepository<PagoModel, String> {
-    @Query("SELECT pa FROM PagoModel pa WHERE pa.prestamoId = :prestamoId AND pa.anio = :anio AND pa.semana = :semana GROUP BY pa.prestamoId, pa.anio, pa.semana")
-    PagoModel getPagoModelByPrestamoIdAnioAndSemana(String prestamoId, int anio, int semana);
+    @Query("SELECT pa FROM PagoModel pa WHERE pa.prestamoId = :prestamoId AND pa.anio = :anio AND pa.semana = :semana order by pa.fechaPago desc")
+    ArrayList<PagoModel> getPagoModelByPrestamoIdAnioAndSemana(String prestamoId, int anio, int semana);
 
     @Query("SELECT pa FROM PagoModel pa WHERE pa.agente = :agencia AND pa.anio = :anio AND pa.semana = :semana AND pa.esPrimerPago = false")
     ArrayList<PagoModel> findPagoModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana);

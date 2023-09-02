@@ -11,6 +11,7 @@ import tech.calaverita.reporterloanssql.services.PagoService;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class CobranzaPWAThread implements Runnable {
@@ -39,7 +40,7 @@ public class CobranzaPWAThread implements Runnable {
         LocalDateTime cierreMiercoles = fechaInicioSemana.plusHours(21);
         LocalDateTime cierreJueves = fechaInicioSemana.plusDays(1).plusHours(21);
 
-        PagoModel pagoModel = PagoService.getPagoByPrestamoIdAnioAndSemana(prestamoModel.getPrestamoId(), anio, semana);
+        ArrayList<PagoModel> pagoModels = PagoService.getPagoByPrestamoIdAnioAndSemana(prestamoModel.getPrestamoId(), anio, semana);
 
         prestamoCobranzaPwa.setNombre(prestamoModel.getNombres() + " " + prestamoModel.getApellidoPaterno() + " " + prestamoModel.getApellidoMaterno());
         prestamoCobranzaPwa.setPrestamoId(prestamoModel.getPrestamoId());
@@ -49,9 +50,20 @@ public class CobranzaPWAThread implements Runnable {
         prestamoCobranzaPwa.setRestante(prestamoModel.getSaldo());
         prestamoCobranzaPwa.setDiaDePago(prestamoModel.getDiaDePago());
 
-        if (pagoModel != null) {
-            prestamoCobranzaPwa.setCobradoEnLaSemana(pagoModel.getMonto());
-            prestamoCobranzaPwa.setFechaUltimoPago(pagoModel.getFechaPago());
+        if (pagoModels != null) {
+            if(pagoModels.size() == 1){
+                prestamoCobranzaPwa.setCobradoEnLaSemana(pagoModels.get(0).getMonto());
+                prestamoCobranzaPwa.setFechaUltimoPago(pagoModels.get(0).getFechaPago());
+            }else{
+                double cobradoEnLaSemana = 0;
+
+                for(PagoModel pagoModel : pagoModels){
+                    cobradoEnLaSemana += pagoModel.getMonto();
+                }
+
+                prestamoCobranzaPwa.setCobradoEnLaSemana(cobradoEnLaSemana);
+                prestamoCobranzaPwa.setFechaUltimoPago(pagoModels.get(0).getFechaPago());
+            }
         }
 
         prestamoCobranzaPwa.setStatus(prestamoCobranzaPwa.getCobradoEnLaSemana() == 0 ? CobranzaStatusPWA.Pendiente : prestamoCobranzaPwa.getCobradoEnLaSemana() >= prestamoCobranzaPwa.getTarifa() ? CobranzaStatusPWA.Completado : CobranzaStatusPWA.Parcial);

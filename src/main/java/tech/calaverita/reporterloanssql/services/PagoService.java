@@ -21,7 +21,7 @@ public class PagoService {
         return pagoRepository.getPagoMigracionByAgenteAnioAndSemana(prestamoId, anio, semana);
     }
 
-    public static PagoModel getPagoByPrestamoIdAnioAndSemana(String prestamoId, int anio, int semana) {
+    public static ArrayList<PagoModel> getPagoByPrestamoIdAnioAndSemana(String prestamoId, int anio, int semana) {
         return pagoRepository.getPagoModelByPrestamoIdAnioAndSemana(prestamoId, anio, semana);
     }
 

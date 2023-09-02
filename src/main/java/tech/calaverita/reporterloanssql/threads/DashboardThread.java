@@ -105,13 +105,15 @@ public class DashboardThread implements Runnable {
         int pagosReducidos = 0;
 
         for (int i = 0; i < objectsContainer.getPagosVistaToDashboard().size(); i++) {
-            if (objectsContainer.getPagosVistaToDashboard().get(i).getAbreCon() < objectsContainer.getPagosVistaToDashboard().get(i).getTarifa()) {
-                if (objectsContainer.getPagosVistaToDashboard().get(i).getMonto() < objectsContainer.getPagosVistaToDashboard().get(i).getAbreCon()) {
-                    pagosReducidos++;
-                }
-            } else {
-                if (objectsContainer.getPagosVistaToDashboard().get(i).getMonto() < objectsContainer.getPagosVistaToDashboard().get(i).getTarifa()) {
-                    pagosReducidos++;
+            if(objectsContainer.getPagosVistaToDashboard().get(i).getMonto() != 0){
+                if (objectsContainer.getPagosVistaToDashboard().get(i).getAbreCon() < objectsContainer.getPagosVistaToDashboard().get(i).getTarifa()) {
+                    if (objectsContainer.getPagosVistaToDashboard().get(i).getMonto() < objectsContainer.getPagosVistaToDashboard().get(i).getAbreCon()) {
+                        pagosReducidos++;
+                    }
+                } else {
+                    if (objectsContainer.getPagosVistaToDashboard().get(i).getMonto() < objectsContainer.getPagosVistaToDashboard().get(i).getTarifa()) {
+                        pagosReducidos++;
+                    }
                 }
             }
         }
