@@ -50,7 +50,7 @@ public class CobranzaPWAThread implements Runnable {
         prestamoCobranzaPwa.setRestante(prestamoModel.getSaldo());
         prestamoCobranzaPwa.setDiaDePago(prestamoModel.getDiaDePago());
 
-        if (pagoModels != null) {
+        if (!pagoModels.isEmpty()) {
             if(pagoModels.size() == 1){
                 prestamoCobranzaPwa.setCobradoEnLaSemana(pagoModels.get(0).getMonto());
                 prestamoCobranzaPwa.setFechaUltimoPago(pagoModels.get(0).getFechaPago());
