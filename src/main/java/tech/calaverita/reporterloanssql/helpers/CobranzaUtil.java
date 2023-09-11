@@ -1,15 +1,12 @@
 package tech.calaverita.reporterloanssql.helpers;
 
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
-import tech.calaverita.reporterloanssql.services.RepositoriesContainer;
 import tech.calaverita.reporterloanssql.threads.CobranzaThread;
 
 public class CobranzaUtil implements Runnable {
-    public RepositoriesContainer repositoriesContainer;
     public ObjectsContainer objectsContainer;
 
-    public CobranzaUtil(RepositoriesContainer repositoriesContainer, ObjectsContainer objectsContainer) {
-        this.repositoriesContainer = repositoriesContainer;
+    public CobranzaUtil(ObjectsContainer objectsContainer) {
         this.objectsContainer = objectsContainer;
     }
 
@@ -17,31 +14,27 @@ public class CobranzaUtil implements Runnable {
     public void run() {
         Thread[] threads = new Thread[8];
 
-        for (int i = 0; i < 8; i++) {
-            threads[i] = new Thread(new CobranzaThread(repositoriesContainer, objectsContainer, i));
+        for (int i = 0; i < 2; i++) {
+            threads[i] = new Thread(new CobranzaThread(objectsContainer, i));
         }
 
         threads[0].start();
         threads[1].start();
 
-        while (objectsContainer.getPrestamosToCobranza() == null) {
-
+        for (int i = 2; i < 8; i++) {
+            threads[i] = new Thread(new CobranzaThread(objectsContainer, i, threads));
         }
 
-        threads[2].start();
-        threads[3].start();
-
-        while (objectsContainer.getPagosVistaToCobranza() == null) {
-
+        for (int i = 2; i < 8; i++) {
+            threads[i].start();
         }
 
-        threads[4].start();
-        threads[5].start();
-        threads[6].start();
-        threads[7].start();
-
-        while (objectsContainer.getCobranza().getDebitoTotal() == null) {
-
+        for (int i = 2; i < 8; i++) {
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

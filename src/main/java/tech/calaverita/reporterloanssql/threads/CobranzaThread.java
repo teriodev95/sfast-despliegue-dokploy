@@ -1,17 +1,23 @@
 package tech.calaverita.reporterloanssql.threads;
 
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
-import tech.calaverita.reporterloanssql.services.RepositoriesContainer;
+import tech.calaverita.reporterloanssql.services.PagoService;
+import tech.calaverita.reporterloanssql.services.PrestamoService;
 
 public class CobranzaThread implements Runnable {
-    public RepositoriesContainer repositoriesContainer;
     public ObjectsContainer objectsContainer;
     public int opc;
+    public Thread[] threads;
 
-    public CobranzaThread(RepositoriesContainer repositoriesContainer, ObjectsContainer objectsContainer, int ope) {
-        this.repositoriesContainer = repositoriesContainer;
+    public CobranzaThread(ObjectsContainer objectsContainer, int ope) {
         this.objectsContainer = objectsContainer;
         this.opc = ope;
+    }
+
+    public CobranzaThread(ObjectsContainer objectsContainer, int ope, Thread[] threads) {
+        this.objectsContainer = objectsContainer;
+        this.opc = ope;
+        this.threads = threads;
     }
 
     @Override
@@ -45,24 +51,42 @@ public class CobranzaThread implements Runnable {
     }
 
     public void getGerencia() {
+        try {
+            threads[0].join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         objectsContainer.getCobranza().setGerencia(objectsContainer.getPrestamosToCobranza().get(0).getGerencia());
     }
 
     public void getClientes() {
+        try {
+            threads[0].join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         objectsContainer.getCobranza().setClientes(objectsContainer.getPrestamosToCobranza().size());
     }
 
     public void getPrestamos() {
-        objectsContainer.setPrestamosToCobranza(repositoriesContainer.getPrestamoRepository().getPrestamosByAgenciaAnioAndSemanaToCobranza(objectsContainer.getCobranza().getAgencia(), objectsContainer.getCobranza().getAnio(), objectsContainer.getCobranza().getSemana()));
-
+        objectsContainer.setPrestamosToCobranza(PrestamoService.getPrestamoModelsByAgenciaAnioAndSemanaToCobranzaPGS(objectsContainer.getCobranza().getAgencia(), objectsContainer.getCobranza().getAnio(), objectsContainer.getCobranza().getSemana()));
         objectsContainer.getCobranza().setPrestamos(objectsContainer.getPrestamosToCobranza());
     }
 
     public void getPagos() {
-        objectsContainer.setPagosVistaToCobranza(repositoriesContainer.getPagoRepository().getPagosByAgenciaAnioAndSemanaToCobranza(objectsContainer.getCobranza().getAgencia(), objectsContainer.getCobranza().getAnio(), objectsContainer.getCobranza().getSemana()));
+        objectsContainer.setPagosVistaToCobranza(PagoService.getPagoUtilModelsByAgenciaAnioAndSemanaToCobranza(objectsContainer.getCobranza().getAgencia(), objectsContainer.getCobranza().getAnio(), objectsContainer.getCobranza().getSemana()));
     }
 
     public void getDebitoMiercoles() {
+        try {
+            threads[0].join();
+            threads[1].join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         double debitoMiercoles = 0;
 
         for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
@@ -78,6 +102,13 @@ public class CobranzaThread implements Runnable {
     }
 
     public void getDebitoJueves() {
+        try {
+            threads[0].join();
+            threads[1].join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         double debitoJueves = 0;
 
         for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
@@ -93,6 +124,13 @@ public class CobranzaThread implements Runnable {
     }
 
     public void getDebitoViernes() {
+        try {
+            threads[0].join();
+            threads[1].join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         double debitoViernes = 0;
 
         for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
@@ -108,6 +146,13 @@ public class CobranzaThread implements Runnable {
     }
 
     public void getDebitoTotal() {
+        try {
+            threads[0].join();
+            threads[1].join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         double debitoTotal = 0;
 
         for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {

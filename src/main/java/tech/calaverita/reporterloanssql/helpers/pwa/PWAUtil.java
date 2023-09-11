@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 public class PWAUtil {
     public static ArrayList<PrestamoCobranzaPWA> getPrestamoCobranzaPwasFromPrestamoModelsAndPagoModels(String agencia, int anio, int semana) {
-        ArrayList<PrestamoModel> prestamoModels = PrestamoService.getPrestamoModelsByAgenciaAnioAndSemanaToCobranza(agencia, anio, semana);
+        ArrayList<PrestamoModel> prestamoModels = PrestamoService.getPrestamoModelsByAgenciaAnioAndSemanaToCobranzaPGS(agencia, anio, semana);
         ArrayList<PrestamoCobranzaPWA> prestamoCobranzaPWAs = new ArrayList<>();
 
         Thread[] threads = new Thread[prestamoModels.size()];
@@ -65,18 +65,18 @@ public class PWAUtil {
     }
 
     public static ArrayList<PagoHistoricoPWA> getPagoHistoricoPWAsFromPagoVistaModelsByPrestamoId(String prestamoId) {
-        ArrayList<PagoVistaModel> pagoVistaModels = PagoService.findPagoVistaModelsByPrestamoId(prestamoId);
+        ArrayList<PagoAgrupadoModel> pagoAgrupadoModels = PagoService.findPagoVistaModelsByPrestamoId(prestamoId);
         ArrayList<PagoHistoricoPWA> pagoHistoricoPWAs = new ArrayList<>();
 
-        Thread[] threads = new Thread[pagoVistaModels.size()];
+        Thread[] threads = new Thread[pagoAgrupadoModels.size()];
         int indice = 0;
 
-        for (PagoVistaModel pagoVistaModel : pagoVistaModels) {
+        for (PagoAgrupadoModel pagoAgrupadoModel : pagoAgrupadoModels) {
             PagoHistoricoPWA pagoHistoricoPWA = new PagoHistoricoPWA();
 
             pagoHistoricoPWAs.add(pagoHistoricoPWA);
 
-            threads[indice] = new Thread(new PagoHistoricoPWAThread(pagoVistaModel, pagoHistoricoPWA));
+            threads[indice] = new Thread(new PagoHistoricoPWAThread(pagoAgrupadoModel, pagoHistoricoPWA));
             threads[indice].start();
             indice++;
         }
@@ -89,10 +89,10 @@ public class PWAUtil {
         return pagoHistoricoPWAs;
     }
 
-    public static ArrayList<HashMap<String, Object>> getAsignacionModelsPWA(ArrayList<AsignacionModel> asignacionModels){
+    public static ArrayList<HashMap<String, Object>> getAsignacionModelsPWA(ArrayList<AsignacionModel> asignacionModels) {
         ArrayList<HashMap<String, Object>> asignacionModelsPWA = new ArrayList<>();
 
-        for(AsignacionModel asignacionModel : asignacionModels){
+        for (AsignacionModel asignacionModel : asignacionModels) {
             UsuarioModel usuarioModel = UsuarioService.findOneByUsuarioId(asignacionModel.getQuienRecibioUsuarioId());
 
             HashMap<String, Object> recibioHashMap = new HashMap<>();

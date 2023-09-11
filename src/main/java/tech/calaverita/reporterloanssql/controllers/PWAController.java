@@ -1,6 +1,5 @@
 package tech.calaverita.reporterloanssql.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,9 +24,6 @@ import java.util.NoSuchElementException;
 @RestController
 @RequestMapping("/xpress/v1/pwa")
 public class PWAController {
-    @Autowired
-    private RepositoriesContainer repositoriesContainer;
-
     @GetMapping(path = "/gerencias")
     public ResponseEntity<ArrayList<GerenciaModel>> getGerenciaModels() {
         ArrayList<GerenciaModel> gerenciaModels = GerenciaService.getGerenciaModels();
@@ -77,7 +73,7 @@ public class PWAController {
     }
 
     @GetMapping(path = "/gerencias/usuarios/{usuario}")
-    public ResponseEntity<HashMap<String ,ArrayList<String>>> getGerenciaIdsFromSucursalByUsuario(@PathVariable("usuario") String usuario) {
+    public ResponseEntity<HashMap<String, ArrayList<String>>> getGerenciaIdsFromSucursalByUsuario(@PathVariable("usuario") String usuario) {
         UsuarioModel usuarioModel;
         HashMap<String, ArrayList<String>> sucursalGerencias = new HashMap<>();
 
@@ -90,16 +86,16 @@ public class PWAController {
         ArrayList<String> sucursalIds = UsuarioSucursalService.getSucursalIdsByUsuarioId(usuarioModel.getUsuarioId());
         ArrayList<String> gerenciaIds = UsuarioGerenciaService.getGerenciaIdsByUsuarioId(usuarioModel.getUsuarioId());
 
-        for(String sucursalId : sucursalIds){
+        for (String sucursalId : sucursalIds) {
             ArrayList<String> gerenciasSucursal = GerenciaService.getGerenciaIdsBySucursalId(sucursalId);
 
-            for(String gerencia : gerenciasSucursal){
-                for(String gerenciaAux : gerenciaIds){
+            for (String gerencia : gerenciasSucursal) {
+                for (String gerenciaAux : gerenciaIds) {
                     int contador = 0;
-                    if(!gerencia.equals(gerenciaAux)){
+                    if (!gerencia.equals(gerenciaAux)) {
                         contador++;
                     }
-                    if(contador == gerenciaAux.length()){
+                    if (contador == gerenciaAux.length()) {
                         gerenciasSucursal.remove(gerencia);
                     }
                 }
@@ -116,7 +112,7 @@ public class PWAController {
     public ResponseEntity<ArrayList<String>> getGerenciaIdsBySucursalId(@PathVariable("id") String id) {
         ArrayList<String> gerencias = GerenciaService.getGerenciaIdsBySucursalId(id);
 
-        if(gerencias.isEmpty()){
+        if (gerencias.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -136,7 +132,7 @@ public class PWAController {
 
         ArrayList<String> sucursalIds = UsuarioSucursalService.getSucursalIdsByUsuarioId(usuarioModel.getUsuarioId());
 
-        for(String sucursalId : sucursalIds){
+        for (String sucursalId : sucursalIds) {
             sucursalModels.add(SucursalService.findOneBySucursalId(sucursalId));
         }
 
@@ -190,7 +186,7 @@ public class PWAController {
 
         }
 
-        DashboardPorDiaUtil dashboardPorDiaUtil = new DashboardPorDiaUtil(repositoriesContainer, objectsContainer);
+        DashboardPorDiaUtil dashboardPorDiaUtil = new DashboardPorDiaUtil(objectsContainer);
 
         dashboardPorDiaUtil.run();
 

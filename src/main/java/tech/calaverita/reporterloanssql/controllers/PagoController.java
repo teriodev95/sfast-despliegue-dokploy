@@ -73,7 +73,7 @@ public class PagoController {
             return new ResponseEntity<>("El Pago cuenta con migración", HttpStatus.CONFLICT);
         }
 
-        PrestamoModel prestamo = prestamoRepository.getPrestamoByPrestamoId(pago.getPrestamoId());
+        PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(pago.getPrestamoId());
 
         if (prestamo == null)
             return new ResponseEntity<>("No Se Encontró Ningún Prestamo Con Ese 'prestamoId'", HttpStatus.NOT_FOUND);
@@ -153,7 +153,7 @@ public class PagoController {
                 isOnline = false;
             }
 
-            PrestamoModel prestamo = prestamoRepository.getPrestamoByPrestamoId(pago.getPrestamoId());
+            PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(pago.getPrestamoId());
 
             if (prestamo == null) {
                 msgAux += "No Se Encontró Ningún Prestamo Con Ese 'prestamoId'|";
@@ -212,8 +212,8 @@ public class PagoController {
 
     @CrossOrigin
     @GetMapping(path = "/history/{prestamoId}")
-    public @ResponseBody ResponseEntity<ArrayList<PagoVistaModel>> getHistorialDePagos(@PathVariable("prestamoId") String prestamoId) {
-        ArrayList<PagoVistaModel> pagos = pagoRepository.getHistorialDePagosToApp(prestamoId);
+    public @ResponseBody ResponseEntity<ArrayList<PagoAgrupadoModel>> getHistorialDePagos(@PathVariable("prestamoId") String prestamoId) {
+        ArrayList<PagoAgrupadoModel> pagos = pagoRepository.getHistorialDePagosToApp(prestamoId);
 
         if (pagos.isEmpty())
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

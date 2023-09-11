@@ -32,11 +32,11 @@ public class VisitaService {
         visitaRepository.save(visitaModel);
     }
 
-    public static ArrayList<VisitaModel> findVisitaModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana){
+    public static ArrayList<VisitaModel> findVisitaModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
         return visitaRepository.findVisitaModelsByAgenciaAnioAndSemana(agencia, anio, semana);
     }
 
-    public static ArrayList<VisitaModel> findVisitaModelsByPrestamoIdAnioAndSemana(String prestamoId, int anio, int semana){
+    public static ArrayList<VisitaModel> findVisitaModelsByPrestamoIdAnioAndSemana(String prestamoId, int anio, int semana) {
         return visitaRepository.findVisitaModelsByPrestamoIdAnioAndSemana(prestamoId, anio, semana);
     }
 }

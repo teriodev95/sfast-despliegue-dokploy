@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
-import tech.calaverita.reporterloanssql.models.UsuarioModel;
 
 @Repository
 public interface XpressRepository extends CrudRepository<PrestamoModel, String> {
@@ -15,7 +14,7 @@ public interface XpressRepository extends CrudRepository<PrestamoModel, String> 
             "SUM(CASE WHEN pr.diaDePago = 'VIERNES' THEN CASE WHEN pa.cierraCon < pr.tarifa THEN pa.cierraCon ELSE pr.tarifa END ELSE 0 END) AS debitoViernes, " +
             "SUM(CASE WHEN pa.cierraCon < pr.tarifa THEN pa.cierraCon ELSE pr.tarifa END) AS debitoTotal " +
             "FROM PrestamoModel pr " +
-            "INNER JOIN PagoVistaModel pa " +
+            "INNER JOIN PagoAgrupadoModel pa " +
             "ON pr.prestamoId = pa.prestamoId " +
             "WHERE pr.gerencia = :gerencia " +
             "AND pa.anio = :anio " +
@@ -45,7 +44,7 @@ public interface XpressRepository extends CrudRepository<PrestamoModel, String> 
             "WHEN pa.abreCon < pr.tarifa AND pa.monto < pa.abreCon THEN pa.abreCon - pa.monto ELSE 0 END) AS montoDeDebitoFaltante, " +
             "COUNT(pr) AS clientesCobrados " +
             "FROM PrestamoModel pr " +
-            "INNER JOIN PagoVistaModel pa " +
+            "INNER JOIN PagoAgrupadoModel pa " +
             "ON pr.prestamoId = pa.prestamoId " +
             "WHERE pr.gerencia = :gerencia " +
             "AND pa.anio = :anio " +

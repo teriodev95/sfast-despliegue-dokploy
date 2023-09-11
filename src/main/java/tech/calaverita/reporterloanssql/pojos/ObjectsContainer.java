@@ -13,9 +13,9 @@ public class ObjectsContainer {
     private Cobranza cobranza;
     private Dashboard dashboard;
     private ArrayList<PrestamoModel> prestamosToCobranza;
-    private ArrayList<PagoVistaModel> pagosVistaToCobranza;
-    private ArrayList<PrestamoModel> prestamosToDashboard;
-    private ArrayList<PagoVistaModel> pagosVistaToDashboard;
+    private ArrayList<PagoUtilModel> pagosVistaToCobranza;
+    private ArrayList<PrestamoUtilModel> prestamosToDashboard;
+    private ArrayList<PagoUtilModel> pagosVistaToDashboard;
     private ArrayList<PagoModel> pagoModelsToDashboard;
     private ArrayList<PagoModel> pagos;
     private ArrayList<Cobranza> cobranzas;

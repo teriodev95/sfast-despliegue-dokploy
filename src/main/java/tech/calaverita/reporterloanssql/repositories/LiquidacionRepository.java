@@ -9,18 +9,18 @@ import java.util.ArrayList;
 public interface LiquidacionRepository extends CrudRepository<LiquidacionModel, Integer> {
     @Query("SELECT li " +
             "FROM LiquidacionModel li " +
-            "INNER JOIN PagoVistaModel pa " +
+            "INNER JOIN PagoModel pa " +
             "ON li.pagoId = pa.pagoId " +
             "WHERE pa.agente = :agencia " +
             "AND li.anio = :anio " +
             "AND li.semana = :semana")
-    ArrayList<LiquidacionModel> getLiquidacionesByAgenciaAnioAndSemanaToDashboard(String agencia, int anio, int semana);
+    ArrayList<LiquidacionModel> getLiquidacionModelsByAgenciaAnioAndSemanaToDashboard(String agencia, int anio, int semana);
 
     @Query("SELECT li " +
             "FROM LiquidacionModel li " +
-            "INNER JOIN PagoVistaModel pa " +
+            "INNER JOIN PagoModel pa " +
             "ON li.pagoId = pa.pagoId " +
             "WHERE pa.agente = :agencia " +
             "AND pa.fechaPago like :fechaPago%")
-    ArrayList<LiquidacionModel> getLiquidacionesByAgenciaAndFechaPagoToDashboard(String agencia, String fechaPago);
+    ArrayList<LiquidacionModel> getLiquidacionModelsByAgenciaAndFechaPagoToDashboard(String agencia, String fechaPago);
 }

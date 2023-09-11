@@ -12,11 +12,15 @@ public class AsignacionService {
     private static AsignacionRepository asignacionRepository;
 
     @Autowired
-    public AsignacionService(AsignacionRepository asignacionRepository){
+    public AsignacionService(AsignacionRepository asignacionRepository) {
         AsignacionService.asignacionRepository = asignacionRepository;
     }
 
-    public static ArrayList<AsignacionModel> findManyByAgenciaAnioAndSemana(String agencia, int anio, int semana){
+    public static ArrayList<AsignacionModel> findManyByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
         return asignacionRepository.findManyByAgenciaAnioAndSemana(agencia, anio, semana);
+    }
+
+    public static ArrayList<AsignacionModel> getAsignacionesToDashboard(String agencia, int anio, int semana) {
+        return asignacionRepository.getAsignacionesToDashboard(agencia, anio, semana);
     }
 }

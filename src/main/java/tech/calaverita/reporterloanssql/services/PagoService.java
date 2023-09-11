@@ -2,8 +2,9 @@ package tech.calaverita.reporterloanssql.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tech.calaverita.reporterloanssql.models.PagoAgrupadoModel;
 import tech.calaverita.reporterloanssql.models.PagoModel;
-import tech.calaverita.reporterloanssql.models.PagoVistaModel;
+import tech.calaverita.reporterloanssql.models.PagoUtilModel;
 import tech.calaverita.reporterloanssql.repositories.PagoRepository;
 
 import java.util.ArrayList;
@@ -33,11 +34,11 @@ public class PagoService {
         return pagoRepository.findPagoModelsByPrestamoId(prestamoId);
     }
 
-    public static ArrayList<PagoVistaModel> findPagoVistaModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
+    public static ArrayList<PagoAgrupadoModel> findPagoVistaModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
         return pagoRepository.findPagoVistaModelsByAgenciaAnioAndSemana(agencia, anio, semana);
     }
 
-    public static ArrayList<PagoVistaModel> findPagoVistaModelsByPrestamoId(String prestamoId) {
+    public static ArrayList<PagoAgrupadoModel> findPagoVistaModelsByPrestamoId(String prestamoId) {
         return pagoRepository.findPagoVistaModelsByPrestamoId(prestamoId);
     }
 
@@ -45,7 +46,27 @@ public class PagoService {
         return pagoRepository.findPagoModelsByPrestamoIdAnioAndSemana(prestamoId, anio, semana);
     }
 
-    public static ArrayList<PagoVistaModel> getHistorialDePagosToPGS(String prestamoId) {
+    public static ArrayList<PagoAgrupadoModel> getHistorialDePagosToPGS(String prestamoId) {
         return pagoRepository.getHistorialDePagosToPGS(prestamoId);
+    }
+
+    public static ArrayList<PagoUtilModel> getPagoUtilModelsByAgenciaAnioAndSemanaToCobranza(String agencia, int anio, int semana) {
+        return pagoRepository.getPagoUtilModelsByAgenciaAnioAndSemanaToCobranza(agencia, anio, semana);
+    }
+
+    public static ArrayList<PagoUtilModel> getPagoUtilModelsByAgenciaAnioAndSemanaToDashboard(String agencia, int anio, int semana) {
+        return pagoRepository.getPagoUtilModelsByAgenciaAnioAndSemanaToDashboard(agencia, anio, semana);
+    }
+
+    public static ArrayList<PagoModel> getPagoModelsByAgenciaAndFechaPagoToDashboard(String agencia, String fechaPago) {
+        return pagoRepository.getPagoModelsByAgenciaAndFechaPagoToDashboard(agencia, fechaPago);
+    }
+
+    public static ArrayList<PagoModel> getPagoModelsOfLiquidacionesByAgenciaAnioAndSemanaToDashboard(String agencia, int anio, int semana) {
+        return pagoRepository.getPagoModelsOfLiquidacionesByAgenciaAnioAndSemanaToDashboard(agencia, anio, semana);
+    }
+
+    public static ArrayList<PagoModel> getPagosOfLiquidacionesByAgenciaAndFechaPagoToDashboard(String agencia, String fechaPago) {
+        return pagoRepository.getPagosOfLiquidacionesByAgenciaAndFechaPagoToDashboard(agencia, fechaPago);
     }
 }

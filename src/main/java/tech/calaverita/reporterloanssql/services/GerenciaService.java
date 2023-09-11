@@ -1,6 +1,5 @@
 package tech.calaverita.reporterloanssql.services;
 
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tech.calaverita.reporterloanssql.models.GerenciaModel;
@@ -9,7 +8,6 @@ import tech.calaverita.reporterloanssql.repositories.GerenciaRepository;
 import java.util.ArrayList;
 
 @Service
-@AllArgsConstructor
 public class GerenciaService {
     private static GerenciaRepository gerenciaRepository;
 
@@ -26,7 +24,7 @@ public class GerenciaService {
         return gerenciaRepository.findManyByRegional(regional);
     }
 
-    public static ArrayList<GerenciaModel> getGerenciaModels(){
+    public static ArrayList<GerenciaModel> getGerenciaModels() {
         return gerenciaRepository.getGerenciaModels();
     }
 
@@ -34,11 +32,11 @@ public class GerenciaService {
         return gerenciaRepository.getGerencias();
     }
 
-    public static GerenciaModel findOneByGerenciaId(String gerenciaId){
+    public static GerenciaModel findOneByGerenciaId(String gerenciaId) {
         return gerenciaRepository.findOneByGerenciaId(gerenciaId);
     }
 
-    public static ArrayList<String> getGerenciaIdsBySucursalId(String sucursalId){
+    public static ArrayList<String> getGerenciaIdsBySucursalId(String sucursalId) {
         return gerenciaRepository.getGerenciaIdsBySucursalId(sucursalId);
     }
 }

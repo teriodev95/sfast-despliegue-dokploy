@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import tech.calaverita.reporterloanssql.models.PrestamoModel;
+import tech.calaverita.reporterloanssql.models.PrestamoUtilModel;
 
 import java.util.ArrayList;
 
@@ -12,34 +13,44 @@ public interface PrestamoRepository extends CrudRepository<PrestamoModel, String
     @Query("SELECT pr " +
             "FROM PrestamoModel pr " +
             "WHERE pr.prestamoId = :prestamoId")
-    PrestamoModel getPrestamoByPrestamoId(String prestamoId);
+    PrestamoModel getPrestamoModelByPrestamoId(String prestamoId);
 
     @Query("SELECT pr " +
             "FROM PrestamoModel pr " +
-            "INNER JOIN PagoVistaModel pa " +
+            "INNER JOIN PagoAgrupadoModel pa " +
             "ON pr.prestamoId = pa.prestamoId " +
             "WHERE pa.agente = :agencia " +
             "AND pa.anio = :anio " +
             "AND pa.semana = :semana - 1 " +
             "AND pa.cierraCon > 0")
-    ArrayList<PrestamoModel> getPrestamosByAgenciaAnioAndSemanaToCobranza(String agencia, int anio, int semana);
+    ArrayList<PrestamoModel> getPrestamoModelsByAgenciaAnioAndSemanaToCobranzaPGS(String agencia, int anio, int semana);
 
     @Query("SELECT pr " +
-            "FROM PrestamoModel pr " +
-            "INNER JOIN PagoVistaModel pa " +
+            "FROM PrestamoUtilModel pr " +
+            "INNER JOIN PagoAgrupadoModel pa " +
+            "ON pr.prestamoId = pa.prestamoId " +
+            "WHERE pa.agente = :agencia " +
+            "AND pa.anio = :anio " +
+            "AND pa.semana = :semana - 1 " +
+            "AND pa.cierraCon > 0")
+    ArrayList<PrestamoUtilModel> getPrestamoUtilModelByAgenciaAnioAndSemanaToCobranza(String agencia, int anio, int semana);
+
+    @Query("SELECT pr " +
+            "FROM PrestamoUtilModel pr " +
+            "INNER JOIN PagoAgrupadoModel pa " +
             "ON pr.prestamoId = pa.prestamoId " +
             "WHERE pa.agente = :agencia " +
             "AND pa.anio = :anio " +
             "AND pa.semana = :semana " +
             "AND pa.esPrimerPago = false")
-    ArrayList<PrestamoModel> getPrestamosByAgenciaAnioAndSemanaToDashboard(String agencia, int anio, int semana);
+    ArrayList<PrestamoUtilModel> getPrestamoUtilModelByAgenciaAnioAndSemanaToDashboard(String agencia, int anio, int semana);
 
     @Query("SELECT distinct(pr)" +
-            "FROM PrestamoModel pr " +
+            "FROM PrestamoUtilModel pr " +
             "INNER JOIN PagoModel pa " +
             "ON pr.prestamoId = pa.prestamoId " +
             "WHERE pa.agente = :agencia " +
             "AND pa.fechaPago like :fechaPago% " +
             "AND pa.esPrimerPago = false")
-    ArrayList<PrestamoModel> getPrestamosByAgenciaAndFechaPagoToDashboard(String agencia, String fechaPago);
+    ArrayList<PrestamoUtilModel> getPrestamoUtilModelByAgenciaAndFechaPagoToDashboard(String agencia, String fechaPago);
 }

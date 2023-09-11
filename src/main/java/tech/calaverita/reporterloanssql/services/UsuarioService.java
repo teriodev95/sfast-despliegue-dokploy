@@ -1,16 +1,17 @@
 package tech.calaverita.reporterloanssql.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tech.calaverita.reporterloanssql.models.UsuarioModel;
 import tech.calaverita.reporterloanssql.repositories.UsuarioRepository;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Service
 public class UsuarioService {
     private static UsuarioRepository usuarioRepository;
 
+    @Autowired
     public UsuarioService(UsuarioRepository usuarioRepository) {
         UsuarioService.usuarioRepository = usuarioRepository;
     }
@@ -31,7 +32,7 @@ public class UsuarioService {
         return usuarioRepository.findOneByUsuarioId(usuarioId);
     }
 
-    public static UsuarioModel findOneByUsuarioIdFromGerenciaIdOfGerenciaModel(String gerenciaId){
+    public static UsuarioModel findOneByUsuarioIdFromGerenciaIdOfGerenciaModel(String gerenciaId) {
         return usuarioRepository.findOneByUsuarioIdFromGerenciaIdOfGerenciaModel(gerenciaId);
     }
 }

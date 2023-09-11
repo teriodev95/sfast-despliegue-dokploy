@@ -1,15 +1,13 @@
 package tech.calaverita.reporterloanssql.threads.pwa;
 
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
-import tech.calaverita.reporterloanssql.services.RepositoriesContainer;
+import tech.calaverita.reporterloanssql.services.*;
 
 public class DashboardPorDiaPWAThread implements Runnable {
-    public RepositoriesContainer repositoriesContainer;
     public ObjectsContainer objectsContainer;
     public int opc;
 
-    public DashboardPorDiaPWAThread(RepositoriesContainer repositoriesContainer, ObjectsContainer objectsContainer, int opc) {
-        this.repositoriesContainer = repositoriesContainer;
+    public DashboardPorDiaPWAThread(ObjectsContainer objectsContainer, int opc) {
         this.objectsContainer = objectsContainer;
         this.opc = opc;
     }
@@ -42,34 +40,34 @@ public class DashboardPorDiaPWAThread implements Runnable {
     }
 
     public void getCalendario() {
-        objectsContainer.setCalendarioModel(repositoriesContainer.getCalendarioRepository().getSemanaActualXpressByFechaActual(objectsContainer.getFechaPago()));
+        objectsContainer.setCalendarioModel(CalendarioService.getSemanaActualXpressByFechaActual(objectsContainer.getFechaPago()));
         objectsContainer.getDashboard().setAnio(objectsContainer.getCalendarioModel().getAnio());
         objectsContainer.getDashboard().setSemana(objectsContainer.getCalendarioModel().getSemana());
     }
 
     public void getPrestamosToCobranza() {
-        objectsContainer.setPrestamosToCobranza(repositoriesContainer.getPrestamoRepository().getPrestamosByAgenciaAnioAndSemanaToCobranza(objectsContainer.getDashboard().getAgencia(), objectsContainer.getCalendarioModel().getAnio(), objectsContainer.getCalendarioModel().getSemana()));
+        objectsContainer.setPrestamosToCobranza(PrestamoService.getPrestamoModelsByAgenciaAnioAndSemanaToCobranzaPGS(objectsContainer.getDashboard().getAgencia(), objectsContainer.getCalendarioModel().getAnio(), objectsContainer.getCalendarioModel().getSemana()));
     }
 
     public void getPrestamosToDashboard() {
-        objectsContainer.setPrestamosToDashboard(repositoriesContainer.getPrestamoRepository().getPrestamosByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
+        objectsContainer.setPrestamosToDashboard(PrestamoService.getPrestamoModelsByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
     }
 
     public void getPagosToCobranza() {
-        objectsContainer.setPagosVistaToCobranza(repositoriesContainer.getPagoRepository().getPagosByAgenciaAnioAndSemanaToCobranza(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        objectsContainer.setPagosVistaToCobranza(PagoService.getPagoUtilModelsByAgenciaAnioAndSemanaToCobranza(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
     public void getPagosToDashboard() {
-        objectsContainer.setPagoModelsToDashboard(repositoriesContainer.getPagoRepository().getPagosByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
+        objectsContainer.setPagoModelsToDashboard(PagoService.getPagoModelsByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
     }
 
     public void getLiquidacionesBd() {
-        objectsContainer.setLiquidaciones(repositoriesContainer.getLiquidacionRepository().getLiquidacionesByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
-        objectsContainer.setPagosOfLiquidaciones(repositoriesContainer.getPagoRepository().getPagosOfLiquidacionesByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
+        objectsContainer.setLiquidaciones(LiquidacionService.getLiquidacionModelsByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
+        objectsContainer.setPagosOfLiquidaciones(PagoService.getPagosOfLiquidacionesByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
     }
 
     public void getAsignaciones() {
-        objectsContainer.setAsignaciones(repositoriesContainer.getAsignacionRepository().getAsignacionesToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        objectsContainer.setAsignaciones(AsignacionService.getAsignacionesToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
     public void getAgencia() {
@@ -78,9 +76,12 @@ public class DashboardPorDiaPWAThread implements Runnable {
 
     public void getClientes() {
         switch (objectsContainer.getDia()) {
-            case "miércoles", "Miércoles", "wednesday", "Wednesday" -> objectsContainer.getDashboard().setClientes(getClientesMiercoles());
-            case "jueves", "Jueves", "thursday", "Thursday" -> objectsContainer.getDashboard().setClientes(getClientesJueves());
-            case "viernes", "Viernes", "friday", "Friday" -> objectsContainer.getDashboard().setClientes(getClientesViernes());
+            case "miércoles", "Miércoles", "wednesday", "Wednesday" ->
+                    objectsContainer.getDashboard().setClientes(getClientesMiercoles());
+            case "jueves", "Jueves", "thursday", "Thursday" ->
+                    objectsContainer.getDashboard().setClientes(getClientesJueves());
+            case "viernes", "Viernes", "friday", "Friday" ->
+                    objectsContainer.getDashboard().setClientes(getClientesViernes());
             default -> objectsContainer.getDashboard().setClientes(null);
         }
     }

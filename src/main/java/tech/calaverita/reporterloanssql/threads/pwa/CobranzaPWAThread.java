@@ -51,13 +51,13 @@ public class CobranzaPWAThread implements Runnable {
         prestamoCobranzaPwa.setDiaDePago(prestamoModel.getDiaDePago());
 
         if (!pagoModels.isEmpty()) {
-            if(pagoModels.size() == 1){
+            if (pagoModels.size() == 1) {
                 prestamoCobranzaPwa.setCobradoEnLaSemana(pagoModels.get(0).getMonto());
                 prestamoCobranzaPwa.setFechaUltimoPago(pagoModels.get(0).getFechaPago());
-            }else{
+            } else {
                 double cobradoEnLaSemana = 0;
 
-                for(PagoModel pagoModel : pagoModels){
+                for (PagoModel pagoModel : pagoModels) {
                     cobradoEnLaSemana += pagoModel.getMonto();
                 }
 

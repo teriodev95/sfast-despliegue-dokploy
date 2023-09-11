@@ -1,15 +1,12 @@
 package tech.calaverita.reporterloanssql.helpers;
 
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
-import tech.calaverita.reporterloanssql.services.RepositoriesContainer;
 import tech.calaverita.reporterloanssql.threads.pwa.DashboardPorDiaPWAThread;
 
 public class DashboardPorDiaUtil implements Runnable {
-    public RepositoriesContainer repositoriesContainer;
     public ObjectsContainer objectsContainer;
 
-    public DashboardPorDiaUtil(RepositoriesContainer repositoriesContainer, ObjectsContainer objectsContainer) {
-        this.repositoriesContainer = repositoriesContainer;
+    public DashboardPorDiaUtil(ObjectsContainer objectsContainer) {
         this.objectsContainer = objectsContainer;
     }
 
@@ -18,7 +15,7 @@ public class DashboardPorDiaUtil implements Runnable {
         Thread[] threads = new Thread[21];
 
         for (int i = 0; i < threads.length; i++) {
-            threads[i] = new Thread(new DashboardPorDiaPWAThread(repositoriesContainer, objectsContainer, i));
+            threads[i] = new Thread(new DashboardPorDiaPWAThread(objectsContainer, i));
         }
 
         threads[0].start();
@@ -37,7 +34,7 @@ public class DashboardPorDiaUtil implements Runnable {
 
         threads[7].start();
 
-        while (objectsContainer.getPagosVistaToCobranza() == null){
+        while (objectsContainer.getPagosVistaToCobranza() == null) {
 
         }
 
@@ -51,7 +48,7 @@ public class DashboardPorDiaUtil implements Runnable {
             threads[i].start();
         }
 
-        while (objectsContainer.getPrestamosToDashboard() == null){
+        while (objectsContainer.getPrestamosToDashboard() == null) {
 
         }
 

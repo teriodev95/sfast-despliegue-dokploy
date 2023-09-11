@@ -12,8 +12,8 @@ public class XpressUtil {
             threads[i].start();
         }
 
-        for(Thread thread: threads){
-            while (thread.isAlive()){
+        for (Thread thread : threads) {
+            while (thread.isAlive()) {
 
             }
         }

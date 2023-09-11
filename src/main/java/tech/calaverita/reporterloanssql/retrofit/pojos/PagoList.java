@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 @Data
 public class PagoList {
+    private ArrayList<PagoModel> pagos = new ArrayList<>();
+
     public PagoList() {
 
     }
@@ -14,6 +16,4 @@ public class PagoList {
     public PagoList(PagoModel pago) {
         this.pagos.add(pago);
     }
-
-    private ArrayList<PagoModel> pagos = new ArrayList<>();
 }

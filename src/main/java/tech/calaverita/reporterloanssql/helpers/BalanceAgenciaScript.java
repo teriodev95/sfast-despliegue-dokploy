@@ -18,12 +18,12 @@ public class BalanceAgenciaScript {
 
     public static BalanceAgencia balanceAgencia;
 
-    public static void main(String[] args) {
-        writePdf();
-    }
-
     public BalanceAgenciaScript(BalanceAgencia balanceAgencia) {
         this.balanceAgencia = balanceAgencia;
+    }
+
+    public static void main(String[] args) {
+        writePdf();
     }
 
     public static void writePdf() {

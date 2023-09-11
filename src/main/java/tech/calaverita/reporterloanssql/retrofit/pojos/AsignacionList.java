@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 @Data
 public class AsignacionList {
+    private ArrayList<AsignacionModel> asignaciones = new ArrayList<>();
+
     public AsignacionList() {
 
     }
@@ -14,6 +16,4 @@ public class AsignacionList {
     public AsignacionList(AsignacionModel asignacion) {
         this.asignaciones.add(asignacion);
     }
-
-    private ArrayList<AsignacionModel> asignaciones = new ArrayList<>();
 }

@@ -17,7 +17,7 @@ public class PrestamoController {
     @CrossOrigin
     @GetMapping(path = "/{id}")
     public ResponseEntity<PrestamoModel> getPrestamoByPrestamoId(@PathVariable("id") String prestamoId) {
-        PrestamoModel prestamoModel = prestamoRepository.getPrestamoByPrestamoId(prestamoId);
+        PrestamoModel prestamoModel = prestamoRepository.getPrestamoModelByPrestamoId(prestamoId);
 
         if (prestamoModel == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

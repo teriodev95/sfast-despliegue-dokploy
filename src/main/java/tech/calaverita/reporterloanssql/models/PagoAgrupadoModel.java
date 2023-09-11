@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "pagos_agrupados")
-public class PagoVistaModel {
+public class PagoAgrupadoModel {
     @Id
     @Column(name = "pagoid")
     private String pagoId;
