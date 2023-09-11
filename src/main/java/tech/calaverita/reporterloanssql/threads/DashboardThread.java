@@ -25,118 +25,137 @@ public class DashboardThread implements Runnable {
     @Override
     public void run() {
         switch (opc) {
-            case 0 -> getPrestamosToCobranza();
-            case 1 -> getPrestamosToDashboard();
-            case 2 -> getPagosToCobranza();
-            case 3 -> getPagosToDashboard();
-            case 4 -> getLiquidacionesBd();
-            case 5 -> getPagosOfLiquidaciones();
-            case 6 -> getAsignaciones();
-            case 7 -> getGerencia();
-            case 8 -> getClientes();
-            case 9 -> getDebitoMiercoles();
-            case 10 -> getDebitoJueves();
-            case 11 -> getDebitoViernes();
-            case 12 -> getDebitoTotal();
-            case 13 -> getLiquidaciones();
-            case 14 -> getNumeroDeLiquidaciones();
-            case 15 -> getTotalDeDescuento();
-            case 16 -> getClientesCobrados();
-            case 17 -> getNoPagos();
-            case 18 -> getPagosReducidos();
-            case 19 -> getMontoExcedente();
-            case 20 -> getCobranzaTotal();
-            case 21 -> getTotalCobranzaPura();
-            case 22 -> getEfectivoEnCampo();
-            case 23 -> getRendmiento();
-            case 24 -> getMontoDeDebitoFaltante();
-            case 25 -> getMultas();
+            case 0 -> setPrestamosToCobranza();
+            case 1 -> setPrestamosToDashboard();
+            case 2 -> setPagosToCobranza();
+            case 3 -> setPagosToDashboard();
+            case 4 -> setLiquidacionesBd();
+            case 5 -> setPagosOfLiquidaciones();
+            case 6 -> setAsignaciones();
         }
     }
 
-    public void getPrestamosToCobranza() {
+    public void setPrestamosToCobranza() {
         objectsContainer.setPrestamosToCobranza(PrestamoService.getPrestamoModelsByAgenciaAnioAndSemanaToCobranzaPGS(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+
+        setGerencia();
+        setClientes();
     }
 
-    public void getPrestamosToDashboard() {
+    public void setPrestamosToDashboard() {
         objectsContainer.setPrestamosToDashboard(PrestamoService.getPrestamoModelsByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
-    public void getPagosToCobranza() {
+    public void setPagosToCobranza() {
         objectsContainer.setPagosVistaToCobranza(PagoService.getPagoUtilModelsByAgenciaAnioAndSemanaToCobranza(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+
+        try {
+            threads[0].join();
+        } catch (InterruptedException e) {
+            System.out.println("Ha fallado el seteoDeDebitos " + e);
+        }
+
+        setDebitoMiercoles();
+        setDebitoJueves();
+        setDebitoViernes();
+        setDebitoTotal();
     }
 
-    public void getPagosToDashboard() {
+    public void setPagosToDashboard() {
         objectsContainer.setPagosVistaToDashboard(PagoService.getPagoUtilModelsByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
-    }
 
-    public void getLiquidacionesBd() {
-        objectsContainer.setLiquidaciones(LiquidacionService.getLiquidacionModelsByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
-    }
+        setClientesCobrados();
+        setMultas();
+        setNoPagos();
+        setPagosReducidos();
+        setCobranzaTotal();
 
-    public void getPagosOfLiquidaciones() {
-        objectsContainer.setPagosOfLiquidaciones(PagoService.getPagoModelsOfLiquidacionesByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
-    }
-
-    public void getAsignaciones() {
-        objectsContainer.setAsignaciones(AsignacionService.getAsignacionesToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
-    }
-
-    public void getGerencia() {
-        try {
-            threads[0].join();
-        } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getAgencia " + e);
-        }
-
-        objectsContainer.getDashboard().setGerencia(objectsContainer.getPrestamosToCobranza().get(0).getGerencia());
-    }
-
-    public void getClientes() {
-        try {
-            threads[0].join();
-        } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getClientes " + e);
-        }
-        objectsContainer.getDashboard().setClientes(objectsContainer.getPrestamosToCobranza().size());
-    }
-
-    public void getClientesCobrados() {
-        try {
-            threads[3].join();
-        } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getClientesCobrados " + e);
-        }
-        objectsContainer.getDashboard().setClientesCobrados(objectsContainer.getPagosVistaToDashboard().size());
-    }
-
-    public void getNumeroDeLiquidaciones() {
         try {
             threads[4].join();
         } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getNumeroDeLiquidaciones " + e);
+            System.out.println("Ha fallado el setMontoExcedente " + e);
         }
 
+        setMontoExcedente();
+
+        try {
+            threads[4].join();
+        } catch (InterruptedException e) {
+            System.out.println("Ha fallado el setTotalCobranzaPura " + e);
+        }
+
+        setTotalCobranzaPura();
+
+        try {
+            threads[2].join();
+        } catch (InterruptedException e) {
+            System.out.println("Ha fallado el setMontoDeDebitoFaltante " + e);
+        }
+
+        setMontoDeDebitoFaltante();
+
+        try {
+            threads[2].join();
+        } catch (InterruptedException e) {
+            System.out.println("Ha fallado el setRendimiento " + e);
+        }
+
+        setRendmiento();
+    }
+
+    public void setLiquidacionesBd() {
+        objectsContainer.setLiquidaciones(LiquidacionService.getLiquidacionModelsByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+
+        setNumeroDeLiquidaciones();
+        setTotalDeDescuento();
+
+        try {
+            threads[5].join();
+        } catch (InterruptedException e) {
+            System.out.println("Ha fallado el setLiquidaciones " + e);
+        }
+
+        setLiquidaciones();
+    }
+
+    public void setPagosOfLiquidaciones() {
+        objectsContainer.setPagosOfLiquidaciones(PagoService.getPagoModelsOfLiquidacionesByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+    }
+
+    public void setAsignaciones() {
+        objectsContainer.setAsignaciones(AsignacionService.getAsignacionesToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+
+        try {
+            threads[3].join();
+
+        } catch (InterruptedException e) {
+            System.out.println("Ha fallado el setEfectivoEnCampo " + e);
+        }
+
+        setEfectivoEnCampo();
+    }
+
+    public void setGerencia() {
+        objectsContainer.getDashboard().setGerencia(objectsContainer.getPrestamosToCobranza().get(0).getGerencia());
+    }
+
+    public void setClientes() {
+        objectsContainer.getDashboard().setClientes(objectsContainer.getPrestamosToCobranza().size());
+    }
+
+    public void setClientesCobrados() {
+        objectsContainer.getDashboard().setClientesCobrados(objectsContainer.getPagosVistaToDashboard().size());
+    }
+
+    public void setNumeroDeLiquidaciones() {
         objectsContainer.getDashboard().setNumeroLiquidaciones(objectsContainer.getLiquidaciones().size());
     }
 
-    public void getMultas() {
-        try {
-            threads[0].join();
-        } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getMultas " + e);
-        }
-
+    public void setMultas() {
         objectsContainer.getDashboard().setMultas(0.0);
     }
 
-    public void getNoPagos() {
-        try {
-            threads[3].join();
-        } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getNoPagos " + e);
-        }
-
+    public void setNoPagos() {
         int noPagos = 0;
 
         for (int i = 0; i < objectsContainer.getPagosVistaToDashboard().size(); i++) {
@@ -147,13 +166,7 @@ public class DashboardThread implements Runnable {
         objectsContainer.getDashboard().setNoPagos(noPagos);
     }
 
-    public void getPagosReducidos() {
-        try {
-            threads[3].join();
-        } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getPagosReducidos " + e);
-        }
-
+    public void setPagosReducidos() {
         int pagosReducidos = 0;
 
         for (int i = 0; i < objectsContainer.getPagosVistaToDashboard().size(); i++) {
@@ -173,15 +186,7 @@ public class DashboardThread implements Runnable {
         objectsContainer.getDashboard().setPagosReducidos(pagosReducidos);
     }
 
-    public void getDebitoMiercoles() {
-        try {
-            threads[0].join();
-            threads[2].join();
-
-        } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getDebitoMiercoles " + e);
-        }
-
+    public void setDebitoMiercoles() {
         double debitoMiercoles = 0;
 
         for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
@@ -196,15 +201,7 @@ public class DashboardThread implements Runnable {
         }
     }
 
-    public void getDebitoJueves() {
-        try {
-            threads[0].join();
-            threads[2].join();
-
-        } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getDebitoJueves " + e);
-        }
-
+    public void setDebitoJueves() {
         double debitoJueves = 0;
 
         for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
@@ -219,15 +216,7 @@ public class DashboardThread implements Runnable {
         }
     }
 
-    public void getDebitoViernes() {
-        try {
-            threads[0].join();
-            threads[2].join();
-
-        } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getDebitoViernes " + e);
-        }
-
+    public void setDebitoViernes() {
         double debitoViernes = 0;
 
         for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
@@ -242,15 +231,7 @@ public class DashboardThread implements Runnable {
         }
     }
 
-    public void getDebitoTotal() {
-        try {
-            threads[0].join();
-            threads[2].join();
-
-        } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getDebitoTotal " + e);
-        }
-
+    public void setDebitoTotal() {
         double debitoTotal = 0;
 
         for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
@@ -263,14 +244,7 @@ public class DashboardThread implements Runnable {
         }
     }
 
-    public void getTotalDeDescuento() {
-        try {
-            threads[4].join();
-
-        } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getTotalDeDescuento " + e);
-        }
-
+    public void setTotalDeDescuento() {
         double totalDeDescuento = 0;
 
         if (objectsContainer.getLiquidaciones() != null) {
@@ -284,16 +258,7 @@ public class DashboardThread implements Runnable {
         objectsContainer.getDashboard().setTotalDeDescuento(totalDeDescuento);
     }
 
-    public void getMontoExcedente() {
-        try {
-            threads[3].join();
-            threads[4].join();
-            threads[13].join();
-
-        } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getMontoExcedente " + e);
-        }
-
+    public void setMontoExcedente() {
         double montoExcedente = 0;
 
         for (int i = 0; i < objectsContainer.getPagosVistaToDashboard().size(); i++) {
@@ -311,14 +276,7 @@ public class DashboardThread implements Runnable {
         objectsContainer.getDashboard().setMontoExcedente(montoExcedente);
     }
 
-    public void getLiquidaciones() {
-        try {
-            threads[4].join();
-            threads[5].join();
-        } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getLiquidaciones " + e);
-        }
-
+    public void setLiquidaciones() {
         double liquidaciones = 0;
 
         if (objectsContainer.getLiquidaciones() != null) {
@@ -332,14 +290,7 @@ public class DashboardThread implements Runnable {
         objectsContainer.getDashboard().setLiquidaciones(liquidaciones);
     }
 
-    public void getCobranzaTotal() {
-        try {
-            threads[3].join();
-
-        } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getCobranzaTotal " + e);
-        }
-
+    public void setCobranzaTotal() {
         double cobranzaTotal = 0;
 
         for (int i = 0; i < objectsContainer.getPagosVistaToDashboard().size(); i++) {
@@ -349,16 +300,7 @@ public class DashboardThread implements Runnable {
         objectsContainer.getDashboard().setCobranzaTotal(cobranzaTotal);
     }
 
-    public void getTotalCobranzaPura() {
-        try {
-            threads[13].join();
-            threads[19].join();
-            threads[20].join();
-
-        } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getTotalCobranzaPura " + e);
-        }
-
+    public void setTotalCobranzaPura() {
         double totalCobranzaPura = objectsContainer.getDashboard().getCobranzaTotal() - objectsContainer.getDashboard().getMontoExcedente();
 
         if (objectsContainer.getDashboard().getLiquidaciones() != null) {
@@ -371,26 +313,12 @@ public class DashboardThread implements Runnable {
 
     }
 
-    public void getMontoDeDebitoFaltante() {
-        try {
-            threads[12].join();
-            threads[21].join();
-
-        } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getMontoDeDebitoFaltante " + e);
-        }
-
+    public void setMontoDeDebitoFaltante() {
         objectsContainer.getDashboard().setMontoDeDebitoFaltante(objectsContainer.getDashboard().getDebitoTotal() - objectsContainer.getDashboard().getTotalCobranzaPura());
     }
 
-    public void getEfectivoEnCampo() {
-        try {
-            threads[6].join();
-            threads[20].join();
+    public void setEfectivoEnCampo() {
 
-        } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getEfectivoEnCampo " + e);
-        }
 
         double asignaciones = 0;
 
@@ -407,15 +335,7 @@ public class DashboardThread implements Runnable {
         objectsContainer.getDashboard().setEfectivoEnCampo((double) Math.round(efectivoEnCampo * 100.0) / 100.0);
     }
 
-    public void getRendmiento() {
-        try {
-            threads[12].join();
-            threads[21].join();
-
-        } catch (InterruptedException e) {
-            System.out.println("Ha fallado el getRendimiento " + e);
-        }
-
+    public void setRendmiento() {
         double rendimiento = objectsContainer.getDashboard().getTotalCobranzaPura() / objectsContainer.getDashboard().getDebitoTotal() * 100;
 
         objectsContainer.getDashboard().setRendimiento((Math.round(rendimiento * 100.0) / 100.0));

@@ -12,25 +12,17 @@ public class DashboardUtil implements Runnable {
 
     @Override
     public void run() {
-        Thread[] threads = new Thread[26];
+        Thread[] threads = new Thread[7];
 
         for (int i = 0; i < 7; i++) {
-            threads[i] = new Thread(new DashboardThread(objectsContainer, i));
-        }
-
-        for (int i = 0; i < 7; i++) {
-            threads[i].start();
-        }
-
-        for (int i = 6; i < 26; i++) {
             threads[i] = new Thread(new DashboardThread(objectsContainer, i, threads));
         }
 
-        for (int i = 6; i < 26; i++) {
+        for (int i = 0; i < 7; i++) {
             threads[i].start();
         }
 
-        for (int i = 6; i < 26; i++) {
+        for (int i = 0; i < 7; i++) {
             try {
                 threads[i].join();
             } catch (InterruptedException e) {
