@@ -123,7 +123,7 @@ public class DashboardThread implements Runnable {
     }
 
     public void setAsignaciones() {
-        objectsContainer.setAsignaciones(AsignacionService.getAsignacionesToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        objectsContainer.setAsignaciones(AsignacionService.getAsignacionesByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
 
         try {
             threads[3].join();

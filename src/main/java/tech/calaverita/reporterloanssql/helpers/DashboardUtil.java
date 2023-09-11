@@ -16,6 +16,7 @@ public class DashboardUtil implements Runnable {
 
         for (int i = 0; i < 7; i++) {
             threads[i] = new Thread(new DashboardThread(objectsContainer, i, threads));
+            threads[i].setPriority(1);
         }
 
         for (int i = 0; i < 7; i++) {

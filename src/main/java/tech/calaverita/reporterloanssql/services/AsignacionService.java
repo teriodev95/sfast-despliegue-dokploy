@@ -20,7 +20,7 @@ public class AsignacionService {
         return asignacionRepository.findManyByAgenciaAnioAndSemana(agencia, anio, semana);
     }
 
-    public static ArrayList<AsignacionModel> getAsignacionesToDashboard(String agencia, int anio, int semana) {
-        return asignacionRepository.getAsignacionesToDashboard(agencia, anio, semana);
+    public static ArrayList<AsignacionModel> getAsignacionesByAgenciaAnioAndSemanaToDashboard(String agencia, int anio, int semana) {
+        return asignacionRepository.getAsignacionesByAgenciaAnioAndSemanaToDashboard(agencia, anio, semana);
     }
 }

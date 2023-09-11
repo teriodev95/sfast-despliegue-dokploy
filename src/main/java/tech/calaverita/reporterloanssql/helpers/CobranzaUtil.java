@@ -23,6 +23,7 @@ public class CobranzaUtil implements Runnable {
 
         for (int i = 2; i < 8; i++) {
             threads[i] = new Thread(new CobranzaThread(objectsContainer, i, threads));
+            threads[i].setPriority(1);
         }
 
         for (int i = 2; i < 8; i++) {

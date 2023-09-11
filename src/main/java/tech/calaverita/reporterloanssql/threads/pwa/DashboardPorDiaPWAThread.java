@@ -6,75 +6,139 @@ import tech.calaverita.reporterloanssql.services.*;
 public class DashboardPorDiaPWAThread implements Runnable {
     public ObjectsContainer objectsContainer;
     public int opc;
+    public Thread[] threads;
 
-    public DashboardPorDiaPWAThread(ObjectsContainer objectsContainer, int opc) {
+    public DashboardPorDiaPWAThread(ObjectsContainer objectsContainer, int opc, Thread[] threads) {
         this.objectsContainer = objectsContainer;
         this.opc = opc;
+        this.threads = threads;
     }
 
     @Override
     public void run() {
         switch (opc) {
-            case 0 -> getCalendario();
-            case 1 -> getPrestamosToCobranza();
-            case 2 -> getPrestamosToDashboard();
-            case 3 -> getPagosToCobranza();
-            case 4 -> getPagosToDashboard();
-            case 5 -> getLiquidacionesBd();
-            case 6 -> getAsignaciones();
-            case 7 -> getAgencia();
-            case 8 -> getClientes();
-            case 9 -> getLiquidaciones();
-            case 10 -> getNumeroDeLiquidaciones();
-            case 11 -> getTotalDeDescuento();
-            case 12 -> getClientesCobrados();
-            case 13 -> getNoPagos();
-            case 14 -> getPagosReducidos();
-            case 15 -> getMontoExcedente();
-            case 16 -> getCobranzaTotal();
-            case 17 -> getTotalCobranzaPura();
-            case 18 -> getMontoDeDebitoFaltante();
-            case 19 -> getRendmiento();
-            case 20 -> getMultas();
+            case 0 -> setPrestamosToCobranza();
+            case 1 -> setPrestamosToDashboard();
+            case 2 -> setPagosToCobranza();
+            case 3 -> setPagosToDashboard();
+            case 4 -> setLiquidacionesBd();
+            case 5 -> setCalendario();
+            case 6 -> setAsignaciones();
         }
     }
 
-    public void getCalendario() {
+    public void setCalendario() {
         objectsContainer.setCalendarioModel(CalendarioService.getSemanaActualXpressByFechaActual(objectsContainer.getFechaPago()));
         objectsContainer.getDashboard().setAnio(objectsContainer.getCalendarioModel().getAnio());
         objectsContainer.getDashboard().setSemana(objectsContainer.getCalendarioModel().getSemana());
     }
 
-    public void getPrestamosToCobranza() {
+    public void setPrestamosToCobranza() {
+        try {
+            threads[5].join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         objectsContainer.setPrestamosToCobranza(PrestamoService.getPrestamoModelsByAgenciaAnioAndSemanaToCobranzaPGS(objectsContainer.getDashboard().getAgencia(), objectsContainer.getCalendarioModel().getAnio(), objectsContainer.getCalendarioModel().getSemana()));
+
+        setGerencia();
+        setClientes();
     }
 
-    public void getPrestamosToDashboard() {
+    public void setPrestamosToDashboard() {
         objectsContainer.setPrestamosToDashboard(PrestamoService.getPrestamoModelsByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
     }
 
-    public void getPagosToCobranza() {
+    public void setPagosToCobranza() {
+        try {
+            threads[5].join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         objectsContainer.setPagosVistaToCobranza(PagoService.getPagoUtilModelsByAgenciaAnioAndSemanaToCobranza(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
-    public void getPagosToDashboard() {
+    public void setPagosToDashboard() {
         objectsContainer.setPagoModelsToDashboard(PagoService.getPagoModelsByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
+
+        try {
+            threads[0].join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        setClientesCobrados();
+        setMultas();
+        setNoPagos();
+        setPagosReducidos();
+        setCobranzaTotal();
+
+        try {
+            threads[4].join();
+        } catch (InterruptedException e) {
+            System.out.println("Ha fallado el setMontoExcedente " + e);
+        }
+
+        setMontoExcedente();
+
+        try {
+            threads[4].join();
+        } catch (InterruptedException e) {
+            System.out.println("Ha fallado el setTotalCobranzaPura " + e);
+        }
+
+        setTotalCobranzaPura();
+
+        try {
+            threads[2].join();
+        } catch (InterruptedException e) {
+            System.out.println("Ha fallado el setMontoDeDebitoFaltante " + e);
+        }
+
+        setMontoDeDebitoFaltante();
+
+        try {
+            threads[2].join();
+        } catch (InterruptedException e) {
+            System.out.println("Ha fallado el setRendimiento " + e);
+        }
+
+        setRendmiento();
     }
 
-    public void getLiquidacionesBd() {
+    public void setLiquidacionesBd() {
         objectsContainer.setLiquidaciones(LiquidacionService.getLiquidacionModelsByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
         objectsContainer.setPagosOfLiquidaciones(PagoService.getPagosOfLiquidacionesByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
+
+        setNumeroDeLiquidaciones();
+        setTotalDeDescuento();
+
+        try {
+            threads[5].join();
+        } catch (InterruptedException e) {
+            System.out.println("Ha fallado el setLiquidaciones " + e);
+        }
+
+        setLiquidaciones();
     }
 
-    public void getAsignaciones() {
-        objectsContainer.setAsignaciones(AsignacionService.getAsignacionesToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+    public void setAsignaciones() {
+        try {
+            threads[5].join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        objectsContainer.setAsignaciones(AsignacionService.getAsignacionesByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
-    public void getAgencia() {
+    public void setGerencia() {
         objectsContainer.getDashboard().setGerencia(objectsContainer.getPrestamosToCobranza().get(0).getGerencia());
     }
 
-    public void getClientes() {
+    public void setClientes() {
         switch (objectsContainer.getDia()) {
             case "miércoles", "Miércoles", "wednesday", "Wednesday" ->
                     objectsContainer.getDashboard().setClientes(getClientesMiercoles());
@@ -86,11 +150,11 @@ public class DashboardPorDiaPWAThread implements Runnable {
         }
     }
 
-    public void getClientesCobrados() {
+    public void setClientesCobrados() {
         objectsContainer.getDashboard().setClientesCobrados(objectsContainer.getPrestamosToDashboard().size());
     }
 
-    public void getNumeroDeLiquidaciones() {
+    public void setNumeroDeLiquidaciones() {
         if (objectsContainer.getLiquidaciones().isEmpty()) {
             objectsContainer.getDashboard().setNumeroLiquidaciones(0);
         } else {
@@ -98,11 +162,11 @@ public class DashboardPorDiaPWAThread implements Runnable {
         }
     }
 
-    public void getMultas() {
+    public void setMultas() {
         objectsContainer.getDashboard().setMultas(0.0);
     }
 
-    public void getNoPagos() {
+    public void setNoPagos() {
         int noPagos = 0;
 
         for (int i = 0; i < objectsContainer.getPagoModelsToDashboard().size(); i++) {
@@ -113,7 +177,7 @@ public class DashboardPorDiaPWAThread implements Runnable {
         objectsContainer.getDashboard().setNoPagos(noPagos);
     }
 
-    public void getPagosReducidos() {
+    public void setPagosReducidos() {
         int pagosReducidos = 0;
 
         for (int i = 0; i < objectsContainer.getPagoModelsToDashboard().size(); i++) {
@@ -185,7 +249,7 @@ public class DashboardPorDiaPWAThread implements Runnable {
         return clientesViernes;
     }
 
-    public void getTotalDeDescuento() {
+    public void setTotalDeDescuento() {
         double totalDeDescuento = 0;
 
         if (objectsContainer.getLiquidaciones() != null) {
@@ -199,7 +263,7 @@ public class DashboardPorDiaPWAThread implements Runnable {
         objectsContainer.getDashboard().setTotalDeDescuento(totalDeDescuento);
     }
 
-    public void getMontoExcedente() {
+    public void setMontoExcedente() {
         double montoExcedente = 0;
 
         for (int i = 0; i < objectsContainer.getPagoModelsToDashboard().size(); i++) {
@@ -217,7 +281,7 @@ public class DashboardPorDiaPWAThread implements Runnable {
         objectsContainer.getDashboard().setMontoExcedente(montoExcedente);
     }
 
-    public void getLiquidaciones() {
+    public void setLiquidaciones() {
         double liquidaciones = 0;
 
         if (objectsContainer.getLiquidaciones() != null) {
@@ -231,7 +295,7 @@ public class DashboardPorDiaPWAThread implements Runnable {
         objectsContainer.getDashboard().setLiquidaciones(liquidaciones);
     }
 
-    public void getCobranzaTotal() {
+    public void setCobranzaTotal() {
         double cobranzaTotal = 0;
 
         for (int i = 0; i < objectsContainer.getPagoModelsToDashboard().size(); i++) {
@@ -241,7 +305,7 @@ public class DashboardPorDiaPWAThread implements Runnable {
         objectsContainer.getDashboard().setCobranzaTotal(cobranzaTotal);
     }
 
-    public void getTotalCobranzaPura() {
+    public void setTotalCobranzaPura() {
         double totalCobranzaPura = objectsContainer.getDashboard().getCobranzaTotal() - objectsContainer.getDashboard().getMontoExcedente();
 
         if (objectsContainer.getDashboard().getLiquidaciones() != null) {
@@ -253,13 +317,13 @@ public class DashboardPorDiaPWAThread implements Runnable {
         objectsContainer.getDashboard().setTotalCobranzaPura(totalCobranzaPura);
     }
 
-    public void getMontoDeDebitoFaltante() {
+    public void setMontoDeDebitoFaltante() {
         if (objectsContainer.getDashboard().getDebitoTotal() != null && objectsContainer.getDashboard().getDebitoTotal() > 0) {
             objectsContainer.getDashboard().setMontoDeDebitoFaltante(objectsContainer.getDashboard().getDebitoTotal() - objectsContainer.getDashboard().getTotalCobranzaPura());
         }
     }
 
-    public void getRendmiento() {
+    public void setRendmiento() {
         if (objectsContainer.getDashboard().getDebitoTotal() != null && objectsContainer.getDashboard().getDebitoTotal() > 0) {
             double rendimiento = objectsContainer.getDashboard().getTotalCobranzaPura() / objectsContainer.getDashboard().getDebitoTotal() * 100;
 

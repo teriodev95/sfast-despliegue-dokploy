@@ -73,6 +73,7 @@ public class XpressController {
             objectsContainers[i].getCobranza().setSemana(semana);
 
             threads[i] = new Thread(new CobranzaUtil(objectsContainers[i]));
+            threads[i].setPriority(3);
         }
 
         for (int i = 0; i < agencias.size(); i++) {
@@ -80,7 +81,10 @@ public class XpressController {
         }
 
         for (int i = 0; i < agencias.size(); i++) {
-            while (threads[i].isAlive()) {
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
 
@@ -123,16 +127,11 @@ public class XpressController {
             objectsContainers[i].getDashboard().setSemana(semana);
 
             threads[i] = new Thread(new DashboardUtil(objectsContainers[i]));
+            threads[i].setPriority(3);
         }
 
         for (int i = 0; i < agencias.size(); i++) {
             threads[i].start();
-
-            try {
-                Thread.sleep(250);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
         }
 
         for (int i = 0; i < agencias.size(); i++) {
