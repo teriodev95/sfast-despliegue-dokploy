@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.reporterloanssql.helpers.CobranzaUtil;
 import tech.calaverita.reporterloanssql.helpers.DashboardUtil;
-import tech.calaverita.reporterloanssql.helpers.XpressUtil;
 import tech.calaverita.reporterloanssql.models.UsuarioModel;
 import tech.calaverita.reporterloanssql.pojos.Cobranza;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
@@ -30,10 +29,7 @@ public class XpressController {
         }
 
         loginResponse.setSolicitante(usuarioModel);
-
-        if (usuarioModel.getTipo().equals("Agente")) {
-            XpressUtil.setInvolucradosLoginResponse(loginResponse);
-        }
+        loginResponse.setInvolucrados(UsuarioService.findManyByGerencia(usuarioModel.getGerencia()));
 
         return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }
@@ -109,6 +105,7 @@ public class XpressController {
         return new ResponseEntity<>(objectsContainer.getDashboard(), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @GetMapping(path = "/dashboard-gerencia/{gerencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<Dashboard[]> getDashboardByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
         ArrayList<String> agencias = AgenciaService.getAgenciasByGerencia(gerencia);

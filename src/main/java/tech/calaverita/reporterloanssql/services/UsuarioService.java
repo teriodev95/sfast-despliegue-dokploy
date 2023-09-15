@@ -35,4 +35,8 @@ public class UsuarioService {
     public static UsuarioModel findOneByUsuarioIdFromGerenciaIdOfGerenciaModel(String gerenciaId) {
         return usuarioRepository.findOneByUsuarioIdFromGerenciaIdOfGerenciaModel(gerenciaId);
     }
+
+    public static ArrayList<UsuarioModel> findManyByGerencia(String gerencia){
+        return usuarioRepository.findManyByGerencia(gerencia);
+    }
 }

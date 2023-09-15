@@ -3,6 +3,7 @@ package tech.calaverita.reporterloanssql.repositories;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import tech.calaverita.reporterloanssql.models.UsuarioGerenciaModel;
 import tech.calaverita.reporterloanssql.models.UsuarioModel;
 
 import java.util.ArrayList;
@@ -39,4 +40,11 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
             "FROM gerencias ger " +
             "WHERE ger.gerenciaId = :gerenciaId))", nativeQuery = true)
     UsuarioModel findOneByUsuarioIdFromGerenciaIdOfGerenciaModel(String gerenciaId);
+
+    @Query("SELECT usu " +
+            "FROM UsuarioModel usu " +
+            "JOIN UsuarioGerenciaModel ugm " +
+            "ON usu.usuarioId = ugm.usuarioId " +
+            "AND ugm.gerenciaId = :gerencia")
+    ArrayList<UsuarioModel> findManyByGerencia(String gerencia);
 }
