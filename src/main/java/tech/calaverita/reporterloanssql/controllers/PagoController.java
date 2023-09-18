@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import retrofit2.Call;
-import tech.calaverita.reporterloanssql.helpers.PagoUtil;
+import tech.calaverita.reporterloanssql.utils.PagoUtil;
 import tech.calaverita.reporterloanssql.models.*;
 import tech.calaverita.reporterloanssql.pojos.PagoConLiquidacion;
 import tech.calaverita.reporterloanssql.repositories.*;

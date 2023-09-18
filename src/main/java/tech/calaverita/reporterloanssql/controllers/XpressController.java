@@ -3,8 +3,8 @@ package tech.calaverita.reporterloanssql.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.calaverita.reporterloanssql.helpers.CobranzaUtil;
-import tech.calaverita.reporterloanssql.helpers.DashboardUtil;
+import tech.calaverita.reporterloanssql.utils.CobranzaUtil;
+import tech.calaverita.reporterloanssql.utils.DashboardUtil;
 import tech.calaverita.reporterloanssql.models.UsuarioModel;
 import tech.calaverita.reporterloanssql.pojos.Cobranza;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
@@ -107,7 +107,9 @@ public class XpressController {
 
     @CrossOrigin
     @GetMapping(path = "/dashboard-gerencia/{gerencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Dashboard[]> getDashboardByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
+    public @ResponseBody ResponseEntity<Dashboard> getDashboardByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
+        Dashboard dashboardResponse;
+
         ArrayList<String> agencias = AgenciaService.getAgenciasByGerencia(gerencia);
 
         Thread[] threads = new Thread[agencias.size()];
@@ -139,6 +141,8 @@ public class XpressController {
             }
         }
 
-        return new ResponseEntity<>(dashboards, HttpStatus.OK);
+        dashboardResponse = DashboardUtil.getDashboardGeneral(dashboards);
+
+        return new ResponseEntity<>(dashboardResponse, HttpStatus.OK);
     }
 }

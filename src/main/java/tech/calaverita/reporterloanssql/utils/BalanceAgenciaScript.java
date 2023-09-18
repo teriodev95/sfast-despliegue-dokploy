@@ -1,4 +1,4 @@
-package tech.calaverita.reporterloanssql.helpers;
+package tech.calaverita.reporterloanssql.utils;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;

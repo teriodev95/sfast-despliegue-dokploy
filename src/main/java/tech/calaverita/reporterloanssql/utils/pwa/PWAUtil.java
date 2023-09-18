@@ -1,4 +1,4 @@
-package tech.calaverita.reporterloanssql.helpers.pwa;
+package tech.calaverita.reporterloanssql.utils.pwa;
 
 import tech.calaverita.reporterloanssql.models.*;
 import tech.calaverita.reporterloanssql.pojos.pwa.PagoHistoricoPWA;

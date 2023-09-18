@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.calaverita.reporterloanssql.helpers.VisitaUtil;
+import tech.calaverita.reporterloanssql.utils.VisitaUtil;
 import tech.calaverita.reporterloanssql.models.VisitaModel;
 import tech.calaverita.reporterloanssql.services.VisitaService;
 

@@ -1,4 +1,4 @@
-package tech.calaverita.reporterloanssql.helpers;
+package tech.calaverita.reporterloanssql.utils;
 
 public class BalanceAgenciaUtil {
     public static String getNivelAgente(int clientes, double porCobroJueves, int antiguedad) {

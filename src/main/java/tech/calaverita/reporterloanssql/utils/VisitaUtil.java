@@ -1,4 +1,4 @@
-package tech.calaverita.reporterloanssql.helpers;
+package tech.calaverita.reporterloanssql.utils;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

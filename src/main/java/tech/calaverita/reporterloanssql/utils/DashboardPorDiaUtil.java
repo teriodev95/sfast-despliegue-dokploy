@@ -1,7 +1,6 @@
-package tech.calaverita.reporterloanssql.helpers;
+package tech.calaverita.reporterloanssql.utils;
 
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
-import tech.calaverita.reporterloanssql.threads.DashboardThread;
 import tech.calaverita.reporterloanssql.threads.pwa.DashboardPorDiaPWAThread;
 
 public class DashboardPorDiaUtil implements Runnable {
