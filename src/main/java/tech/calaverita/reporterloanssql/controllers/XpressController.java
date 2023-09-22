@@ -122,6 +122,7 @@ public class XpressController {
 
             objectsContainers[i].setDashboard(dashboards[i]);
             objectsContainers[i].getDashboard().setAgencia(agencias.get(i));
+            objectsContainers[i].getDashboard().setGerencia(gerencia);
             objectsContainers[i].getDashboard().setAnio(anio);
             objectsContainers[i].getDashboard().setSemana(semana);
 

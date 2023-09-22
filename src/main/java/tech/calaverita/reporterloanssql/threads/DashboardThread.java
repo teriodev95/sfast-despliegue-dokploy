@@ -136,18 +136,26 @@ public class DashboardThread implements Runnable {
     }
 
     public void setGerencia() {
-        objectsContainer.getDashboard().setGerencia(objectsContainer.getPrestamosToCobranza().get(0).getGerencia());
+        if (objectsContainer.getDashboard().getGerencia() == null) {
+            objectsContainer.getDashboard().setGerencia(objectsContainer.getPrestamosToCobranza().get(0).getGerencia());
+        }
     }
 
     public void setClientes() {
+        objectsContainer.getDashboard().setClientes(0);
+
         objectsContainer.getDashboard().setClientes(objectsContainer.getPrestamosToCobranza().size());
     }
 
     public void setClientesCobrados() {
+        objectsContainer.getDashboard().setClientesCobrados(0);
+
         objectsContainer.getDashboard().setClientesCobrados(objectsContainer.getPagosVistaToDashboard().size());
     }
 
     public void setNumeroDeLiquidaciones() {
+        objectsContainer.getDashboard().setNumeroLiquidaciones(0);
+
         objectsContainer.getDashboard().setNumeroLiquidaciones(objectsContainer.getLiquidaciones().size());
     }
 
@@ -189,71 +197,83 @@ public class DashboardThread implements Runnable {
     public void setDebitoMiercoles() {
         double debitoMiercoles = 0;
 
-        for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
-            if (objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("MIERCOLES")) {
-                if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
-                    debitoMiercoles += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
-                else
-                    debitoMiercoles += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
-            }
+        if (!objectsContainer.getPrestamosToCobranza().isEmpty() &&
+                !objectsContainer.getPagosVistaToCobranza().isEmpty()
+        ) {
+            for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
+                if (objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("MIERCOLES")) {
+                    if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
+                        debitoMiercoles += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
+                    else
+                        debitoMiercoles += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
+                }
 
-            objectsContainer.getDashboard().setDebitoMiercoles(debitoMiercoles);
+            }
         }
+        objectsContainer.getDashboard().setDebitoMiercoles(debitoMiercoles);
     }
 
     public void setDebitoJueves() {
         double debitoJueves = 0;
 
-        for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
-            if (objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("JUEVES")) {
-                if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
-                    debitoJueves += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
-                else
-                    debitoJueves += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
+        if (!objectsContainer.getPrestamosToCobranza().isEmpty() &&
+                !objectsContainer.getPagosVistaToCobranza().isEmpty()
+        ) {
+            for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
+                if (objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("JUEVES")) {
+                    if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
+                        debitoJueves += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
+                    else
+                        debitoJueves += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
+                }
             }
-
-            objectsContainer.getDashboard().setDebitoJueves(debitoJueves);
         }
+        objectsContainer.getDashboard().setDebitoJueves(debitoJueves);
     }
 
     public void setDebitoViernes() {
         double debitoViernes = 0;
 
-        for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
-            if (objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("VIERNES")) {
-                if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
-                    debitoViernes += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
-                else
-                    debitoViernes += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
+        if (!objectsContainer.getPrestamosToCobranza().isEmpty() &&
+                !objectsContainer.getPagosVistaToCobranza().isEmpty()
+        ) {
+            for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
+                if (objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("VIERNES")) {
+                    if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
+                        debitoViernes += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
+                    else
+                        debitoViernes += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
+                }
             }
-
-            objectsContainer.getDashboard().setDebitoViernes(debitoViernes);
         }
+        objectsContainer.getDashboard().setDebitoViernes(debitoViernes);
     }
 
     public void setDebitoTotal() {
         double debitoTotal = 0;
 
-        for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
-            if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
-                debitoTotal += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
-            else
-                debitoTotal += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
-
-            objectsContainer.getDashboard().setDebitoTotal(debitoTotal);
+        if (!objectsContainer.getPrestamosToCobranza().isEmpty() &&
+                !objectsContainer.getPagosVistaToCobranza().isEmpty()
+        ) {
+            for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
+                if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
+                    debitoTotal += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
+                else
+                    debitoTotal += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
+            }
         }
+        objectsContainer.getDashboard().setDebitoTotal(debitoTotal);
     }
 
     public void setTotalDeDescuento() {
         double totalDeDescuento = 0;
 
-        if (objectsContainer.getLiquidaciones() != null) {
-            if (!objectsContainer.getLiquidaciones().isEmpty()) {
-                for (int i = 0; i < objectsContainer.getLiquidaciones().size(); i++) {
-                    totalDeDescuento += objectsContainer.getLiquidaciones().get(i).getDescuentoEnDinero();
-                }
+        if (objectsContainer.getLiquidaciones() != null && !objectsContainer.getLiquidaciones().isEmpty()) {
+            for (int i = 0; i < objectsContainer.getLiquidaciones().size(); i++) {
+                totalDeDescuento += objectsContainer.getLiquidaciones().get(i).getDescuentoEnDinero();
             }
         }
+
 
         objectsContainer.getDashboard().setTotalDeDescuento(totalDeDescuento);
     }
