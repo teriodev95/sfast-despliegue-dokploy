@@ -142,20 +142,14 @@ public class DashboardThread implements Runnable {
     }
 
     public void setClientes() {
-        objectsContainer.getDashboard().setClientes(0);
-
         objectsContainer.getDashboard().setClientes(objectsContainer.getPrestamosToCobranza().size());
     }
 
     public void setClientesCobrados() {
-        objectsContainer.getDashboard().setClientesCobrados(0);
-
         objectsContainer.getDashboard().setClientesCobrados(objectsContainer.getPagosVistaToDashboard().size());
     }
 
     public void setNumeroDeLiquidaciones() {
-        objectsContainer.getDashboard().setNumeroLiquidaciones(0);
-
         objectsContainer.getDashboard().setNumeroLiquidaciones(objectsContainer.getLiquidaciones().size());
     }
 
@@ -197,9 +191,6 @@ public class DashboardThread implements Runnable {
     public void setDebitoMiercoles() {
         double debitoMiercoles = 0;
 
-        if (!objectsContainer.getPrestamosToCobranza().isEmpty() &&
-                !objectsContainer.getPagosVistaToCobranza().isEmpty()
-        ) {
             for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
                 if (objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("MIERCOLES")) {
                     if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
@@ -209,16 +200,12 @@ public class DashboardThread implements Runnable {
                 }
 
             }
-        }
         objectsContainer.getDashboard().setDebitoMiercoles(debitoMiercoles);
     }
 
     public void setDebitoJueves() {
         double debitoJueves = 0;
 
-        if (!objectsContainer.getPrestamosToCobranza().isEmpty() &&
-                !objectsContainer.getPagosVistaToCobranza().isEmpty()
-        ) {
             for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
                 if (objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("JUEVES")) {
                     if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
@@ -227,16 +214,12 @@ public class DashboardThread implements Runnable {
                         debitoJueves += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
                 }
             }
-        }
         objectsContainer.getDashboard().setDebitoJueves(debitoJueves);
     }
 
     public void setDebitoViernes() {
         double debitoViernes = 0;
 
-        if (!objectsContainer.getPrestamosToCobranza().isEmpty() &&
-                !objectsContainer.getPagosVistaToCobranza().isEmpty()
-        ) {
             for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
                 if (objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("VIERNES")) {
                     if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
@@ -245,23 +228,18 @@ public class DashboardThread implements Runnable {
                         debitoViernes += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
                 }
             }
-        }
         objectsContainer.getDashboard().setDebitoViernes(debitoViernes);
     }
 
     public void setDebitoTotal() {
         double debitoTotal = 0;
 
-        if (!objectsContainer.getPrestamosToCobranza().isEmpty() &&
-                !objectsContainer.getPagosVistaToCobranza().isEmpty()
-        ) {
             for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
                 if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
                     debitoTotal += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
                 else
                     debitoTotal += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
             }
-        }
         objectsContainer.getDashboard().setDebitoTotal(debitoTotal);
     }
 

@@ -45,7 +45,7 @@ public class BalanceAgenciaScript {
             String path = new File("src\\main\\java\\tech\\calaverita\\reporterloanssql\\resources\\balancesDeAgencias").getCanonicalPath();
             String fileName = path + "\\balance-de-agencia.pdf";
 
-            PdfWriter.getInstance(document, new FileOutputStream(new File(fileName)));
+            PdfWriter.getInstance(document, new FileOutputStream(fileName));
 
             document.open();
 

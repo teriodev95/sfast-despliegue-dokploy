@@ -23,4 +23,8 @@ public class AsignacionService {
     public static ArrayList<AsignacionModel> getAsignacionesByAgenciaAnioAndSemanaToDashboard(String agencia, int anio, int semana) {
         return asignacionRepository.getAsignacionesByAgenciaAnioAndSemanaToDashboard(agencia, anio, semana);
     }
+
+    public static Double getSumaDeAsigancionesByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
+        return asignacionRepository.getSumaDeAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
+    }
 }
