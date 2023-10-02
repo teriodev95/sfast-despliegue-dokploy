@@ -1,8 +1,10 @@
 package tech.calaverita.reporterloanssql.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.calaverita.reporterloanssql.pojos.pwa.CierreSemanalPWA;
 import tech.calaverita.reporterloanssql.utils.DashboardPorDiaUtil;
 import tech.calaverita.reporterloanssql.utils.pwa.PWAUtil;
 import tech.calaverita.reporterloanssql.models.*;
@@ -15,15 +17,15 @@ import tech.calaverita.reporterloanssql.services.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/xpress/v1/pwa")
 public class PWAController {
+    @Autowired
+    XpressController xpressController;
+
     @GetMapping(path = "/gerencias")
     public ResponseEntity<ArrayList<GerenciaModel>> getGerenciaModels() {
         ArrayList<GerenciaModel> gerenciaModels = GerenciaService.getGerenciaModels();
@@ -48,7 +50,7 @@ public class PWAController {
 
     @GetMapping(path = "/agencias/{gerencia}")
     public ResponseEntity<ArrayList<String>> getAgenciasByGerencia(@PathVariable("gerencia") String gerencia) {
-        ArrayList<String> agencias = AgenciaService.getAgenciasByGerencia(gerencia);
+        ArrayList<String> agencias = AgenciaService.getAgenciaModelsByGerencia(gerencia);
 
         if (agencias.isEmpty()) {
             return new ResponseEntity<>(agencias, HttpStatus.NO_CONTENT);
@@ -158,7 +160,7 @@ public class PWAController {
     }
 
     @GetMapping(path = "/dashboard-fecha/{agencia}/{fecha}")
-    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgencia(@PathVariable("agencia") String agencia, @PathVariable("fecha") String fecha) {
+    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgenciaAndFecha(@PathVariable("agencia") String agencia, @PathVariable("fecha") String fecha) {
         Dashboard dashboard = new Dashboard();
         ObjectsContainer objectsContainer = new ObjectsContainer();
 
@@ -216,5 +218,16 @@ public class PWAController {
         ArrayList<HashMap<String, Object>> asignacionModelsPWA = PWAUtil.getAsignacionModelsPWA(asignacionModels);
 
         return new ResponseEntity<>(asignacionModelsPWA, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/cierre-semanal/{agencia}/{anio}/{semana}")
+    public @ResponseBody ResponseEntity<CierreSemanalPWA> getCierreSemanalByAgenciaAnioAndSemana(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana){
+        Dashboard dashboard = xpressController.getDashboardByAgenciaAnioAndSemana(agencia, anio, semana).getBody();
+        List<UsuarioModel> usuarioModels = new ArrayList<>();
+        usuarioModels.add(UsuarioService.findOneByUsuario(agencia));
+        usuarioModels.add(UsuarioService.findOneByUsuario(usuarioModels.get(0).getGerencia()));
+        Double asignaciones = AsignacionService.getSumaDeAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
+
+        return new ResponseEntity<>(PWAUtil.getCierreSemanalPWA(dashboard, usuarioModels, asignaciones) , HttpStatus.OK);
     }
 }

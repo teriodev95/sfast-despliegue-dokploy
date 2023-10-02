@@ -53,7 +53,7 @@ public class XpressController {
 
     @GetMapping(path = "/cobranza-gerencia/{gerencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<Cobranza[]> getCobranzaByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
-        ArrayList<String> agencias = AgenciaService.getAgenciasByGerencia(gerencia);
+        ArrayList<String> agencias = AgenciaService.getAgenciaModelsByGerencia(gerencia);
 
         Thread[] threads = new Thread[agencias.size()];
         Cobranza[] cobranzas = new Cobranza[agencias.size()];
@@ -89,7 +89,7 @@ public class XpressController {
 
     @CrossOrigin
     @GetMapping(path = "/dashboard-agencia/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
+    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgenciaAnioAndSemana(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
         Dashboard dashboard = new Dashboard();
         ObjectsContainer objectsContainer = new ObjectsContainer();
 
@@ -107,10 +107,10 @@ public class XpressController {
 
     @CrossOrigin
     @GetMapping(path = "/dashboard-gerencia/{gerencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Dashboard> getDashboardByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
+    public @ResponseBody ResponseEntity<Dashboard> getDashboardByGerenciaAnioAndSemana(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
         Dashboard dashboardResponse;
 
-        ArrayList<String> agencias = AgenciaService.getAgenciasByGerencia(gerencia);
+        ArrayList<String> agencias = AgenciaService.getAgenciaModelsByGerencia(gerencia);
 
         Thread[] threads = new Thread[agencias.size()];
         Dashboard[] dashboards = new Dashboard[agencias.size()];

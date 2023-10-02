@@ -14,6 +14,8 @@ public class UsuarioModel {
     @Column(name = "usuarioid")
     private Integer usuarioId;
     private String nombre;
+    private String apellidoPaterno;
+    private String apellidoMaterno;
     private String tipo;
     private Integer pin;
     private String usuario;
