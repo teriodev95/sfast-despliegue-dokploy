@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import tech.calaverita.reporterloanssql.persistence.entities.AsignacionEntity;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Repository
 public interface AsignacionRepository extends CrudRepository<AsignacionEntity, String> {
@@ -36,11 +37,11 @@ public interface AsignacionRepository extends CrudRepository<AsignacionEntity, S
     );
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @Query("SELECT SUM(am.monto) " +
-            "FROM AsignacionEntity am " +
+    @Query(value = "SELECT if(SUM(am.monto) is null, 0, SUM(am.monto)) " +
+            "FROM asignaciones am " +
             "WHERE am.agencia = :agencia " +
             "AND am.anio = :anio " +
-            "AND am.semana = :semana")
+            "AND am.semana = :semana", nativeQuery = true)
     double getSumaDeAsigancionesByAgenciaAnioAndSemana(
             String agencia,
             int anio,

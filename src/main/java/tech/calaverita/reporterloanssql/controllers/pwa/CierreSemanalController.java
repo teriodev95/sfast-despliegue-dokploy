@@ -18,7 +18,7 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/xpress/v1/pwa/cierre-semanal")
+@RequestMapping("/xpress/v1/pwa/cierres_semanales")
 public final class CierreSemanalController {
     //------------------------------------------------------------------------------------------------------------------
     /*INSTANCE VARIABLES*/
@@ -59,22 +59,32 @@ public final class CierreSemanalController {
     /*METHODS*/
     //------------------------------------------------------------------------------------------------------------------
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<CierreSemanalDTO> getCierreSemanalByAgenciaAnioAndSemana(
+    public @ResponseBody ResponseEntity<?> getCierreSemanalByAgenciaAnioAndSemana(
             @PathVariable("agencia") String agencia,
             @PathVariable("anio") int anio,
             @PathVariable("semana") int semana
     ) {
-        Dashboard dashboard = xprContr.getDashboardByAgenciaAnioAndSemana(agencia, anio, semana).getBody();
-        List<UsuarioEntity> usuarioModels = new ArrayList<>();
-        usuarioModels.add(this.usuarServ.usuarModFindByUsuario(agencia));
-        usuarioModels.add(this.usuarServ.usuarModFindByUsuario(usuarioModels.get(0).getGerencia()));
-        Double asignaciones = this.asignServ.getSumaDeAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
+        Dashboard dashboard;
+        List<UsuarioEntity> usuarioModels;
+        double asignaciones;
+
+        if (
+                this.usuarServ.findByUsuario(agencia).isPresent()
+        ) {
+            dashboard = xprContr.getDashboardByAgenciaAnioAndSemana(agencia, anio, semana).getBody();
+            usuarioModels = new ArrayList<>();
+            usuarioModels.add(this.usuarServ.usuarModFindByUsuario(agencia));
+            usuarioModels.add(this.usuarServ.usuarModFindByUsuario(usuarioModels.get(0).getGerencia()));
+            asignaciones = this.asignServ.getSumaDeAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
+        } else {
+            return new ResponseEntity<>("La agencia no existe", HttpStatus.BAD_REQUEST);
+        }
 
         return new ResponseEntity<>(PWAUtil.getCierreSemanalPWA(dashboard, usuarioModels, asignaciones), HttpStatus.OK);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @PostMapping(path = "")
+    @PostMapping(path = "/create-one")
     public @ResponseBody ResponseEntity<String> restrCreateCierreSemanal(
             @RequestBody CierreSemanalDTO cierreSemanalDTO_I
     ) {

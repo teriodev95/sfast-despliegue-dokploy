@@ -53,6 +53,13 @@ public final class UsuarioService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public Optional<UsuarioEntity> findByUsuario(
+            String usuario
+    ) {
+        return this.usuarRepo.findByUsuario(usuario);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public ArrayList<UsuarioEntity> darrusuarModFindByTipo(
             String tipo
     ) {

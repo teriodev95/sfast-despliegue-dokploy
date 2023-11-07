@@ -67,4 +67,7 @@ public interface UsuarioRepository extends CrudRepository<UsuarioEntity, Integer
     ArrayList<UsuarioEntity> darrusuarEntFindByGerencia(
             String gerencia
     );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    Optional<UsuarioEntity> findByUsuario(String usuario);
 }

@@ -164,7 +164,7 @@ public final class PWAUtil {
     public static CierreSemanalDTO getCierreSemanalPWA(
             Dashboard dashboard,
             List<UsuarioEntity> darrusuarEnt,
-            Double asignaciones
+            double asignaciones
     ) {
         StringBuilder nombreAgente = new StringBuilder(darrusuarEnt.get(0).getNombre()).append(" ")
                 .append(darrusuarEnt.get(0).getApellidoPaterno()).append(" ").append(darrusuarEnt.get(0)
