@@ -1,11 +1,11 @@
 package tech.calaverita.reporterloanssql.pojos;
 
 import lombok.Data;
-import tech.calaverita.reporterloanssql.models.PagoModel;
-import tech.calaverita.reporterloanssql.models.PrestamoModel;
+import tech.calaverita.reporterloanssql.persistence.entities.PagoEntity;
+import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoEntity;
 
 @Data
 public class PrestamoPago {
-    PrestamoModel prestamo;
-    PagoModel pago;
+    PrestamoEntity prestamo;
+    PagoEntity pago;
 }

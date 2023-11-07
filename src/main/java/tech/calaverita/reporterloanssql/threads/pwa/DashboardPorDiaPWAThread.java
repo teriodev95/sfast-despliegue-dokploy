@@ -1,19 +1,59 @@
 package tech.calaverita.reporterloanssql.threads.pwa;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
-import tech.calaverita.reporterloanssql.services.*;
+import tech.calaverita.reporterloanssql.services.AsignacionService;
+import tech.calaverita.reporterloanssql.services.CalendarioService;
+import tech.calaverita.reporterloanssql.services.LiquidacionService;
+import tech.calaverita.reporterloanssql.services.PagoService;
+import tech.calaverita.reporterloanssql.services.view.PrestamoService;
 
+@Component
 public class DashboardPorDiaPWAThread implements Runnable {
-    public ObjectsContainer objectsContainer;
-    public int opc;
-    public Thread[] threads;
+    //------------------------------------------------------------------------------------------------------------------
+    /*INSTANCE VARIABLES*/
+    //------------------------------------------------------------------------------------------------------------------
+    private ObjectsContainer objectsContainer;
+    private int opc;
+    private Thread[] threads;
+    private static AsignacionService asignServ;
+    private static CalendarioService calServ;
+    private static LiquidacionService liqServ;
+    private static PagoService pagServ;
+    private static PrestamoService prestServ;
 
-    public DashboardPorDiaPWAThread(ObjectsContainer objectsContainer, int opc, Thread[] threads) {
+    //------------------------------------------------------------------------------------------------------------------
+    /*CONSTRUCTORS*/
+    //------------------------------------------------------------------------------------------------------------------
+    @Autowired
+    private DashboardPorDiaPWAThread(
+            AsignacionService asignServ_S,
+            CalendarioService calServ_S,
+            LiquidacionService liqServ_S,
+            PagoService pagServ_S,
+            PrestamoService prestServ_S
+    ) {
+        DashboardPorDiaPWAThread.asignServ = asignServ_S;
+        DashboardPorDiaPWAThread.calServ = calServ_S;
+        DashboardPorDiaPWAThread.liqServ = liqServ_S;
+        DashboardPorDiaPWAThread.pagServ = pagServ_S;
+        DashboardPorDiaPWAThread.prestServ = prestServ_S;
+    }
+
+    public DashboardPorDiaPWAThread(
+            ObjectsContainer objectsContainer,
+            int opc,
+            Thread[] threads
+    ) {
         this.objectsContainer = objectsContainer;
         this.opc = opc;
         this.threads = threads;
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    /*METHODS*/
+    //------------------------------------------------------------------------------------------------------------------
     @Override
     public void run() {
         switch (opc) {
@@ -28,9 +68,9 @@ public class DashboardPorDiaPWAThread implements Runnable {
     }
 
     public void setCalendario() {
-        objectsContainer.setCalendarioModel(CalendarioService.getSemanaActualXpressByFechaActual(objectsContainer.getFechaPago()));
-        objectsContainer.getDashboard().setAnio(objectsContainer.getCalendarioModel().getAnio());
-        objectsContainer.getDashboard().setSemana(objectsContainer.getCalendarioModel().getSemana());
+        objectsContainer.setCalendarioEntity(DashboardPorDiaPWAThread.calServ.calModFindBySemanaActualXpressByFechaActual(objectsContainer.getFechaPago()));
+        objectsContainer.getDashboard().setAnio(objectsContainer.getCalendarioEntity().getAnio());
+        objectsContainer.getDashboard().setSemana(objectsContainer.getCalendarioEntity().getSemana());
     }
 
     public void setPrestamosToCobranza() {
@@ -40,14 +80,14 @@ public class DashboardPorDiaPWAThread implements Runnable {
             throw new RuntimeException(e);
         }
 
-        objectsContainer.setPrestamosToCobranza(PrestamoService.getPrestamoModelsByAgenciaAnioAndSemanaToCobranzaPGS(objectsContainer.getDashboard().getAgencia(), objectsContainer.getCalendarioModel().getAnio(), objectsContainer.getCalendarioModel().getSemana()));
+        objectsContainer.setPrestamosToCobranza(DashboardPorDiaPWAThread.prestServ.darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(objectsContainer.getDashboard().getAgencia(), objectsContainer.getCalendarioEntity().getAnio(), objectsContainer.getCalendarioEntity().getSemana()));
 
         setGerencia();
         setClientes();
     }
 
     public void setPrestamosToDashboard() {
-        objectsContainer.setPrestamosToDashboard(PrestamoService.getPrestamoModelsByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
+        objectsContainer.setPrestamosToDashboard(DashboardPorDiaPWAThread.prestServ.darrprestUtilModByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
     }
 
     public void setPagosToCobranza() {
@@ -57,11 +97,11 @@ public class DashboardPorDiaPWAThread implements Runnable {
             throw new RuntimeException(e);
         }
 
-        objectsContainer.setPagosVistaToCobranza(PagoService.getPagoUtilModelsByAgenciaAnioAndSemanaToCobranza(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        objectsContainer.setPagosVistaToCobranza(DashboardPorDiaPWAThread.pagServ.darrpagUtilModFindByAgenciaAnioAndSemanaToCobranza(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
     public void setPagosToDashboard() {
-        objectsContainer.setPagoModelsToDashboard(PagoService.getPagoModelsByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
+        objectsContainer.setPagEntPagoModelsToDashboard(DashboardPorDiaPWAThread.pagServ.darrpagModFindByAgenciaFechaPagoAndNoPrimerPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
 
         try {
             threads[0].join();
@@ -109,8 +149,8 @@ public class DashboardPorDiaPWAThread implements Runnable {
     }
 
     public void setLiquidacionesBd() {
-        objectsContainer.setLiquidaciones(LiquidacionService.getLiquidacionModelsByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
-        objectsContainer.setPagosOfLiquidaciones(PagoService.getPagosOfLiquidacionesByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
+        objectsContainer.setLiquidaciones(DashboardPorDiaPWAThread.liqServ.darrliqModFindByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
+        objectsContainer.setPagosOfLiquidaciones(DashboardPorDiaPWAThread.pagServ.darrpagModFindByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
 
         setNumeroDeLiquidaciones();
         setTotalDeDescuento();
@@ -131,7 +171,7 @@ public class DashboardPorDiaPWAThread implements Runnable {
             throw new RuntimeException(e);
         }
 
-        objectsContainer.setAsignaciones(AsignacionService.getAsignacionesByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        objectsContainer.setAsignaciones(DashboardPorDiaPWAThread.asignServ.darrasignModFindByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
     }
 
     public void setGerencia() {
@@ -169,8 +209,8 @@ public class DashboardPorDiaPWAThread implements Runnable {
     public void setNoPagos() {
         int noPagos = 0;
 
-        for (int i = 0; i < objectsContainer.getPagoModelsToDashboard().size(); i++) {
-            if (objectsContainer.getPagoModelsToDashboard().get(i).getMonto() == 0) {
+        for (int i = 0; i < objectsContainer.getPagEntPagoModelsToDashboard().size(); i++) {
+            if (objectsContainer.getPagEntPagoModelsToDashboard().get(i).getMonto() == 0) {
                 noPagos++;
             }
         }
@@ -180,13 +220,13 @@ public class DashboardPorDiaPWAThread implements Runnable {
     public void setPagosReducidos() {
         int pagosReducidos = 0;
 
-        for (int i = 0; i < objectsContainer.getPagoModelsToDashboard().size(); i++) {
-            if (objectsContainer.getPagoModelsToDashboard().get(i).getAbreCon() < objectsContainer.getPagoModelsToDashboard().get(i).getTarifa()) {
-                if (objectsContainer.getPagoModelsToDashboard().get(i).getMonto() < objectsContainer.getPagoModelsToDashboard().get(i).getAbreCon()) {
+        for (int i = 0; i < objectsContainer.getPagEntPagoModelsToDashboard().size(); i++) {
+            if (objectsContainer.getPagEntPagoModelsToDashboard().get(i).getAbreCon() < objectsContainer.getPagEntPagoModelsToDashboard().get(i).getTarifa()) {
+                if (objectsContainer.getPagEntPagoModelsToDashboard().get(i).getMonto() < objectsContainer.getPagEntPagoModelsToDashboard().get(i).getAbreCon()) {
                     pagosReducidos++;
                 }
             } else {
-                if (objectsContainer.getPagoModelsToDashboard().get(i).getMonto() < objectsContainer.getPagoModelsToDashboard().get(i).getTarifa()) {
+                if (objectsContainer.getPagEntPagoModelsToDashboard().get(i).getMonto() < objectsContainer.getPagEntPagoModelsToDashboard().get(i).getTarifa()) {
                     pagosReducidos++;
                 }
             }
@@ -266,9 +306,9 @@ public class DashboardPorDiaPWAThread implements Runnable {
     public void setMontoExcedente() {
         double montoExcedente = 0;
 
-        for (int i = 0; i < objectsContainer.getPagoModelsToDashboard().size(); i++) {
-            if (objectsContainer.getPagoModelsToDashboard().get(i).getMonto() > objectsContainer.getPagoModelsToDashboard().get(i).getTarifa()) {
-                montoExcedente += objectsContainer.getPagoModelsToDashboard().get(i).getMonto() - objectsContainer.getPagoModelsToDashboard().get(i).getTarifa();
+        for (int i = 0; i < objectsContainer.getPagEntPagoModelsToDashboard().size(); i++) {
+            if (objectsContainer.getPagEntPagoModelsToDashboard().get(i).getMonto() > objectsContainer.getPagEntPagoModelsToDashboard().get(i).getTarifa()) {
+                montoExcedente += objectsContainer.getPagEntPagoModelsToDashboard().get(i).getMonto() - objectsContainer.getPagEntPagoModelsToDashboard().get(i).getTarifa();
             }
         }
 
@@ -298,8 +338,8 @@ public class DashboardPorDiaPWAThread implements Runnable {
     public void setCobranzaTotal() {
         double cobranzaTotal = 0;
 
-        for (int i = 0; i < objectsContainer.getPagoModelsToDashboard().size(); i++) {
-            cobranzaTotal += objectsContainer.getPagoModelsToDashboard().get(i).getMonto();
+        for (int i = 0; i < objectsContainer.getPagEntPagoModelsToDashboard().size(); i++) {
+            cobranzaTotal += objectsContainer.getPagEntPagoModelsToDashboard().get(i).getMonto();
         }
 
         objectsContainer.getDashboard().setCobranzaTotal(cobranzaTotal);

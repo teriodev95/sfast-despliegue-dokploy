@@ -4,8 +4,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.models.UsuarioModel;
-import tech.calaverita.reporterloanssql.repositories.UsuarioRepository;
+import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
+import tech.calaverita.reporterloanssql.persistence.repositories.UsuarioRepository;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -17,8 +17,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UsuarioModel usuario = usuarioRepository
-                .findOneByUsuario(username)
+        UsuarioEntity usuario = usuarioRepository
+                .optusuarEntFindByUsuario(username)
                 .orElseThrow(() -> new UsernameNotFoundException("El usuario " + username + " no existe"));
 
         return new UserDetailsImpl(usuario);

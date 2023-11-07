@@ -1,128 +1,181 @@
 package tech.calaverita.reporterloanssql.threads;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.services.PagoService;
-import tech.calaverita.reporterloanssql.services.PrestamoService;
+import tech.calaverita.reporterloanssql.services.view.PrestamoService;
 
+@Component
 public class CobranzaThread implements Runnable {
-    public ObjectsContainer objectsContainer;
-    public int opc;
-    public Thread[] threads;
+    //------------------------------------------------------------------------------------------------------------------
+    /*INSTANCE VARIABLES*/
+    //------------------------------------------------------------------------------------------------------------------
+    private ObjectsContainer objectsContainer;
+    private int opc;
+    private Thread[] threads;
+    private static PagoService pagServ;
+    private static PrestamoService prestServ;
 
-    public CobranzaThread(ObjectsContainer objectsContainer, int ope) {
+    //------------------------------------------------------------------------------------------------------------------
+    /*CONSTRUCTORS*/
+    //------------------------------------------------------------------------------------------------------------------
+    @Autowired
+    private CobranzaThread(
+            PagoService pagServ_S,
+            PrestamoService prestServ_S
+    ) {
+        CobranzaThread.pagServ = pagServ_S;
+        CobranzaThread.prestServ = prestServ_S;
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public CobranzaThread(
+            ObjectsContainer objectsContainer,
+            int ope
+    ) {
         this.objectsContainer = objectsContainer;
         this.opc = ope;
     }
 
-    public CobranzaThread(ObjectsContainer objectsContainer, int ope, Thread[] threads) {
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public CobranzaThread(
+            ObjectsContainer objectsContainer,
+            int ope,
+            Thread[] threads
+    ) {
         this.objectsContainer = objectsContainer;
         this.opc = ope;
         this.threads = threads;
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    /*METHODS*/
+    //------------------------------------------------------------------------------------------------------------------
     @Override
     public void run() {
-        switch (opc) {
+        switch (this.opc) {
             case 0:
-                getPrestamos();
+                this.getPrestamos();
                 break;
             case 1:
-                getPagos();
+                this.getPagos();
                 break;
             case 2:
-                getGerencia();
+                this.getGerencia();
                 break;
             case 3:
-                getClientes();
+                this.getClientes();
                 break;
             case 4:
-                getDebitoMiercoles();
+                this.getDebitoMiercoles();
                 break;
             case 5:
-                getDebitoJueves();
+                this.getDebitoJueves();
                 break;
             case 6:
-                getDebitoViernes();
+                this.getDebitoViernes();
                 break;
             case 7:
-                getDebitoTotal();
+                this.getDebitoTotal();
                 break;
         }
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getGerencia() {
         try {
-            threads[0].join();
+            this.threads[0].join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        objectsContainer.getCobranza().setGerencia(objectsContainer.getPrestamosToCobranza().get(0).getGerencia());
+        this.objectsContainer.getCobranza().setGerencia(this.objectsContainer.getPrestamosToCobranza().get(0).getGerencia());
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getClientes() {
         try {
-            threads[0].join();
+            this.threads[0].join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        objectsContainer.getCobranza().setClientes(objectsContainer.getPrestamosToCobranza().size());
+        this.objectsContainer.getCobranza().setClientes(this.objectsContainer.getPrestamosToCobranza().size());
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getPrestamos() {
-        objectsContainer.setPrestamosToCobranza(PrestamoService.getPrestamoModelsByAgenciaAnioAndSemanaToCobranzaPGS(objectsContainer.getCobranza().getAgencia(), objectsContainer.getCobranza().getAnio(), objectsContainer.getCobranza().getSemana()));
-        objectsContainer.getCobranza().setPrestamos(objectsContainer.getPrestamosToCobranza());
+        this.objectsContainer.setPrestamosToCobranza(CobranzaThread.prestServ
+                .darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(this.objectsContainer.getCobranza().getAgencia(),
+                        this.objectsContainer.getCobranza().getAnio(), objectsContainer.getCobranza().getSemana()));
+        this.objectsContainer.getCobranza().setPrestamos(this.objectsContainer.getPrestamosToCobranza());
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getPagos() {
-        objectsContainer.setPagosVistaToCobranza(PagoService.getPagoUtilModelsByAgenciaAnioAndSemanaToCobranza(objectsContainer.getCobranza().getAgencia(), objectsContainer.getCobranza().getAnio(), objectsContainer.getCobranza().getSemana()));
+        objectsContainer.setPagosVistaToCobranza(CobranzaThread.pagServ
+                .darrpagUtilModFindByAgenciaAnioAndSemanaToCobranza(this.objectsContainer.getCobranza().getAgencia(),
+                        this.objectsContainer.getCobranza().getAnio(), this.objectsContainer.getCobranza().getSemana()));
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getDebitoMiercoles() {
         try {
-            threads[0].join();
-            threads[1].join();
+            this.threads[0].join();
+            this.threads[1].join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
 
         double debitoMiercoles = 0;
 
-        for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
-            if (objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("MIERCOLES")) {
-                if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
-                    debitoMiercoles += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
+        for (int i = 0; i < this.objectsContainer.getPrestamosToCobranza().size(); i++) {
+            if (
+                    this.objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("MIERCOLES")
+            ) {
+                if (
+                        this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
+                        .getPrestamosToCobranza().get(i).getTarifa()
+                )
+                    debitoMiercoles += this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
                 else
-                    debitoMiercoles += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
+                    debitoMiercoles += this.objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
             }
 
-            objectsContainer.getCobranza().setDebitoMiercoles(debitoMiercoles);
+            this.objectsContainer.getCobranza().setDebitoMiercoles(debitoMiercoles);
         }
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getDebitoJueves() {
         try {
-            threads[0].join();
-            threads[1].join();
+            this.threads[0].join();
+            this.threads[1].join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
 
         double debitoJueves = 0;
 
-        for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
-            if (objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("JUEVES")) {
-                if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
-                    debitoJueves += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
+        for (int i = 0; i < this.objectsContainer.getPrestamosToCobranza().size(); i++) {
+            if (
+                    this.objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("JUEVES")
+            ) {
+                if (
+                        this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
+                        .getPrestamosToCobranza().get(i).getTarifa()
+                )
+                    debitoJueves += this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
                 else
-                    debitoJueves += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
+                    debitoJueves += this.objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
             }
 
-            objectsContainer.getCobranza().setDebitoJueves(debitoJueves);
+            this.objectsContainer.getCobranza().setDebitoJueves(debitoJueves);
         }
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getDebitoViernes() {
         try {
             threads[0].join();
@@ -133,35 +186,44 @@ public class CobranzaThread implements Runnable {
 
         double debitoViernes = 0;
 
-        for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
-            if (objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("VIERNES")) {
-                if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
-                    debitoViernes += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
+        for (int i = 0; i < this.objectsContainer.getPrestamosToCobranza().size(); i++) {
+            if (
+                    this.objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("VIERNES")
+            ) {
+                if (
+                        this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
+                        .getPrestamosToCobranza().get(i).getTarifa()
+                )
+                    debitoViernes += this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
                 else
-                    debitoViernes += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
+                    debitoViernes += this.objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
             }
 
-            objectsContainer.getCobranza().setDebitoViernes(debitoViernes);
+            this.objectsContainer.getCobranza().setDebitoViernes(debitoViernes);
         }
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getDebitoTotal() {
         try {
-            threads[0].join();
-            threads[1].join();
+            this.threads[0].join();
+            this.threads[1].join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
 
         double debitoTotal = 0;
 
-        for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
-            if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
-                debitoTotal += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
+        for (int i = 0; i < this.objectsContainer.getPrestamosToCobranza().size(); i++) {
+            if (
+                    this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
+                    .getPrestamosToCobranza().get(i).getTarifa()
+            )
+                debitoTotal += this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
             else
-                debitoTotal += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
+                debitoTotal += this.objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
 
-            objectsContainer.getCobranza().setDebitoTotal(debitoTotal);
+            this.objectsContainer.getCobranza().setDebitoTotal(debitoTotal);
         }
     }
 }

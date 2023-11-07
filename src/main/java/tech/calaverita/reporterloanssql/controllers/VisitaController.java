@@ -1,65 +1,83 @@
 package tech.calaverita.reporterloanssql.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.calaverita.reporterloanssql.utils.VisitaUtil;
-import tech.calaverita.reporterloanssql.models.VisitaModel;
+import tech.calaverita.reporterloanssql.persistence.entities.VisitaEntity;
 import tech.calaverita.reporterloanssql.services.VisitaService;
+import tech.calaverita.reporterloanssql.utils.VisitaUtil;
 
 import java.util.ArrayList;
 
 @RestController
 @RequestMapping(path = "/xpress/v1/visits")
-public class VisitaController {
-    private VisitaService visitaService;
+public final class VisitaController {
+    //------------------------------------------------------------------------------------------------------------------
+    /*INSTANCE VARIABLES*/
+    //------------------------------------------------------------------------------------------------------------------
+    private final VisitaService visServ;
 
-    @Autowired
-    public void setVisitaService(VisitaService visitaService) {
-        this.visitaService = visitaService;
+    //------------------------------------------------------------------------------------------------------------------
+    /*CONSTRUCTORS*/
+    //------------------------------------------------------------------------------------------------------------------
+    private VisitaController(
+            VisitaService visServ_S
+    ) {
+        this.visServ = visServ_S;
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    /*METHODS*/
+    //------------------------------------------------------------------------------------------------------------------
     @GetMapping
-    public ResponseEntity<ArrayList<VisitaModel>> getVisitaModels() {
-        ArrayList<VisitaModel> visitaModels = visitaService.getVisitaModels();
+    public ResponseEntity<ArrayList<VisitaEntity>> getVisitaModels() {
+        ArrayList<VisitaEntity> visEntVisitaEntities = visServ.darrvisModFindAll();
 
-        if (visitaModels.isEmpty()) {
+        if (visEntVisitaEntities.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return new ResponseEntity<>(visitaModels, HttpStatus.OK);
+        return new ResponseEntity<>(visEntVisitaEntities, HttpStatus.OK);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/{visitaId}")
-    public ResponseEntity<VisitaModel> getVisitaModelByVisitaId(@PathVariable(name = "visitaId") String visitaId) {
-        VisitaModel visitaModel = visitaService.getVisitaModelByVisitaId(visitaId);
+    public ResponseEntity<VisitaEntity> getVisitaModelByVisitaId(
+            @PathVariable(name = "visitaId") String visitaId
+    ) {
+        VisitaEntity visitaEntity = visServ.visModFindByVisitaId(visitaId);
 
-        if (visitaModel == null) {
+        if (visitaEntity == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return new ResponseEntity<>(visitaModel, HttpStatus.OK);
+        return new ResponseEntity<>(visitaEntity, HttpStatus.OK);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/prestamo-id/{prestamoId}")
-    public ResponseEntity<ArrayList<VisitaModel>> getVisitaModelsByPrestamoId(@PathVariable(name = "prestamoId") String prestamoId) {
-        ArrayList<VisitaModel> visitaModels = visitaService.getVisitaModelsByPrestamoId(prestamoId);
+    public ResponseEntity<ArrayList<VisitaEntity>> getVisitaModelsByPrestamoId(
+            @PathVariable(name = "prestamoId") String prestamoId
+    ) {
+        ArrayList<VisitaEntity> visEntVisitaEntities = visServ.darrvisModFindByPrestamoId(prestamoId);
 
-        if (visitaModels.isEmpty()) {
+        if (visEntVisitaEntities.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return new ResponseEntity<>(visitaModels, HttpStatus.OK);
+        return new ResponseEntity<>(visEntVisitaEntities, HttpStatus.OK);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @PostMapping(path = "/create-one")
-    public ResponseEntity<String> createVisitaModel(@RequestBody VisitaModel visitaModel) {
+    public ResponseEntity<String> createVisitaModel(
+            @RequestBody VisitaEntity visitaEntity
+    ) {
 
-        ResponseEntity<String> responseEntity = VisitaUtil.checkVisit(visitaModel);
+        ResponseEntity<String> responseEntity = VisitaUtil.restrCheckVisit(visitaEntity);
 
         if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            visitaService.createVisitaModel(visitaModel);
+            visServ.save(visitaEntity);
         } else {
             return responseEntity;
         }

@@ -3,9 +3,7 @@ package tech.calaverita.reporterloanssql.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.calaverita.reporterloanssql.utils.CobranzaUtil;
-import tech.calaverita.reporterloanssql.utils.DashboardUtil;
-import tech.calaverita.reporterloanssql.models.UsuarioModel;
+import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
 import tech.calaverita.reporterloanssql.pojos.Cobranza;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.pojos.LoginResponse;
@@ -13,29 +11,58 @@ import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.security.AuthCredentials;
 import tech.calaverita.reporterloanssql.services.AgenciaService;
 import tech.calaverita.reporterloanssql.services.UsuarioService;
+import tech.calaverita.reporterloanssql.utils.CobranzaUtil;
+import tech.calaverita.reporterloanssql.utils.DashboardUtil;
 
 import java.util.ArrayList;
 
 @RestController()
 @RequestMapping(path = "/xpress/v1")
-public class XpressController {
+public final class XpressController {
+    //------------------------------------------------------------------------------------------------------------------
+    /*INSTANCE VARIABLES*/
+    //------------------------------------------------------------------------------------------------------------------
+    private final AgenciaService agencServ;
+    private final UsuarioService usuarServ;
+
+    //------------------------------------------------------------------------------------------------------------------
+    /*CONSTRUCTORS*/
+    //------------------------------------------------------------------------------------------------------------------
+    private XpressController(
+            AgenciaService agencServ_S,
+            UsuarioService usuarServ_S
+    ) {
+        this.agencServ = agencServ_S;
+        this.usuarServ = usuarServ_S;
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    /*METHODS*/
+    //------------------------------------------------------------------------------------------------------------------
     @PostMapping(path = "/login")
-    public @ResponseBody ResponseEntity<?> login(@RequestBody AuthCredentials login) {
-        UsuarioModel usuarioModel = UsuarioService.findOneByUsuarioAndPin(login.getUsername(), login.getPassword());
+    public @ResponseBody ResponseEntity<?> login(
+            @RequestBody AuthCredentials login
+    ) {
+        UsuarioEntity usuarioEntity = this.usuarServ.usuarModFindByUsuarioAndPin(login.getUsername(), login.getPassword());
         LoginResponse loginResponse = new LoginResponse();
 
-        if (usuarioModel == null) {
+        if (usuarioEntity == null) {
             return new ResponseEntity<>("Usuario y/o contraseña incorrecto", HttpStatus.BAD_REQUEST);
         }
 
-        loginResponse.setSolicitante(usuarioModel);
-        loginResponse.setInvolucrados(UsuarioService.findManyByGerencia(usuarioModel.getGerencia()));
+        loginResponse.setSolicitante(usuarioEntity);
+        loginResponse.setInvolucrados(this.usuarServ.darrUsuarModFindByGerencia(usuarioEntity.getGerencia()));
 
         return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/cobranza/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Cobranza> getCobranzaByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
+    public @ResponseBody ResponseEntity<Cobranza> getCobranzaByAgencia(
+            @PathVariable("agencia") String agencia,
+            @PathVariable("anio") int anio,
+            @PathVariable("semana") int semana
+    ) {
         Cobranza cobranza = new Cobranza();
         ObjectsContainer objectsContainer = new ObjectsContainer();
 
@@ -51,9 +78,13 @@ public class XpressController {
         return new ResponseEntity<>(objectsContainer.getCobranza(), HttpStatus.OK);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/cobranza-gerencia/{gerencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Cobranza[]> getCobranzaByGerencia(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
-        ArrayList<String> agencias = AgenciaService.getAgenciaModelsByGerencia(gerencia);
+    public @ResponseBody ResponseEntity<Cobranza[]> getCobranzaByGerencia(
+            @PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio,
+            @PathVariable("semana") int semana
+    ) {
+        ArrayList<String> agencias = this.agencServ.darrstrAgenciaIdFindByGerenciaId(gerencia);
 
         Thread[] threads = new Thread[agencias.size()];
         Cobranza[] cobranzas = new Cobranza[agencias.size()];
@@ -87,9 +118,12 @@ public class XpressController {
         return new ResponseEntity<>(cobranzas, HttpStatus.OK);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @CrossOrigin
     @GetMapping(path = "/dashboard-agencia/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgenciaAnioAndSemana(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
+    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgenciaAnioAndSemana(
+            @PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana
+    ) {
         Dashboard dashboard = new Dashboard();
         ObjectsContainer objectsContainer = new ObjectsContainer();
 
@@ -105,12 +139,16 @@ public class XpressController {
         return new ResponseEntity<>(objectsContainer.getDashboard(), HttpStatus.OK);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @CrossOrigin
     @GetMapping(path = "/dashboard-gerencia/{gerencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Dashboard> getDashboardByGerenciaAnioAndSemana(@PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
+    public @ResponseBody ResponseEntity<Dashboard> getDashboardByGerencia(
+            @PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio,
+            @PathVariable("semana") int semana
+    ) {
         Dashboard dashboardResponse;
 
-        ArrayList<String> agencias = AgenciaService.getAgenciaModelsByGerencia(gerencia);
+        ArrayList<String> agencias = this.agencServ.darrstrAgenciaIdFindByGerenciaId(gerencia);
 
         Thread[] threads = new Thread[agencias.size()];
         Dashboard[] dashboards = new Dashboard[agencias.size()];
@@ -142,7 +180,7 @@ public class XpressController {
             }
         }
 
-        dashboardResponse = DashboardUtil.getDashboardGeneral(dashboards);
+        dashboardResponse = DashboardUtil.dashboard(dashboards);
 
         return new ResponseEntity<>(dashboardResponse, HttpStatus.OK);
     }

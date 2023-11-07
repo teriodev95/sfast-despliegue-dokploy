@@ -1,14 +1,19 @@
 package tech.calaverita.reporterloanssql.utils.pwa;
 
-import tech.calaverita.reporterloanssql.models.*;
+import org.springframework.stereotype.Component;
+import tech.calaverita.reporterloanssql.persistence.dto.cierre_semanal.*;
+import tech.calaverita.reporterloanssql.persistence.entities.AsignacionEntity;
+import tech.calaverita.reporterloanssql.persistence.entities.PagoEntity;
+import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
+import tech.calaverita.reporterloanssql.persistence.entities.view.PagoAgrupadoEntity;
+import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoEntity;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
-import tech.calaverita.reporterloanssql.pojos.pwa.CierreSemanalPWA;
 import tech.calaverita.reporterloanssql.pojos.pwa.PagoHistoricoPWA;
 import tech.calaverita.reporterloanssql.pojos.pwa.PagoPWA;
 import tech.calaverita.reporterloanssql.pojos.pwa.PrestamoCobranzaPWA;
 import tech.calaverita.reporterloanssql.services.PagoService;
-import tech.calaverita.reporterloanssql.services.PrestamoService;
 import tech.calaverita.reporterloanssql.services.UsuarioService;
+import tech.calaverita.reporterloanssql.services.view.PrestamoService;
 import tech.calaverita.reporterloanssql.threads.pwa.CobranzaPWAThread;
 import tech.calaverita.reporterloanssql.threads.pwa.PagoHistoricoPWAThread;
 import tech.calaverita.reporterloanssql.threads.pwa.PagoPWAThread;
@@ -21,20 +26,48 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-public class PWAUtil {
-    public static ArrayList<PrestamoCobranzaPWA> getPrestamoCobranzaPwasFromPrestamoModelsAndPagoModels(String agencia, int anio, int semana) {
-        ArrayList<PrestamoModel> prestamoModels = PrestamoService.getPrestamoModelsByAgenciaAnioAndSemanaToCobranzaPGS(agencia, anio, semana);
+@Component
+public final class PWAUtil {
+    //------------------------------------------------------------------------------------------------------------------
+    /*INSTANCE VARIABLES*/
+    //------------------------------------------------------------------------------------------------------------------
+    private static PagoService pagServ;
+    private static PrestamoService prestServ;
+    private static UsuarioService usuarServ;
+
+    //------------------------------------------------------------------------------------------------------------------
+    /*CONSTRUCTORS*/
+    //------------------------------------------------------------------------------------------------------------------
+    private PWAUtil(
+            PagoService pagServ_S,
+            PrestamoService prestServ_S,
+            UsuarioService usuarServ_S
+    ) {
+        PWAUtil.pagServ = pagServ_S;
+        PWAUtil.prestServ = prestServ_S;
+        PWAUtil.usuarServ = usuarServ_S;
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    /*METHODS*/
+    //------------------------------------------------------------------------------------------------------------------
+    public static ArrayList<PrestamoCobranzaPWA> darrprestamoCobranzaPwaFromPrestamoModelsAndPagoModels(
+            String agencia, int anio, int semana
+    ) {
+        ArrayList<PrestamoEntity> prestEntPrestamoEntities = PWAUtil.prestServ
+                .darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(
+                        agencia, anio, semana);
         ArrayList<PrestamoCobranzaPWA> prestamoCobranzaPWAs = new ArrayList<>();
 
-        Thread[] threads = new Thread[prestamoModels.size()];
+        Thread[] threads = new Thread[prestEntPrestamoEntities.size()];
         int indice = 0;
 
-        for (PrestamoModel prestamoModel : prestamoModels) {
+        for (PrestamoEntity prestamoEntity : prestEntPrestamoEntities) {
             PrestamoCobranzaPWA prestamoCobranzaPwa = new PrestamoCobranzaPWA();
 
             prestamoCobranzaPWAs.add(prestamoCobranzaPwa);
 
-            threads[indice] = new Thread(new CobranzaPWAThread(prestamoModel, prestamoCobranzaPwa, anio, semana));
+            threads[indice] = new Thread(new CobranzaPWAThread(prestamoEntity, prestamoCobranzaPwa, anio, semana));
             threads[indice].start();
             indice++;
         }
@@ -47,18 +80,21 @@ public class PWAUtil {
         return prestamoCobranzaPWAs;
     }
 
-    public static ArrayList<PagoPWA> getPagoPWAsFromPagoModels(ArrayList<PagoModel> pagoModels) {
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public static ArrayList<PagoPWA> darrpagoPwaFromPagoModels(
+            ArrayList<PagoEntity> pagEntPagoEntities
+    ) {
         ArrayList<PagoPWA> pagoPWAs = new ArrayList<>();
 
-        Thread[] threads = new Thread[pagoModels.size()];
+        Thread[] threads = new Thread[pagEntPagoEntities.size()];
         int indice = 0;
 
-        for (PagoModel pagoModel : pagoModels) {
+        for (PagoEntity pagoEntity : pagEntPagoEntities) {
             PagoPWA pagoPWA = new PagoPWA();
 
             pagoPWAs.add(pagoPWA);
 
-            threads[indice] = new Thread(new PagoPWAThread(pagoModel, pagoPWA));
+            threads[indice] = new Thread(new PagoPWAThread(pagoEntity, pagoPWA));
             threads[indice].start();
             indice++;
         }
@@ -71,19 +107,23 @@ public class PWAUtil {
         return pagoPWAs;
     }
 
-    public static ArrayList<PagoHistoricoPWA> getPagoHistoricoPWAsFromPagoVistaModelsByPrestamoId(String prestamoId) {
-        ArrayList<PagoAgrupadoModel> pagoAgrupadoModels = PagoService.findPagoVistaModelsByPrestamoId(prestamoId);
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public static ArrayList<PagoHistoricoPWA> darrpagoHistoricoPwaFromPagoVistaModelsByPrestamoId(
+            String prestamoId
+    ) {
+        ArrayList<PagoAgrupadoEntity> pagAgrEntPagoAgrupadoEntities = PWAUtil.pagServ
+                .darrpagAgrModFindByPrestamoId(prestamoId);
         ArrayList<PagoHistoricoPWA> pagoHistoricoPWAs = new ArrayList<>();
 
-        Thread[] threads = new Thread[pagoAgrupadoModels.size()];
+        Thread[] threads = new Thread[pagAgrEntPagoAgrupadoEntities.size()];
         int indice = 0;
 
-        for (PagoAgrupadoModel pagoAgrupadoModel : pagoAgrupadoModels) {
+        for (PagoAgrupadoEntity pagoAgrupadoEntity : pagAgrEntPagoAgrupadoEntities) {
             PagoHistoricoPWA pagoHistoricoPWA = new PagoHistoricoPWA();
 
             pagoHistoricoPWAs.add(pagoHistoricoPWA);
 
-            threads[indice] = new Thread(new PagoHistoricoPWAThread(pagoAgrupadoModel, pagoHistoricoPWA));
+            threads[indice] = new Thread(new PagoHistoricoPWAThread(pagoAgrupadoEntity, pagoHistoricoPWA));
             threads[indice].start();
             indice++;
         }
@@ -96,61 +136,94 @@ public class PWAUtil {
         return pagoHistoricoPWAs;
     }
 
-    public static ArrayList<HashMap<String, Object>> getAsignacionModelsPWA(ArrayList<AsignacionModel> asignacionModels) {
-        ArrayList<HashMap<String, Object>> asignacionModelsPWA = new ArrayList<>();
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public static ArrayList<HashMap<String, Object>> darrdicasignacionModelPwa(
+            ArrayList<AsignacionEntity> darrasignacionEntityAsigModAsignEnt
+    ) {
+        ArrayList<HashMap<String, Object>> darrHshMpAsgMdlPwa = new ArrayList<>();
 
-        for (AsignacionModel asignacionModel : asignacionModels) {
-            UsuarioModel usuarioModel = UsuarioService.findOneByUsuarioId(asignacionModel.getQuienRecibioUsuarioId());
+        for (AsignacionEntity asignacionEntity : darrasignacionEntityAsigModAsignEnt) {
+            UsuarioEntity usuarioEntity = PWAUtil.usuarServ.usuarModFindByUsuarioId(asignacionEntity
+                    .getQuienRecibioUsuarioId());
 
             HashMap<String, Object> recibioHashMap = new HashMap<>();
-            recibioHashMap.put("usuario", usuarioModel.getUsuario());
-            recibioHashMap.put("tipo", usuarioModel.getTipo());
+            recibioHashMap.put("usuario", usuarioEntity.getUsuario());
+            recibioHashMap.put("tipo", usuarioEntity.getTipo());
 
             HashMap<String, Object> responseHashMap = new HashMap<>();
-            responseHashMap.put("asignacion", asignacionModel);
+            responseHashMap.put("asignacion", asignacionEntity);
             responseHashMap.put("recibio", recibioHashMap);
 
-            asignacionModelsPWA.add(responseHashMap);
+            darrHshMpAsgMdlPwa.add(responseHashMap);
         }
 
-        return asignacionModelsPWA;
+        return darrHshMpAsgMdlPwa;
     }
 
-    public static CierreSemanalPWA getCierreSemanalPWA(Dashboard dashboard, List<UsuarioModel> usuarioModels, Double asignaciones) {
-        CierreSemanalPWA cierreSemanalPWA = new CierreSemanalPWA();
-
-        StringBuilder nombreAgente = new StringBuilder(usuarioModels.get(0).getNombre()).append(" ").append(usuarioModels.get(0).getApellidoPaterno()).append(" ").append(usuarioModels.get(0).getApellidoMaterno());
-        StringBuilder nombreGerente = new StringBuilder(usuarioModels.get(1).getNombre()).append(" ").append(usuarioModels.get(1).getApellidoPaterno()).append(" ").append(usuarioModels.get(1).getApellidoMaterno());
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public static CierreSemanalDTO getCierreSemanalPWA(
+            Dashboard dashboard,
+            List<UsuarioEntity> darrusuarEnt,
+            Double asignaciones
+    ) {
+        StringBuilder nombreAgente = new StringBuilder(darrusuarEnt.get(0).getNombre()).append(" ")
+                .append(darrusuarEnt.get(0).getApellidoPaterno()).append(" ").append(darrusuarEnt.get(0)
+                        .getApellidoMaterno());
+        StringBuilder nombreGerente = new StringBuilder(darrusuarEnt.get(1).getNombre()).append(" ")
+                .append(darrusuarEnt.get(1).getApellidoPaterno()).append(" ").append(darrusuarEnt.get(1)
+                        .getApellidoMaterno());
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date fechaIngresoAgente;
 
         try {
-            fechaIngresoAgente = format.parse(usuarioModels.get(0).getFechaIngreso());
+            fechaIngresoAgente = format.parse(darrusuarEnt.get(0).getFechaIngreso());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
 
         long antiguedad = (new Date().getTime() - fechaIngresoAgente.getTime()) / (1000 * 60 * 60 * 24 * 7);
 
-        cierreSemanalPWA.setZona(dashboard.getGerencia());
-        cierreSemanalPWA.setGerente(nombreGerente.toString());
-        cierreSemanalPWA.setAgencia(dashboard.getAgencia());
-        cierreSemanalPWA.setAgente(nombreAgente.toString());
-        cierreSemanalPWA.setRendimiento(dashboard.getRendimiento());
-        cierreSemanalPWA.setNivel(BalanceAgenciaUtil.getNivelAgente(dashboard.getClientes(), dashboard.getRendimiento() / 100, (int) antiguedad));
-        cierreSemanalPWA.setCobranzaPura(dashboard.getTotalCobranzaPura());
-        cierreSemanalPWA.setMontoExcedente(dashboard.getMontoExcedente());
-        cierreSemanalPWA.setLiquidaciones(dashboard.getLiquidaciones());
-        cierreSemanalPWA.setMultas(dashboard.getMultas());
-        cierreSemanalPWA.setSemana(dashboard.getSemana());
-        cierreSemanalPWA.setAnio(dashboard.getAnio());
-        cierreSemanalPWA.setClientes(dashboard.getClientes());
-        cierreSemanalPWA.setPagosReducidos(dashboard.getPagosReducidos());
-        cierreSemanalPWA.setNoPagos(dashboard.getNoPagos());
-        cierreSemanalPWA.setNumeroLiquidaciones(dashboard.getNumeroLiquidaciones());
-        cierreSemanalPWA.setAsignacionesEgresosAgente(asignaciones);
+        BalanceAgenciaDTO balanceAgenciaDTO = new BalanceAgenciaDTO();
+        {
+            balanceAgenciaDTO.setZona(dashboard.getGerencia());
+            balanceAgenciaDTO.setGerente(nombreGerente.toString());
+            balanceAgenciaDTO.setAgencia(dashboard.getAgencia());
+            balanceAgenciaDTO.setAgente(nombreAgente.toString());
+            balanceAgenciaDTO.setRendimiento(dashboard.getRendimiento());
+            balanceAgenciaDTO.setNivel(BalanceAgenciaUtil.strGetNivelAgente(dashboard.getClientes(),
+                    dashboard.getRendimiento() / 100, (int) antiguedad));
+            balanceAgenciaDTO.setClientes(dashboard.getClientes());
+            balanceAgenciaDTO.setPagosReducidos(dashboard.getPagosReducidos());
+            balanceAgenciaDTO.setNoPagos(dashboard.getNoPagos());
+            balanceAgenciaDTO.setLiquidaciones(dashboard.getNumeroLiquidaciones());
+        }
 
-        return cierreSemanalPWA;
+        EgresosAgenteDTO egresosAgenteDTO = new EgresosAgenteDTO();
+        {
+            egresosAgenteDTO.setAsignaciones(asignaciones);
+        }
+
+        EgresosGerenteDTO egresosGerenteDTO = new EgresosGerenteDTO();
+
+        IngresosAgenteDTO ingresosAgenteDTO = new IngresosAgenteDTO();
+        {
+            ingresosAgenteDTO.setCobranzaPura(dashboard.getTotalCobranzaPura());
+            ingresosAgenteDTO.setMontoExcedente(dashboard.getMontoExcedente());
+            ingresosAgenteDTO.setLiquidaciones(dashboard.getLiquidaciones());
+            ingresosAgenteDTO.setMultas(dashboard.getMultas());
+        }
+
+        CierreSemanalDTO cierreSemanalDTO_O = new CierreSemanalDTO();
+        {
+            cierreSemanalDTO_O.setSemana(dashboard.getSemana());
+            cierreSemanalDTO_O.setAnio(dashboard.getAnio());
+            cierreSemanalDTO_O.setBalanceAgencia(balanceAgenciaDTO);
+            cierreSemanalDTO_O.setEgresosAgente(egresosAgenteDTO);
+            cierreSemanalDTO_O.setEgresosGerente(egresosGerenteDTO);
+            cierreSemanalDTO_O.setIngresosAgente(ingresosAgenteDTO);
+        }
+
+        return cierreSemanalDTO_O;
     }
 }

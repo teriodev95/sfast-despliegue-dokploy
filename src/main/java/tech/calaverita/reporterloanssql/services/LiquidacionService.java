@@ -1,26 +1,50 @@
 package tech.calaverita.reporterloanssql.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.models.LiquidacionModel;
-import tech.calaverita.reporterloanssql.repositories.LiquidacionRepository;
+import tech.calaverita.reporterloanssql.persistence.entities.LiquidacionEntity;
+import tech.calaverita.reporterloanssql.persistence.repositories.LiquidacionRepository;
 
 import java.util.ArrayList;
 
 @Service
-public class LiquidacionService {
-    private static LiquidacionRepository liquidacionRepository;
+public final class LiquidacionService {
+    //------------------------------------------------------------------------------------------------------------------
+    /*INSTANCE VARIABLES*/
+    //------------------------------------------------------------------------------------------------------------------
+    private final LiquidacionRepository liqRepo;
 
-    @Autowired
-    public LiquidacionService(LiquidacionRepository liquidacionRepository) {
-        LiquidacionService.liquidacionRepository = liquidacionRepository;
+    //------------------------------------------------------------------------------------------------------------------
+    /*CONSTRUCTORS*/
+    //------------------------------------------------------------------------------------------------------------------
+    private LiquidacionService(
+            LiquidacionRepository liqRepo_S
+    ) {
+        this.liqRepo = liqRepo_S;
     }
 
-    public static ArrayList<LiquidacionModel> getLiquidacionModelsByAgenciaAnioAndSemanaToDashboard(String agencia, int anio, int semana) {
-        return liquidacionRepository.getLiquidacionModelsByAgenciaAnioAndSemanaToDashboard(agencia, anio, semana);
+    //------------------------------------------------------------------------------------------------------------------
+    /*METHODS*/
+    //------------------------------------------------------------------------------------------------------------------
+    public void save(
+            LiquidacionEntity liqMod_I
+    ) {
+        this.liqRepo.save(liqMod_I);
     }
 
-    public static ArrayList<LiquidacionModel> getLiquidacionModelsByAgenciaAndFechaPagoToDashboard(String agencia, String fechaPago) {
-        return liquidacionRepository.getLiquidacionModelsByAgenciaAndFechaPagoToDashboard(agencia, fechaPago);
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public ArrayList<LiquidacionEntity> darrliqModFindByAgenciaAnioAndSemanaToDashboard(
+            String strAgencia_I,
+            int intAnio_I,
+            int intSemana_I
+    ) {
+        return this.liqRepo.darrliqEntFindByAgenciaAnioAndSemanaToDashboard(strAgencia_I, intAnio_I, intSemana_I);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public ArrayList<LiquidacionEntity> darrliqModFindByAgenciaAndFechaPagoToDashboard(
+            String strAgencia_I,
+            String strFechaPago_I
+    ) {
+        return this.liqRepo.darrliqEntFindByAgenciaAndFechaPagoToDashboard(strAgencia_I, strFechaPago_I);
     }
 }

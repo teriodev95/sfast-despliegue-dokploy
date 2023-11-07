@@ -1,42 +1,64 @@
 package tech.calaverita.reporterloanssql.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.models.GerenciaModel;
-import tech.calaverita.reporterloanssql.repositories.GerenciaRepository;
+import tech.calaverita.reporterloanssql.persistence.entities.GerenciaEntity;
+import tech.calaverita.reporterloanssql.persistence.repositories.GerenciaRepository;
 
 import java.util.ArrayList;
 
 @Service
-public class GerenciaService {
-    private static GerenciaRepository gerenciaRepository;
+public final class GerenciaService {
+    //------------------------------------------------------------------------------------------------------------------
+    /*INSTANCE VARIABLES*/
+    //------------------------------------------------------------------------------------------------------------------
+    private final GerenciaRepository gerRepo;
 
-    @Autowired
-    public GerenciaService(GerenciaRepository gerenciaRepository) {
-        GerenciaService.gerenciaRepository = gerenciaRepository;
+    //------------------------------------------------------------------------------------------------------------------
+    /*CONSTRUCTORS*/
+    //------------------------------------------------------------------------------------------------------------------
+    private GerenciaService(
+            GerenciaRepository gerRepo_S
+    ) {
+        this.gerRepo = gerRepo_S;
     }
 
-    public static ArrayList<String> findManyBySeguridad(String seguridad) {
-        return gerenciaRepository.findManyBySeguridad(seguridad);
+    //------------------------------------------------------------------------------------------------------------------
+    /*METHODS*/
+    //------------------------------------------------------------------------------------------------------------------
+    public ArrayList<String> darrstrGerenciaIdFindBySeguridad(
+            String seguridad_I
+    ) {
+        return this.gerRepo.darrstrGerenciaIdFindBySeguridad(seguridad_I);
     }
 
-    public static ArrayList<String> findManyByRegional(String regional) {
-        return gerenciaRepository.findManyByRegional(regional);
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public ArrayList<String> darrstrGerenciaIdByRegional(
+            String regional_I
+    ) {
+        return this.gerRepo.darrstrGerenciaIdByRegional(regional_I);
     }
 
-    public static ArrayList<GerenciaModel> getGerenciaModels() {
-        return gerenciaRepository.getGerenciaModels();
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public ArrayList<GerenciaEntity> darrGerModFindAll() {
+        return this.gerRepo.darrGerEntFindAll();
     }
 
-    public static ArrayList<String> getGerencias() {
-        return gerenciaRepository.getGerencias();
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public ArrayList<String> darrstrGerenciaIdFindAll() {
+        return this.gerRepo.darrstrGerenciaIdFindAll();
     }
 
-    public static GerenciaModel findOneByGerenciaId(String gerenciaId) {
-        return gerenciaRepository.findOneByGerenciaId(gerenciaId);
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public GerenciaEntity gerModFindByGerenciaId(
+            String gerenciaId_I
+    ) {
+        return this.gerRepo.gerEntFindByGerenciaId(gerenciaId_I);
     }
 
-    public static ArrayList<String> getGerenciaIdsBySucursalId(String sucursalId) {
-        return gerenciaRepository.getGerenciaIdsBySucursalId(sucursalId);
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public ArrayList<String> darrstrGerenciaIdFindBySucursalId(
+            int sucursalId_I
+    ) {
+        return this.gerRepo.darrstrGerenciaIdFindBySucursalId(sucursalId_I);
     }
 }

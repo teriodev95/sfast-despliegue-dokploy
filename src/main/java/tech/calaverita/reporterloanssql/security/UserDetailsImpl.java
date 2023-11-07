@@ -3,14 +3,14 @@ package tech.calaverita.reporterloanssql.security;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import tech.calaverita.reporterloanssql.models.UsuarioModel;
+import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
 
 import java.util.Collection;
 import java.util.Collections;
 
 @AllArgsConstructor
 public class UserDetailsImpl implements UserDetails {
-    private final UsuarioModel usuario;
+    private final UsuarioEntity usuario;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

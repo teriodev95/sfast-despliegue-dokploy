@@ -6,8 +6,10 @@ import tech.calaverita.reporterloanssql.threads.CobranzaThread;
 public class CobranzaUtil implements Runnable {
     public ObjectsContainer objectsContainer;
 
-    public CobranzaUtil(ObjectsContainer objectsContainer) {
-        this.objectsContainer = objectsContainer;
+    public CobranzaUtil(
+            ObjectsContainer objectsContainer_S
+    ) {
+        this.objectsContainer = objectsContainer_S;
     }
 
     @Override
@@ -33,7 +35,9 @@ public class CobranzaUtil implements Runnable {
         for (int i = 2; i < 8; i++) {
             try {
                 threads[i].join();
-            } catch (InterruptedException e) {
+            } catch (
+                    InterruptedException e
+            ) {
                 throw new RuntimeException(e);
             }
         }

@@ -1,15 +1,21 @@
 package tech.calaverita.reporterloanssql.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.repositories.XpressRepository;
+import tech.calaverita.reporterloanssql.persistence.repositories.XpressRepository;
 
 @Service
-public class XpressService {
-    private static XpressRepository xpressRepository;
+public final class XpressService {
+    //------------------------------------------------------------------------------------------------------------------
+    /*INSTANCE VARIABLES*/
+    //------------------------------------------------------------------------------------------------------------------
+    private final XpressRepository xprRepo;
 
-    @Autowired
-    public XpressService(XpressRepository xpressRepository) {
-        XpressService.xpressRepository = xpressRepository;
+    //------------------------------------------------------------------------------------------------------------------
+    /*CONSTRUCTORS*/
+    //------------------------------------------------------------------------------------------------------------------
+    private XpressService(
+            XpressRepository xprRepo_S
+    ) {
+        this.xprRepo = xprRepo_S;
     }
 }

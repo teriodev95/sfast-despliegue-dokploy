@@ -1,20 +1,31 @@
 package tech.calaverita.reporterloanssql.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.models.CalendarioModel;
-import tech.calaverita.reporterloanssql.repositories.CalendarioRepository;
+import tech.calaverita.reporterloanssql.persistence.entities.CalendarioEntity;
+import tech.calaverita.reporterloanssql.persistence.repositories.CalendarioRepository;
 
 @Service
-public class CalendarioService {
-    private static CalendarioRepository calendarioRepository;
+public final class CalendarioService {
+    //------------------------------------------------------------------------------------------------------------------
+    /*INSTANCE VARIABLES*/
+    //------------------------------------------------------------------------------------------------------------------
+    private final CalendarioRepository calRepo;
 
-    @Autowired
-    public CalendarioService(CalendarioRepository calendarioRepository) {
-        CalendarioService.calendarioRepository = calendarioRepository;
+    //------------------------------------------------------------------------------------------------------------------
+    /*CONSTRUCTORS*/
+    //------------------------------------------------------------------------------------------------------------------
+    public CalendarioService(
+            CalendarioRepository calRepo_S
+    ) {
+        this.calRepo = calRepo_S;
     }
 
-    public static CalendarioModel getSemanaActualXpressByFechaActual(String fechaActual) {
-        return calendarioRepository.getSemanaActualXpressByFechaActual(fechaActual);
+    //------------------------------------------------------------------------------------------------------------------
+    /*METHODS*/
+    //------------------------------------------------------------------------------------------------------------------
+    public CalendarioEntity calModFindBySemanaActualXpressByFechaActual(
+            String fechaActual_I
+    ) {
+        return this.calRepo.calModFindBySemanaActualXpressByFechaActual(fechaActual_I);
     }
 }

@@ -1,223 +1,134 @@
 package tech.calaverita.reporterloanssql.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
-import retrofit2.Call;
-import tech.calaverita.reporterloanssql.utils.PagoUtil;
-import tech.calaverita.reporterloanssql.models.*;
+import tech.calaverita.reporterloanssql.persistence.entities.PagoEntity;
+import tech.calaverita.reporterloanssql.persistence.entities.view.PagoAgrupadoEntity;
+import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoEntity;
+import tech.calaverita.reporterloanssql.pojos.ModelValidation;
 import tech.calaverita.reporterloanssql.pojos.PagoConLiquidacion;
-import tech.calaverita.reporterloanssql.repositories.*;
-import tech.calaverita.reporterloanssql.retrofit.RetrofitOdoo;
-import tech.calaverita.reporterloanssql.retrofit.pojos.LiquidacionBody;
-import tech.calaverita.reporterloanssql.retrofit.pojos.PagoBody;
-import tech.calaverita.reporterloanssql.retrofit.pojos.PagoList;
-import tech.calaverita.reporterloanssql.retrofit.pojos.ResponseBodyXms;
-import tech.calaverita.reporterloanssql.services.RetrofitOdooService;
+import tech.calaverita.reporterloanssql.services.PagoService;
+import tech.calaverita.reporterloanssql.services.view.PrestamoService;
+import tech.calaverita.reporterloanssql.utils.PagoUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/xpress/v1/pays")
-public class PagoController {
-    @Autowired
-    PagoRepository pagoRepository;
-    @Autowired
-    PrestamoRepository prestamoRepository;
-    @Autowired
-    LiquidacionRepository liquidacionRepository;
-    @Autowired
-    RetrofitOdooService retrofitOdooService;
-    @Autowired
-    GerenciaRepository gerenciaRepository;
-    @Autowired
-    AgenciaRepository agenciaRepository;
+public final class PagoController {
+    //------------------------------------------------------------------------------------------------------------------
+    /*INSTANCE VARIABLES*/
+    //------------------------------------------------------------------------------------------------------------------
+    private final PagoService pagServ;
+    private final PrestamoService prestServ;
 
+    //------------------------------------------------------------------------------------------------------------------
+    /*CONSTRUCTORS*/
+    //------------------------------------------------------------------------------------------------------------------
+    private PagoController(
+            PagoService pagServ_S,
+            PrestamoService prestServ_S
+    ) {
+        this.pagServ = pagServ_S;
+        this.prestServ = prestServ_S;
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    /*METHODS*/
+    //------------------------------------------------------------------------------------------------------------------
     @CrossOrigin
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<ArrayList<PagoModel>> getPagosByAgencia(@PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana) {
-        ArrayList<PagoModel> pagos = pagoRepository.findPagoModelsByAgenciaAnioAndSemana(agencia, anio, semana);
+    public @ResponseBody ResponseEntity<ArrayList<PagoEntity>> redarrpagModGetByAgenciaAnioAndSemana(
+            @PathVariable("agencia") String strAgencia_I,
+            @PathVariable("anio") int intAnio_I,
+            @PathVariable("semana") int intSemana_I
+    ) {
+        ArrayList<PagoEntity> darrpagMod_O = this.pagServ.darrpagModFindByAgenciaAnioAndSemana(strAgencia_I, intAnio_I,
+                intSemana_I);
 
-        if (pagos.isEmpty())
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        HttpStatus httpStatus_O = HttpStatus.OK;
 
-        return new ResponseEntity<>(pagos, HttpStatus.OK);
+        if (
+                darrpagMod_O.isEmpty()
+        ) {
+            httpStatus_O = HttpStatus.NO_CONTENT;
+        }
+
+        return new ResponseEntity<>(darrpagMod_O, httpStatus_O);
     }
 
-    /*
-        Dentro de este endpoint se puede recibir el pago con la liquidación,
-        si el pago mandado cuenta con liquidacion se hará el proceso correspondiente
-        para guardar dicha liquidacion y ajustar la propiedad cierraCon de pago,
-        si se manda solo el pago solo se realizará el proceso para guardar el pago.
-     */
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @PostMapping(path = "/create-one")
-    public @ResponseBody ResponseEntity<String> createPago(@RequestBody PagoConLiquidacion pago) {
-        String session = "session_id=76d814874514726176f0615260848da2aab725ea";
+    public @ResponseBody ResponseEntity<String> restrCreatePagMod(
+            //                                              //Dentro de este endpoint se puede recibir el pago con la
+            //                                              //      liquidación, si el pago mandado cuenta con
+            //                                              //      liquidacion se hará el proceso correspondiente para
+            //                                              //      guardar dicha liquidacion y ajustar la propiedad
+            //                                              //      cierraCon de pago, si se manda solo el pago solo se
+            //                                              //      realizará el proceso para guardar el pago.
 
-        if (pago.getPagoId() == null)
-            return new ResponseEntity<>("Debe Ingresar El 'pagoId'", HttpStatus.BAD_REQUEST);
+            @RequestBody PagoConLiquidacion pagConLiq_I
+    ) {
+        ModelValidation modVal;
+        PrestamoEntity prestMod = this.prestServ.prestModFindByPrestamoId(pagConLiq_I.getPrestamoId());
+        modVal = PagoUtil.modValPagoModelValidation(pagConLiq_I, prestMod);
 
-        Optional<PagoModel> pagoAux = pagoRepository.findById(pago.getPagoId());
-
-        if (pago.getPrestamoId() == null || pago.getPrestamoId().equalsIgnoreCase(""))
-            return new ResponseEntity<>("Debe Ingresar El 'prestamoId'", HttpStatus.BAD_REQUEST);
-
-        if (!pagoAux.isEmpty())
-            return new ResponseEntity<>("El Pago Ya Existe", HttpStatus.CONFLICT);
-
-        if (PagoUtil.isPagoMigracion(pago.getPrestamoId(), pago.getAnio(), pago.getSemana())) {
-            return new ResponseEntity<>("El Pago cuenta con migración", HttpStatus.CONFLICT);
+        if (
+                modVal.isBoolIsOnline()
+        ) {
+            PagoUtil.subProcessPayment(modVal, pagConLiq_I, prestMod);
         }
 
-        PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(pago.getPrestamoId());
-
-        if (prestamo == null)
-            return new ResponseEntity<>("No Se Encontró Ningún Prestamo Con Ese 'prestamoId'", HttpStatus.NOT_FOUND);
-
-        PagoModel pagoModel = PagoUtil.getPagoModelFromPagoConLiquidacion(pago);
-        LiquidacionModel liquidacionModel = pago.getInfoLiquidacion();
-
-        /*
-            A continuación se hace una validación para comprobar si el pago mandado lleva liquidación,
-            de ser así se hará el proceso dentro del if, sino se hará el proceso dentro del else.
-         */
-        if (liquidacionModel != null) {
-            liquidacionModel.setPagoId(pagoModel.getPagoId());
-            pagoModel.setAbreCon(prestamo.getTotalAPagar() - pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()));
-            pagoModel.setCierraCon(0.0);
-            pagoModel.setEsPrimerPago(false);
-
-            Call<ResponseBodyXms> call = RetrofitOdoo.getInstance().getApi().liquidacionCreateOne(session, new LiquidacionBody(liquidacionModel));
-            retrofitOdooService.sendCall(call);
-        } else {
-            pagoModel.setAbreCon(prestamo.getTotalAPagar() - pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()));
-            pagoModel.setCierraCon(pagoModel.getAbreCon() - pago.getMonto());
-            pagoModel.setEsPrimerPago(false);
-        }
-
-        try {
-            pagoRepository.save(pagoModel);
-
-            AgenciaModel agencia = agenciaRepository.getAgenciaModelByAgenciaId(pago.getAgente());
-            GerenciaModel gerencia = gerenciaRepository.findOneByGerenciaId(agencia.getGerenciaId());
-            PagoUtil.sendPayMessage(prestamo, pagoModel, gerencia);
-
-            Call<ResponseBodyXms> call = RetrofitOdoo.getInstance().getApi().pagoCreateOne(session, new PagoBody(new PagoList(pagoModel)));
-            retrofitOdooService.sendCall(call);
-
-            if (liquidacionModel != null) {
-                liquidacionRepository.save(liquidacionModel);
-            }
-        } catch (HttpClientErrorException e) {
-            return new ResponseEntity<>(e.toString(), HttpStatus.CONFLICT);
-        }
-
-        return new ResponseEntity<>("Pago Insertado con Éxito", HttpStatus.CREATED);
+        return new ResponseEntity<>(modVal.getStrResponse(), modVal.getHttpStatus());
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @PostMapping(path = "/create-many")
-    public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> createPagos(@RequestBody ArrayList<PagoConLiquidacion> pagos) {
-        String session = "session_id=76d814874514726176f0615260848da2aab725ea";
+    public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> redarrdicobjectCreatePagMod(
+            @RequestBody ArrayList<PagoConLiquidacion> darrpagConLiq_I
+    ) {
+        ArrayList<HashMap<String, Object>> darrdicpagMod_O = new ArrayList<>();
+        HttpStatus httpStatus_O = HttpStatus.CREATED;
 
-        ArrayList<HashMap<String, Object>> respuesta = new ArrayList<>();
+        for (PagoConLiquidacion pagConLiq : darrpagConLiq_I) {
+            HashMap<String, Object> dirobjeto = new HashMap<>();
 
-        for (PagoConLiquidacion pago : pagos) {
-            HashMap<String, Object> objeto = new HashMap<>();
-            String msg = "OK";
-            String msgAux = "";
-            Boolean isOnline = true;
+            ModelValidation modVal;
+            PrestamoEntity prestMod = this.prestServ.prestModFindByPrestamoId(pagConLiq.getPrestamoId());
+            modVal = PagoUtil.modValPagoModelValidation(pagConLiq, prestMod);
 
-            if (pago.getPagoId() == null) {
-                msgAux += "Debe Ingresar El 'pagoId'|";
-                isOnline = false;
+            if (
+                    modVal.isBoolIsOnline()
+            ) {
+                PagoUtil.subProcessPayment(modVal, pagConLiq, prestMod);
             }
 
-            Optional<PagoModel> pagoAux = pagoRepository.findById(pago.getPagoId());
-
-            if (pago.getPrestamoId() == null || pago.getPrestamoId().equalsIgnoreCase("")) {
-                msgAux += "Debe Ingresar El 'prestamoId'|";
-                isOnline = false;
-            }
-
-            if (!pagoAux.isEmpty()) {
-                msgAux += "El Pago Ya Existe|";
-                isOnline = false;
-            }
-
-            if (PagoUtil.isPagoMigracion(pago.getPrestamoId(), pago.getAnio(), pago.getSemana())) {
-                msgAux += "El Pago cuenta con migración|";
-                isOnline = false;
-            }
-
-            PrestamoModel prestamo = prestamoRepository.getPrestamoModelByPrestamoId(pago.getPrestamoId());
-
-            if (prestamo == null) {
-                msgAux += "No Se Encontró Ningún Prestamo Con Ese 'prestamoId'|";
-                isOnline = false;
-            }
-
-            PagoModel pagoModel = PagoUtil.getPagoModelFromPagoConLiquidacion(pago);
-            LiquidacionModel liquidacionModel = pago.getInfoLiquidacion();
-
-        /*
-            A continuación se hace una validación para comprobar si el pago mandado lleva liquidación,
-            de ser así se hará el proceso dentro del if, sino se hará el proceso dentro del else.
-         */
-            if (liquidacionModel != null) {
-                liquidacionModel.setPagoId(pagoModel.getPagoId());
-                pagoModel.setAbreCon(prestamo.getTotalAPagar() - pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()));
-                pagoModel.setCierraCon(0.0);
-                pagoModel.setEsPrimerPago(false);
-
-                Call<ResponseBodyXms> call = RetrofitOdoo.getInstance().getApi().liquidacionCreateOne(session, new LiquidacionBody(liquidacionModel));
-                retrofitOdooService.sendCall(call);
-            } else {
-                pagoModel.setAbreCon(prestamo.getTotalAPagar() - pagoRepository.getSaldoFromPrestamoByPrestamoId(pago.getPrestamoId()));
-                pagoModel.setCierraCon(pagoModel.getAbreCon() - pago.getMonto());
-                pagoModel.setEsPrimerPago(false);
-            }
-
-            try {
-                if (isOnline == true) {
-                    pagoRepository.save(pagoModel);
-
-                    AgenciaModel agencia = agenciaRepository.getAgenciaModelByAgenciaId(pago.getAgente());
-                    GerenciaModel gerencia = gerenciaRepository.findOneByGerenciaId(agencia.getGerenciaId());
-                    PagoUtil.sendPayMessage(prestamo, pagoModel, gerencia);
-
-                    Call<ResponseBodyXms> call = RetrofitOdoo.getInstance().getApi().pagoCreateOne(session, new PagoBody(new PagoList(pagoModel)));
-                    retrofitOdooService.sendCall(call);
-
-                    if (liquidacionModel != null)
-                        liquidacionRepository.save(liquidacionModel);
-                } else
-                    msg = msgAux;
-            } catch (HttpClientErrorException e) {
-                msg = e.toString();
-                isOnline = false;
-            }
-
-            objeto.put("id", pago.getPagoId());
-            objeto.put("isOnline", isOnline);
-            objeto.put("msg", msg);
-            respuesta.add(objeto);
+            dirobjeto.put("id", pagConLiq.getPagoId());
+            dirobjeto.put("isOnline", modVal.isBoolIsOnline());
+            dirobjeto.put("msg", modVal.getStrResponse());
+            darrdicpagMod_O.add(dirobjeto);
         }
 
-        return new ResponseEntity<>(respuesta, HttpStatus.OK);
+        return new ResponseEntity<>(darrdicpagMod_O, httpStatus_O);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @CrossOrigin
-    @GetMapping(path = "/history/{prestamoId}")
-    public @ResponseBody ResponseEntity<ArrayList<PagoAgrupadoModel>> getHistorialDePagos(@PathVariable("prestamoId") String prestamoId) {
-        ArrayList<PagoAgrupadoModel> pagos = pagoRepository.getHistorialDePagosToApp(prestamoId);
+    @GetMapping(path = "/history/{id}")
+    public @ResponseBody ResponseEntity<ArrayList<PagoAgrupadoEntity>> redarrpagAgrModGetHistory(
+            @PathVariable("id") String strId_I
+    ) {
+        ArrayList<PagoAgrupadoEntity> pagAgrMod_O = this.pagServ.darrpagAgrModGetHistorialDePagosToApp(strId_I);
+        HttpStatus httpStatus_O = HttpStatus.OK;
 
-        if (pagos.isEmpty())
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        if (
+                pagAgrMod_O.isEmpty()
+        ) {
+            httpStatus_O = HttpStatus.NO_CONTENT;
+        }
 
-        return new ResponseEntity<>(pagos, HttpStatus.OK);
+        return new ResponseEntity<>(pagAgrMod_O, httpStatus_O);
     }
 }

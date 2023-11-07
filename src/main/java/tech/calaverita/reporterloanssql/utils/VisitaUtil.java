@@ -1,21 +1,48 @@
 package tech.calaverita.reporterloanssql.utils;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import tech.calaverita.reporterloanssql.models.VisitaModel;
+import org.springframework.stereotype.Component;
+import tech.calaverita.reporterloanssql.persistence.entities.VisitaEntity;
 import tech.calaverita.reporterloanssql.services.VisitaService;
 
-public class VisitaUtil {
-    public static boolean isVisita(String visitaId) {
-        VisitaModel visitaModel = VisitaService.getVisitaModelByVisitaId(visitaId);
+@Component
+public final class VisitaUtil {
+    //------------------------------------------------------------------------------------------------------------------
+    /*INSTANCE VARIABLES*/
+    //------------------------------------------------------------------------------------------------------------------
+    private static VisitaService visServ;
 
-        return visitaModel != null;
+    //------------------------------------------------------------------------------------------------------------------
+    /*CONSTRUCTORS*/
+    //------------------------------------------------------------------------------------------------------------------
+    private VisitaUtil(
+            VisitaService visServ_S
+    ) {
+        VisitaUtil.visServ = visServ_S;
     }
 
-    public static ResponseEntity<String> checkVisitaModelByVisitaId(String visitaId) {
+    //------------------------------------------------------------------------------------------------------------------
+    /*METHODS*/
+    //------------------------------------------------------------------------------------------------------------------
+    public static boolean blnHasVisita(
+            String visitaId_I
+    ) {
+        VisitaEntity visitaEntity = VisitaUtil.visServ.visModFindByVisitaId(visitaId_I);
+
+        return visitaEntity != null;
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public static ResponseEntity<String> restrCheckVisitaModelByVisitaId(
+            String visitaId_I
+    ) {
         ResponseEntity<String> responseEntity;
 
-        if (isVisita(visitaId)) {
+        if (
+                blnHasVisita(visitaId_I)
+        ) {
             responseEntity = new ResponseEntity<>("La visita ya existe", HttpStatus.CONFLICT);
         } else {
             responseEntity = new ResponseEntity<>("La visita no existe", HttpStatus.CONFLICT);
@@ -24,46 +51,73 @@ public class VisitaUtil {
         return responseEntity;
     }
 
-    public static ResponseEntity<String> checkVisit(VisitaModel visitaModel) {
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public static ResponseEntity<String> restrCheckVisit(
+            VisitaEntity visitaEntity_I
+    ) {
         ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.OK);
 
-        if (visitaModel.getVisitaId() == null || visitaModel.getVisitaId().equals("")) {
+        if (
+                ((visitaEntity_I.getVisitaId() == null) || (visitaEntity_I.getVisitaId().equals("")))
+        ) {
             responseEntity = new ResponseEntity<>("Debe ingresar un visitaId válido", HttpStatus.BAD_REQUEST);
-        } else if (VisitaUtil.isVisita(visitaModel.getVisitaId())) {
-            responseEntity = VisitaUtil.checkVisitaModelByVisitaId(visitaModel.getVisitaId());
+        } //
+        else if (
+                VisitaUtil.blnHasVisita(visitaEntity_I.getVisitaId())
+        ) {
+            responseEntity = VisitaUtil.restrCheckVisitaModelByVisitaId(visitaEntity_I.getVisitaId());
         }
 
-        if (visitaModel.getPrestamoId() == null || visitaModel.getPrestamoId().equals("")) {
+        if (
+                ((visitaEntity_I.getPrestamoId() == null) || (visitaEntity_I.getPrestamoId().equals("")))
+        ) {
             responseEntity = new ResponseEntity<>("Debe ingresar un prestamoId válido", HttpStatus.BAD_REQUEST);
-        } else if (!PrestamoUtil.isPrestamo(visitaModel.getPrestamoId())) {
-            responseEntity = PrestamoUtil.checkPrestamoByPrestamoId(visitaModel.getPrestamoId());
+        } //
+        else if (
+                !PrestamoUtil.blnIsPrestamo(visitaEntity_I.getPrestamoId())
+        ) {
+            responseEntity = PrestamoUtil.restrCheckPrestamoByPrestamoId(visitaEntity_I.getPrestamoId());
         }
 
-        if (visitaModel.getSemana() == null || visitaModel.getSemana() == 0) {
+        if (
+                ((visitaEntity_I.getSemana() == null) || (visitaEntity_I.getSemana() == 0))
+        ) {
             responseEntity = new ResponseEntity<>("Debe ingresar la semana", HttpStatus.BAD_REQUEST);
         }
 
-        if (visitaModel.getAnio() == null || visitaModel.getAnio() == 0) {
+        if (
+                (visitaEntity_I.getAnio() == null) || (visitaEntity_I.getAnio() == 0)
+        ) {
             responseEntity = new ResponseEntity<>("Debe ingresar el año", HttpStatus.BAD_REQUEST);
         }
 
-        if (visitaModel.getFecha() == null || visitaModel.getFecha().equals("")) {
+        if (
+                ((visitaEntity_I.getFecha() == null) || (visitaEntity_I.getFecha().equals("")))
+        ) {
             responseEntity = new ResponseEntity<>("Debe ingresar una fecha", HttpStatus.BAD_REQUEST);
         }
 
-        if (visitaModel.getCliente() == null || visitaModel.getCliente().equals("")) {
+        if (
+                ((visitaEntity_I.getCliente() == null) || (visitaEntity_I.getCliente().equals("")))
+        ) {
             responseEntity = new ResponseEntity<>("Debe ingresar el cliente", HttpStatus.BAD_REQUEST);
         }
 
-        if (visitaModel.getAgente() == null || visitaModel.getAgente().equals("")) {
+        if (
+                ((visitaEntity_I.getAgente() == null) || (visitaEntity_I.getAgente().equals("")))
+        ) {
             responseEntity = new ResponseEntity<>("Debe ingresar el agente", HttpStatus.BAD_REQUEST);
         }
 
-        if (visitaModel.getLat() == null) {
+        if (
+                visitaEntity_I.getLat() == null
+        ) {
             responseEntity = new ResponseEntity<>("Debe ingresar la lat", HttpStatus.BAD_REQUEST);
         }
 
-        if (visitaModel.getLng() == null) {
+        if (
+                visitaEntity_I.getLng() == null
+        ) {
             responseEntity = new ResponseEntity<>("Debe ingresar la lng", HttpStatus.BAD_REQUEST);
         }
 

@@ -4,7 +4,7 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import tech.calaverita.reporterloanssql.models.UsuarioModel;
+import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
 import tech.calaverita.reporterloanssql.pojos.BalanceAgencia;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
 
@@ -18,11 +18,15 @@ public class BalanceAgenciaScript {
 
     public static BalanceAgencia balanceAgencia;
 
-    public BalanceAgenciaScript(BalanceAgencia balanceAgencia) {
-        this.balanceAgencia = balanceAgencia;
+    public BalanceAgenciaScript(
+            BalanceAgencia balanceAgencia_S
+    ) {
+        this.balanceAgencia = balanceAgencia_S;
     }
 
-    public static void main(String[] args) {
+    public static void main(
+            String[] strArgs
+    ) {
         writePdf();
     }
 
@@ -31,21 +35,21 @@ public class BalanceAgenciaScript {
         document.setPageSize(personalizado);
 
         Dashboard dashboard = balanceAgencia.getDashboard().getBody();
-        UsuarioModel agente = balanceAgencia.getAgente();
-        UsuarioModel gerente = balanceAgencia.getGerente();
-        Double asignaciones = balanceAgencia.getAsignaciones();
+        UsuarioEntity usuModAgente = balanceAgencia.getAgente();
+        UsuarioEntity usuModGerente = balanceAgencia.getGerente();
+        Double numAsignaciones = balanceAgencia.getAsignaciones();
 
         Calendar calendar = Calendar.getInstance();
 
-        String agencia = dashboard.getAgencia();
-        int anio = dashboard.getAnio();
-        int semana = dashboard.getSemana();
+        String strAgencia = dashboard.getAgencia();
+        int intAnio = dashboard.getAnio();
+        int intSemana = dashboard.getSemana();
 
         try {
-            String path = new File("src\\main\\java\\tech\\calaverita\\reporterloanssql\\resources\\balancesDeAgencias").getCanonicalPath();
-            String fileName = path + "\\balance-de-agencia.pdf";
+            String strPath = new File("src\\main\\java\\tech\\calaverita\\reporterloanssql\\resources\\balancesDeAgencias").getCanonicalPath();
+            String strFileName = strPath + "\\balance-de-agencia.pdf";
 
-            PdfWriter.getInstance(document, new FileOutputStream(fileName));
+            PdfWriter.getInstance(document, new FileOutputStream(new File(strFileName)));
 
             document.open();
 
@@ -59,19 +63,19 @@ public class BalanceAgenciaScript {
             PdfPCell cellLeft1C = new PdfPCell(cellLeft1P);
             cellLeft1C.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
 
-            Paragraph cellLeft2_1P = new Paragraph("ZONA: " + "07" + "      " + "GERENTE: " + gerente.getNombre());
+            Paragraph cellLeft2_1P = new Paragraph("ZONA: " + "07" + "      " + "GERENTE: " + usuModGerente.getNombre());
 
             PdfPCell cellLeft2_1C = new PdfPCell(cellLeft2_1P);
             cellLeft2_1C.setBorder(PdfPCell.NO_BORDER);
             cellLeft2_1C.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
 
-            Paragraph cellLeft2_2P = new Paragraph("AG: " + agencia + "      " + "AGENTE: " + agente.getNombre());
+            Paragraph cellLeft2_2P = new Paragraph("AG: " + strAgencia + "      " + "AGENTE: " + usuModAgente.getNombre());
 
             PdfPCell cellLeft2_2C = new PdfPCell(cellLeft2_2P);
             cellLeft2_2C.setBorder(PdfPCell.NO_BORDER);
             cellLeft2_2C.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
 
-            Paragraph cellLeft2_3P = new Paragraph("% DE AG: " + dashboard.getRendimiento() + "      " + "NIVEL: " + BalanceAgenciaUtil.getNivelAgente(dashboard.getClientes(), dashboard.getRendimiento(), 53));
+            Paragraph cellLeft2_3P = new Paragraph("% DE AG: " + dashboard.getRendimiento() + "      " + "NIVEL: " + BalanceAgenciaUtil.strGetNivelAgente(dashboard.getClientes(), dashboard.getRendimiento(), 53));
 
             PdfPCell cellLeft2_3C = new PdfPCell(cellLeft2_3P);
             cellLeft2_3C.setBorder(PdfPCell.NO_BORDER);
@@ -308,7 +312,7 @@ public class BalanceAgenciaScript {
             PdfPCell cellRight2_2_1C = new PdfPCell(cellRight2_2_1P);
             cellRight2_2_1C.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
 
-            Paragraph cellRight2_2_2P = new Paragraph("$ " + asignaciones);
+            Paragraph cellRight2_2_2P = new Paragraph("$ " + numAsignaciones);
             cellRight2_2_2P.getFont().setStyle(Font.BOLDITALIC);
 
             PdfPCell cellRight2_2_2C = new PdfPCell(cellRight2_2_2P);

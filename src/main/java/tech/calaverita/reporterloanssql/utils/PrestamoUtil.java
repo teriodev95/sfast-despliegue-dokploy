@@ -4,28 +4,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import tech.calaverita.reporterloanssql.models.PrestamoModel;
-import tech.calaverita.reporterloanssql.services.PrestamoService;
+import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoEntity;
+import tech.calaverita.reporterloanssql.services.view.PrestamoService;
 
 @Component
 public class PrestamoUtil {
     private static PrestamoService prestamoService;
 
     @Autowired
-    private PrestamoUtil(PrestamoService prestamoService) {
-        PrestamoUtil.prestamoService = prestamoService;
+    private PrestamoUtil(
+            PrestamoService prestamoService_S
+    ) {
+        PrestamoUtil.prestamoService = prestamoService_S;
     }
 
-    public static boolean isPrestamo(String prestamoId) {
-        PrestamoModel prestamoModel = prestamoService.getPrestamoModelByPrestamoId(prestamoId);
+    public static boolean blnIsPrestamo(
+            String prestamoId_I
+    ) {
+        PrestamoEntity prestamoEntity = prestamoService.prestModFindByPrestamoId(prestamoId_I);
 
-        return prestamoModel != null;
+        return prestamoEntity != null;
     }
 
-    public static ResponseEntity<String> checkPrestamoByPrestamoId(String prestamoId) {
+    public static ResponseEntity<String> restrCheckPrestamoByPrestamoId(
+            String prestamoId_I
+    ) {
         ResponseEntity<String> responseEntity;
 
-        if (isPrestamo(prestamoId)) {
+        if (
+                blnIsPrestamo(prestamoId_I)
+        ) {
             responseEntity = new ResponseEntity<>("El prestamo ya existe", HttpStatus.CONFLICT);
         } else {
             responseEntity = new ResponseEntity<>("El prestamo no existe", HttpStatus.CONFLICT);
@@ -34,12 +42,14 @@ public class PrestamoUtil {
         return responseEntity;
     }
 
-    public static PrestamoModel asignarPorcentajeCobrado(PrestamoModel prestamoModel) {
-        Double totalAPagar = prestamoModel.getTotalAPagar();
-        Double cobrado = prestamoModel.getCobrado();
+    public static PrestamoEntity prestamoModelAsignarPorcentajeCobrado(
+            PrestamoEntity prestamoEntity_M
+    ) {
+        Double dblTotalAPagar = prestamoEntity_M.getTotalAPagar();
+        Double dblCobrado = prestamoEntity_M.getCobrado();
 
-        prestamoModel.setPorcentajeCobrado(Math.round(cobrado / totalAPagar * 100.0) / 100.0 * 100);
+        prestamoEntity_M.setPorcentajeCobrado(Math.round(dblCobrado / dblTotalAPagar * 100.0) / 100.0 * 100);
 
-        return prestamoModel;
+        return prestamoEntity_M;
     }
 }

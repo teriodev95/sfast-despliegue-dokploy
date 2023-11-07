@@ -1,42 +1,69 @@
 package tech.calaverita.reporterloanssql.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.models.VisitaModel;
-import tech.calaverita.reporterloanssql.repositories.VisitaRepository;
+import tech.calaverita.reporterloanssql.persistence.entities.VisitaEntity;
+import tech.calaverita.reporterloanssql.persistence.repositories.VisitaRepository;
 
 import java.util.ArrayList;
 
 @Service
-public class VisitaService {
-    private static VisitaRepository visitaRepository;
+public final class VisitaService {
+    //------------------------------------------------------------------------------------------------------------------
+    /*INSTANCE VARIABLES*/
+    //------------------------------------------------------------------------------------------------------------------
+    private final VisitaRepository visRepo;
 
-    @Autowired
-    public VisitaService(VisitaRepository visitaRepository) {
-        VisitaService.visitaRepository = visitaRepository;
+    //------------------------------------------------------------------------------------------------------------------
+    /*CONSTRUCTORS*/
+    //------------------------------------------------------------------------------------------------------------------
+    private VisitaService(
+            VisitaRepository visRepo_S
+    ) {
+        this.visRepo = visRepo_S;
     }
 
-    public static ArrayList<VisitaModel> getVisitaModels() {
-        return visitaRepository.getVisitaModels();
+    //------------------------------------------------------------------------------------------------------------------
+    /*METHODS*/
+    //------------------------------------------------------------------------------------------------------------------
+    public void save(
+            VisitaEntity visMod_I
+    ) {
+        this.visRepo.save(visMod_I);
     }
 
-    public static VisitaModel getVisitaModelByVisitaId(String visitaId) {
-        return visitaRepository.getVisitaModelByVisitaId(visitaId);
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public ArrayList<VisitaEntity> darrvisModFindAll() {
+        return visRepo.darrvisEntFindAll();
     }
 
-    public static ArrayList<VisitaModel> getVisitaModelsByPrestamoId(String prestamoId) {
-        return visitaRepository.getVisitaModelsByPrestamoId(prestamoId);
+    public VisitaEntity visModFindByVisitaId(
+            String strVisitaId_I
+    ) {
+        return this.visRepo.visEntFindByVisitaId(strVisitaId_I);
     }
 
-    public static void createVisitaModel(VisitaModel visitaModel) {
-        visitaRepository.save(visitaModel);
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public ArrayList<VisitaEntity> darrvisModFindByPrestamoId(
+            String strPrestamoId_I
+    ) {
+        return this.visRepo.darrvisEntFindByPrestamoId(strPrestamoId_I);
     }
 
-    public static ArrayList<VisitaModel> findVisitaModelsByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
-        return visitaRepository.findVisitaModelsByAgenciaAnioAndSemana(agencia, anio, semana);
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public ArrayList<VisitaEntity> darrvisModFindByAgenciaAnioAndSemana(
+            String strAgencia_I,
+            int intAnio_I,
+            int intSemana_I
+    ) {
+        return this.visRepo.darrvisEntFindByAgenciaAnioAndSemana(strAgencia_I, intAnio_I, intSemana_I);
     }
 
-    public static ArrayList<VisitaModel> findVisitaModelsByPrestamoIdAnioAndSemana(String prestamoId, int anio, int semana) {
-        return visitaRepository.findVisitaModelsByPrestamoIdAnioAndSemana(prestamoId, anio, semana);
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public ArrayList<VisitaEntity> darrVisModFindByPrestamoIdAnioAndSemana(
+            String strPrestamoId_I,
+            int intAnio_I,
+            int intSemana_I
+    ) {
+        return this.visRepo.darrVisEntFindByPrestamoIdAnioAndSemana(strPrestamoId_I, intAnio_I, intSemana_I);
     }
 }

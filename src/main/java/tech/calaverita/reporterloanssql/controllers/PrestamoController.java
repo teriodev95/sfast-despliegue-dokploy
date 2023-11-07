@@ -1,30 +1,47 @@
 package tech.calaverita.reporterloanssql.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoEntity;
+import tech.calaverita.reporterloanssql.persistence.repositories.view.PrestRepoPrestamoRepository;
 import tech.calaverita.reporterloanssql.utils.PrestamoUtil;
-import tech.calaverita.reporterloanssql.models.PrestamoModel;
-import tech.calaverita.reporterloanssql.repositories.PrestamoRepository;
 
 @RestController
 @RequestMapping(path = "/xpress/v1/loans")
-public class PrestamoController {
-    @Autowired
-    PrestamoRepository prestamoRepository;
+public final class PrestamoController {
+    //------------------------------------------------------------------------------------------------------------------
+    /*INSTANCE VARIABLES*/
+    //------------------------------------------------------------------------------------------------------------------
+    private final PrestRepoPrestamoRepository prestRepo;
 
+    //------------------------------------------------------------------------------------------------------------------
+    /*CONSTRUCTORS*/
+    //------------------------------------------------------------------------------------------------------------------
+    private PrestamoController(
+            PrestRepoPrestamoRepository prestRepo_S
+    ) {
+        this.prestRepo = prestRepo_S;
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    /*METHODS*/
+    //------------------------------------------------------------------------------------------------------------------
     @CrossOrigin
     @GetMapping(path = "/{id}")
-    public ResponseEntity<PrestamoModel> getPrestamoByPrestamoId(@PathVariable("id") String prestamoId) {
-        PrestamoModel prestamoModel = prestamoRepository.getPrestamoModelByPrestamoId(prestamoId);
+    public ResponseEntity<PrestamoEntity> represtModGetByStrId(
+            @PathVariable("id") String strId_I
+    ) {
+        PrestamoEntity prestMod_O = prestRepo.prestEntFindByPrestamoId(strId_I);
 
-        if (prestamoModel == null) {
+        if (
+                prestMod_O == null
+        ) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        PrestamoUtil.asignarPorcentajeCobrado(prestamoModel);
+        PrestamoUtil.prestamoModelAsignarPorcentajeCobrado(prestMod_O);
 
-        return new ResponseEntity<>(prestamoModel, HttpStatus.OK);
+        return new ResponseEntity<>(prestMod_O, HttpStatus.OK);
     }
 }

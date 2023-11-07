@@ -1,20 +1,31 @@
 package tech.calaverita.reporterloanssql.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.models.SucursalModel;
-import tech.calaverita.reporterloanssql.repositories.SucursalRepository;
+import tech.calaverita.reporterloanssql.persistence.entities.SucursalEntity;
+import tech.calaverita.reporterloanssql.persistence.repositories.SucursalRepository;
 
 @Service
-public class SucursalService {
-    private static SucursalRepository sucursalRepository;
+public final class SucursalService {
+    //------------------------------------------------------------------------------------------------------------------
+    /*INSTANCE VARIABLES*/
+    //------------------------------------------------------------------------------------------------------------------
+    private final SucursalRepository sucRepo;
 
-    @Autowired
-    public SucursalService(SucursalRepository sucursalRepository) {
-        SucursalService.sucursalRepository = sucursalRepository;
+    //------------------------------------------------------------------------------------------------------------------
+    /*CONSTRUCTORS*/
+    //------------------------------------------------------------------------------------------------------------------
+    private SucursalService(
+            SucursalRepository sucRepo_S
+    ) {
+        this.sucRepo = sucRepo_S;
     }
 
-    public static SucursalModel findOneBySucursalId(String sucursalId) {
-        return sucursalRepository.findOneBySucursalId(sucursalId);
+    //------------------------------------------------------------------------------------------------------------------
+    /*METHODS*/
+    //------------------------------------------------------------------------------------------------------------------
+    public SucursalEntity sucModFindBySucursalId(
+            String strSucursalId_I
+    ) {
+        return this.sucRepo.sucEntFindBySucursalId(strSucursalId_I);
     }
 }

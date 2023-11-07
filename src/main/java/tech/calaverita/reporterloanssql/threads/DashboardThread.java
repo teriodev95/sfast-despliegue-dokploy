@@ -1,30 +1,68 @@
 package tech.calaverita.reporterloanssql.threads;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.services.AsignacionService;
 import tech.calaverita.reporterloanssql.services.LiquidacionService;
 import tech.calaverita.reporterloanssql.services.PagoService;
-import tech.calaverita.reporterloanssql.services.PrestamoService;
+import tech.calaverita.reporterloanssql.services.view.PrestamoService;
 
+@Component
 public class DashboardThread implements Runnable {
-    public ObjectsContainer objectsContainer;
-    public int opc;
+    //------------------------------------------------------------------------------------------------------------------
+    /*INSTANCE VARIABLES*/
+    //------------------------------------------------------------------------------------------------------------------
+    private ObjectsContainer objectsContainer;
+    private int opc;
     private Thread[] threads;
+    private static AsignacionService asignServ;
+    private static LiquidacionService liqServ;
+    private static PagoService pagServ;
+    private static PrestamoService prestServ;
 
-    public DashboardThread(ObjectsContainer objectsContainer, int opc) {
+    //------------------------------------------------------------------------------------------------------------------
+    /*CONSTRUCTORS*/
+    //------------------------------------------------------------------------------------------------------------------
+    @Autowired
+    private DashboardThread(
+            AsignacionService asignServ_S,
+            LiquidacionService liqServ_S,
+            PagoService pagServ_S,
+            PrestamoService prestServ_S
+    ) {
+        DashboardThread.asignServ = asignServ_S;
+        DashboardThread.liqServ = liqServ_S;
+        DashboardThread.pagServ = pagServ_S;
+        DashboardThread.prestServ = prestServ_S;
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public DashboardThread(
+            ObjectsContainer objectsContainer,
+            int opc
+    ) {
         this.objectsContainer = objectsContainer;
         this.opc = opc;
     }
 
-    public DashboardThread(ObjectsContainer objectsContainer, int opc, Thread[] threads) {
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public DashboardThread(
+            ObjectsContainer objectsContainer,
+            int opc,
+            Thread[] threads
+    ) {
         this.objectsContainer = objectsContainer;
         this.opc = opc;
         this.threads = threads;
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    /*METHODS*/
+    //------------------------------------------------------------------------------------------------------------------
     @Override
     public void run() {
-        switch (opc) {
+        switch (this.opc) {
             case 0 -> setPrestamosToCobranza();
             case 1 -> setPrestamosToDashboard();
             case 2 -> setPagosToCobranza();
@@ -35,22 +73,34 @@ public class DashboardThread implements Runnable {
         }
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setPrestamosToCobranza() {
-        objectsContainer.setPrestamosToCobranza(PrestamoService.getPrestamoModelsByAgenciaAnioAndSemanaToCobranzaPGS(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        this.objectsContainer.setPrestamosToCobranza(DashboardThread.prestServ
+                .darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(this.objectsContainer.getDashboard().getAgencia(),
+                        this.objectsContainer.getDashboard().getAnio(), this.objectsContainer.getDashboard()
+                                .getSemana()));
 
         setGerencia();
         setClientes();
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setPrestamosToDashboard() {
-        objectsContainer.setPrestamosToDashboard(PrestamoService.getPrestamoModelsByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        this.objectsContainer.setPrestamosToDashboard(DashboardThread.prestServ
+                .darrprestUtilModFindByAgenciaAnioAndSemanaToDashboard(this.objectsContainer.getDashboard()
+                        .getAgencia(), this.objectsContainer.getDashboard().getAnio(), this.objectsContainer
+                        .getDashboard().getSemana()));
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setPagosToCobranza() {
-        objectsContainer.setPagosVistaToCobranza(PagoService.getPagoUtilModelsByAgenciaAnioAndSemanaToCobranza(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        this.objectsContainer.setPagosVistaToCobranza(DashboardThread.pagServ
+                .darrpagUtilModFindByAgenciaAnioAndSemanaToCobranza(this.objectsContainer.getDashboard().getAgencia(),
+                        this.objectsContainer.getDashboard().getAnio(), this.objectsContainer.getDashboard()
+                                .getSemana()));
 
         try {
-            threads[0].join();
+            this.threads[0].join();
         } catch (InterruptedException e) {
             System.out.println("Ha fallado el seteoDeDebitos " + e);
         }
@@ -61,17 +111,21 @@ public class DashboardThread implements Runnable {
         setDebitoTotal();
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setPagosToDashboard() {
-        objectsContainer.setPagosVistaToDashboard(PagoService.getPagoUtilModelsByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        this.objectsContainer.setPagosVistaToDashboard(DashboardThread.pagServ
+                .darrpagUtilModFindByAgenciaAnioAndSemanaToDashboard(this.objectsContainer.getDashboard().getAgencia(),
+                        this.objectsContainer.getDashboard().getAnio(), this.objectsContainer.getDashboard()
+                                .getSemana()));
 
-        setClientesCobrados();
-        setMultas();
-        setNoPagos();
-        setPagosReducidos();
-        setCobranzaTotal();
+        this.setClientesCobrados();
+        this.setMultas();
+        this.setNoPagos();
+        this.setPagosReducidos();
+        this.setCobranzaTotal();
 
         try {
-            threads[4].join();
+            this.threads[4].join();
         } catch (InterruptedException e) {
             System.out.println("Ha fallado el setMontoExcedente " + e);
         }
@@ -79,7 +133,7 @@ public class DashboardThread implements Runnable {
         setMontoExcedente();
 
         try {
-            threads[4].join();
+            this.threads[4].join();
         } catch (InterruptedException e) {
             System.out.println("Ha fallado el setTotalCobranzaPura " + e);
         }
@@ -87,7 +141,7 @@ public class DashboardThread implements Runnable {
         setTotalCobranzaPura();
 
         try {
-            threads[2].join();
+            this.threads[2].join();
         } catch (InterruptedException e) {
             System.out.println("Ha fallado el setMontoDeDebitoFaltante " + e);
         }
@@ -95,7 +149,7 @@ public class DashboardThread implements Runnable {
         setMontoDeDebitoFaltante();
 
         try {
-            threads[2].join();
+            this.threads[2].join();
         } catch (InterruptedException e) {
             System.out.println("Ha fallado el setRendimiento " + e);
         }
@@ -103,14 +157,18 @@ public class DashboardThread implements Runnable {
         setRendmiento();
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setLiquidacionesBd() {
-        objectsContainer.setLiquidaciones(LiquidacionService.getLiquidacionModelsByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        this.objectsContainer.setLiquidaciones(DashboardThread.liqServ
+                .darrliqModFindByAgenciaAnioAndSemanaToDashboard(this.objectsContainer.getDashboard().getAgencia(),
+                        this.objectsContainer.getDashboard().getAnio(), this.objectsContainer.getDashboard()
+                                .getSemana()));
 
         setNumeroDeLiquidaciones();
         setTotalDeDescuento();
 
         try {
-            threads[5].join();
+            this.threads[5].join();
         } catch (InterruptedException e) {
             System.out.println("Ha fallado el setLiquidaciones " + e);
         }
@@ -118,15 +176,23 @@ public class DashboardThread implements Runnable {
         setLiquidaciones();
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setPagosOfLiquidaciones() {
-        objectsContainer.setPagosOfLiquidaciones(PagoService.getPagoModelsOfLiquidacionesByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        this.objectsContainer.setPagosOfLiquidaciones(DashboardThread.pagServ
+                .darrpagModFindByAgenciaAnioAndSemanaToDashboard(this.objectsContainer.getDashboard().getAgencia(),
+                        this.objectsContainer.getDashboard().getAnio(), this.objectsContainer.getDashboard()
+                                .getSemana()));
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setAsignaciones() {
-        objectsContainer.setAsignaciones(AsignacionService.getAsignacionesByAgenciaAnioAndSemanaToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        this.objectsContainer.setAsignaciones(DashboardThread.asignServ
+                .darrasignModFindByAgenciaAnioAndSemanaToDashboard(this.objectsContainer.getDashboard().getAgencia(),
+                        this.objectsContainer.getDashboard().getAnio(), this.objectsContainer.getDashboard()
+                                .getSemana()));
 
         try {
-            threads[3].join();
+            this.threads[3].join();
 
         } catch (InterruptedException e) {
             System.out.println("Ha fallado el setEfectivoEnCampo " + e);
@@ -135,207 +201,281 @@ public class DashboardThread implements Runnable {
         setEfectivoEnCampo();
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setGerencia() {
-        if (objectsContainer.getDashboard().getGerencia() == null) {
-            objectsContainer.getDashboard().setGerencia(objectsContainer.getPrestamosToCobranza().get(0).getGerencia());
+        if (
+                this.objectsContainer.getDashboard().getGerencia() == null
+        ) {
+            this.objectsContainer.getDashboard().setGerencia(this.objectsContainer.getPrestamosToCobranza().get(0)
+                    .getGerencia());
         }
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setClientes() {
-        objectsContainer.getDashboard().setClientes(objectsContainer.getPrestamosToCobranza().size());
+        this.objectsContainer.getDashboard().setClientes(this.objectsContainer.getPrestamosToCobranza().size());
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setClientesCobrados() {
-        objectsContainer.getDashboard().setClientesCobrados(objectsContainer.getPagosVistaToDashboard().size());
+        this.objectsContainer.getDashboard().setClientesCobrados(this.objectsContainer.getPagosVistaToDashboard()
+                .size());
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setNumeroDeLiquidaciones() {
-        objectsContainer.getDashboard().setNumeroLiquidaciones(objectsContainer.getLiquidaciones().size());
+        this.objectsContainer.getDashboard().setNumeroLiquidaciones(this.objectsContainer.getLiquidaciones().size());
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setMultas() {
-        objectsContainer.getDashboard().setMultas(0.0);
+        this.objectsContainer.getDashboard().setMultas(0.0);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setNoPagos() {
         int noPagos = 0;
 
-        for (int i = 0; i < objectsContainer.getPagosVistaToDashboard().size(); i++) {
-            if (objectsContainer.getPagosVistaToDashboard().get(i).getMonto() == 0) {
+        for (int i = 0; i < this.objectsContainer.getPagosVistaToDashboard().size(); i++) {
+            if (
+                    this.objectsContainer.getPagosVistaToDashboard().get(i).getMonto() == 0
+            ) {
                 noPagos++;
             }
         }
-        objectsContainer.getDashboard().setNoPagos(noPagos);
+        this.objectsContainer.getDashboard().setNoPagos(noPagos);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setPagosReducidos() {
         int pagosReducidos = 0;
 
-        for (int i = 0; i < objectsContainer.getPagosVistaToDashboard().size(); i++) {
-            if (objectsContainer.getPagosVistaToDashboard().get(i).getMonto() != 0) {
-                if (objectsContainer.getPagosVistaToDashboard().get(i).getAbreCon() < objectsContainer.getPagosVistaToDashboard().get(i).getTarifa()) {
-                    if (objectsContainer.getPagosVistaToDashboard().get(i).getMonto() < objectsContainer.getPagosVistaToDashboard().get(i).getAbreCon()) {
+        for (int i = 0; i < this.objectsContainer.getPagosVistaToDashboard().size(); i++) {
+            if (
+                    this.objectsContainer.getPagosVistaToDashboard().get(i).getMonto() != 0
+            ) {
+                if (
+                        this.objectsContainer.getPagosVistaToDashboard().get(i).getAbreCon() < this.objectsContainer
+                                .getPagosVistaToDashboard().get(i).getTarifa()
+                ) {
+                    if (
+                            this.objectsContainer.getPagosVistaToDashboard().get(i).getMonto() < this.objectsContainer
+                                    .getPagosVistaToDashboard().get(i).getAbreCon()
+                    ) {
                         pagosReducidos++;
                     }
                 } else {
-                    if (objectsContainer.getPagosVistaToDashboard().get(i).getMonto() < objectsContainer.getPagosVistaToDashboard().get(i).getTarifa()) {
+                    if (
+                            this.objectsContainer.getPagosVistaToDashboard().get(i).getMonto() < this.objectsContainer
+                                    .getPagosVistaToDashboard().get(i).getTarifa()
+                    ) {
                         pagosReducidos++;
                     }
                 }
             }
         }
 
-        objectsContainer.getDashboard().setPagosReducidos(pagosReducidos);
+        this.objectsContainer.getDashboard().setPagosReducidos(pagosReducidos);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setDebitoMiercoles() {
         double debitoMiercoles = 0;
 
-            for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
-                if (objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("MIERCOLES")) {
-                    if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
-                        debitoMiercoles += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
-                    else
-                        debitoMiercoles += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
-                }
-
+        for (int i = 0; i < this.objectsContainer.getPrestamosToCobranza().size(); i++) {
+            if (
+                    this.objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("MIERCOLES")
+            ) {
+                if (
+                        this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
+                                .getPrestamosToCobranza().get(i).getTarifa()
+                )
+                    debitoMiercoles += this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
+                else
+                    debitoMiercoles += this.objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
             }
-        objectsContainer.getDashboard().setDebitoMiercoles(debitoMiercoles);
+
+        }
+        this.objectsContainer.getDashboard().setDebitoMiercoles(debitoMiercoles);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setDebitoJueves() {
         double debitoJueves = 0;
 
-            for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
-                if (objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("JUEVES")) {
-                    if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
-                        debitoJueves += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
-                    else
-                        debitoJueves += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
-                }
+        for (int i = 0; i < this.objectsContainer.getPrestamosToCobranza().size(); i++) {
+            if (
+                    this.objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("JUEVES")
+            ) {
+                if (
+                        this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
+                                .getPrestamosToCobranza().get(i).getTarifa()
+                )
+                    debitoJueves += this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
+                else
+                    debitoJueves += this.objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
             }
-        objectsContainer.getDashboard().setDebitoJueves(debitoJueves);
+        }
+        this.objectsContainer.getDashboard().setDebitoJueves(debitoJueves);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setDebitoViernes() {
         double debitoViernes = 0;
 
-            for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
-                if (objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("VIERNES")) {
-                    if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
-                        debitoViernes += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
-                    else
-                        debitoViernes += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
-                }
+        for (int i = 0; i < this.objectsContainer.getPrestamosToCobranza().size(); i++) {
+            if (
+                    this.objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("VIERNES")
+            ) {
+                if (
+                        this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
+                                .getPrestamosToCobranza().get(i).getTarifa()
+                )
+                    debitoViernes += this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
+                else
+                    debitoViernes += this.objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
             }
-        objectsContainer.getDashboard().setDebitoViernes(debitoViernes);
+        }
+        this.objectsContainer.getDashboard().setDebitoViernes(debitoViernes);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setDebitoTotal() {
         double debitoTotal = 0;
 
-            for (int i = 0; i < objectsContainer.getPrestamosToCobranza().size(); i++) {
-                if (objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < objectsContainer.getPrestamosToCobranza().get(i).getTarifa())
-                    debitoTotal += objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
-                else
-                    debitoTotal += objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
-            }
-        objectsContainer.getDashboard().setDebitoTotal(debitoTotal);
+        for (
+                int i = 0; i < this.objectsContainer.getPrestamosToCobranza().size(); i++
+        ) {
+            if (
+                    this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
+                            .getPrestamosToCobranza().get(i).getTarifa()
+            )
+                debitoTotal += this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
+            else
+                debitoTotal += this.objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
+        }
+        this.objectsContainer.getDashboard().setDebitoTotal(debitoTotal);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setTotalDeDescuento() {
         double totalDeDescuento = 0;
 
-        if (objectsContainer.getLiquidaciones() != null && !objectsContainer.getLiquidaciones().isEmpty()) {
-            for (int i = 0; i < objectsContainer.getLiquidaciones().size(); i++) {
-                totalDeDescuento += objectsContainer.getLiquidaciones().get(i).getDescuentoEnDinero();
+        if (
+                this.objectsContainer.getLiquidaciones() != null && !this.objectsContainer.getLiquidaciones().isEmpty()
+        ) {
+            for (int i = 0; i < this.objectsContainer.getLiquidaciones().size(); i++) {
+                totalDeDescuento += this.objectsContainer.getLiquidaciones().get(i).getDescuentoEnDinero();
             }
         }
 
 
-        objectsContainer.getDashboard().setTotalDeDescuento(totalDeDescuento);
+        this.objectsContainer.getDashboard().setTotalDeDescuento(totalDeDescuento);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setMontoExcedente() {
         double montoExcedente = 0;
 
-        for (int i = 0; i < objectsContainer.getPagosVistaToDashboard().size(); i++) {
-            if (objectsContainer.getPagosVistaToDashboard().get(i).getMonto() > objectsContainer.getPagosVistaToDashboard().get(i).getTarifa()) {
-                montoExcedente += objectsContainer.getPagosVistaToDashboard().get(i).getMonto() - objectsContainer.getPagosVistaToDashboard().get(i).getTarifa();
+        for (int i = 0; i < this.objectsContainer.getPagosVistaToDashboard().size(); i++) {
+            if (
+                    this.objectsContainer.getPagosVistaToDashboard().get(i).getMonto() > this.objectsContainer
+                            .getPagosVistaToDashboard().get(i).getTarifa()
+            ) {
+                montoExcedente += this.objectsContainer.getPagosVistaToDashboard().get(i).getMonto()
+                        - this.objectsContainer.getPagosVistaToDashboard().get(i).getTarifa();
             }
         }
 
-        if (objectsContainer.getDashboard().getLiquidaciones() != null) {
-            if (objectsContainer.getDashboard().getLiquidaciones() > 0) {
-                montoExcedente -= objectsContainer.getDashboard().getLiquidaciones();
+        if (this.objectsContainer.getDashboard().getLiquidaciones() != null) {
+            if (this.objectsContainer.getDashboard().getLiquidaciones() > 0) {
+                montoExcedente -= this.objectsContainer.getDashboard().getLiquidaciones();
             }
         }
 
-        objectsContainer.getDashboard().setMontoExcedente(montoExcedente);
+        this.objectsContainer.getDashboard().setMontoExcedente(montoExcedente);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setLiquidaciones() {
         double liquidaciones = 0;
 
-        if (objectsContainer.getLiquidaciones() != null) {
-            if (!objectsContainer.getLiquidaciones().isEmpty()) {
-                for (int i = 0; i < objectsContainer.getLiquidaciones().size(); i++) {
-                    liquidaciones += objectsContainer.getLiquidaciones().get(i).getLiquidoCon() - objectsContainer.getPagosOfLiquidaciones().get(i).getTarifa();
+        if (this.objectsContainer.getLiquidaciones() != null) {
+            if (
+                    !this.objectsContainer.getLiquidaciones().isEmpty()
+            ) {
+                for (int i = 0; i < this.objectsContainer.getLiquidaciones().size(); i++) {
+                    liquidaciones += this.objectsContainer.getLiquidaciones().get(i).getLiquidoCon()
+                            - this.objectsContainer.getPagosOfLiquidaciones().get(i).getTarifa();
                 }
             }
         }
 
-        objectsContainer.getDashboard().setLiquidaciones(liquidaciones);
+        this.objectsContainer.getDashboard().setLiquidaciones(liquidaciones);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setCobranzaTotal() {
         double cobranzaTotal = 0;
 
-        for (int i = 0; i < objectsContainer.getPagosVistaToDashboard().size(); i++) {
-            cobranzaTotal += objectsContainer.getPagosVistaToDashboard().get(i).getMonto();
+        for (int i = 0; i < this.objectsContainer.getPagosVistaToDashboard().size(); i++) {
+            cobranzaTotal += this.objectsContainer.getPagosVistaToDashboard().get(i).getMonto();
         }
 
-        objectsContainer.getDashboard().setCobranzaTotal(cobranzaTotal);
+        this.objectsContainer.getDashboard().setCobranzaTotal(cobranzaTotal);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setTotalCobranzaPura() {
-        double totalCobranzaPura = objectsContainer.getDashboard().getCobranzaTotal() - objectsContainer.getDashboard().getMontoExcedente();
+        double totalCobranzaPura = this.objectsContainer.getDashboard().getCobranzaTotal() - this.objectsContainer
+                .getDashboard().getMontoExcedente();
 
-        if (objectsContainer.getDashboard().getLiquidaciones() != null) {
-            if (objectsContainer.getDashboard().getLiquidaciones() > 0) {
-                totalCobranzaPura -= objectsContainer.getDashboard().getLiquidaciones();
+        if (this.objectsContainer.getDashboard().getLiquidaciones() != null) {
+            if (
+                    this.objectsContainer.getDashboard().getLiquidaciones() > 0
+            ) {
+                totalCobranzaPura -= this.objectsContainer.getDashboard().getLiquidaciones();
             }
         }
 
-        objectsContainer.getDashboard().setTotalCobranzaPura(totalCobranzaPura);
+        this.objectsContainer.getDashboard().setTotalCobranzaPura(totalCobranzaPura);
 
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setMontoDeDebitoFaltante() {
-        objectsContainer.getDashboard().setMontoDeDebitoFaltante(objectsContainer.getDashboard().getDebitoTotal() - objectsContainer.getDashboard().getTotalCobranzaPura());
+        this.objectsContainer.getDashboard().setMontoDeDebitoFaltante(this.objectsContainer.getDashboard()
+                .getDebitoTotal() - this.objectsContainer.getDashboard().getTotalCobranzaPura());
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setEfectivoEnCampo() {
 
 
         double asignaciones = 0;
 
-        if (objectsContainer.getAsignaciones() != null) {
-            if (!objectsContainer.getAsignaciones().isEmpty()) {
-                for (int i = 0; i < objectsContainer.getAsignaciones().size(); i++) {
-                    asignaciones += objectsContainer.getAsignaciones().get(i).getMonto();
+        if (
+                this.objectsContainer.getAsignaciones() != null
+        ) {
+            if (
+                    !this.objectsContainer.getAsignaciones().isEmpty()
+            ) {
+                for (int i = 0; i < this.objectsContainer.getAsignaciones().size(); i++) {
+                    asignaciones += this.objectsContainer.getAsignaciones().get(i).getMonto();
                 }
             }
         }
 
-        double efectivoEnCampo = objectsContainer.getDashboard().getCobranzaTotal() - asignaciones;
+        double efectivoEnCampo = this.objectsContainer.getDashboard().getCobranzaTotal() - asignaciones;
 
-        objectsContainer.getDashboard().setEfectivoEnCampo((double) Math.round(efectivoEnCampo * 100.0) / 100.0);
+        this.objectsContainer.getDashboard().setEfectivoEnCampo((double) Math.round(efectivoEnCampo * 100.0) / 100.0);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setRendmiento() {
-        double rendimiento = objectsContainer.getDashboard().getTotalCobranzaPura() / objectsContainer.getDashboard().getDebitoTotal() * 100;
+        double rendimiento = this.objectsContainer.getDashboard().getTotalCobranzaPura() / this.objectsContainer
+                .getDashboard().getDebitoTotal() * 100;
 
-        objectsContainer.getDashboard().setRendimiento((Math.round(rendimiento * 100.0) / 100.0));
+        this.objectsContainer.getDashboard().setRendimiento((Math.round(rendimiento * 100.0) / 100.0));
     }
 }

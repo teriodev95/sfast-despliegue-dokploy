@@ -4,13 +4,13 @@ import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.threads.DashboardThread;
 
-import java.util.ArrayList;
-
 public class DashboardUtil implements Runnable {
     public ObjectsContainer objectsContainer;
 
-    public DashboardUtil(ObjectsContainer objectsContainer) {
-        this.objectsContainer = objectsContainer;
+    public DashboardUtil(
+            ObjectsContainer objectsContainer_M
+    ) {
+        this.objectsContainer = objectsContainer_M;
     }
 
     @Override
@@ -29,66 +29,81 @@ public class DashboardUtil implements Runnable {
         for (int i = 0; i < 7; i++) {
             try {
                 threads[i].join();
-            } catch (InterruptedException e) {
+            } catch (
+                    InterruptedException e
+            ) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    public static Dashboard getDashboardGeneral(Dashboard[] dashboards){
-        Dashboard dashboardResponse = getDashboardWithEmptyValues();
+    public static Dashboard dashboard(
+            Dashboard[] dashboards_I
+    ) {
+        Dashboard dashboardResponse_O = dashboardWithEmptyValues();
 
-        for(Dashboard dashboard : dashboards){
-            if(dashboardResponse.getGerencia() == null){
-                dashboardResponse.setGerencia(dashboard.getGerencia());
-                dashboardResponse.setAnio(dashboard.getAnio());
-                dashboardResponse.setSemana(dashboard.getSemana());
+        for (Dashboard dashboard : dashboards_I) {
+            if (
+                    dashboardResponse_O.getGerencia() == null
+            ) {
+                dashboardResponse_O.setGerencia(dashboard.getGerencia());
+                dashboardResponse_O.setAnio(dashboard.getAnio());
+                dashboardResponse_O.setSemana(dashboard.getSemana());
             }
 
-            dashboardResponse.setClientes(dashboardResponse.getClientes() + dashboard.getClientes());
-            dashboardResponse.setClientesCobrados(dashboardResponse.getClientesCobrados() + dashboard.getClientesCobrados());
-            dashboardResponse.setNoPagos(dashboardResponse.getNoPagos() + dashboard.getNoPagos());
-            dashboardResponse.setNumeroLiquidaciones(dashboardResponse.getNumeroLiquidaciones() + dashboard.getNumeroLiquidaciones());
-            dashboardResponse.setPagosReducidos(dashboardResponse.getPagosReducidos() + dashboard.getPagosReducidos());
-            dashboardResponse.setDebitoMiercoles(dashboardResponse.getDebitoMiercoles() + dashboard.getDebitoMiercoles());
-            dashboardResponse.setDebitoJueves(dashboardResponse.getDebitoJueves() + dashboard.getDebitoJueves());
-            dashboardResponse.setDebitoViernes(dashboardResponse.getDebitoViernes() + dashboard.getDebitoViernes());
-            dashboardResponse.setDebitoTotal(dashboardResponse.getDebitoTotal() + dashboard.getDebitoTotal());
-            dashboardResponse.setTotalDeDescuento(dashboardResponse.getTotalDeDescuento() + dashboard.getTotalDeDescuento());
-            dashboardResponse.setTotalCobranzaPura(dashboardResponse.getTotalCobranzaPura() + dashboard.getTotalCobranzaPura());
-            dashboardResponse.setMontoExcedente(dashboardResponse.getMontoExcedente() + dashboard.getMontoExcedente());
-            dashboardResponse.setMultas(dashboardResponse.getMultas() + dashboard.getMultas());
-            dashboardResponse.setLiquidaciones(dashboardResponse.getLiquidaciones() + dashboard.getLiquidaciones());
-            dashboardResponse.setCobranzaTotal(dashboardResponse.getCobranzaTotal() + dashboard.getCobranzaTotal());
-            dashboardResponse.setMontoDeDebitoFaltante(dashboardResponse.getMontoDeDebitoFaltante() + dashboard.getMontoDeDebitoFaltante());
+            dashboardResponse_O.setClientes(dashboardResponse_O.getClientes() + dashboard.getClientes());
+            dashboardResponse_O.setClientesCobrados(dashboardResponse_O.getClientesCobrados() + dashboard
+                    .getClientesCobrados());
+            dashboardResponse_O.setNoPagos(dashboardResponse_O.getNoPagos() + dashboard.getNoPagos());
+            dashboardResponse_O.setNumeroLiquidaciones(dashboardResponse_O.getNumeroLiquidaciones() + dashboard
+                    .getNumeroLiquidaciones());
+            dashboardResponse_O.setPagosReducidos(dashboardResponse_O.getPagosReducidos() + dashboard
+                    .getPagosReducidos());
+            dashboardResponse_O.setDebitoMiercoles(dashboardResponse_O.getDebitoMiercoles() + dashboard
+                    .getDebitoMiercoles());
+            dashboardResponse_O.setDebitoJueves(dashboardResponse_O.getDebitoJueves() + dashboard.getDebitoJueves());
+            dashboardResponse_O.setDebitoViernes(dashboardResponse_O.getDebitoViernes() + dashboard.getDebitoViernes());
+            dashboardResponse_O.setDebitoTotal(dashboardResponse_O.getDebitoTotal() + dashboard.getDebitoTotal());
+            dashboardResponse_O.setTotalDeDescuento(dashboardResponse_O.getTotalDeDescuento() + dashboard
+                    .getTotalDeDescuento());
+            dashboardResponse_O.setTotalCobranzaPura(dashboardResponse_O.getTotalCobranzaPura() + dashboard
+                    .getTotalCobranzaPura());
+            dashboardResponse_O.setMontoExcedente(dashboardResponse_O.getMontoExcedente() + dashboard
+                    .getMontoExcedente());
+            dashboardResponse_O.setMultas(dashboardResponse_O.getMultas() + dashboard.getMultas());
+            dashboardResponse_O.setLiquidaciones(dashboardResponse_O.getLiquidaciones() + dashboard.getLiquidaciones());
+            dashboardResponse_O.setCobranzaTotal(dashboardResponse_O.getCobranzaTotal() + dashboard.getCobranzaTotal());
+            dashboardResponse_O.setMontoDeDebitoFaltante(dashboardResponse_O.getMontoDeDebitoFaltante() + dashboard
+                    .getMontoDeDebitoFaltante());
         }
 
-        dashboardResponse.setRendimiento(Math.round(dashboardResponse.getTotalCobranzaPura() / dashboardResponse.getDebitoTotal() * 100.0) / 100.0 * 100.0);
+        dashboardResponse_O.setRendimiento(Math.round(dashboardResponse_O.getTotalCobranzaPura() / dashboardResponse_O
+                .getDebitoTotal() * 100.0) / 100.0 * 100.0);
 
-        return dashboardResponse;
+        return dashboardResponse_O;
     }
 
-    public static Dashboard getDashboardWithEmptyValues(){
-        Dashboard dashboardResponse = new Dashboard();
+    public static Dashboard dashboardWithEmptyValues() {
+        Dashboard dashboardResponse_O = new Dashboard();
 
-        dashboardResponse.setClientes(0);
-        dashboardResponse.setClientesCobrados(0);
-        dashboardResponse.setNoPagos(0);
-        dashboardResponse.setNumeroLiquidaciones(0);
-        dashboardResponse.setPagosReducidos(0);
-        dashboardResponse.setDebitoMiercoles(0.0);
-        dashboardResponse.setDebitoJueves(0.0);
-        dashboardResponse.setDebitoViernes(0.0);
-        dashboardResponse.setDebitoTotal(0.0);
-        dashboardResponse.setRendimiento(0.0);
-        dashboardResponse.setTotalDeDescuento(0.0);
-        dashboardResponse.setTotalCobranzaPura(0.0);
-        dashboardResponse.setMontoExcedente(0.0);
-        dashboardResponse.setMultas(0.0);
-        dashboardResponse.setLiquidaciones(0.0);
-        dashboardResponse.setCobranzaTotal(0.0);
-        dashboardResponse.setMontoDeDebitoFaltante(0.0);
+        dashboardResponse_O.setClientes(0);
+        dashboardResponse_O.setClientesCobrados(0);
+        dashboardResponse_O.setNoPagos(0);
+        dashboardResponse_O.setNumeroLiquidaciones(0);
+        dashboardResponse_O.setPagosReducidos(0);
+        dashboardResponse_O.setDebitoMiercoles(0.0);
+        dashboardResponse_O.setDebitoJueves(0.0);
+        dashboardResponse_O.setDebitoViernes(0.0);
+        dashboardResponse_O.setDebitoTotal(0.0);
+        dashboardResponse_O.setRendimiento(0.0);
+        dashboardResponse_O.setTotalDeDescuento(0.0);
+        dashboardResponse_O.setTotalCobranzaPura(0.0);
+        dashboardResponse_O.setMontoExcedente(0.0);
+        dashboardResponse_O.setMultas(0.0);
+        dashboardResponse_O.setLiquidaciones(0.0);
+        dashboardResponse_O.setCobranzaTotal(0.0);
+        dashboardResponse_O.setMontoDeDebitoFaltante(0.0);
 
-        return dashboardResponse;
+        return dashboardResponse_O;
     }
 }

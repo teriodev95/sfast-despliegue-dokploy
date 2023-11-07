@@ -1,19 +1,19 @@
 package tech.calaverita.reporterloanssql.retrofit.pojos;
 
 import lombok.Data;
-import tech.calaverita.reporterloanssql.models.PagoModel;
+import tech.calaverita.reporterloanssql.persistence.entities.PagoEntity;
 
 import java.util.ArrayList;
 
 @Data
 public class PagoList {
-    private ArrayList<PagoModel> pagos = new ArrayList<>();
+    private ArrayList<PagoEntity> pagos = new ArrayList<>();
 
     public PagoList() {
 
     }
 
-    public PagoList(PagoModel pago) {
+    public PagoList(PagoEntity pago) {
         this.pagos.add(pago);
     }
 }

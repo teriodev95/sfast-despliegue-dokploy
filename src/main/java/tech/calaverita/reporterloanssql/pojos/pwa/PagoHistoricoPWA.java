@@ -1,7 +1,7 @@
 package tech.calaverita.reporterloanssql.pojos.pwa;
 
 import lombok.Data;
-import tech.calaverita.reporterloanssql.models.VisitaModel;
+import tech.calaverita.reporterloanssql.persistence.entities.VisitaEntity;
 
 import java.util.ArrayList;
 
@@ -18,5 +18,5 @@ public class PagoHistoricoPWA {
     private String agente;
     private String identificador;
     private ArrayList<PagoPWA> pagos;
-    private ArrayList<VisitaModel> visitas;
+    private ArrayList<VisitaEntity> visitas;
 }

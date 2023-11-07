@@ -1,42 +1,82 @@
 package tech.calaverita.reporterloanssql.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.models.UsuarioModel;
-import tech.calaverita.reporterloanssql.repositories.UsuarioRepository;
+import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
+import tech.calaverita.reporterloanssql.persistence.repositories.UsuarioRepository;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
-public class UsuarioService {
-    private static UsuarioRepository usuarioRepository;
+public final class UsuarioService {
+    //------------------------------------------------------------------------------------------------------------------
+    /*INSTANCE VARIABLES*/
+    //------------------------------------------------------------------------------------------------------------------
+    private final UsuarioRepository usuarRepo;
 
-    @Autowired
-    public UsuarioService(UsuarioRepository usuarioRepository) {
-        UsuarioService.usuarioRepository = usuarioRepository;
+    //------------------------------------------------------------------------------------------------------------------
+    /*CONSTRUCTORS*/
+    //------------------------------------------------------------------------------------------------------------------
+    private UsuarioService(
+            UsuarioRepository usuarRepo_S
+    ) {
+        this.usuarRepo = usuarRepo_S;
     }
 
-    public static UsuarioModel findOneByUsuarioAndPin(String usuario, String pin) {
-        return usuarioRepository.findOneByUsuarioAndPin(usuario, pin);
+    //------------------------------------------------------------------------------------------------------------------
+    /*METHODS*/
+    //------------------------------------------------------------------------------------------------------------------
+    public Iterable<UsuarioEntity> iteausuarEntFindAll() {
+        return this.usuarRepo.findAll();
     }
 
-    public static UsuarioModel findOneByUsuario(String usuario) {
-        return usuarioRepository.findOneByUsuario(usuario).orElseThrow();
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public Optional<UsuarioEntity> optusuarEntFindById(
+            int intId_I
+    ) {
+        return this.usuarRepo.findById(intId_I);
     }
 
-    public static ArrayList<UsuarioModel> findManyByTipo(String tipo) {
-        return usuarioRepository.findManyByTipo(tipo);
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public UsuarioEntity usuarModFindByUsuarioAndPin(
+            String usuario,
+            String pin
+    ) {
+        return this.usuarRepo.usuarEntFindByUsuarioAndPin(usuario, pin);
     }
 
-    public static UsuarioModel findOneByUsuarioId(int usuarioId) {
-        return usuarioRepository.findOneByUsuarioId(usuarioId);
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public UsuarioEntity usuarModFindByUsuario(
+            String usuario
+    ) {
+        return this.usuarRepo.optusuarEntFindByUsuario(usuario).orElseThrow();
     }
 
-    public static UsuarioModel findOneByUsuarioIdFromGerenciaIdOfGerenciaModel(String gerenciaId) {
-        return usuarioRepository.findOneByUsuarioIdFromGerenciaIdOfGerenciaModel(gerenciaId);
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public ArrayList<UsuarioEntity> darrusuarModFindByTipo(
+            String tipo
+    ) {
+        return this.usuarRepo.darrusuarEntFindByTipo(tipo);
     }
 
-    public static ArrayList<UsuarioModel> findManyByGerencia(String gerencia){
-        return usuarioRepository.findManyByGerencia(gerencia);
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public UsuarioEntity usuarModFindByUsuarioId(
+            int usuarioId
+    ) {
+        return this.usuarRepo.usuarEntFindByUsuarioId(usuarioId);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public UsuarioEntity usuarModFindByUsuarioIdFromGerenciaIdOfGerenciaModel(
+            String gerenciaId
+    ) {
+        return this.usuarRepo.usuarEntFindByUsuarioIdFromGerenciaIdOfGerenciaModel(gerenciaId);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public ArrayList<UsuarioEntity> darrUsuarModFindByGerencia(
+            String gerencia
+    ) {
+        return this.usuarRepo.darrusuarEntFindByGerencia(gerencia);
     }
 }

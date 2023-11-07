@@ -1,30 +1,73 @@
 package tech.calaverita.reporterloanssql.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.models.AsignacionModel;
-import tech.calaverita.reporterloanssql.repositories.AsignacionRepository;
+import tech.calaverita.reporterloanssql.persistence.entities.AsignacionEntity;
+import tech.calaverita.reporterloanssql.persistence.repositories.AsignacionRepository;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
-public class AsignacionService {
-    private static AsignacionRepository asignacionRepository;
+public final class AsignacionService {
+    //------------------------------------------------------------------------------------------------------------------
+    /*INSTANCE VARIABLES*/
+    //------------------------------------------------------------------------------------------------------------------
+    private final AsignacionRepository asignRepo;
 
-    @Autowired
-    public AsignacionService(AsignacionRepository asignacionRepository) {
-        AsignacionService.asignacionRepository = asignacionRepository;
+    //------------------------------------------------------------------------------------------------------------------
+    /*CONSTRUCTORS*/
+    //------------------------------------------------------------------------------------------------------------------
+    public AsignacionService(
+            AsignacionRepository asignRepo_S
+    ) {
+        this.asignRepo = asignRepo_S;
     }
 
-    public static ArrayList<AsignacionModel> findManyByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
-        return asignacionRepository.findManyByAgenciaAnioAndSemana(agencia, anio, semana);
+    //------------------------------------------------------------------------------------------------------------------
+    /*METHODS*/
+    //------------------------------------------------------------------------------------------------------------------
+    public void save(
+            AsignacionEntity asignMod_I
+    ) {
+        asignRepo.save(asignMod_I);
     }
 
-    public static ArrayList<AsignacionModel> getAsignacionesByAgenciaAnioAndSemanaToDashboard(String agencia, int anio, int semana) {
-        return asignacionRepository.getAsignacionesByAgenciaAnioAndSemanaToDashboard(agencia, anio, semana);
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public Iterable<AsignacionEntity> iteasignModFindAll() {
+        return asignRepo.findAll();
     }
 
-    public static Double getSumaDeAsigancionesByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
-        return asignacionRepository.getSumaDeAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public Optional<AsignacionEntity> optasignModFindById(
+            String strId_I
+    ) {
+        return asignRepo.findById(strId_I);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public ArrayList<AsignacionEntity> darrasignModFindByAgenciaAnioAndSemana(
+            String agencia_I,
+            int anio_I,
+            int semana_I
+    ) {
+        return asignRepo.darrasignModFindByAgenciaAnioAndSemana(agencia_I, anio_I, semana_I);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public ArrayList<AsignacionEntity> darrasignModFindByAgenciaAnioAndSemanaToDashboard(
+            String agencia_I,
+            int anio_I,
+            int semana_I
+    ) {
+        return asignRepo.darrasignModFindByAgenciaAnioAndSemanaToDashboard(agencia_I, anio_I, semana_I);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public double getSumaDeAsigancionesByAgenciaAnioAndSemana(
+            String strAgencia_I,
+            int intAnio_I,
+            int intSemana_I
+    ) {
+        return asignRepo.getSumaDeAsigancionesByAgenciaAnioAndSemana(strAgencia_I, intAnio_I, intSemana_I);
     }
 }
