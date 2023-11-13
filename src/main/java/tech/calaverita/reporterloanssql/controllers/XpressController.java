@@ -3,6 +3,11 @@ package tech.calaverita.reporterloanssql.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.calaverita.reporterloanssql.persistence.dto.reporte_diario_agencias.*;
+import tech.calaverita.reporterloanssql.persistence.dto.reporte_general_gerencia.AvanceReporteGeneralGerencia;
+import tech.calaverita.reporterloanssql.persistence.dto.reporte_general_gerencia.DashboardReporteGeneralGerencia;
+import tech.calaverita.reporterloanssql.persistence.dto.reporte_general_gerencia.EncabezadoReporteGeneralGerencia;
+import tech.calaverita.reporterloanssql.persistence.dto.reporte_general_gerencia.ReporteGeneralGerencia;
 import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
 import tech.calaverita.reporterloanssql.pojos.Cobranza;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
@@ -121,10 +126,10 @@ public final class XpressController {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @CrossOrigin
     @GetMapping(path = "/dashboard-agencia/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgenciaAnioAndSemana(
+    public @ResponseBody ResponseEntity<tech.calaverita.reporterloanssql.pojos.Dashboard> getDashboardByAgenciaAnioAndSemana(
             @PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana
     ) {
-        Dashboard dashboard = new Dashboard();
+        tech.calaverita.reporterloanssql.pojos.Dashboard dashboard = new tech.calaverita.reporterloanssql.pojos.Dashboard();
         ObjectsContainer objectsContainer = new ObjectsContainer();
 
         objectsContainer.setDashboard(dashboard);
@@ -142,20 +147,20 @@ public final class XpressController {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @CrossOrigin
     @GetMapping(path = "/dashboard-gerencia/{gerencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Dashboard> getDashboardByGerencia(
+    public @ResponseBody ResponseEntity<tech.calaverita.reporterloanssql.pojos.Dashboard> getDashboardByGerencia(
             @PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio,
             @PathVariable("semana") int semana
     ) {
-        Dashboard dashboardResponse;
+        tech.calaverita.reporterloanssql.pojos.Dashboard dashboardResponse;
 
         ArrayList<String> agencias = this.agencServ.darrstrAgenciaIdFindByGerenciaId(gerencia);
 
         Thread[] threads = new Thread[agencias.size()];
-        Dashboard[] dashboards = new Dashboard[agencias.size()];
+        tech.calaverita.reporterloanssql.pojos.Dashboard[] dashboards = new tech.calaverita.reporterloanssql.pojos.Dashboard[agencias.size()];
         ObjectsContainer[] objectsContainers = new ObjectsContainer[agencias.size()];
 
         for (int i = 0; i < agencias.size(); i++) {
-            dashboards[i] = new Dashboard();
+            dashboards[i] = new tech.calaverita.reporterloanssql.pojos.Dashboard();
             objectsContainers[i] = new ObjectsContainer();
 
             objectsContainers[i].setDashboard(dashboards[i]);
@@ -183,5 +188,54 @@ public final class XpressController {
         dashboardResponse = DashboardUtil.dashboard(dashboards);
 
         return new ResponseEntity<>(dashboardResponse, HttpStatus.OK);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @CrossOrigin
+    @GetMapping(path = "/reporte_diario_agencias")
+    public @ResponseBody ResponseEntity<ReporteDiarioAgencias> getReporteDiarioAgencias() {
+        ReporteDiarioAgencias reporteDiarioAgencias = new ReporteDiarioAgencias();
+        {
+            reporteDiarioAgencias.setEncabezado(new EncabezadoReporteDiarioAgencias());
+
+            ArrayList<AgenciaReporteDiarioAgencias> agencias = new ArrayList<>();
+            {
+                AgenciaReporteDiarioAgencias agencia = new AgenciaReporteDiarioAgencias();
+                {
+                    agencia.setSemanaActual(new DashboardSemanaActualReporteDiarioAgencias());
+                    agencia.setSemanaAnterior(new DashboardSemanaAnteriorReporteDiarioAgencias());
+                }
+                agencias.add(agencia);
+            }
+            reporteDiarioAgencias.setAgencias(agencias);
+        }
+
+        return new ResponseEntity<>(reporteDiarioAgencias, HttpStatus.OK);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @CrossOrigin
+    @GetMapping(path = "/reporte_general_gerencia")
+    public @ResponseBody ResponseEntity<ReporteGeneralGerencia> getReporteGeneralGerencia() {
+        ReporteGeneralGerencia reporteGeneralGerencia = new ReporteGeneralGerencia();
+        {
+            reporteGeneralGerencia.setEncabezado(new EncabezadoReporteGeneralGerencia());
+
+            ArrayList<DashboardReporteGeneralGerencia> dashboards = new ArrayList<>();
+            {
+                DashboardReporteGeneralGerencia dashboard = new DashboardReporteGeneralGerencia();
+                dashboards.add(dashboard);
+            }
+            reporteGeneralGerencia.setDashboards(dashboards);
+
+            ArrayList<AvanceReporteGeneralGerencia> avances = new ArrayList<>();
+            {
+                AvanceReporteGeneralGerencia avance = new AvanceReporteGeneralGerencia();
+                avances.add(avance);
+            }
+            reporteGeneralGerencia.setAvances(avances);
+        }
+
+        return new ResponseEntity<>(reporteGeneralGerencia, HttpStatus.OK);
     }
 }
