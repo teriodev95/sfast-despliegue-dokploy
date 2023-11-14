@@ -6,10 +6,13 @@ import lombok.Data;
 public class DashboardReporteGeneralGerencia {
     String concepto;
     Double debitoTotal;
-    Integer clientesCobrados;
+    Integer clientesTotalesCobrados;
+    Integer clientesCobradosMiercoles;
+    Integer clientesCobradosJueves;
+    Integer clientesTotales;
     Double cobranzaPura;
-    Double diferenciaCobranzaPuraVsDebitoTotal;
     Double porcentajeCobranzaPura;
+    Double diferenciaCobranzaPuraVsDebitoTotal;
     Double diferenciaActualVsDiferenciaAnterior;
     Double cobranzaTotal;
     Double excedente;

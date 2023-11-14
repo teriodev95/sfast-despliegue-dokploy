@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class AgenciaReporteDiarioAgencias {
-    String agencia;
+    String nombre;
     String agente;
     DashboardSemanaActualReporteDiarioAgencias semanaActual;
     DashboardSemanaAnteriorReporteDiarioAgencias semanaAnterior;
