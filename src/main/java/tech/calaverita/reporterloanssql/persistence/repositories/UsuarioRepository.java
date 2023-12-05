@@ -7,6 +7,7 @@ import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Repository
 public interface UsuarioRepository extends CrudRepository<UsuarioEntity, Integer> {

@@ -3,14 +3,14 @@ package tech.calaverita.reporterloanssql.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.calaverita.reporterloanssql.persistence.documents.ReporteDiarioAgenciasDocument;
 import tech.calaverita.reporterloanssql.persistence.dto.reporte_diario_agencias.*;
-import tech.calaverita.reporterloanssql.persistence.dto.reporte_general_gerencia.AvanceReporteGeneralGerencia;
-import tech.calaverita.reporterloanssql.persistence.dto.reporte_general_gerencia.DashboardReporteGeneralGerencia;
-import tech.calaverita.reporterloanssql.persistence.dto.reporte_general_gerencia.EncabezadoReporteGeneralGerencia;
-import tech.calaverita.reporterloanssql.persistence.dto.reporte_general_gerencia.ReporteGeneralGerencia;
+import tech.calaverita.reporterloanssql.persistence.dto.reporte_general_gerencia.AvanceReporteGeneralGerenciaDTO;
+import tech.calaverita.reporterloanssql.persistence.dto.reporte_general_gerencia.DashboardReporteGeneralGerenciaDTO;
+import tech.calaverita.reporterloanssql.persistence.dto.reporte_general_gerencia.EncabezadoReporteGeneralGerenciaDTO;
+import tech.calaverita.reporterloanssql.persistence.documents.ReporteGeneralGerenciaDocument;
 import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
 import tech.calaverita.reporterloanssql.pojos.Cobranza;
-import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.pojos.LoginResponse;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.security.AuthCredentials;
@@ -188,54 +188,5 @@ public final class XpressController {
         dashboardResponse = DashboardUtil.dashboard(dashboards);
 
         return new ResponseEntity<>(dashboardResponse, HttpStatus.OK);
-    }
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @CrossOrigin
-    @GetMapping(path = "/reporte_diario_agencias")
-    public @ResponseBody ResponseEntity<ReporteDiarioAgencias> getReporteDiarioAgencias() {
-        ReporteDiarioAgencias reporteDiarioAgencias = new ReporteDiarioAgencias();
-        {
-            reporteDiarioAgencias.setEncabezado(new EncabezadoReporteDiarioAgencias());
-
-            ArrayList<AgenciaReporteDiarioAgencias> agencias = new ArrayList<>();
-            {
-                AgenciaReporteDiarioAgencias agencia = new AgenciaReporteDiarioAgencias();
-                {
-                    agencia.setSemanaActual(new DashboardSemanaActualReporteDiarioAgencias());
-                    agencia.setSemanaAnterior(new DashboardSemanaAnteriorReporteDiarioAgencias());
-                }
-                agencias.add(agencia);
-            }
-            reporteDiarioAgencias.setAgencias(agencias);
-        }
-
-        return new ResponseEntity<>(reporteDiarioAgencias, HttpStatus.OK);
-    }
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @CrossOrigin
-    @GetMapping(path = "/reporte_general_gerencia")
-    public @ResponseBody ResponseEntity<ReporteGeneralGerencia> getReporteGeneralGerencia() {
-        ReporteGeneralGerencia reporteGeneralGerencia = new ReporteGeneralGerencia();
-        {
-            reporteGeneralGerencia.setEncabezado(new EncabezadoReporteGeneralGerencia());
-
-            ArrayList<DashboardReporteGeneralGerencia> dashboards = new ArrayList<>();
-            {
-                DashboardReporteGeneralGerencia dashboard = new DashboardReporteGeneralGerencia();
-                dashboards.add(dashboard);
-            }
-            reporteGeneralGerencia.setDashboards(dashboards);
-
-            ArrayList<AvanceReporteGeneralGerencia> avances = new ArrayList<>();
-            {
-                AvanceReporteGeneralGerencia avance = new AvanceReporteGeneralGerencia();
-                avances.add(avance);
-            }
-            reporteGeneralGerencia.setAvances(avances);
-        }
-
-        return new ResponseEntity<>(reporteGeneralGerencia, HttpStatus.OK);
     }
 }

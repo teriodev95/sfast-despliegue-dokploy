@@ -10,15 +10,15 @@ import lombok.Data;
 @Table(name = "balance_agencia")
 public class BalanceAgenciaEntity {
     @Id
-    String id;
-    String zona;
-    String gerente;
-    String agencia;
-    String agente;
-    Double rendimiento;
-    String nivel;
-    Integer clientes;
-    Integer pagosReducidos;
-    Integer noPagos;
-    Integer liquidaciones;
+    private String id;
+    private String zona;
+    private String gerente;
+    private String agencia;
+    private String agente;
+    private Double rendimiento;
+    private String nivel;
+    private Integer clientes;
+    private Integer pagosReducidos;
+    private Integer noPagos;
+    private Integer liquidaciones;
 }

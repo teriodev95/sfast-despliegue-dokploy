@@ -1,64 +1,85 @@
 package tech.calaverita.reporterloanssql.services;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import tech.calaverita.reporterloanssql.persistence.entities.GerenciaEntity;
 import tech.calaverita.reporterloanssql.persistence.repositories.GerenciaRepository;
 
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
-public final class GerenciaService {
+public class GerenciaService {
     //------------------------------------------------------------------------------------------------------------------
     /*INSTANCE VARIABLES*/
     //------------------------------------------------------------------------------------------------------------------
-    private final GerenciaRepository gerRepo;
+    private final GerenciaRepository repo;
 
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
     //------------------------------------------------------------------------------------------------------------------
-    private GerenciaService(
-            GerenciaRepository gerRepo_S
+    public GerenciaService(
+            GerenciaRepository repo
     ) {
-        this.gerRepo = gerRepo_S;
+        this.repo = repo;
     }
 
     //------------------------------------------------------------------------------------------------------------------
     /*METHODS*/
     //------------------------------------------------------------------------------------------------------------------
     public ArrayList<String> darrstrGerenciaIdFindBySeguridad(
-            String seguridad_I
+            String seguridad
     ) {
-        return this.gerRepo.darrstrGerenciaIdFindBySeguridad(seguridad_I);
+        return this.repo.darrstrGerenciaIdFindBySeguridad(seguridad);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public ArrayList<String> darrstrGerenciaIdByRegional(
-            String regional_I
+            String regional
     ) {
-        return this.gerRepo.darrstrGerenciaIdByRegional(regional_I);
+        return this.repo.darrstrGerenciaIdByRegional(regional);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public ArrayList<GerenciaEntity> darrGerModFindAll() {
-        return this.gerRepo.darrGerEntFindAll();
+        return this.repo.darrGerEntFindAll();
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Async("asyncExecutor")
+    public CompletableFuture<ArrayList<GerenciaEntity>> findAllAsync() {
+        ArrayList<GerenciaEntity> entity = this.repo.darrGerEntFindAll();
+
+        return CompletableFuture.completedFuture(entity);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Async("asyncExecutor")
+    public CompletableFuture<Optional<GerenciaEntity>> findByIdAsync(
+            String id
+    ) {
+        Optional<GerenciaEntity> entity = this.repo.findById(id);
+
+        return CompletableFuture.completedFuture(entity);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public ArrayList<String> darrstrGerenciaIdFindAll() {
-        return this.gerRepo.darrstrGerenciaIdFindAll();
+        return this.repo.darrstrGerenciaIdFindAll();
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public GerenciaEntity gerModFindByGerenciaId(
-            String gerenciaId_I
+            String gerenciaId
     ) {
-        return this.gerRepo.gerEntFindByGerenciaId(gerenciaId_I);
+        return this.repo.gerEntFindByGerenciaId(gerenciaId);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public ArrayList<String> darrstrGerenciaIdFindBySucursalId(
-            int sucursalId_I
+            int sucursalId
     ) {
-        return this.gerRepo.darrstrGerenciaIdFindBySucursalId(sucursalId_I);
+        return this.repo.darrstrGerenciaIdFindBySucursalId(sucursalId);
     }
 }

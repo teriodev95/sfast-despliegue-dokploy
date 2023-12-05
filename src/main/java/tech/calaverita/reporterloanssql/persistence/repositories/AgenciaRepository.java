@@ -25,4 +25,9 @@ public interface AgenciaRepository extends CrudRepository<AgenciaEntity, String>
     ArrayList<String> darrstrAgenciaIdFindByGerenciaId(
             String gerenciaId
     );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    ArrayList<AgenciaEntity> findByGerenciaId(
+            String gerenciaId
+    );
 }

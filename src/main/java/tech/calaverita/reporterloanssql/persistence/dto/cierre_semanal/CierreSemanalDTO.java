@@ -4,14 +4,15 @@ import lombok.Data;
 
 @Data
 public class CierreSemanalDTO {
-    Integer semana;
-    Integer anio;
-    Integer dia;
-    Integer mes;
-    String selfieAgente;
-    String selfieGerente;
-    BalanceAgenciaDTO balanceAgencia;
-    EgresosAgenteDTO egresosAgente;
-    EgresosGerenteDTO egresosGerente;
-    IngresosAgenteDTO ingresosAgente;
+    private Integer semana;
+    private Integer anio;
+    private Integer dia;
+    private Integer mes;
+    private String selfieAgente;
+    private String selfieGerente;
+    private BalanceAgenciaDTO balanceAgencia;
+    private EgresosAgenteDTO egresosAgente;
+    private EgresosGerenteDTO egresosGerente;
+    private IngresosAgenteDTO ingresosAgente;
+    private Integer pinAgente;
 }

@@ -63,7 +63,7 @@ public class CobranzaPWAThread implements Runnable {
 
     public void getMontoStatusAndPorcentaje(PrestamoEntity prestamoEntity, PrestamoCobranzaPWA prestamoCobranzaPwa, int anio, int semana) {
         String fechaActual = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        CalendarioEntity calendarioEntity = CobranzaPWAThread.calServ.calModFindBySemanaActualXpressByFechaActual(fechaActual);
+        CalendarioEntity calendarioEntity = CobranzaPWAThread.calServ.findByFechaActual(fechaActual);
 
         LocalDateTime fechaInicioSemana = LocalDate.parse(calendarioEntity.getDesde()).atStartOfDay();
         LocalDateTime cierreMiercoles = fechaInicioSemana.plusHours(21);

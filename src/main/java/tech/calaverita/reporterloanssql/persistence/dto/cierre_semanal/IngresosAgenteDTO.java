@@ -7,10 +7,10 @@ import lombok.Data;
 
 @Data
 public class IngresosAgenteDTO {
-    Double cobranzaPura;
-    Double montoExcedente;
-    Double liquidaciones;
-    Double multas;
-    Double otros;
-    Double total;
+    private Double cobranzaPura;
+    private Double montoExcedente;
+    private Double liquidaciones;
+    private Double multas;
+    private Double otros;
+    private Double total;
 }

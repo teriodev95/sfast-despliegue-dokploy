@@ -8,7 +8,7 @@ import tech.calaverita.reporterloanssql.persistence.entities.relation.UsuarioSuc
 import java.util.ArrayList;
 
 @Repository
-public interface UsuarSucRepoUsuarioSucursalRepository extends CrudRepository<UsuarioSucursalEntity,
+public interface UsuarioSucursalRepository extends CrudRepository<UsuarioSucursalEntity,
         Integer> {
     //------------------------------------------------------------------------------------------------------------------
     /*METHODS*/

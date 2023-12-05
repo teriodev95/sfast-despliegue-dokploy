@@ -10,15 +10,15 @@ import lombok.Data;
 @Table(name = "cierre_semanal")
 public class CierreSemanalEntity {
     @Id
-    String id;
-    String balanceAgenciaId;
-    String egresosAgenteId;
-    String egresosGerenteId;
-    String ingresosAgenteId;
-    Integer semana;
-    Integer anio;
-    Integer dia;
-    Integer mes;
-    String selfieAgente;
-    String selfieGerente;
+    private String id;
+    private String balanceAgenciaId;
+    private String egresosAgenteId;
+    private String egresosGerenteId;
+    private String ingresosAgenteId;
+    private Integer semana;
+    private Integer anio;
+    private Integer dia;
+    private Integer mes;
+    private String selfieAgente;
+    private String selfieGerente;
 }

@@ -79,7 +79,7 @@ public final class GerenciaController {
         }
 
         //                                                  //To easy code
-        ArrayList<String> darrstrGerencia_O = this.usuarGerServ.darrstrGerenciaIdByUsuarioId(usuarMod
+        ArrayList<String> darrstrGerencia_O = this.usuarGerServ.darrstrGerenciaIdFindByUsuarioId(usuarMod
                 .getUsuarioId());
 
         return new ResponseEntity<>(darrstrGerencia_O, HttpStatus.OK);
@@ -105,7 +105,7 @@ public final class GerenciaController {
         ArrayList<String> darrintSucursalId = this.usuarSucServ
                 .darrstrSucursalIdFindByUsuarioId(usuarMod.getUsuarioId());
         ArrayList<String> darrstrGerenciaId = this.usuarGerServ
-                .darrstrGerenciaIdByUsuarioId(usuarMod.getUsuarioId());
+                .darrstrGerenciaIdFindByUsuarioId(usuarMod.getUsuarioId());
 
         for (String strSucursalId : darrintSucursalId) {
             ArrayList<String> darrstrGerenciaIdAux = new ArrayList<>();
@@ -118,7 +118,7 @@ public final class GerenciaController {
                 }
             }
 
-            SucursalEntity sucMod = this.sucServ.sucModFindBySucursalId(strSucursalId);
+            SucursalEntity sucMod = this.sucServ.findBySucursalId(strSucursalId);
             dicdarrstrGerencia_O.put(sucMod.getNombre(), darrstrGerenciaIdAux);
         }
 

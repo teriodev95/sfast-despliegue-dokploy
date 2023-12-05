@@ -7,10 +7,10 @@ import lombok.Data;
 
 @Data
 public class EgresosGerenteDTO {
-    Integer porcentajeComisionCobranza;
-    Integer porcentajeBonoMensual;
-    Double pagoComisionCobranza;
-    Double pagoComisionVentas;
-    Double bonos;
-    Double efectivoRestanteCierre;
+    private Integer porcentajeComisionCobranza;
+    private Integer porcentajeBonoMensual;
+    private Double pagoComisionCobranza;
+    private Double pagoComisionVentas;
+    private Double bonos;
+    private Double efectivoRestanteCierre;
 }

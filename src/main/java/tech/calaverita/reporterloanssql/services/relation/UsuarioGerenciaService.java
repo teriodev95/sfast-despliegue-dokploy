@@ -1,7 +1,7 @@
 package tech.calaverita.reporterloanssql.services.relation;
 
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.repositories.relation.UsuarGerRepoUsuarioGerenciaRepository;
+import tech.calaverita.reporterloanssql.persistence.repositories.relation.UsuarioGerenciaRepository;
 
 import java.util.ArrayList;
 
@@ -10,23 +10,23 @@ public final class UsuarioGerenciaService {
     //------------------------------------------------------------------------------------------------------------------
     /*INSTANCE VARIABLES*/
     //------------------------------------------------------------------------------------------------------------------
-    private final UsuarGerRepoUsuarioGerenciaRepository usuarGerRepo;
+    private final UsuarioGerenciaRepository repo;
 
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
     //------------------------------------------------------------------------------------------------------------------
     private UsuarioGerenciaService(
-            UsuarGerRepoUsuarioGerenciaRepository usuarGerRepo_S
+            UsuarioGerenciaRepository repo
     ) {
-        this.usuarGerRepo = usuarGerRepo_S;
+        this.repo = repo;
     }
 
     //------------------------------------------------------------------------------------------------------------------
     /*METHODS*/
     //------------------------------------------------------------------------------------------------------------------
-    public ArrayList<String> darrstrGerenciaIdByUsuarioId(
-            int intUsuarioId_I
+    public ArrayList<String> darrstrGerenciaIdFindByUsuarioId(
+            int usuarioId
     ) {
-        return this.usuarGerRepo.darrstrGerenciaIdFindByUsuarioId(intUsuarioId_I);
+        return this.repo.darrstrGerenciaIdFindByUsuarioId(usuarioId);
     }
 }

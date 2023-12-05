@@ -3,8 +3,8 @@ package tech.calaverita.reporterloanssql.persistence.repositories;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import tech.calaverita.reporterloanssql.persistence.entities.view.PagoAgrupadoEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.PagoEntity;
+import tech.calaverita.reporterloanssql.persistence.entities.view.PagoAgrupadoEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.view.PagoUtilEntity;
 
 import java.util.ArrayList;
@@ -198,4 +198,275 @@ public interface PagoRepository extends CrudRepository<PagoEntity, String> {
             String prestamoId,
             int anio,
             int semana);
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Query("SELECT SUM(pag.tarifa) " +
+            "FROM PagoAgrupadoEntity pag " +
+            "WHERE pag.agente = :agencia " +
+            "AND pag.anio = :anio " +
+            "AND pag.semana = :semana")
+    Double getDebitoTotalByAgenciaAnioAndSemana(
+            String agencia,
+            int anio,
+            int semana
+    );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Query("SELECT SUM(IF((pag.monto > pag.tarifa), pag.monto - pag.tarifa, 0)) " +
+            "FROM PagoAgrupadoEntity pag " +
+            "WHERE pag.agente = :agencia " +
+            "AND pag.anio = :anio " +
+            "AND pag.semana = :semana")
+    Double getExcedenteByAgenciaAnioAndSemana(
+            String agencia,
+            int anio,
+            int semana
+    );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Query("SELECT SUM(pag.tarifa) " +
+            "FROM PagoAgrupadoEntity pag " +
+            "WHERE pag.agente = :agencia " +
+            "AND pag.anio = :anio " +
+            "AND pag.semana = :semana")
+    Double getCobranzaTotalByAgenciaAnioAndSemana(
+            String agencia,
+            int anio,
+            int semana
+    );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Query("SELECT COUNT(pag) " +
+            "FROM PagoAgrupadoEntity pag " +
+            "WHERE pag.agente = :agencia " +
+            "AND pag.anio = :anio " +
+            "AND pag.semana = :semana")
+    Integer getClientesCobradosAgenciaAnioAndSemana(
+            String agencia,
+            int anio,
+            int semana
+    );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Query("SELECT COUNT(pag) " +
+            "FROM PagoAgrupadoEntity pag " +
+            "WHERE pag.agente = :agencia " +
+            "AND pag.anio = :anio " +
+            "AND pag.semana = :semana " +
+            "AND pag.esPrimerPago = false")
+    Integer getClientesTotalesAgenciaAnioAndSemana(
+            String agencia,
+            int anio,
+            int semana
+    );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Query("SELECT SUM(IF((pag.abreCon > pag.tarifa), pag.tarifa, pag.abreCon)) " +
+            "FROM PagoAgrupadoEntity pag " +
+            "INNER JOIN PrestamoEntity prest " +
+            "ON pag.prestamoId = prest.prestamoId " +
+            "AND prest.gerencia = :gerencia " +
+            "AND prest.sucursal = :sucursal " +
+            "AND pag.anio = :anio " +
+            "AND pag.semana = :semana " +
+            "AND pag.esPrimerPago = false")
+    Double getDebitoTotalParcialByGerenciaAnioAndSemana(
+            String gerencia,
+            String sucursal,
+            int anio,
+            int semana
+    );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Query("SELECT SUM(IF((pag.cierraCon > pag.tarifa), pag.tarifa, pag.cierraCon)) " +
+            "FROM PagoAgrupadoEntity pag " +
+            "INNER JOIN PrestamoEntity prest " +
+            "ON pag.prestamoId = prest.prestamoId " +
+            "AND prest.gerencia = :gerencia " +
+            "AND prest.sucursal = :sucursal " +
+            "AND pag.anio = :anio " +
+            "AND pag.semana = :semana")
+    Double getDebitoTotalSemanaByGerenciaAnioAndSemana(
+            String gerencia,
+            String sucursal,
+            int anio,
+            int semana
+    );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Query("SELECT SUM(IF((pag.monto > pag.tarifa), pag.monto - pag.tarifa, 0)) " +
+            "FROM PagoAgrupadoEntity pag " +
+            "INNER JOIN PrestamoEntity prest " +
+            "ON pag.prestamoId = prest.prestamoId " +
+            "AND prest.gerencia = :gerencia " +
+            "AND prest.sucursal = :sucursal " +
+            "AND pag.anio = :anio " +
+            "AND pag.semana = :semana " +
+            "AND pag.esPrimerPago = false")
+    Double getExcedenteByGerenciaAnioAndSemana(
+            String gerencia,
+            String sucursal,
+            int anio,
+            int semana
+    );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Query("SELECT SUM(pag.monto) " +
+            "FROM PagoAgrupadoEntity pag " +
+            "INNER JOIN PrestamoEntity prest " +
+            "ON pag.prestamoId = prest.prestamoId " +
+            "AND prest.gerencia = :gerencia " +
+            "AND prest.sucursal = :sucursal " +
+            "AND pag.anio = :anio " +
+            "AND pag.semana = :semana " +
+            "AND pag.esPrimerPago = false")
+    Double getCobranzaTotalByGerenciaAnioAndSemana(
+            String gerencia,
+            String sucursal,
+            int anio,
+            int semana
+    );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Query("SELECT COUNT(pag) " +
+            "FROM PagoAgrupadoEntity pag " +
+            "INNER JOIN PrestamoEntity prest " +
+            "ON pag.prestamoId = prest.prestamoId " +
+            "AND prest.gerencia = :gerencia " +
+            "AND prest.sucursal = :sucursal " +
+            "AND pag.anio = :anio " +
+            "AND pag.semana = :semana " +
+            "AND pag.esPrimerPago = false")
+    Integer getClientesCobradosGerenciaAnioAndSemana(
+            String gerencia,
+            String sucursal,
+            int anio,
+            int semana
+    );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Query("SELECT COUNT(pag) " +
+            "FROM PagoAgrupadoEntity pag " +
+            "INNER JOIN PrestamoEntity prest " +
+            "ON pag.prestamoId = prest.prestamoId " +
+            "AND prest.gerencia = :gerencia " +
+            "AND prest.sucursal = :sucursal " +
+            "AND pag.anio = :anio " +
+            "AND pag.semana = :semana " +
+            "AND pag.esPrimerPago = false")
+    Integer getClientesTotalesGerenciaAnioAndSemana(
+            String gerencia,
+            String sucursal,
+            int anio,
+            int semana
+    );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Query("SELECT SUM(IF((pag.cierraCon > pag.tarifa), pag.tarifa, pag.cierraCon)) " +
+            "FROM PagoAgrupadoEntity pag " +
+            "INNER JOIN PrestamoEntity prest " +
+            "ON pag.prestamoId = prest.prestamoId " +
+            "AND prest.gerencia = :gerencia " +
+            "AND prest.sucursal = :sucursal " +
+            "AND pag.anio = :anio " +
+            "AND pag.semana = :semana " +
+            "AND prest.diaDePago = 'MIERCOLES'")
+    Double getDebitoTotalParcialByGerenciaAnioSemana(
+            String gerencia,
+            String sucursal,
+            int anio,
+            int semana
+    );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Query("SELECT SUM(IF((pag.cierraCon > pag.tarifa), pag.tarifa, pag.cierraCon)) " +
+            "FROM PagoAgrupadoEntity pag " +
+            "INNER JOIN PrestamoEntity prest " +
+            "ON pag.prestamoId = prest.prestamoId " +
+            "AND prest.gerencia = :gerencia " +
+            "AND prest.sucursal = :sucursal " +
+            "AND pag.anio = :anio " +
+            "AND pag.semana = :semana")
+    Double getDebitoTotalSemanaByGerenciaAnioSemana(
+            String gerencia,
+            String sucursal,
+            int anio,
+            int semana
+    );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Query("SELECT SUM(IF((pag.monto > pag.tarifa), pag.monto - pag.tarifa, 0)) " +
+            "FROM PagoAgrupadoEntity pag " +
+            "INNER JOIN PrestamoEntity prest " +
+            "ON pag.prestamoId = prest.prestamoId " +
+            "AND prest.gerencia = :gerencia " +
+            "AND prest.sucursal = :sucursal " +
+            "AND pag.anio = :anio " +
+            "AND pag.semana = :semana " +
+            "AND pag.fechaPago < :fecha " +
+            "AND pag.esPrimerPago = false")
+    Double getExcedenteByGerenciaAnioSemanaAndFecha(
+            String gerencia,
+            String sucursal,
+            int anio,
+            int semana,
+            String fecha
+    );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Query("SELECT SUM(pag.monto) " +
+            "FROM PagoAgrupadoEntity pag " +
+            "INNER JOIN PrestamoEntity prest " +
+            "ON pag.prestamoId = prest.prestamoId " +
+            "AND prest.gerencia = :gerencia " +
+            "AND prest.sucursal = :sucursal " +
+            "AND pag.anio = :anio " +
+            "AND pag.semana = :semana " +
+            "AND pag.fechaPago < :fecha " +
+            "AND pag.esPrimerPago = false")
+    Double getCobranzaTotalByGerenciaAnioSemanaAndFecha(
+            String gerencia,
+            String sucursal,
+            int anio,
+            int semana,
+            String fecha
+    );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Query("SELECT COUNT(pag) " +
+            "FROM PagoAgrupadoEntity pag " +
+            "INNER JOIN PrestamoEntity prest " +
+            "ON pag.prestamoId = prest.prestamoId " +
+            "AND prest.gerencia = :gerencia " +
+            "AND prest.sucursal = :sucursal " +
+            "AND pag.anio = :anio " +
+            "AND pag.semana = :semana " +
+            "AND pag.fechaPago < :fecha " +
+            "AND pag.esPrimerPago = false")
+    Integer getClientesCobradosGerenciaAnioSemanaAndFecha(
+            String gerencia,
+            String sucursal,
+            int anio,
+            int semana,
+            String fecha
+    );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Query("SELECT COUNT(pag) " +
+            "FROM PagoAgrupadoEntity pag " +
+            "INNER JOIN PrestamoEntity prest " +
+            "ON pag.prestamoId = prest.prestamoId " +
+            "AND prest.gerencia = :gerencia " +
+            "AND prest.sucursal = :sucursal " +
+            "AND pag.anio = :anio " +
+            "AND pag.semana = :semana " +
+            "AND pag.fechaPago < :fecha " +
+            "AND pag.esPrimerPago = false")
+    Integer getClientesTotalesGerenciaAnioSemanaAndFecha(
+            String gerencia,
+            String sucursal,
+            int anio,
+            int semana,
+            String fecha
+    );
 }

@@ -1,31 +1,44 @@
 package tech.calaverita.reporterloanssql.services;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import tech.calaverita.reporterloanssql.persistence.entities.SucursalEntity;
 import tech.calaverita.reporterloanssql.persistence.repositories.SucursalRepository;
 
+import java.util.concurrent.CompletableFuture;
+
 @Service
-public final class SucursalService {
+public class SucursalService {
     //------------------------------------------------------------------------------------------------------------------
     /*INSTANCE VARIABLES*/
     //------------------------------------------------------------------------------------------------------------------
-    private final SucursalRepository sucRepo;
+    private final SucursalRepository repo;
 
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
     //------------------------------------------------------------------------------------------------------------------
-    private SucursalService(
-            SucursalRepository sucRepo_S
+    public SucursalService(
+            SucursalRepository repo
     ) {
-        this.sucRepo = sucRepo_S;
+        this.repo = repo;
     }
 
     //------------------------------------------------------------------------------------------------------------------
     /*METHODS*/
     //------------------------------------------------------------------------------------------------------------------
-    public SucursalEntity sucModFindBySucursalId(
-            String strSucursalId_I
+    public SucursalEntity findBySucursalId(
+            String sucursalId
     ) {
-        return this.sucRepo.sucEntFindBySucursalId(strSucursalId_I);
+        return this.repo.findBySucursalId(sucursalId);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Async("asyncExecutor")
+    public CompletableFuture<SucursalEntity> findBySucursalIdAsync(
+            String sucursalId
+    ) {
+        SucursalEntity entity = this.repo.findBySucursalId(sucursalId);
+
+        return CompletableFuture.completedFuture(entity);
     }
 }

@@ -7,8 +7,8 @@ import lombok.Data;
 
 @Data
 public class EgresosAgenteDTO {
-    Double asignaciones;
-    Double otros;
-    Double efectivoEntregadoCierre;
-    Double total;
+    private Double asignaciones;
+    private Double otros;
+    private Double efectivoEntregadoCierre;
+    private Double total;
 }

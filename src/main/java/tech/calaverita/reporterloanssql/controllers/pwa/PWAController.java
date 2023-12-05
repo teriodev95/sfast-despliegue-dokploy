@@ -62,7 +62,7 @@ public final class PWAController {
     public ResponseEntity<CalendarioEntity> getSemanaActual() {
         String fechaActual = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
-        CalendarioEntity calendarioEntity = this.calServ.calModFindBySemanaActualXpressByFechaActual(fechaActual);
+        CalendarioEntity calendarioEntity = this.calServ.findByFechaActual(fechaActual);
 
         return new ResponseEntity<>(calendarioEntity, HttpStatus.OK);
     }

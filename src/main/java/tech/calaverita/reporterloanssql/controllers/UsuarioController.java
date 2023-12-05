@@ -30,7 +30,7 @@ public final class UsuarioController {
     //------------------------------------------------------------------------------------------------------------------
     @GetMapping(path = "/all")
     public @ResponseBody ResponseEntity<Iterable<UsuarioEntity>> getAllUsers() {
-        Iterable<UsuarioEntity> usuarios = this.usuarServ.iteausuarEntFindAll();
+        Iterable<UsuarioEntity> usuarios = this.usuarServ.findAll();
 
         if (!usuarios.iterator().hasNext())
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

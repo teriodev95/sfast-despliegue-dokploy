@@ -14,7 +14,7 @@ public interface LiquidacionRepository extends CrudRepository<LiquidacionEntity,
             "FROM LiquidacionEntity li " +
             "INNER JOIN PagoEntity pa " +
             "ON li.pagoId = pa.pagoId " +
-            "WHERE pa.agente = :agencia " +
+            "AND pa.agente = :agencia " +
             "AND li.anio = :anio " +
             "AND li.semana = :semana")
     ArrayList<LiquidacionEntity> darrliqEntFindByAgenciaAnioAndSemanaToDashboard(
@@ -28,7 +28,7 @@ public interface LiquidacionRepository extends CrudRepository<LiquidacionEntity,
             "FROM LiquidacionEntity li " +
             "INNER JOIN PagoEntity pa " +
             "ON li.pagoId = pa.pagoId " +
-            "WHERE pa.agente = :agencia " +
+            "AND pa.agente = :agencia " +
             "AND pa.fechaPago like :fechaPago%")
     ArrayList<LiquidacionEntity> darrliqEntFindByAgenciaAndFechaPagoToDashboard(
             String agencia,

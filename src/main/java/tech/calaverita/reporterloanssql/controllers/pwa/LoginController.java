@@ -98,7 +98,7 @@ public final class LoginController {
                 .darrstrSucursalIdFindByUsuarioId(usuarioEntity.getUsuarioId());
 
         for (String strSucursalId : darrintSucursalId) {
-            sucEntSucursalEntities.add(this.sucServ.sucModFindBySucursalId(strSucursalId));
+            sucEntSucursalEntities.add(this.sucServ.findBySucursalId(strSucursalId));
         }
 
         return new ResponseEntity<>(sucEntSucursalEntities, HttpStatus.OK);

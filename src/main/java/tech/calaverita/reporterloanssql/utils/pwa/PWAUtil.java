@@ -166,12 +166,13 @@ public final class PWAUtil {
             List<UsuarioEntity> darrusuarEnt,
             double asignaciones
     ) {
-        StringBuilder nombreAgente = new StringBuilder(darrusuarEnt.get(0).getNombre()).append(" ")
-                .append(darrusuarEnt.get(0).getApellidoPaterno()).append(" ").append(darrusuarEnt.get(0)
-                        .getApellidoMaterno());
-        StringBuilder nombreGerente = new StringBuilder(darrusuarEnt.get(1).getNombre()).append(" ")
-                .append(darrusuarEnt.get(1).getApellidoPaterno()).append(" ").append(darrusuarEnt.get(1)
-                        .getApellidoMaterno());
+        // To easy code
+        UsuarioEntity agenteUsuarioEntity = darrusuarEnt.get(0);
+        UsuarioEntity gerenteUsuarioEntity = darrusuarEnt.get(1);
+        String nombreAgente = agenteUsuarioEntity.getNombre() + " " + agenteUsuarioEntity.getApellidoPaterno() + " "
+                + agenteUsuarioEntity.getApellidoMaterno();
+        String nombreGerente = gerenteUsuarioEntity.getNombre() + " " + gerenteUsuarioEntity.getApellidoPaterno() + " "
+                + gerenteUsuarioEntity.getApellidoMaterno();
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date fechaIngresoAgente;
@@ -187,9 +188,9 @@ public final class PWAUtil {
         BalanceAgenciaDTO balanceAgenciaDTO = new BalanceAgenciaDTO();
         {
             balanceAgenciaDTO.setZona(dashboard.getGerencia());
-            balanceAgenciaDTO.setGerente(nombreGerente.toString());
+            balanceAgenciaDTO.setGerente(nombreGerente);
             balanceAgenciaDTO.setAgencia(dashboard.getAgencia());
-            balanceAgenciaDTO.setAgente(nombreAgente.toString());
+            balanceAgenciaDTO.setAgente(nombreAgente);
             balanceAgenciaDTO.setRendimiento(dashboard.getRendimiento());
             balanceAgenciaDTO.setNivel(BalanceAgenciaUtil.strGetNivelAgente(dashboard.getClientes(),
                     dashboard.getRendimiento() / 100, (int) antiguedad));
@@ -222,6 +223,7 @@ public final class PWAUtil {
             cierreSemanalDTO_O.setEgresosAgente(egresosAgenteDTO);
             cierreSemanalDTO_O.setEgresosGerente(egresosGerenteDTO);
             cierreSemanalDTO_O.setIngresosAgente(ingresosAgenteDTO);
+            cierreSemanalDTO_O.setPinAgente(agenteUsuarioEntity.getPin());
         }
 
         return cierreSemanalDTO_O;

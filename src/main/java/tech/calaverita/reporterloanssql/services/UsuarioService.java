@@ -1,40 +1,43 @@
 package tech.calaverita.reporterloanssql.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
 import tech.calaverita.reporterloanssql.persistence.repositories.UsuarioRepository;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
-public final class UsuarioService {
+public class UsuarioService {
     //------------------------------------------------------------------------------------------------------------------
     /*INSTANCE VARIABLES*/
     //------------------------------------------------------------------------------------------------------------------
-    private final UsuarioRepository usuarRepo;
+    private final UsuarioRepository repo;
 
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
     //------------------------------------------------------------------------------------------------------------------
-    private UsuarioService(
-            UsuarioRepository usuarRepo_S
+    public UsuarioService(
+            UsuarioRepository repo
     ) {
-        this.usuarRepo = usuarRepo_S;
+        this.repo = repo;
     }
 
     //------------------------------------------------------------------------------------------------------------------
     /*METHODS*/
     //------------------------------------------------------------------------------------------------------------------
-    public Iterable<UsuarioEntity> iteausuarEntFindAll() {
-        return this.usuarRepo.findAll();
+    public Iterable<UsuarioEntity> findAll() {
+        return this.repo.findAll();
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public Optional<UsuarioEntity> optusuarEntFindById(
             int intId_I
     ) {
-        return this.usuarRepo.findById(intId_I);
+        return this.repo.findById(intId_I);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -42,48 +45,68 @@ public final class UsuarioService {
             String usuario,
             String pin
     ) {
-        return this.usuarRepo.usuarEntFindByUsuarioAndPin(usuario, pin);
+        return this.repo.usuarEntFindByUsuarioAndPin(usuario, pin);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public UsuarioEntity usuarModFindByUsuario(
             String usuario
     ) {
-        return this.usuarRepo.optusuarEntFindByUsuario(usuario).orElseThrow();
+        return this.repo.optusuarEntFindByUsuario(usuario).orElseThrow();
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public Optional<UsuarioEntity> findByUsuario(
             String usuario
     ) {
-        return this.usuarRepo.findByUsuario(usuario);
+        return this.repo.findByUsuario(usuario);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Async("asyncExecutor")
+    public CompletableFuture<Optional<UsuarioEntity>> findByUsuarioAsync(
+            String usuario
+    ) {
+        Optional<UsuarioEntity> entity = this.repo.findByUsuario(usuario);
+
+        return CompletableFuture.completedFuture(entity);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public ArrayList<UsuarioEntity> darrusuarModFindByTipo(
             String tipo
     ) {
-        return this.usuarRepo.darrusuarEntFindByTipo(tipo);
+        return this.repo.darrusuarEntFindByTipo(tipo);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public UsuarioEntity usuarModFindByUsuarioId(
             int usuarioId
     ) {
-        return this.usuarRepo.usuarEntFindByUsuarioId(usuarioId);
+        return this.repo.usuarEntFindByUsuarioId(usuarioId);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Async("asyncExecutor")
+    public CompletableFuture<UsuarioEntity> findByUsuarioIdAsync(
+            int usuarioId
+    ) {
+        UsuarioEntity entity = this.repo.usuarEntFindByUsuarioId(usuarioId);
+
+        return CompletableFuture.completedFuture(entity);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public UsuarioEntity usuarModFindByUsuarioIdFromGerenciaIdOfGerenciaModel(
             String gerenciaId
     ) {
-        return this.usuarRepo.usuarEntFindByUsuarioIdFromGerenciaIdOfGerenciaModel(gerenciaId);
+        return this.repo.usuarEntFindByUsuarioIdFromGerenciaIdOfGerenciaModel(gerenciaId);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public ArrayList<UsuarioEntity> darrUsuarModFindByGerencia(
             String gerencia
     ) {
-        return this.usuarRepo.darrusuarEntFindByGerencia(gerencia);
+        return this.repo.darrusuarEntFindByGerencia(gerencia);
     }
 }

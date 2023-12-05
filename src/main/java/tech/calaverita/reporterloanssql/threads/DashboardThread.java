@@ -369,7 +369,6 @@ public class DashboardThread implements Runnable {
             }
         }
 
-
         this.objectsContainer.getDashboard().setTotalDeDescuento(totalDeDescuento);
     }
 

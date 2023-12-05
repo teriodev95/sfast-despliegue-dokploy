@@ -1,40 +1,54 @@
 package tech.calaverita.reporterloanssql.services;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import tech.calaverita.reporterloanssql.persistence.entities.AgenciaEntity;
+import tech.calaverita.reporterloanssql.persistence.entities.GerenciaEntity;
 import tech.calaverita.reporterloanssql.persistence.repositories.AgenciaRepository;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
-public final class AgenciaService {
+public class AgenciaService {
     //------------------------------------------------------------------------------------------------------------------
     /*INSTANCE VARIABLES*/
     //------------------------------------------------------------------------------------------------------------------
-    private final AgenciaRepository agencRepo;
+    private final AgenciaRepository repo;
 
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
     //------------------------------------------------------------------------------------------------------------------
     public AgenciaService(
-            AgenciaRepository agencRepo_S
+            AgenciaRepository repo
     ) {
-        this.agencRepo = agencRepo_S;
+        this.repo = repo;
     }
 
     //------------------------------------------------------------------------------------------------------------------
     /*METHODS*/
     //------------------------------------------------------------------------------------------------------------------
     public AgenciaEntity agencModFindByAgenciaId(
-            String agenciaId_I
+            String agenciaId
     ) {
-        return this.agencRepo.agencModFindByAgenciaId(agenciaId_I);
+        return this.repo.agencModFindByAgenciaId(agenciaId);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public ArrayList<String> darrstrAgenciaIdFindByGerenciaId(
-            String strGerencia_I
+            String gerencia
     ) {
-        return this.agencRepo.darrstrAgenciaIdFindByGerenciaId(strGerencia_I);
+        return this.repo.darrstrAgenciaIdFindByGerenciaId(gerencia);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Async("asyncExecutor")
+    public CompletableFuture<ArrayList<AgenciaEntity>> findByGerenciaIdAsync(
+            String gerenciaId
+    ) {
+        ArrayList<AgenciaEntity> entities = this.repo.findByGerenciaId(gerenciaId);
+
+        return CompletableFuture.completedFuture(entities);
     }
 }

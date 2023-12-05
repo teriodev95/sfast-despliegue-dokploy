@@ -10,9 +10,9 @@ import lombok.Data;
 @Table(name = "egresos_agente")
 public class EgresosAgenteEntity {
     @Id
-    String id;
-    Double asignaciones;
-    Double otros;
-    Double efectivoEntregadoCierre;
-    Double total;
+    private String id;
+    private Double asignaciones;
+    private Double otros;
+    private Double efectivoEntregadoCierre;
+    private Double total;
 }

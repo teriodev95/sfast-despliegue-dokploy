@@ -37,7 +37,7 @@ public interface AsignacionRepository extends CrudRepository<AsignacionEntity, S
     );
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @Query(value = "SELECT if(SUM(am.monto) is null, 0, SUM(am.monto)) " +
+    @Query(value = "SELECT IF(SUM(am.monto) is null, 0, SUM(am.monto)) " +
             "FROM asignaciones am " +
             "WHERE am.agencia = :agencia " +
             "AND am.anio = :anio " +

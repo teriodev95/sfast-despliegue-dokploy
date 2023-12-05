@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/xpress/v1/assignments")
-public final class AsignacionController {
+public class AsignacionController {
     //------------------------------------------------------------------------------------------------------------------
     /*INSTANCE VARIABLES*/
     //------------------------------------------------------------------------------------------------------------------

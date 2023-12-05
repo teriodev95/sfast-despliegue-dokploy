@@ -37,6 +37,7 @@ public final class LiquidacionService {
             int intAnio_I,
             int intSemana_I
     ) {
+
         return this.liqRepo.darrliqEntFindByAgenciaAnioAndSemanaToDashboard(strAgencia_I, intAnio_I, intSemana_I);
     }
 

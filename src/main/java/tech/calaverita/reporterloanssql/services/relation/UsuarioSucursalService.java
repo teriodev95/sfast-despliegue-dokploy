@@ -1,7 +1,7 @@
 package tech.calaverita.reporterloanssql.services.relation;
 
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.repositories.relation.UsuarSucRepoUsuarioSucursalRepository;
+import tech.calaverita.reporterloanssql.persistence.repositories.relation.UsuarioSucursalRepository;
 
 import java.util.ArrayList;
 
@@ -10,13 +10,13 @@ public final class UsuarioSucursalService {
     //------------------------------------------------------------------------------------------------------------------
     /*INSTANCE VARIABLES*/
     //------------------------------------------------------------------------------------------------------------------
-    private final UsuarSucRepoUsuarioSucursalRepository usuarSucRepo;
+    private final UsuarioSucursalRepository usuarSucRepo;
 
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
     //------------------------------------------------------------------------------------------------------------------
     private UsuarioSucursalService(
-            UsuarSucRepoUsuarioSucursalRepository usuarSucRepo_S
+            UsuarioSucursalRepository usuarSucRepo_S
     ) {
         this.usuarSucRepo = usuarSucRepo_S;
     }

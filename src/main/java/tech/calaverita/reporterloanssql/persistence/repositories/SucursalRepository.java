@@ -10,10 +10,7 @@ public interface SucursalRepository extends CrudRepository<SucursalEntity, Integ
     //------------------------------------------------------------------------------------------------------------------
     /*METHODS*/
     //------------------------------------------------------------------------------------------------------------------
-    @Query("SELECT suc " +
-            "FROM SucursalEntity suc " +
-            "WHERE suc.sucursalId = :sucursalId")
-    SucursalEntity sucEntFindBySucursalId(
+    SucursalEntity findBySucursalId(
             String sucursalId
     );
 }

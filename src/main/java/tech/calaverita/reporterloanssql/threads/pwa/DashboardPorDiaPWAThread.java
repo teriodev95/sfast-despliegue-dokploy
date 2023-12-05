@@ -68,7 +68,7 @@ public class DashboardPorDiaPWAThread implements Runnable {
     }
 
     public void setCalendario() {
-        objectsContainer.setCalendarioEntity(DashboardPorDiaPWAThread.calServ.calModFindBySemanaActualXpressByFechaActual(objectsContainer.getFechaPago()));
+        objectsContainer.setCalendarioEntity(DashboardPorDiaPWAThread.calServ.findByFechaActual(objectsContainer.getFechaPago()));
         objectsContainer.getDashboard().setAnio(objectsContainer.getCalendarioEntity().getAnio());
         objectsContainer.getDashboard().setSemana(objectsContainer.getCalendarioEntity().getSemana());
     }

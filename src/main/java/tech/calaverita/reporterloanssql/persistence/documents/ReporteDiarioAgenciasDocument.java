@@ -1,0 +1,18 @@
+package tech.calaverita.reporterloanssql.persistence.documents;
+
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import tech.calaverita.reporterloanssql.persistence.dto.reporte_diario_agencias.AgenciaReporteDiarioAgenciasDTO;
+import tech.calaverita.reporterloanssql.persistence.dto.reporte_diario_agencias.EncabezadoReporteDiarioAgenciasDTO;
+
+import java.util.ArrayList;
+
+@Data
+@Document(collection = "diarios_agencias")
+public class ReporteDiarioAgenciasDocument {
+    @Id
+    private String id;
+    private EncabezadoReporteDiarioAgenciasDTO encabezado;
+    private ArrayList<AgenciaReporteDiarioAgenciasDTO> agencias;
+}
