@@ -207,7 +207,7 @@ public class PagoService {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Async("asyncExecutor")
-    public CompletableFuture<Integer> getClientesCobradosAgenciaAnioAndSemanaAsync(
+    public CompletableFuture<Integer> getClientesCobradosByAgenciaAnioAndSemanaAsync(
             String agencia,
             int anio,
             int semana
@@ -219,12 +219,24 @@ public class PagoService {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Async("asyncExecutor")
-    public CompletableFuture<Integer> getClientesTotalesAgenciaAnioAndSemanaAsync(
+    public CompletableFuture<Integer> getClientesPagoCompletoByAgenciaAnioAndSemanaAsync(
             String agencia,
             int anio,
             int semana
     ) {
-        Integer clientes = this.repo.getClientesTotalesAgenciaAnioAndSemana(agencia, anio, semana);
+        Integer clientes = this.repo.getClientesPagoCompletoByAgenciaAnioAndSemana(agencia, anio, semana);
+
+        return CompletableFuture.completedFuture(clientes);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @Async("asyncExecutor")
+    public CompletableFuture<Integer> getClientesTotalesByAgenciaAnioAndSemanaAsync(
+            String agencia,
+            int anio,
+            int semana
+    ) {
+        Integer clientes = this.repo.getClientesTotalesByAgenciaAnioAndSemana(agencia, anio, semana);
 
         return CompletableFuture.completedFuture(clientes);
     }
@@ -372,7 +384,7 @@ public class PagoService {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Async("asyncExecutor")
-    public CompletableFuture<Integer> getClientesCobradosGerenciaAnioSemanaAndFechaAsync(
+    public CompletableFuture<Integer> getClientesCobradosByGerenciaAnioSemanaAndFechaAsync(
             String gerencia,
             String sucursal,
             int anio,
@@ -387,7 +399,7 @@ public class PagoService {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Async("asyncExecutor")
-    public CompletableFuture<Integer> getClientesTotalesGerenciaAnioSemanaAndFechaAsync(
+    public CompletableFuture<Integer> getClientesTotalesByGerenciaAnioSemanaAndFechaAsync(
             String gerencia,
             String sucursal,
             int anio,

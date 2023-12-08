@@ -233,7 +233,7 @@ public class ReporteGeneralGerenciaMigracionUtil {
         CompletableFuture<Double> excedente = ReporteGeneralGerenciaMigracionUtil.pagoService
                 .getExcedenteByGerenciaAnioSemanaAndFechaAsync(gerencia, sucursal, anio, semana, fecha);
         CompletableFuture<Integer> clientesCobrados = ReporteGeneralGerenciaMigracionUtil.pagoService
-                .getClientesCobradosGerenciaAnioSemanaAndFechaAsync(gerencia, sucursal, anio, semana, fecha);
+                .getClientesCobradosByGerenciaAnioSemanaAndFechaAsync(gerencia, sucursal, anio, semana, fecha);
 
         CompletableFuture.allOf(debitoTotal, cobranzaTotal, excedente, clientesCobrados);
         dashboard.setDebitoTotal(debitoTotal.get());

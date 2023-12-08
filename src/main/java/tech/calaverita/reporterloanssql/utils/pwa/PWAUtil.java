@@ -19,12 +19,11 @@ import tech.calaverita.reporterloanssql.threads.pwa.PagoHistoricoPWAThread;
 import tech.calaverita.reporterloanssql.threads.pwa.PagoPWAThread;
 import tech.calaverita.reporterloanssql.utils.BalanceAgenciaUtil;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Component
 public final class PWAUtil {
@@ -165,7 +164,11 @@ public final class PWAUtil {
             Dashboard dashboard,
             List<UsuarioEntity> darrusuarEnt,
             double asignaciones
-    ) {
+    ) throws ExecutionException, InterruptedException {
+        CompletableFuture<Integer> clientePagoCompleto = PWAUtil.pagServ
+                .getClientesPagoCompletoByAgenciaAnioAndSemanaAsync(dashboard.getAgencia(), dashboard.getAnio(),
+                        dashboard.getSemana());
+
         // To easy code
         UsuarioEntity agenteUsuarioEntity = darrusuarEnt.get(0);
         UsuarioEntity gerenteUsuarioEntity = darrusuarEnt.get(1);
@@ -174,17 +177,6 @@ public final class PWAUtil {
         String nombreGerente = gerenteUsuarioEntity.getNombre() + " " + gerenteUsuarioEntity.getApellidoPaterno() + " "
                 + gerenteUsuarioEntity.getApellidoMaterno();
 
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Date fechaIngresoAgente;
-
-        try {
-            fechaIngresoAgente = format.parse(darrusuarEnt.get(0).getFechaIngreso());
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-
-        long antiguedad = (new Date().getTime() - fechaIngresoAgente.getTime()) / (1000 * 60 * 60 * 24 * 7);
-
         BalanceAgenciaDTO balanceAgenciaDTO = new BalanceAgenciaDTO();
         {
             balanceAgenciaDTO.setZona(dashboard.getGerencia());
@@ -192,8 +184,8 @@ public final class PWAUtil {
             balanceAgenciaDTO.setAgencia(dashboard.getAgencia());
             balanceAgenciaDTO.setAgente(nombreAgente);
             balanceAgenciaDTO.setRendimiento(dashboard.getRendimiento());
-            balanceAgenciaDTO.setNivel(BalanceAgenciaUtil.strGetNivelAgente(dashboard.getClientes(),
-                    dashboard.getRendimiento() / 100, (int) antiguedad));
+            balanceAgenciaDTO.setNivel(BalanceAgenciaUtil.getNivelAgente(dashboard.getClientes(),
+                    dashboard.getRendimiento() / 100, agenteUsuarioEntity));
             balanceAgenciaDTO.setClientes(dashboard.getClientes());
             balanceAgenciaDTO.setPagosReducidos(dashboard.getPagosReducidos());
             balanceAgenciaDTO.setNoPagos(dashboard.getNoPagos());
@@ -206,6 +198,18 @@ public final class PWAUtil {
         }
 
         EgresosGerenteDTO egresosGerenteDTO = new EgresosGerenteDTO();
+        {
+            egresosGerenteDTO.setPorcentajeComisionCobranza(BalanceAgenciaUtil
+                    .getPorcentajeComisionCobranza(balanceAgenciaDTO.getNivel()));
+
+            clientePagoCompleto.join();
+
+            // To easy code
+            int porcentajeBonoMensual = BalanceAgenciaUtil.getPorcentajeBonoMensual(clientePagoCompleto.get(),
+                    dashboard.getRendimiento(), agenteUsuarioEntity);
+
+            egresosGerenteDTO.setPorcentajeBonoMensual(porcentajeBonoMensual);
+        }
 
         IngresosAgenteDTO ingresosAgenteDTO = new IngresosAgenteDTO();
         {

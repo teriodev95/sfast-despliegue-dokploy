@@ -15,6 +15,7 @@ import tech.calaverita.reporterloanssql.utils.pwa.PWAUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @CrossOrigin
 @RestController
@@ -63,7 +64,7 @@ public final class CierreSemanalController {
             @PathVariable("agencia") String agencia,
             @PathVariable("anio") int anio,
             @PathVariable("semana") int semana
-    ) {
+    ) throws ExecutionException, InterruptedException {
         Dashboard dashboard;
         List<UsuarioEntity> usuarioModels;
         double asignaciones;

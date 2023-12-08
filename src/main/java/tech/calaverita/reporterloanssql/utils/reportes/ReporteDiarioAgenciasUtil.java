@@ -282,9 +282,9 @@ public final class ReporteDiarioAgenciasUtil {
         CompletableFuture<Double> cobranzaTotal = ReporteDiarioAgenciasUtil.pagoService
                 .getCobranzaTotalByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
         CompletableFuture<Integer> clientesTotalesCobrados = ReporteDiarioAgenciasUtil.pagoService
-                .getClientesCobradosAgenciaAnioAndSemanaAsync(agencia, anio, semana);
+                .getClientesCobradosByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
         CompletableFuture<Integer> clientesTotales = ReporteDiarioAgenciasUtil.pagoService
-                .getClientesTotalesAgenciaAnioAndSemanaAsync(agencia, anioAnterior, semanaAnterior);
+                .getClientesTotalesByAgenciaAnioAndSemanaAsync(agencia, anioAnterior, semanaAnterior);
 
         semanaActual.setDiferenciaFaltanteActualVsFaltanteAnterior(null);
         semanaActual.setDiferenciaAcumuladaFaltantes(null);
@@ -325,7 +325,7 @@ public final class ReporteDiarioAgenciasUtil {
         CompletableFuture<Double> cobranzaTotal = ReporteDiarioAgenciasUtil.pagoService
                 .getCobranzaTotalByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
         CompletableFuture<Integer> clientesTotalesCobrados = ReporteDiarioAgenciasUtil.pagoService
-                .getClientesCobradosAgenciaAnioAndSemanaAsync(agencia, anio, semana);
+                .getClientesCobradosByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
 
         CompletableFuture.allOf(debitoTotal, excedente, cobranzaTotal, clientesTotalesCobrados);
         semanaAnterior.setDebitoTotal(debitoTotal.get());
