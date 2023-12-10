@@ -254,11 +254,10 @@ public class ReporteGeneralGerenciaMigracionUtil {
             // To easy code
             int anio = calendarioEntity.getAnio();
             int semana = calendarioEntity.getSemana();
-
-            ReporteGeneralGerenciaMigracionUtil.funSemanaSiguiente(calendarioEntity);
-
             String gerencia = String.format("Ger%s", encabezado.getZona().substring(4));
             String sucursal = encabezado.getSucursal().split(" ")[0];
+
+            ReporteGeneralGerenciaMigracionUtil.funSemanaSiguiente(calendarioEntity);
 
             CompletableFuture<Double> debitoTotal = ReporteGeneralGerenciaMigracionUtil.pagoService
                     .getDebitoTotalSemanaByGerenciaAnioAndSemanaAsync(gerencia, sucursal, anio, semana);

@@ -254,6 +254,8 @@ public class ReporteGeneralGerenciaUtil {
             String gerencia = String.format("Ger%s", encabezado.getZona().substring(4));
             String sucursal = encabezado.getSucursal().split(" ")[0];
 
+            ReporteGeneralGerenciaUtil.funSemanaSiguiente(calendarioEntity);
+
             CompletableFuture<Double> debitoTotal = ReporteGeneralGerenciaUtil.pagoService
                     .getDebitoTotalSemanaByGerenciaAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
 
@@ -312,8 +314,12 @@ public class ReporteGeneralGerenciaUtil {
             if (
                     reporte.isPresent()
             ) {
-                dashboards.add(reporte.get().getDashboards().get(0));
-                avances.add(reporte.get().getAvances().get(0));
+                if (
+                        i < 4
+                ) {
+                    dashboards.add(reporte.get().getDashboards().get(0));
+                    avances.add(reporte.get().getAvances().get(0));
+                }
                 arrastres.add(reporte.get().getArrastres().get(0));
             }
         }
