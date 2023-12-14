@@ -168,6 +168,9 @@ public final class PWAUtil {
         CompletableFuture<Integer> clientePagoCompleto = PWAUtil.pagServ
                 .getClientesPagoCompletoByAgenciaAnioAndSemanaAsync(dashboard.getAgencia(), dashboard.getAnio(),
                         dashboard.getSemana());
+        CompletableFuture<Double> cobranzaTotal = PWAUtil.pagServ
+                .getCobranzaTotalByAgenciaAnioAndSemanaAsync(dashboard.getAgencia(), dashboard.getAnio(),
+                        dashboard.getSemana());
 
         // To easy code
         UsuarioEntity agenteUsuarioEntity = darrusuarEnt.get(0);
@@ -195,6 +198,10 @@ public final class PWAUtil {
         EgresosAgenteDTO egresosAgenteDTO = new EgresosAgenteDTO();
         {
             egresosAgenteDTO.setAsignaciones(asignaciones);
+
+            cobranzaTotal.join();
+
+            egresosAgenteDTO.setEfectivoEntregadoCierre(cobranzaTotal.get() - egresosAgenteDTO.getAsignaciones());
         }
 
         EgresosGerenteDTO egresosGerenteDTO = new EgresosGerenteDTO();
@@ -209,6 +216,12 @@ public final class PWAUtil {
                     dashboard.getRendimiento(), agenteUsuarioEntity);
 
             egresosGerenteDTO.setPorcentajeBonoMensual(porcentajeBonoMensual);
+
+            cobranzaTotal.join();
+
+            egresosGerenteDTO.setPagoComisionCobranza(cobranzaTotal.get() / 100
+                    * egresosGerenteDTO.getPorcentajeComisionCobranza());
+            egresosGerenteDTO.setBonos(cobranzaTotal.get() / 100 * egresosGerenteDTO.getPorcentajeBonoMensual());
         }
 
         IngresosAgenteDTO ingresosAgenteDTO = new IngresosAgenteDTO();
