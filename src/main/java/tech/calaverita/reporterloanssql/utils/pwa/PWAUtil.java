@@ -212,14 +212,14 @@ public final class PWAUtil {
 
             // No se comprueba si los registros siguientes existen ya que si existe el cierre semanal se da por hecho
             // que estos también
-            cierreSemanalDTO = PWAUtil.cierreSemanalService.mapper.mapOut(cierreSemanalEntity.get());
-            cierreSemanalDTO.setBalanceAgencia(PWAUtil.balanceAgenciaService.mapper.mapOut(balanceAgenciaEntity.get()
+            cierreSemanalDTO = PWAUtil.cierreSemanalService.getCierreSemanalDTO(cierreSemanalEntity.get());
+            cierreSemanalDTO.setBalanceAgencia(PWAUtil.balanceAgenciaService.getBalanceAgenciaDTO(balanceAgenciaEntity.get()
                     .get()));
-            cierreSemanalDTO.setEgresosAgente(PWAUtil.egresosAgenteService.mapper.mapOut(egresosAgenteEntity.get()
+            cierreSemanalDTO.setEgresosAgente(PWAUtil.egresosAgenteService.getEgresosGerenteDTO(egresosAgenteEntity.get()
                     .get()));
-            cierreSemanalDTO.setEgresosGerente(PWAUtil.egresosGerenteService.mapper.mapOut(egresosGerenteEntity.get()
+            cierreSemanalDTO.setEgresosGerente(PWAUtil.egresosGerenteService.getEgresosGerenteDTO(egresosGerenteEntity.get()
                     .get()));
-            cierreSemanalDTO.setIngresosAgente(PWAUtil.ingresosAgenteService.mapper.mapOut(ingresosAgenteEntity.get()
+            cierreSemanalDTO.setIngresosAgente(PWAUtil.ingresosAgenteService.getIngresosAgenteDTO(ingresosAgenteEntity.get()
                     .get()));
             cierreSemanalDTO.setIsAgenciaCerrada(true);
         } //

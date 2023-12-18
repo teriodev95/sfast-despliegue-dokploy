@@ -91,21 +91,28 @@ public final class CierreSemanalController {
     ) {
         String strResponse_O;
         HttpStatus httpStatus_O;
-        CierreSemanalEntity cierreSemanalEntity = this.cierSemServ.mapper.mapIn(cierreSemanalDTO_I);
+        CierreSemanalEntity cierreSemanalEntity = this.cierSemServ.getCierreSemanalEntity(cierreSemanalDTO_I);
 
         if (
                 this.cierSemServ.findById(cierreSemanalEntity.getId()).isEmpty()
         ) {
+            BalanceAgenciaEntity balanceAgenciaEntity = this.balAgencServ.getBalanceAgenciaEntity(cierreSemanalDTO_I
+                    .getBalanceAgencia());
+            balanceAgenciaEntity.setId(cierreSemanalEntity.getBalanceAgenciaId());
+            this.balAgencServ.save(balanceAgenciaEntity);
 
-            EgresosAgenteEntity egresosAgenteEntity = this.egrAgentServ.mapper.mapIn(cierreSemanalDTO_I.getEgresosAgente());
+            EgresosAgenteEntity egresosAgenteEntity = this.egrAgentServ.getEgresosGerenteEntity(cierreSemanalDTO_I
+                    .getEgresosAgente());
             egresosAgenteEntity.setId(cierreSemanalEntity.getEgresosAgenteId());
             this.egrAgentServ.save(egresosAgenteEntity);
 
-            EgresosGerenteEntity egresosGerenteEntity = this.egrGerServ.mapper.mapIn(cierreSemanalDTO_I.getEgresosGerente());
+            EgresosGerenteEntity egresosGerenteEntity = this.egrGerServ.getEgresosGerenteEntity(cierreSemanalDTO_I
+                    .getEgresosGerente());
             egresosGerenteEntity.setId(cierreSemanalEntity.getEgresosGerenteId());
             this.egrGerServ.save(egresosGerenteEntity);
 
-            IngresosAgenteEntity ingresosAgenteEntity = this.ingrAgentServ.mapper.mapIn(cierreSemanalDTO_I.getIngresosAgente());
+            IngresosAgenteEntity ingresosAgenteEntity = this.ingrAgentServ.getIngresosAgenteEntity(cierreSemanalDTO_I
+                    .getIngresosAgente());
             ingresosAgenteEntity.setId(cierreSemanalEntity.getIngresosAgenteId());
             this.ingrAgentServ.save(ingresosAgenteEntity);
 

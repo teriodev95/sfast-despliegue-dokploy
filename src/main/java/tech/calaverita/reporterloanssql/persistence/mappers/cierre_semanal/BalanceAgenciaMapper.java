@@ -1,8 +1,9 @@
-package tech.calaverita.reporterloanssql.persistence.mappers;
+package tech.calaverita.reporterloanssql.persistence.mappers.cierre_semanal;
 
 import org.springframework.stereotype.Component;
 import tech.calaverita.reporterloanssql.persistence.dto.cierre_semanal.BalanceAgenciaDTO;
 import tech.calaverita.reporterloanssql.persistence.entities.cierre_semanal.BalanceAgenciaEntity;
+import tech.calaverita.reporterloanssql.persistence.mappers.IMapper;
 
 @Component
 public final class BalanceAgenciaMapper implements IMapper<BalanceAgenciaEntity, BalanceAgenciaDTO> {

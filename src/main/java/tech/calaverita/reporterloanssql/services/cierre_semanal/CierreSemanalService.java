@@ -1,8 +1,9 @@
 package tech.calaverita.reporterloanssql.services.cierre_semanal;
 
 import org.springframework.stereotype.Service;
+import tech.calaverita.reporterloanssql.persistence.dto.cierre_semanal.CierreSemanalDTO;
 import tech.calaverita.reporterloanssql.persistence.entities.cierre_semanal.CierreSemanalEntity;
-import tech.calaverita.reporterloanssql.persistence.mappers.CierreSemanalMapper;
+import tech.calaverita.reporterloanssql.persistence.mappers.cierre_semanal.CierreSemanalMapper;
 import tech.calaverita.reporterloanssql.persistence.repositories.cierre_semanal.CierreSemanalRepository;
 
 import java.util.Optional;
@@ -10,7 +11,7 @@ import java.util.Optional;
 @Service
 public class CierreSemanalService {
     private final CierreSemanalRepository repo;
-    public final CierreSemanalMapper mapper;
+    private final CierreSemanalMapper mapper;
 
     public CierreSemanalService(
             CierreSemanalRepository repo,
@@ -30,5 +31,17 @@ public class CierreSemanalService {
             String id
     ) {
         return this.repo.findById(id);
+    }
+
+    public CierreSemanalDTO getCierreSemanalDTO(
+            CierreSemanalEntity entity
+    ) {
+        return this.mapper.mapOut(entity);
+    }
+
+    public CierreSemanalEntity getCierreSemanalEntity(
+            CierreSemanalDTO DTO
+    ) {
+        return this.mapper.mapIn(DTO);
     }
 }
