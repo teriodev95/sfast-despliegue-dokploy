@@ -17,7 +17,6 @@ public final class CierreSemanalMapper implements IMapper<CierreSemanalEntity, C
             cierreSemanalDTO.setSelfieAgente(out.getSelfieAgente());
             cierreSemanalDTO.setSelfieGerente(out.getSelfieGerente());
         }
-
         return cierreSemanalDTO;
     }
 
@@ -36,10 +35,10 @@ public final class CierreSemanalMapper implements IMapper<CierreSemanalEntity, C
                 intSemana = in.getSemana();
             }
             cierreSemanalEntity.setId(strGerencia + '-' + strAgencia + '-' + intAnio + '-' + intSemana);
-            cierreSemanalEntity.setBalanceAgenciaId(strGerencia + '-' + strAgencia + '-' + intAnio + '-' + intSemana);
-            cierreSemanalEntity.setEgresosAgenteId(strGerencia + '-' + strAgencia + '-' + intAnio + '-' + intSemana);
-            cierreSemanalEntity.setEgresosGerenteId(strGerencia + '-' + strAgencia + '-' + intAnio + '-' + intSemana);
-            cierreSemanalEntity.setIngresosAgenteId(strGerencia + '-' + strAgencia + '-' + intAnio + '-' + intSemana);
+            cierreSemanalEntity.setBalanceAgenciaId(cierreSemanalEntity.getId());
+            cierreSemanalEntity.setEgresosAgenteId(cierreSemanalEntity.getId());
+            cierreSemanalEntity.setEgresosGerenteId(cierreSemanalEntity.getId());
+            cierreSemanalEntity.setIngresosAgenteId(cierreSemanalEntity.getId());
 
             cierreSemanalEntity.setSemana(in.getSemana());
             cierreSemanalEntity.setAnio(in.getAnio());
@@ -48,7 +47,6 @@ public final class CierreSemanalMapper implements IMapper<CierreSemanalEntity, C
             cierreSemanalEntity.setSelfieAgente(in.getSelfieAgente());
             cierreSemanalEntity.setSelfieGerente(in.getSelfieGerente());
         }
-
         return cierreSemanalEntity;
     }
 }

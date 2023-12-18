@@ -15,4 +15,5 @@ public class CierreSemanalDTO {
     private EgresosGerenteDTO egresosGerente;
     private IngresosAgenteDTO ingresosAgente;
     private Integer pinAgente;
+    private Boolean isAgenciaCerrada;
 }

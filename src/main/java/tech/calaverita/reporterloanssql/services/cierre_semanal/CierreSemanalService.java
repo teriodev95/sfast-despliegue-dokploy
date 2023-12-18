@@ -31,4 +31,10 @@ public final class CierreSemanalService {
     ) {
         return this.repo.findById(id_I);
     }
+
+    public Boolean existsById(
+            String id
+    ) {
+        return this.repo.existsById(id);
+    }
 }

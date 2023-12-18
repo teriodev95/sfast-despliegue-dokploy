@@ -12,7 +12,7 @@ import lombok.Data;
 public class AgenciaEntity {
     @Id
     @Column(name = "agenciaid")
-    private String agenciaId;
+    private String id;
     private String status;
     @Column(name = "gerenciaid")
     private String gerenciaId;

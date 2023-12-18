@@ -6,5 +6,4 @@ import tech.calaverita.reporterloanssql.persistence.entities.cierre_semanal.Cier
 
 @Repository
 public interface CierreSemanalRepository extends CrudRepository<CierreSemanalEntity, String> {
-
 }

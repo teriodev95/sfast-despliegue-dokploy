@@ -150,7 +150,8 @@ public final class XpressController {
         ArrayList<String> agencias = this.agencServ.darrstrAgenciaIdFindByGerenciaId(gerencia);
 
         Thread[] threads = new Thread[agencias.size()];
-        tech.calaverita.reporterloanssql.pojos.Dashboard[] dashboards = new tech.calaverita.reporterloanssql.pojos.Dashboard[agencias.size()];
+        tech.calaverita.reporterloanssql.pojos.Dashboard[] dashboards = new tech.calaverita.reporterloanssql.pojos
+                .Dashboard[agencias.size()];
         ObjectsContainer[] objectsContainers = new ObjectsContainer[agencias.size()];
 
         for (int i = 0; i < agencias.size(); i++) {

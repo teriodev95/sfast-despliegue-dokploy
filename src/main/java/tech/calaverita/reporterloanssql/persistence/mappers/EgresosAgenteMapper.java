@@ -15,7 +15,6 @@ public final class EgresosAgenteMapper implements IMapper<EgresosAgenteEntity, E
             egresosAgenteDTO.setEfectivoEntregadoCierre(out.getEfectivoEntregadoCierre());
             egresosAgenteDTO.setTotal(out.getTotal());
         }
-
         return egresosAgenteDTO;
     }
 
@@ -28,7 +27,6 @@ public final class EgresosAgenteMapper implements IMapper<EgresosAgenteEntity, E
             egresosAgenteEntity.setEfectivoEntregadoCierre(egresosAgenteEntity.getEfectivoEntregadoCierre());
             egresosAgenteEntity.setTotal(egresosAgenteEntity.getTotal());
         }
-
         return egresosAgenteEntity;
     }
 }

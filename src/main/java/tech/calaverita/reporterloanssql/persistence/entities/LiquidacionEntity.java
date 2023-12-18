@@ -1,9 +1,6 @@
 package tech.calaverita.reporterloanssql.persistence.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
@@ -11,8 +8,9 @@ import lombok.Data;
 @Table(name = "liquidaciones")
 public class LiquidacionEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "liquidacionid")
-    private Integer liquidacionId;
+    private Integer id;
     @Column(name = "prestamoid")
     private String prestamoId;
     @Column(name = "pagoid")

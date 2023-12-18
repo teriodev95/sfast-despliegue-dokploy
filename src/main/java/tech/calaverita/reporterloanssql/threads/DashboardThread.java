@@ -2,11 +2,15 @@ package tech.calaverita.reporterloanssql.threads;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import tech.calaverita.reporterloanssql.persistence.entities.AgenciaEntity;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
+import tech.calaverita.reporterloanssql.services.AgenciaService;
 import tech.calaverita.reporterloanssql.services.AsignacionService;
 import tech.calaverita.reporterloanssql.services.LiquidacionService;
 import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.view.PrestamoService;
+
+import java.util.Optional;
 
 @Component
 public class DashboardThread implements Runnable {
@@ -20,21 +24,24 @@ public class DashboardThread implements Runnable {
     private static LiquidacionService liqServ;
     private static PagoService pagServ;
     private static PrestamoService prestServ;
+    private static AgenciaService agenciaService;
 
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
     //------------------------------------------------------------------------------------------------------------------
     @Autowired
     private DashboardThread(
-            AsignacionService asignServ_S,
-            LiquidacionService liqServ_S,
-            PagoService pagServ_S,
-            PrestamoService prestServ_S
+            AsignacionService asignServ,
+            LiquidacionService liqServ,
+            PagoService pagServ,
+            PrestamoService prestServ,
+            AgenciaService agenciaService
     ) {
-        DashboardThread.asignServ = asignServ_S;
-        DashboardThread.liqServ = liqServ_S;
-        DashboardThread.pagServ = pagServ_S;
-        DashboardThread.prestServ = prestServ_S;
+        DashboardThread.asignServ = asignServ;
+        DashboardThread.liqServ = liqServ;
+        DashboardThread.pagServ = pagServ;
+        DashboardThread.prestServ = prestServ;
+        DashboardThread.agenciaService = agenciaService;
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -203,11 +210,13 @@ public class DashboardThread implements Runnable {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setGerencia() {
+        Optional<AgenciaEntity> agenciaEntity = DashboardThread.agenciaService.findById(this
+                .objectsContainer.getDashboard().getAgencia());
+
         if (
-                this.objectsContainer.getDashboard().getGerencia() == null
+                this.objectsContainer.getDashboard().getGerencia() == null && agenciaEntity.isPresent()
         ) {
-            this.objectsContainer.getDashboard().setGerencia(this.objectsContainer.getPrestamosToCobranza().get(0)
-                    .getGerencia());
+            this.objectsContainer.getDashboard().setGerencia(agenciaEntity.get().getGerenciaId());
         }
     }
 

@@ -17,7 +17,6 @@ public final class EgresosGerenteMapper implements IMapper<EgresosGerenteEntity,
             egresosGerenteDTO.setBonos(out.getBonos());
             egresosGerenteDTO.setEfectivoRestanteCierre(out.getEfectivoRestanteCierre());
         }
-
         return egresosGerenteDTO;
     }
 
@@ -32,7 +31,6 @@ public final class EgresosGerenteMapper implements IMapper<EgresosGerenteEntity,
             egresosGerenteEntity.setBonos(in.getBonos());
             egresosGerenteEntity.setEfectivoRestanteCierre(in.getEfectivoRestanteCierre());
         }
-
         return egresosGerenteEntity;
     }
 }

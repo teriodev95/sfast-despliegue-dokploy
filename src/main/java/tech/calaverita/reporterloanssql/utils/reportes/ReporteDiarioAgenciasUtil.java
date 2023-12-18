@@ -198,11 +198,11 @@ public final class ReporteDiarioAgenciasUtil {
 
         for (AgenciaEntity agenciaEntity : agenciaEntities.get()) {
             CompletableFuture<Optional<UsuarioEntity>> usuarioEntityAgente = ReporteDiarioAgenciasUtil
-                    .usuarioService.findByUsuarioAsync(agenciaEntity.getAgenciaId());
+                    .usuarioService.findByUsuarioAsync(agenciaEntity.getId());
 
             AgenciaReporteDiarioAgenciasDTO agencia = new AgenciaReporteDiarioAgenciasDTO();
             {
-                agencia.setAgencia(agenciaEntity.getAgenciaId());
+                agencia.setAgencia(agenciaEntity.getId());
 
                 String nombreCompletoAgente;
                 {

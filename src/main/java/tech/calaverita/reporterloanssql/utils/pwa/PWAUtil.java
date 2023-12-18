@@ -13,6 +13,7 @@ import tech.calaverita.reporterloanssql.pojos.pwa.PagoPWA;
 import tech.calaverita.reporterloanssql.pojos.pwa.PrestamoCobranzaPWA;
 import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.UsuarioService;
+import tech.calaverita.reporterloanssql.services.cierre_semanal.CierreSemanalService;
 import tech.calaverita.reporterloanssql.services.view.PrestamoService;
 import tech.calaverita.reporterloanssql.threads.pwa.CobranzaPWAThread;
 import tech.calaverita.reporterloanssql.threads.pwa.PagoHistoricoPWAThread;
@@ -33,18 +34,21 @@ public final class PWAUtil {
     private static PagoService pagServ;
     private static PrestamoService prestServ;
     private static UsuarioService usuarServ;
+    private static CierreSemanalService cierreSemanalService;
 
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
     //------------------------------------------------------------------------------------------------------------------
     private PWAUtil(
-            PagoService pagServ_S,
-            PrestamoService prestServ_S,
-            UsuarioService usuarServ_S
+            PagoService pagServ,
+            PrestamoService prestServ,
+            UsuarioService usuarServ,
+            CierreSemanalService cierreSemanalService
     ) {
-        PWAUtil.pagServ = pagServ_S;
-        PWAUtil.prestServ = prestServ_S;
-        PWAUtil.usuarServ = usuarServ_S;
+        PWAUtil.pagServ = pagServ;
+        PWAUtil.prestServ = prestServ;
+        PWAUtil.usuarServ = usuarServ;
+        PWAUtil.cierreSemanalService = cierreSemanalService;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -241,6 +245,11 @@ public final class PWAUtil {
             cierreSemanalDTO_O.setEgresosGerente(egresosGerenteDTO);
             cierreSemanalDTO_O.setIngresosAgente(ingresosAgenteDTO);
             cierreSemanalDTO_O.setPinAgente(agenteUsuarioEntity.getPin());
+
+            // To easy code
+            String id = dashboard.getGerencia() + '-' + dashboard.getAgencia() + '-' + dashboard.getAnio() + '-' + dashboard.getSemana();
+
+            cierreSemanalDTO_O.setIsAgenciaCerrada(PWAUtil.cierreSemanalService.existsById(id));
         }
 
         return cierreSemanalDTO_O;

@@ -6,11 +6,13 @@ import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import tech.calaverita.reporterloanssql.persistence.dto.LiquidacionDTO;
 import tech.calaverita.reporterloanssql.persistence.entities.AgenciaEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.GerenciaEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.LiquidacionEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.PagoEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoEntity;
+import tech.calaverita.reporterloanssql.persistence.mappers.PagoMapper;
 import tech.calaverita.reporterloanssql.pojos.ModelValidation;
 import tech.calaverita.reporterloanssql.pojos.PagoConLiquidacion;
 import tech.calaverita.reporterloanssql.retrofit.RetrofitOdoo;
@@ -22,10 +24,12 @@ import tech.calaverita.reporterloanssql.services.AgenciaService;
 import tech.calaverita.reporterloanssql.services.GerenciaService;
 import tech.calaverita.reporterloanssql.services.LiquidacionService;
 import tech.calaverita.reporterloanssql.services.PagoService;
-import tech.calaverita.reporterloanssql.services.view.PrestamoService;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public final class PagoUtil {
@@ -36,7 +40,6 @@ public final class PagoUtil {
     private static GerenciaService gerServ;
     private static LiquidacionService liqServ;
     private static PagoService pagServ;
-    private static PrestamoService prestServ;
 
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
@@ -45,14 +48,12 @@ public final class PagoUtil {
             AgenciaService agencServ_S,
             GerenciaService gerServ_S,
             LiquidacionService liqServ_S,
-            PagoService pagServ_S,
-            PrestamoService prestServ_S
+            PagoService pagServ_S
     ) {
         PagoUtil.agencServ = agencServ_S;
         PagoUtil.gerServ = gerServ_S;
         PagoUtil.liqServ = liqServ_S;
         PagoUtil.pagServ = pagServ_S;
-        PagoUtil.prestServ = prestServ_S;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -326,5 +327,22 @@ public final class PagoUtil {
         return (
                 pagoEntity != null
         );
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public static PagoEntity funFillPayFromPayOff(LiquidacionDTO liquidacion) {
+        PagoEntity entity = new PagoMapper().mapIn(liquidacion);
+        {
+            entity.setPagoId(UUID.randomUUID().toString());
+            entity.setSemana(null);
+            entity.setAnio(null);
+            entity.setEsPrimerPago(false);
+            entity.setTarifa(null);
+            entity.setAgente(null);
+            entity.setTipo("Liquidacion");
+            entity.setCreadoDesde("PGS");
+            entity.setFechaPago(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        }
+        return entity;
     }
 }

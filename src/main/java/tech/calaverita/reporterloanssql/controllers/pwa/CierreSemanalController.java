@@ -91,7 +91,6 @@ public final class CierreSemanalController {
     ) {
         String strResponse_O;
         HttpStatus httpStatus_O;
-
         CierreSemanalEntity cierreSemanalEntity = this.cierSemServ.mapper.mapIn(cierreSemanalDTO_I);
 
         if (

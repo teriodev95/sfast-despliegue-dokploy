@@ -21,7 +21,6 @@ public final class BalanceAgenciaMapper implements IMapper<BalanceAgenciaEntity,
             balanceAgenciaDTO.setNoPagos(out.getNoPagos());
             balanceAgenciaDTO.setLiquidaciones(out.getLiquidaciones());
         }
-
         return balanceAgenciaDTO;
     }
 
@@ -40,7 +39,6 @@ public final class BalanceAgenciaMapper implements IMapper<BalanceAgenciaEntity,
             balanceAgenciaEntity.setNoPagos(in.getNoPagos());
             balanceAgenciaEntity.setLiquidaciones(in.getLiquidaciones());
         }
-
         return balanceAgenciaEntity;
     }
 }

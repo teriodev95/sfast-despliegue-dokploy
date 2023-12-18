@@ -3,11 +3,10 @@ package tech.calaverita.reporterloanssql.services;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import tech.calaverita.reporterloanssql.persistence.entities.AgenciaEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.GerenciaEntity;
 import tech.calaverita.reporterloanssql.persistence.repositories.AgenciaRepository;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -50,5 +49,11 @@ public class AgenciaService {
         ArrayList<AgenciaEntity> entities = this.repo.findByGerenciaId(gerenciaId);
 
         return CompletableFuture.completedFuture(entities);
+    }
+
+    public Optional<AgenciaEntity> findById(
+            String id
+    ) {
+        return this.repo.findById(id);
     }
 }

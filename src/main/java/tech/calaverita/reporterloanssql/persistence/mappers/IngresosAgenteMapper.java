@@ -17,7 +17,6 @@ public final class IngresosAgenteMapper implements IMapper<IngresosAgenteEntity,
             ingresosAgenteDTO.setOtros(out.getOtros());
             ingresosAgenteDTO.setTotal(out.getTotal());
         }
-
         return ingresosAgenteDTO;
     }
 
@@ -32,7 +31,6 @@ public final class IngresosAgenteMapper implements IMapper<IngresosAgenteEntity,
             ingresosAgenteEntity.setOtros(in.getOtros());
             ingresosAgenteEntity.setTotal(in.getTotal());
         }
-
         return ingresosAgenteEntity;
     }
 }
