@@ -1,19 +1,20 @@
 package tech.calaverita.reporterloanssql.services.cierre_semanal;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.entities.cierre_semanal.EgresosAgenteEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.cierre_semanal.EgresosGerenteEntity;
-import tech.calaverita.reporterloanssql.persistence.mappers.EgresosAgenteMapper;
 import tech.calaverita.reporterloanssql.persistence.mappers.EgresosGerenteMapper;
-import tech.calaverita.reporterloanssql.persistence.repositories.cierre_semanal.EgresosAgenteRepository;
 import tech.calaverita.reporterloanssql.persistence.repositories.cierre_semanal.EgresosGerenteRepository;
 
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+
 @Service
-public final class EgresosGerenteService {
+public class EgresosGerenteService {
     private final EgresosGerenteRepository repo;
     public final EgresosGerenteMapper mapper;
 
-    private EgresosGerenteService(
+    public EgresosGerenteService(
             EgresosGerenteRepository repo_S,
             EgresosGerenteMapper mapper_S
     ) {
@@ -25,5 +26,14 @@ public final class EgresosGerenteService {
             EgresosGerenteEntity egrGerEnt_I
     ) {
         this.repo.save(egrGerEnt_I);
+    }
+
+    @Async("asyncExecutor")
+
+    public CompletableFuture<Optional<EgresosGerenteEntity>> findById(
+            String id
+    ) {
+        Optional<EgresosGerenteEntity> entity = this.repo.findById(id);
+        return CompletableFuture.completedFuture(entity);
     }
 }

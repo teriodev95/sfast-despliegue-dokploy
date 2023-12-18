@@ -36,7 +36,7 @@ public final class CierreSemanalController {
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
     //------------------------------------------------------------------------------------------------------------------
-    CierreSemanalController(
+    private CierreSemanalController(
             AsignacionService asignServ_S,
             UsuarioService usuarServ_S,
             XpressController xprContr_S,
@@ -96,9 +96,6 @@ public final class CierreSemanalController {
         if (
                 this.cierSemServ.findById(cierreSemanalEntity.getId()).isEmpty()
         ) {
-            BalanceAgenciaEntity balanceAgenciaEntity = this.balAgencServ.mapper.mapIn(cierreSemanalDTO_I.getBalanceAgencia());
-            balanceAgenciaEntity.setId(cierreSemanalEntity.getBalanceAgenciaId());
-            this.balAgencServ.save(balanceAgenciaEntity);
 
             EgresosAgenteEntity egresosAgenteEntity = this.egrAgentServ.mapper.mapIn(cierreSemanalDTO_I.getEgresosAgente());
             egresosAgenteEntity.setId(cierreSemanalEntity.getEgresosAgenteId());

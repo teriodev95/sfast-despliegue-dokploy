@@ -8,16 +8,16 @@ import tech.calaverita.reporterloanssql.persistence.repositories.cierre_semanal.
 import java.util.Optional;
 
 @Service
-public final class CierreSemanalService {
+public class CierreSemanalService {
     private final CierreSemanalRepository repo;
     public final CierreSemanalMapper mapper;
 
-    private CierreSemanalService(
-            CierreSemanalRepository repo_S,
-            CierreSemanalMapper mapper_S
+    public CierreSemanalService(
+            CierreSemanalRepository repo,
+            CierreSemanalMapper mapper
     ) {
-        this.repo = repo_S;
-        this.mapper = mapper_S;
+        this.repo = repo;
+        this.mapper = mapper;
     }
 
     public void save(
@@ -27,14 +27,8 @@ public final class CierreSemanalService {
     }
 
     public Optional<CierreSemanalEntity> findById(
-            String id_I
-    ) {
-        return this.repo.findById(id_I);
-    }
-
-    public Boolean existsById(
             String id
     ) {
-        return this.repo.existsById(id);
+        return this.repo.findById(id);
     }
 }
