@@ -9,6 +9,7 @@ import lombok.Data;
 public class EgresosAgenteDTO {
     private Double asignaciones;
     private Double otros;
+    private String motivoOtros;
     private Double efectivoEntregadoCierre;
     private Double total;
 }

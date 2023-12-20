@@ -13,6 +13,7 @@ public class EgresosAgenteEntity {
     private String id;
     private Double asignaciones;
     private Double otros;
+    private String motivoOtros;
     private Double efectivoEntregadoCierre;
     private Double total;
 }

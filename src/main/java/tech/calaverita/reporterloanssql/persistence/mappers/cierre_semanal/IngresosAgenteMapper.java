@@ -9,29 +9,30 @@ import tech.calaverita.reporterloanssql.persistence.mappers.IMapper;
 public final class IngresosAgenteMapper implements IMapper<IngresosAgenteEntity, IngresosAgenteDTO> {
     @Override
     public IngresosAgenteDTO mapOut(IngresosAgenteEntity out) {
-        IngresosAgenteDTO ingresosAgenteDTO = new IngresosAgenteDTO();
+        IngresosAgenteDTO DTO = new IngresosAgenteDTO();
         {
-            ingresosAgenteDTO.setCobranzaPura(out.getCobranzaPura());
-            ingresosAgenteDTO.setMontoExcedente(out.getMontoExcedente());
-            ingresosAgenteDTO.setLiquidaciones(out.getLiquidaciones());
-            ingresosAgenteDTO.setMultas(out.getMultas());
-            ingresosAgenteDTO.setOtros(out.getOtros());
-            ingresosAgenteDTO.setTotal(out.getTotal());
+            DTO.setCobranzaPura(out.getCobranzaPura());
+            DTO.setMontoExcedente(out.getMontoExcedente());
+            DTO.setLiquidaciones(out.getLiquidaciones());
+            DTO.setMultas(out.getMultas());
+            DTO.setOtros(out.getOtros());
+            DTO.setTotal(out.getTotal());
         }
-        return ingresosAgenteDTO;
+        return DTO;
     }
 
     @Override
     public IngresosAgenteEntity mapIn(IngresosAgenteDTO in) {
-        IngresosAgenteEntity ingresosAgenteEntity = new IngresosAgenteEntity();
+        IngresosAgenteEntity entity = new IngresosAgenteEntity();
         {
-            ingresosAgenteEntity.setCobranzaPura(in.getCobranzaPura());
-            ingresosAgenteEntity.setMontoExcedente(in.getMontoExcedente());
-            ingresosAgenteEntity.setLiquidaciones(in.getLiquidaciones());
-            ingresosAgenteEntity.setMultas(in.getMultas());
-            ingresosAgenteEntity.setOtros(in.getOtros());
-            ingresosAgenteEntity.setTotal(in.getTotal());
+            entity.setCobranzaPura(in.getCobranzaPura());
+            entity.setMontoExcedente(in.getMontoExcedente());
+            entity.setLiquidaciones(in.getLiquidaciones());
+            entity.setMultas(in.getMultas());
+            entity.setOtros(in.getOtros());
+            entity.setTotal(in.getTotal());
+            entity.setMotivoOtros(in.getMotivoOtros());
         }
-        return ingresosAgenteEntity;
+        return entity;
     }
 }

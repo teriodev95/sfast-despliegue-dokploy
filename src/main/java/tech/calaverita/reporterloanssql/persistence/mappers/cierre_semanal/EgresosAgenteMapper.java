@@ -9,25 +9,26 @@ import tech.calaverita.reporterloanssql.persistence.mappers.IMapper;
 public final class EgresosAgenteMapper implements IMapper<EgresosAgenteEntity, EgresosAgenteDTO> {
     @Override
     public EgresosAgenteDTO mapOut(EgresosAgenteEntity out) {
-        EgresosAgenteDTO egresosAgenteDTO = new EgresosAgenteDTO();
+        EgresosAgenteDTO DTO = new EgresosAgenteDTO();
         {
-            egresosAgenteDTO.setAsignaciones(out.getAsignaciones());
-            egresosAgenteDTO.setOtros(out.getOtros());
-            egresosAgenteDTO.setEfectivoEntregadoCierre(out.getEfectivoEntregadoCierre());
-            egresosAgenteDTO.setTotal(out.getTotal());
+            DTO.setAsignaciones(out.getAsignaciones());
+            DTO.setOtros(out.getOtros());
+            DTO.setEfectivoEntregadoCierre(out.getEfectivoEntregadoCierre());
+            DTO.setTotal(out.getTotal());
         }
-        return egresosAgenteDTO;
+        return DTO;
     }
 
     @Override
     public EgresosAgenteEntity mapIn(EgresosAgenteDTO in) {
-        EgresosAgenteEntity egresosAgenteEntity = new EgresosAgenteEntity();
+        EgresosAgenteEntity entity = new EgresosAgenteEntity();
         {
-            egresosAgenteEntity.setAsignaciones(egresosAgenteEntity.getAsignaciones());
-            egresosAgenteEntity.setOtros(egresosAgenteEntity.getOtros());
-            egresosAgenteEntity.setEfectivoEntregadoCierre(egresosAgenteEntity.getEfectivoEntregadoCierre());
-            egresosAgenteEntity.setTotal(egresosAgenteEntity.getTotal());
+            entity.setAsignaciones(in.getAsignaciones());
+            entity.setOtros(in.getOtros());
+            entity.setEfectivoEntregadoCierre(in.getEfectivoEntregadoCierre());
+            entity.setTotal(in.getTotal());
+            entity.setMotivoOtros(in.getMotivoOtros());
         }
-        return egresosAgenteEntity;
+        return entity;
     }
 }

@@ -16,5 +16,7 @@ public class IngresosAgenteEntity {
     private Double liquidaciones;
     private Double multas;
     private Double otros;
+    private String motivoOtros;
+
     private Double total;
 }
