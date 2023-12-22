@@ -215,6 +215,7 @@ public class ReporteGeneralGerenciaUtil {
         ReporteGeneralGerenciaUtil.funSemanaAnterior(calendarioEntity);
         anio = calendarioEntity.getAnio();
         semana = calendarioEntity.getSemana();
+
         if (
                 diaSemana.equals("jueves")
         ) {
@@ -224,7 +225,11 @@ public class ReporteGeneralGerenciaUtil {
             debitoTotal = ReporteGeneralGerenciaUtil.pagoService
                     .getDebitoTotalSemanaByGerenciaAnioSemanaAndFechaAsync(gerencia, sucursal, anio, semana);
         }
-        ReporteGeneralGerenciaUtil.funSemanaSiguiente(calendarioEntity);
+
+        boolean existsSemana53 = ReporteGeneralGerenciaUtil.calendarioService
+                .existsByAnioAndSemana(anio, 53);
+        ReporteGeneralGerenciaUtil.funSemanaSiguiente(calendarioEntity, existsSemana53);
+
         anio = calendarioEntity.getAnio();
         semana = calendarioEntity.getSemana();
 
@@ -254,7 +259,9 @@ public class ReporteGeneralGerenciaUtil {
             String gerencia = String.format("Ger%s", encabezado.getZona().substring(4));
             String sucursal = encabezado.getSucursal().split(" ")[0];
 
-            ReporteGeneralGerenciaUtil.funSemanaSiguiente(calendarioEntity);
+            boolean existsSemana53 = ReporteGeneralGerenciaUtil.calendarioService
+                    .existsByAnioAndSemana(anio, 53);
+            ReporteGeneralGerenciaUtil.funSemanaSiguiente(calendarioEntity, existsSemana53);
 
             CompletableFuture<Double> debitoTotal = ReporteGeneralGerenciaUtil.pagoService
                     .getDebitoTotalSemanaByGerenciaAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
@@ -384,14 +391,12 @@ public class ReporteGeneralGerenciaUtil {
     }
 
     private static void funSemanaSiguiente(
-            CalendarioEntity calendarioEntity
+            CalendarioEntity calendarioEntity,
+            boolean existsSemana53
     ) {
         // To easy code
         int anio = calendarioEntity.getAnio();
         int semana = calendarioEntity.getSemana();
-
-        boolean existsSemana53 = ReporteGeneralGerenciaUtil.calendarioService
-                .existsByAnioAndSemana(anio, 53);
 
         if (
                 semana == 52 && existsSemana53
@@ -399,7 +404,7 @@ public class ReporteGeneralGerenciaUtil {
             semana = 53;
         } //
         else if (
-                semana == 53
+                semana == 52 || semana == 53
         ) {
             anio = anio + 1;
             semana = 1;

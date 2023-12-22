@@ -7,12 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import tech.calaverita.reporterloanssql.persistence.dto.LiquidacionDTO;
-import tech.calaverita.reporterloanssql.persistence.entities.AgenciaEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.GerenciaEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.LiquidacionEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.PagoEntity;
+import tech.calaverita.reporterloanssql.persistence.entities.*;
 import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoEntity;
-import tech.calaverita.reporterloanssql.persistence.mappers.PagoMapper;
 import tech.calaverita.reporterloanssql.pojos.ModelValidation;
 import tech.calaverita.reporterloanssql.pojos.PagoConLiquidacion;
 import tech.calaverita.reporterloanssql.retrofit.RetrofitOdoo;
@@ -20,10 +16,8 @@ import tech.calaverita.reporterloanssql.retrofit.pojos.LiquidacionBody;
 import tech.calaverita.reporterloanssql.retrofit.pojos.PagoBody;
 import tech.calaverita.reporterloanssql.retrofit.pojos.PagoList;
 import tech.calaverita.reporterloanssql.retrofit.pojos.ResponseBodyXms;
-import tech.calaverita.reporterloanssql.services.AgenciaService;
-import tech.calaverita.reporterloanssql.services.GerenciaService;
-import tech.calaverita.reporterloanssql.services.LiquidacionService;
-import tech.calaverita.reporterloanssql.services.PagoService;
+import tech.calaverita.reporterloanssql.services.*;
+import tech.calaverita.reporterloanssql.services.view.PrestamoService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -40,6 +34,8 @@ public final class PagoUtil {
     private static GerenciaService gerServ;
     private static LiquidacionService liqServ;
     private static PagoService pagServ;
+    private static CalendarioService calendarioService;
+    private static PrestamoService prestamoService;
 
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
@@ -48,12 +44,16 @@ public final class PagoUtil {
             AgenciaService agencServ_S,
             GerenciaService gerServ_S,
             LiquidacionService liqServ_S,
-            PagoService pagServ_S
+            PagoService pagServ_S,
+            CalendarioService calendarioService,
+            PrestamoService prestamoService
     ) {
         PagoUtil.agencServ = agencServ_S;
         PagoUtil.gerServ = gerServ_S;
         PagoUtil.liqServ = liqServ_S;
         PagoUtil.pagServ = pagServ_S;
+        PagoUtil.calendarioService = calendarioService;
+        PagoUtil.prestamoService = prestamoService;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -330,18 +330,31 @@ public final class PagoUtil {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public static PagoEntity funFillPayFromPayOff(LiquidacionDTO liquidacion) {
-        PagoEntity entity = new PagoMapper().mapIn(liquidacion);
+    public static PagoEntity getPagoEntity(
+            LiquidacionDTO liquidacionDTO
+    ) {
+        PagoEntity entity = PagoUtil.pagServ.getPagoEntity(liquidacionDTO);
         {
+            String fechaActual = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            CalendarioEntity calendarioEntity = PagoUtil.calendarioService.findByFechaActual(fechaActual);
+            Optional<PrestamoEntity> prestamoEntity = PagoUtil.prestamoService.findById(liquidacionDTO.getPrestamoId());
+
             entity.setPagoId(UUID.randomUUID().toString());
-            entity.setSemana(null);
-            entity.setAnio(null);
+            entity.setSemana(calendarioEntity.getSemana());
+            entity.setAnio(calendarioEntity.getAnio());
             entity.setEsPrimerPago(false);
-            entity.setTarifa(null);
-            entity.setAgente(null);
+
+            if (
+                    prestamoEntity.isPresent()
+            ) {
+                entity.setTarifa(prestamoEntity.get().getTarifa());
+                entity.setAgente(prestamoEntity.get().getAgente());
+            }
+
             entity.setTipo("Liquidacion");
             entity.setCreadoDesde("PGS");
-            entity.setFechaPago(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            entity.setCierraCon(0.0);
+            entity.setFechaPago(fechaActual);
         }
         return entity;
     }

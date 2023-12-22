@@ -1,17 +1,24 @@
 package tech.calaverita.reporterloanssql.persistence.mappers;
 
+import org.springframework.stereotype.Component;
 import tech.calaverita.reporterloanssql.persistence.dto.LiquidacionDTO;
 import tech.calaverita.reporterloanssql.persistence.entities.LiquidacionEntity;
+import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoEntity;
 
+@Component
 public class LiquidacionMapper implements IMapper<LiquidacionEntity, LiquidacionDTO> {
 
     @Override
-    public LiquidacionDTO mapOut(LiquidacionEntity out) {
+    public LiquidacionDTO mapOut(
+            LiquidacionEntity out
+    ) {
         return null;
     }
 
     @Override
-    public LiquidacionEntity mapIn(LiquidacionDTO in) {
+    public LiquidacionEntity mapIn(
+            LiquidacionDTO in
+    ) {
         LiquidacionEntity entity = new LiquidacionEntity();
         {
             entity.setPrestamoId(in.getPrestamoId());
@@ -21,5 +28,28 @@ public class LiquidacionMapper implements IMapper<LiquidacionEntity, Liquidacion
             entity.setSemTranscurridas(in.getSemanasTranscurridas());
         }
         return entity;
+    }
+
+    public LiquidacionDTO mapOut(
+            PrestamoEntity entity
+    ){
+        LiquidacionDTO DTO = new LiquidacionDTO();
+        {
+            // To easy code
+            String cliente = entity.getNombres() + " " + entity.getApellidoPaterno() + " "
+                    + entity.getApellidoMaterno();
+            String semanaEntrega = "#" + entity.getSemana() + "-" + entity.getAnio();
+
+            DTO.setCliente(cliente);
+            DTO.setIdentificador(entity.getIdentificadorCredito());
+            DTO.setSemEntrega(semanaEntrega);
+            DTO.setEntregado(entity.getMontoOtorgado());
+            DTO.setCargo(entity.getCargo());
+            DTO.setMontoTotal(entity.getTotalAPagar());
+            DTO.setCobrado(entity.getCobrado());
+            DTO.setSaldo(entity.getSaldo());
+            DTO.setPrestamoId(entity.getPrestamoId());
+        }
+        return DTO;
     }
 }

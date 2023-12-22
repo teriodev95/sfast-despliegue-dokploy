@@ -6,6 +6,7 @@ import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoUtilEn
 import tech.calaverita.reporterloanssql.persistence.repositories.view.PrestRepoPrestamoRepository;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 public final class PrestamoService {
@@ -64,5 +65,12 @@ public final class PrestamoService {
             String strPrestamoId_I
     ) {
         return this.prestRepo.prestEntFindByPrestamoId(strPrestamoId_I);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public Optional<PrestamoEntity> findById(
+            String strPrestamoId_I
+    ) {
+        return this.prestRepo.findById(strPrestamoId_I);
     }
 }

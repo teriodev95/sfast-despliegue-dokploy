@@ -2,9 +2,11 @@ package tech.calaverita.reporterloanssql.services;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import tech.calaverita.reporterloanssql.persistence.dto.LiquidacionDTO;
 import tech.calaverita.reporterloanssql.persistence.entities.PagoEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.view.PagoAgrupadoEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.view.PagoUtilEntity;
+import tech.calaverita.reporterloanssql.persistence.mappers.PagoMapper;
 import tech.calaverita.reporterloanssql.persistence.repositories.PagoRepository;
 
 import java.util.ArrayList;
@@ -17,23 +19,26 @@ public class PagoService {
     /*INSTANCE VARIABLES*/
     //------------------------------------------------------------------------------------------------------------------
     private final PagoRepository repo;
+    private final PagoMapper mapper;
 
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
     //------------------------------------------------------------------------------------------------------------------
     public PagoService(
-            PagoRepository repo
+            PagoRepository repo,
+            PagoMapper mapper
     ) {
         this.repo = repo;
+        this.mapper = mapper;
     }
 
     //------------------------------------------------------------------------------------------------------------------
     /*METHODS*/
     //------------------------------------------------------------------------------------------------------------------
-    public void save(
+    public PagoEntity save(
             PagoEntity pagMod_I
     ) {
-        this.repo.save(pagMod_I);
+        return this.repo.save(pagMod_I);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -410,5 +415,12 @@ public class PagoService {
                 fecha);
 
         return CompletableFuture.completedFuture(clientes);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public PagoEntity getPagoEntity(
+            LiquidacionDTO liquidacionDTO
+    ) {
+        return this.mapper.mapIn(liquidacionDTO);
     }
 }

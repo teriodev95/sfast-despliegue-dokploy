@@ -398,7 +398,7 @@ public class ReporteGeneralGerenciaMigracionUtil {
             semana = 53;
         } //
         else if (
-                semana == 53
+                semana == 52 || semana == 53
         ) {
             anio = anio + 1;
             semana = 1;

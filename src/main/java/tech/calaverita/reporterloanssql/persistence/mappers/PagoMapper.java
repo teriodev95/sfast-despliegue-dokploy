@@ -1,10 +1,16 @@
 package tech.calaverita.reporterloanssql.persistence.mappers;
 
+import org.springframework.stereotype.Component;
 import tech.calaverita.reporterloanssql.persistence.dto.LiquidacionDTO;
 import tech.calaverita.reporterloanssql.persistence.entities.PagoEntity;
 
+import java.util.UUID;
+
+@Component
 public class PagoMapper {
-    public PagoEntity mapIn(LiquidacionDTO in) {
+    public PagoEntity mapIn(
+            LiquidacionDTO in
+    ) {
         PagoEntity entity = new PagoEntity();
         {
             entity.setPrestamoId(in.getPrestamoId());
