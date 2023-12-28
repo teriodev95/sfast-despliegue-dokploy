@@ -2,9 +2,11 @@ package tech.calaverita.reporterloanssql.threads;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import tech.calaverita.reporterloanssql.persistence.entities.CalendarioEntity;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.view.PrestamoService;
+import tech.calaverita.reporterloanssql.utils.CobranzaUtil;
 
 @Component
 public class CobranzaThread implements Runnable {
@@ -90,7 +92,8 @@ public class CobranzaThread implements Runnable {
             throw new RuntimeException(e);
         }
 
-        this.objectsContainer.getCobranza().setGerencia(this.objectsContainer.getPrestamosToCobranza().get(0).getGerencia());
+        this.objectsContainer.getCobranza().setGerencia(this.objectsContainer.getPrestamosToCobranza().get(0)
+                .getGerencia());
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -106,17 +109,37 @@ public class CobranzaThread implements Runnable {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getPrestamos() {
+        // To easy code
+        String agencia = this.objectsContainer.getCobranza().getAgencia();
+        int anio = this.objectsContainer.getCobranza().getAnio();
+        int semana = this.objectsContainer.getCobranza().getSemana();
+
+        CalendarioEntity calendarioEntity = new CalendarioEntity();
+        calendarioEntity.setAnio(anio);
+        calendarioEntity.setSemana(semana);
+        CobranzaUtil.funSemanaAnterior(calendarioEntity);
+
         this.objectsContainer.setPrestamosToCobranza(CobranzaThread.prestServ
-                .darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(this.objectsContainer.getCobranza().getAgencia(),
-                        this.objectsContainer.getCobranza().getAnio(), objectsContainer.getCobranza().getSemana()));
+                .darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(agencia, calendarioEntity.getAnio(),
+                        calendarioEntity.getSemana()));
         this.objectsContainer.getCobranza().setPrestamos(this.objectsContainer.getPrestamosToCobranza());
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getPagos() {
+        // To easy code
+        String agencia = this.objectsContainer.getCobranza().getAgencia();
+        int anio = this.objectsContainer.getCobranza().getAnio();
+        int semana = this.objectsContainer.getCobranza().getSemana();
+
+        CalendarioEntity calendarioEntity = new CalendarioEntity();
+        calendarioEntity.setAnio(anio);
+        calendarioEntity.setSemana(semana);
+        CobranzaUtil.funSemanaAnterior(calendarioEntity);
+
         objectsContainer.setPagosVistaToCobranza(CobranzaThread.pagServ
-                .darrpagUtilModFindByAgenciaAnioAndSemanaToCobranza(this.objectsContainer.getCobranza().getAgencia(),
-                        this.objectsContainer.getCobranza().getAnio(), this.objectsContainer.getCobranza().getSemana()));
+                .darrpagUtilModFindByAgenciaAnioAndSemanaToCobranza(agencia, calendarioEntity.getAnio(),
+                        calendarioEntity.getSemana()));
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -136,7 +159,7 @@ public class CobranzaThread implements Runnable {
             ) {
                 if (
                         this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
-                        .getPrestamosToCobranza().get(i).getTarifa()
+                                .getPrestamosToCobranza().get(i).getTarifa()
                 )
                     debitoMiercoles += this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
                 else
@@ -164,7 +187,7 @@ public class CobranzaThread implements Runnable {
             ) {
                 if (
                         this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
-                        .getPrestamosToCobranza().get(i).getTarifa()
+                                .getPrestamosToCobranza().get(i).getTarifa()
                 )
                     debitoJueves += this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
                 else
@@ -192,7 +215,7 @@ public class CobranzaThread implements Runnable {
             ) {
                 if (
                         this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
-                        .getPrestamosToCobranza().get(i).getTarifa()
+                                .getPrestamosToCobranza().get(i).getTarifa()
                 )
                     debitoViernes += this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
                 else
@@ -217,7 +240,7 @@ public class CobranzaThread implements Runnable {
         for (int i = 0; i < this.objectsContainer.getPrestamosToCobranza().size(); i++) {
             if (
                     this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
-                    .getPrestamosToCobranza().get(i).getTarifa()
+                            .getPrestamosToCobranza().get(i).getTarifa()
             )
                 debitoTotal += this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
             else

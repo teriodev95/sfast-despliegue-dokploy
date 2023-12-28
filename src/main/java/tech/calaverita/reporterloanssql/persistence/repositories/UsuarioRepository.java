@@ -7,7 +7,6 @@ import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
 
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 @Repository
 public interface UsuarioRepository extends CrudRepository<UsuarioEntity, Integer> {
@@ -71,4 +70,10 @@ public interface UsuarioRepository extends CrudRepository<UsuarioEntity, Integer
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     Optional<UsuarioEntity> findByUsuario(String usuario);
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    boolean existsByUsuarioAndTipo(String usuario, String tipo);
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    boolean existsByUsuarioAndTipoAndStatus(String usuario, String tipo, boolean status);
 }

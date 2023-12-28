@@ -33,6 +33,14 @@ public class CierreSemanalService {
         return this.repo.findById(id);
     }
 
+    public Optional<CierreSemanalEntity> findByAgenciaAnioAndSemana(
+            String agencia,
+            int anio,
+            int semana
+    ) {
+        return this.repo.findByAgenciaAnioAndSemana(agencia + "-" + anio + "-" + semana);
+    }
+
     public CierreSemanalDTO getCierreSemanalDTO(
             CierreSemanalEntity entity
     ) {

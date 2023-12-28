@@ -1,6 +1,5 @@
 package tech.calaverita.reporterloanssql.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
@@ -60,6 +59,20 @@ public class UsuarioService {
             String usuario
     ) {
         return this.repo.findByUsuario(usuario);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public Boolean existsByUsuarioGerente(
+            String usuario
+    ) {
+        return this.repo.existsByUsuarioAndTipo(usuario, "Gerente");
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public Boolean existsByUsuarioGerenteActivo(
+            String usuario
+    ) {
+        return this.repo.existsByUsuarioAndTipoAndStatus(usuario, "Gerente", true);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

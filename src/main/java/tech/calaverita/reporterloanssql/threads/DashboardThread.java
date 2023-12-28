@@ -3,12 +3,14 @@ package tech.calaverita.reporterloanssql.threads;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import tech.calaverita.reporterloanssql.persistence.entities.AgenciaEntity;
+import tech.calaverita.reporterloanssql.persistence.entities.CalendarioEntity;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.services.AgenciaService;
 import tech.calaverita.reporterloanssql.services.AsignacionService;
 import tech.calaverita.reporterloanssql.services.LiquidacionService;
 import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.view.PrestamoService;
+import tech.calaverita.reporterloanssql.utils.CobranzaUtil;
 
 import java.util.Optional;
 
@@ -82,10 +84,19 @@ public class DashboardThread implements Runnable {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setPrestamosToCobranza() {
+        // To easy code
+        String agencia = this.objectsContainer.getCobranza().getAgencia();
+        int anio = this.objectsContainer.getCobranza().getAnio();
+        int semana = this.objectsContainer.getCobranza().getSemana();
+
+        CalendarioEntity calendarioEntity = new CalendarioEntity();
+        calendarioEntity.setAnio(anio);
+        calendarioEntity.setSemana(semana);
+        CobranzaUtil.funSemanaAnterior(calendarioEntity);
+
         this.objectsContainer.setPrestamosToCobranza(DashboardThread.prestServ
-                .darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(this.objectsContainer.getDashboard().getAgencia(),
-                        this.objectsContainer.getDashboard().getAnio(), this.objectsContainer.getDashboard()
-                                .getSemana()));
+                .darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(agencia, calendarioEntity.getAnio(),
+                        calendarioEntity.getSemana()));
 
         setGerencia();
         setClientes();
@@ -101,10 +112,19 @@ public class DashboardThread implements Runnable {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setPagosToCobranza() {
+        // To easy code
+        String agencia = this.objectsContainer.getCobranza().getAgencia();
+        int anio = this.objectsContainer.getCobranza().getAnio();
+        int semana = this.objectsContainer.getCobranza().getSemana();
+
+        CalendarioEntity calendarioEntity = new CalendarioEntity();
+        calendarioEntity.setAnio(anio);
+        calendarioEntity.setSemana(semana);
+        CobranzaUtil.funSemanaAnterior(calendarioEntity);
+
         this.objectsContainer.setPagosVistaToCobranza(DashboardThread.pagServ
-                .darrpagUtilModFindByAgenciaAnioAndSemanaToCobranza(this.objectsContainer.getDashboard().getAgencia(),
-                        this.objectsContainer.getDashboard().getAnio(), this.objectsContainer.getDashboard()
-                                .getSemana()));
+                .darrpagUtilModFindByAgenciaAnioAndSemanaToCobranza(agencia, calendarioEntity.getAnio(),
+                        calendarioEntity.getSemana()));
 
         try {
             this.threads[0].join();

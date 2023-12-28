@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "cierre_semanal")
+@Table(name = "cierres_semanales")
 public class CierreSemanalEntity {
     @Id
     private String id;
@@ -18,7 +18,7 @@ public class CierreSemanalEntity {
     private Integer semana;
     private Integer anio;
     private Integer dia;
-    private Integer mes;
+    private String mes;
     private String selfieAgente;
     private String selfieGerente;
 }

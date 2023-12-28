@@ -27,7 +27,7 @@ public interface PrestRepoPrestamoRepository extends CrudRepository<PrestamoEnti
             "ON pr.prestamoId = pa.prestamoId " +
             "WHERE pa.agente = :agencia " +
             "AND pa.anio = :anio " +
-            "AND pa.semana = :semana - 1 " +
+            "AND pa.semana = :semana " +
             "AND pa.cierraCon > 0")
     ArrayList<PrestamoEntity> darrprestEntFindByAgenciaAnioAndSemanaToCobranzaPGS(
             String agencia,

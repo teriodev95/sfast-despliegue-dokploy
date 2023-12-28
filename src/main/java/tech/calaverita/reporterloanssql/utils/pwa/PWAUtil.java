@@ -1,14 +1,12 @@
 package tech.calaverita.reporterloanssql.utils.pwa;
 
 import org.springframework.stereotype.Component;
-import tech.calaverita.reporterloanssql.persistence.dto.cierre_semanal.*;
 import tech.calaverita.reporterloanssql.persistence.entities.AsignacionEntity;
+import tech.calaverita.reporterloanssql.persistence.entities.CalendarioEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.PagoEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.cierre_semanal.*;
 import tech.calaverita.reporterloanssql.persistence.entities.view.PagoAgrupadoEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoEntity;
-import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.pojos.pwa.PagoHistoricoPWA;
 import tech.calaverita.reporterloanssql.pojos.pwa.PagoPWA;
 import tech.calaverita.reporterloanssql.pojos.pwa.PrestamoCobranzaPWA;
@@ -19,14 +17,10 @@ import tech.calaverita.reporterloanssql.services.view.PrestamoService;
 import tech.calaverita.reporterloanssql.threads.pwa.CobranzaPWAThread;
 import tech.calaverita.reporterloanssql.threads.pwa.PagoHistoricoPWAThread;
 import tech.calaverita.reporterloanssql.threads.pwa.PagoPWAThread;
-import tech.calaverita.reporterloanssql.utils.BalanceAgenciaUtil;
+import tech.calaverita.reporterloanssql.utils.CobranzaUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @Component
 public final class PWAUtil {
@@ -75,9 +69,14 @@ public final class PWAUtil {
     public static ArrayList<PrestamoCobranzaPWA> darrprestamoCobranzaPwaFromPrestamoModelsAndPagoModels(
             String agencia, int anio, int semana
     ) {
+        CalendarioEntity calendarioEntity = new CalendarioEntity();
+        calendarioEntity.setAnio(anio);
+        calendarioEntity.setSemana(semana);
+        CobranzaUtil.funSemanaAnterior(calendarioEntity);
+
         ArrayList<PrestamoEntity> prestEntPrestamoEntities = PWAUtil.prestServ
                 .darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(
-                        agencia, anio, semana);
+                        agencia, calendarioEntity.getAnio(), calendarioEntity.getSemana());
         ArrayList<PrestamoCobranzaPWA> prestamoCobranzaPWAs = new ArrayList<>();
 
         Thread[] threads = new Thread[prestEntPrestamoEntities.size()];
@@ -179,128 +178,5 @@ public final class PWAUtil {
         }
 
         return darrHshMpAsgMdlPwa;
-    }
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public static CierreSemanalDTO getCierreSemanalPWA(
-            Dashboard dashboard,
-            List<UsuarioEntity> darrusuarEnt,
-            double asignaciones
-    ) throws ExecutionException, InterruptedException {
-        CierreSemanalDTO cierreSemanalDTO = new CierreSemanalDTO();
-
-        // To easy code
-        String id = dashboard.getGerencia() + '-' + dashboard.getAgencia() + '-' + dashboard.getAnio() + '-'
-                + dashboard.getSemana();
-
-        Optional<CierreSemanalEntity> cierreSemanalEntity = PWAUtil.cierreSemanalService.findById(id);
-
-        if (
-                cierreSemanalEntity.isPresent()
-        ) {
-            CompletableFuture<Optional<BalanceAgenciaEntity>> balanceAgenciaEntity = PWAUtil.balanceAgenciaService
-                    .findById(id);
-            CompletableFuture<Optional<EgresosAgenteEntity>> egresosAgenteEntity = PWAUtil.egresosAgenteService
-                    .findById(id);
-            CompletableFuture<Optional<EgresosGerenteEntity>> egresosGerenteEntity = PWAUtil.egresosGerenteService
-                    .findById(id);
-            CompletableFuture<Optional<IngresosAgenteEntity>> ingresosAgenteEntity = PWAUtil.ingresosAgenteService
-                    .findById(id);
-
-            CompletableFuture.allOf(balanceAgenciaEntity, egresosAgenteEntity, egresosGerenteEntity,
-                    ingresosAgenteEntity);
-
-            // No se comprueba si los registros siguientes existen ya que si existe el cierre semanal se da por hecho
-            // que estos también
-            cierreSemanalDTO = PWAUtil.cierreSemanalService.getCierreSemanalDTO(cierreSemanalEntity.get());
-            cierreSemanalDTO.setBalanceAgencia(PWAUtil.balanceAgenciaService.getBalanceAgenciaDTO(balanceAgenciaEntity.get()
-                    .get()));
-            cierreSemanalDTO.setEgresosAgente(PWAUtil.egresosAgenteService.getEgresosGerenteDTO(egresosAgenteEntity.get()
-                    .get()));
-            cierreSemanalDTO.setEgresosGerente(PWAUtil.egresosGerenteService.getEgresosGerenteDTO(egresosGerenteEntity.get()
-                    .get()));
-            cierreSemanalDTO.setIngresosAgente(PWAUtil.ingresosAgenteService.getIngresosAgenteDTO(ingresosAgenteEntity.get()
-                    .get()));
-            cierreSemanalDTO.setIsAgenciaCerrada(true);
-        } //
-        else {
-            CompletableFuture<Integer> clientePagoCompleto = PWAUtil.pagServ
-                    .getClientesPagoCompletoByAgenciaAnioAndSemanaAsync(dashboard.getAgencia(), dashboard.getAnio(),
-                            dashboard.getSemana());
-            CompletableFuture<Double> cobranzaTotal = PWAUtil.pagServ
-                    .getCobranzaTotalByAgenciaAnioAndSemanaAsync(dashboard.getAgencia(), dashboard.getAnio(),
-                            dashboard.getSemana());
-
-            // To easy code
-            UsuarioEntity agenteUsuarioEntity = darrusuarEnt.get(0);
-            UsuarioEntity gerenteUsuarioEntity = darrusuarEnt.get(1);
-            String nombreAgente = agenteUsuarioEntity.getNombre() + " " + agenteUsuarioEntity.getApellidoPaterno() + " "
-                    + agenteUsuarioEntity.getApellidoMaterno();
-            String nombreGerente = gerenteUsuarioEntity.getNombre() + " " + gerenteUsuarioEntity.getApellidoPaterno()
-                    + " " + gerenteUsuarioEntity.getApellidoMaterno();
-
-            BalanceAgenciaDTO balanceAgenciaDTO = new BalanceAgenciaDTO();
-            {
-                balanceAgenciaDTO.setZona(dashboard.getGerencia());
-                balanceAgenciaDTO.setGerente(nombreGerente);
-                balanceAgenciaDTO.setAgencia(dashboard.getAgencia());
-                balanceAgenciaDTO.setAgente(nombreAgente);
-                balanceAgenciaDTO.setRendimiento(dashboard.getRendimiento());
-                balanceAgenciaDTO.setNivel(BalanceAgenciaUtil.getNivelAgente(dashboard.getClientes(),
-                        dashboard.getRendimiento() / 100, agenteUsuarioEntity));
-                balanceAgenciaDTO.setClientes(dashboard.getClientes());
-                balanceAgenciaDTO.setPagosReducidos(dashboard.getPagosReducidos());
-                balanceAgenciaDTO.setNoPagos(dashboard.getNoPagos());
-                balanceAgenciaDTO.setLiquidaciones(dashboard.getNumeroLiquidaciones());
-            }
-
-            EgresosAgenteDTO egresosAgenteDTO = new EgresosAgenteDTO();
-            {
-                egresosAgenteDTO.setAsignaciones(asignaciones);
-
-                cobranzaTotal.join();
-
-                egresosAgenteDTO.setEfectivoEntregadoCierre(cobranzaTotal.get() - egresosAgenteDTO.getAsignaciones());
-            }
-
-            EgresosGerenteDTO egresosGerenteDTO = new EgresosGerenteDTO();
-            {
-                egresosGerenteDTO.setPorcentajeComisionCobranza(BalanceAgenciaUtil
-                        .getPorcentajeComisionCobranza(balanceAgenciaDTO.getNivel()));
-
-                clientePagoCompleto.join();
-
-                // To easy code
-                int porcentajeBonoMensual = BalanceAgenciaUtil.getPorcentajeBonoMensual(clientePagoCompleto.get(),
-                        dashboard.getRendimiento(), agenteUsuarioEntity);
-
-                egresosGerenteDTO.setPorcentajeBonoMensual(porcentajeBonoMensual);
-
-                cobranzaTotal.join();
-
-                egresosGerenteDTO.setPagoComisionCobranza(cobranzaTotal.get() / 100
-                        * egresosGerenteDTO.getPorcentajeComisionCobranza());
-                egresosGerenteDTO.setBonos(cobranzaTotal.get() / 100 * egresosGerenteDTO.getPorcentajeBonoMensual());
-            }
-
-            IngresosAgenteDTO ingresosAgenteDTO = new IngresosAgenteDTO();
-            {
-                ingresosAgenteDTO.setCobranzaPura(dashboard.getTotalCobranzaPura());
-                ingresosAgenteDTO.setMontoExcedente(dashboard.getMontoExcedente());
-                ingresosAgenteDTO.setLiquidaciones(dashboard.getLiquidaciones());
-                ingresosAgenteDTO.setMultas(dashboard.getMultas());
-            }
-
-            cierreSemanalDTO.setSemana(dashboard.getSemana());
-            cierreSemanalDTO.setAnio(dashboard.getAnio());
-            cierreSemanalDTO.setBalanceAgencia(balanceAgenciaDTO);
-            cierreSemanalDTO.setEgresosAgente(egresosAgenteDTO);
-            cierreSemanalDTO.setEgresosGerente(egresosGerenteDTO);
-            cierreSemanalDTO.setIngresosAgente(ingresosAgenteDTO);
-            cierreSemanalDTO.setPinAgente(agenteUsuarioEntity.getPin());
-            cierreSemanalDTO.setIsAgenciaCerrada(false);
-        }
-
-        return cierreSemanalDTO;
     }
 }

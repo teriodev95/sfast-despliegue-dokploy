@@ -1,5 +1,6 @@
 package tech.calaverita.reporterloanssql.controllers.pwa;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,10 +12,11 @@ import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.services.AsignacionService;
 import tech.calaverita.reporterloanssql.services.UsuarioService;
 import tech.calaverita.reporterloanssql.services.cierre_semanal.*;
-import tech.calaverita.reporterloanssql.utils.pwa.PWAUtil;
+import tech.calaverita.reporterloanssql.utils.CierreSemanalUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 @CrossOrigin
@@ -61,71 +63,130 @@ public final class CierreSemanalController {
     //------------------------------------------------------------------------------------------------------------------
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<?> getCierreSemanalByAgenciaAnioAndSemana(
+            @RequestHeader(name = "staticToken") String staticToken,
+            @RequestHeader(name = "username") String username,
             @PathVariable("agencia") String agencia,
             @PathVariable("anio") int anio,
-            @PathVariable("semana") int semana
+            @PathVariable("semana") int semana,
+            HttpServletRequest request
     ) throws ExecutionException, InterruptedException {
+        CierreSemanalDTO cierreSemanalDTO = null;
+        HttpStatus responseStatus = HttpStatus.OK;
+
+        request.getHeader("X-FORWARDED-FOR");
+
         Dashboard dashboard;
         List<UsuarioEntity> usuarioModels;
         double asignaciones;
 
+        Optional<CierreSemanalEntity> cierreSemanalEntity = this.cierSemServ.findByAgenciaAnioAndSemana(agencia, anio,
+                semana);
+
         if (
-                this.usuarServ.findByUsuario(agencia).isPresent()
+                staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")
         ) {
-            dashboard = xprContr.getDashboardByAgenciaAnioAndSemana(agencia, anio, semana).getBody();
-            usuarioModels = new ArrayList<>();
-            usuarioModels.add(this.usuarServ.usuarModFindByUsuario(agencia));
-            usuarioModels.add(this.usuarServ.usuarModFindByUsuario(usuarioModels.get(0).getGerencia()));
-            asignaciones = this.asignServ.getSumaDeAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
-        } else {
-            return new ResponseEntity<>("La agencia no existe", HttpStatus.BAD_REQUEST);
+            if (
+                    !this.usuarServ.existsByUsuarioGerente(username)
+            ) {
+                responseStatus = HttpStatus.FORBIDDEN;
+            } //
+            else if (
+                    !this.usuarServ.existsByUsuarioGerenteActivo(username)
+            ) {
+                responseStatus = HttpStatus.UNAUTHORIZED;
+            } //
+            else {
+                if (
+                        cierreSemanalEntity.isPresent()
+                ) {
+                    cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(cierreSemanalEntity.get());
+                } //
+                else if (
+                        this.usuarServ.findByUsuario(agencia).isPresent()
+                ) {
+                    dashboard = xprContr.getDashboardByAgenciaAnioAndSemana(agencia, anio, semana).getBody();
+                    usuarioModels = new ArrayList<>();
+                    usuarioModels.add(this.usuarServ.usuarModFindByUsuario(agencia));
+                    usuarioModels.add(this.usuarServ.usuarModFindByUsuario(usuarioModels.get(0).getGerencia()));
+                    asignaciones = this.asignServ.getSumaDeAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
+
+                    cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(dashboard, usuarioModels, asignaciones);
+                } //
+                else {
+                    return new ResponseEntity<>("La agencia no existe", HttpStatus.BAD_REQUEST);
+                }
+            }
+        } //
+        else {
+            responseStatus = HttpStatus.BAD_REQUEST;
         }
 
-        return new ResponseEntity<>(PWAUtil.getCierreSemanalPWA(dashboard, usuarioModels, asignaciones), HttpStatus.OK);
+        return new ResponseEntity<>(cierreSemanalDTO, responseStatus);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @PostMapping(path = "/create-one")
     public @ResponseBody ResponseEntity<String> restrCreateCierreSemanal(
-            @RequestBody CierreSemanalDTO cierreSemanalDTO_I
+            @RequestBody CierreSemanalDTO cierreSemanalDTO_I,
+            @RequestHeader(name = "staticToken") String staticToken,
+            @RequestHeader(name = "username") String username
     ) {
-        String strResponse_O;
-        HttpStatus httpStatus_O;
+        String responseText = "";
+        HttpStatus responseStatus;
         CierreSemanalEntity cierreSemanalEntity = this.cierSemServ.getCierreSemanalEntity(cierreSemanalDTO_I);
 
         if (
-                this.cierSemServ.findById(cierreSemanalEntity.getId()).isEmpty()
+                staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")
         ) {
-            BalanceAgenciaEntity balanceAgenciaEntity = this.balAgencServ.getBalanceAgenciaEntity(cierreSemanalDTO_I
-                    .getBalanceAgencia());
-            balanceAgenciaEntity.setId(cierreSemanalEntity.getBalanceAgenciaId());
-            this.balAgencServ.save(balanceAgenciaEntity);
+            if (
+                    !this.usuarServ.existsByUsuarioGerente(username)
+            ) {
+                responseStatus = HttpStatus.FORBIDDEN;
+            } //
+            else if (
+                    !this.usuarServ.existsByUsuarioGerenteActivo(username)
+            ) {
+                responseStatus = HttpStatus.UNAUTHORIZED;
+            } //
+            else {
+                if (
+                        this.cierSemServ.findById(cierreSemanalEntity.getId()).isEmpty()
+                ) {
+                    BalanceAgenciaEntity balanceAgenciaEntity = this.balAgencServ.getBalanceAgenciaEntity(cierreSemanalDTO_I
+                            .getBalanceAgencia());
+                    balanceAgenciaEntity.setId(cierreSemanalEntity.getBalanceAgenciaId());
+                    this.balAgencServ.save(balanceAgenciaEntity);
 
-            EgresosAgenteEntity egresosAgenteEntity = this.egrAgentServ.getEgresosGerenteEntity(cierreSemanalDTO_I
-                    .getEgresosAgente());
-            egresosAgenteEntity.setId(cierreSemanalEntity.getEgresosAgenteId());
-            this.egrAgentServ.save(egresosAgenteEntity);
+                    EgresosAgenteEntity egresosAgenteEntity = this.egrAgentServ.getEgresosGerenteEntity(cierreSemanalDTO_I
+                            .getEgresosAgente());
+                    egresosAgenteEntity.setId(cierreSemanalEntity.getEgresosAgenteId());
+                    this.egrAgentServ.save(egresosAgenteEntity);
 
-            EgresosGerenteEntity egresosGerenteEntity = this.egrGerServ.getEgresosGerenteEntity(cierreSemanalDTO_I
-                    .getEgresosGerente());
-            egresosGerenteEntity.setId(cierreSemanalEntity.getEgresosGerenteId());
-            this.egrGerServ.save(egresosGerenteEntity);
+                    EgresosGerenteEntity egresosGerenteEntity = this.egrGerServ.getEgresosGerenteEntity(cierreSemanalDTO_I
+                            .getEgresosGerente());
+                    egresosGerenteEntity.setId(cierreSemanalEntity.getEgresosGerenteId());
+                    this.egrGerServ.save(egresosGerenteEntity);
 
-            IngresosAgenteEntity ingresosAgenteEntity = this.ingrAgentServ.getIngresosAgenteEntity(cierreSemanalDTO_I
-                    .getIngresosAgente());
-            ingresosAgenteEntity.setId(cierreSemanalEntity.getIngresosAgenteId());
-            this.ingrAgentServ.save(ingresosAgenteEntity);
+                    IngresosAgenteEntity ingresosAgenteEntity = this.ingrAgentServ.getIngresosAgenteEntity(cierreSemanalDTO_I
+                            .getIngresosAgente());
+                    ingresosAgenteEntity.setId(cierreSemanalEntity.getIngresosAgenteId());
+                    this.ingrAgentServ.save(ingresosAgenteEntity);
 
-            this.cierSemServ.save(cierreSemanalEntity);
+                    this.cierSemServ.save(cierreSemanalEntity);
 
-            strResponse_O = "Cierre semanal registrado con éxito";
-            httpStatus_O = HttpStatus.CREATED;
+                    responseText = "Cierre semanal registrado con éxito";
+                    responseStatus = HttpStatus.CREATED;
+                } //
+                else {
+                    responseText = "No se pudo registrar el cierre semanal porque ya existe";
+                    responseStatus = HttpStatus.CONFLICT;
+                }
+            }
         } //
         else {
-            strResponse_O = "No se pudo registrar el cierre semanal porque ya existe";
-            httpStatus_O = HttpStatus.CONFLICT;
+            responseStatus = HttpStatus.BAD_REQUEST;
         }
 
-        return new ResponseEntity<>(strResponse_O, httpStatus_O);
+        return new ResponseEntity<>(responseText, responseStatus);
     }
 }

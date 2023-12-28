@@ -2,12 +2,14 @@ package tech.calaverita.reporterloanssql.threads.pwa;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import tech.calaverita.reporterloanssql.persistence.entities.CalendarioEntity;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.services.AsignacionService;
 import tech.calaverita.reporterloanssql.services.CalendarioService;
 import tech.calaverita.reporterloanssql.services.LiquidacionService;
 import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.view.PrestamoService;
+import tech.calaverita.reporterloanssql.utils.CobranzaUtil;
 
 @Component
 public class DashboardPorDiaPWAThread implements Runnable {
@@ -80,14 +82,27 @@ public class DashboardPorDiaPWAThread implements Runnable {
             throw new RuntimeException(e);
         }
 
-        objectsContainer.setPrestamosToCobranza(DashboardPorDiaPWAThread.prestServ.darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(objectsContainer.getDashboard().getAgencia(), objectsContainer.getCalendarioEntity().getAnio(), objectsContainer.getCalendarioEntity().getSemana()));
+        // To easy code
+        String agencia = this.objectsContainer.getCobranza().getAgencia();
+        int anio = this.objectsContainer.getCobranza().getAnio();
+        int semana = this.objectsContainer.getCobranza().getSemana();
+
+        CalendarioEntity calendarioEntity = new CalendarioEntity();
+        calendarioEntity.setAnio(anio);
+        calendarioEntity.setSemana(semana);
+        CobranzaUtil.funSemanaAnterior(calendarioEntity);
+
+        objectsContainer.setPrestamosToCobranza(DashboardPorDiaPWAThread.prestServ
+                .darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(agencia, calendarioEntity.getAnio(),
+                        calendarioEntity.getSemana()));
 
         setGerencia();
         setClientes();
     }
 
     public void setPrestamosToDashboard() {
-        objectsContainer.setPrestamosToDashboard(DashboardPorDiaPWAThread.prestServ.darrprestUtilModByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
+        objectsContainer.setPrestamosToDashboard(DashboardPorDiaPWAThread.prestServ
+                .darrprestUtilModByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
     }
 
     public void setPagosToCobranza() {
@@ -96,12 +111,24 @@ public class DashboardPorDiaPWAThread implements Runnable {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        // To easy code
+        String agencia = this.objectsContainer.getCobranza().getAgencia();
+        int anio = this.objectsContainer.getCobranza().getAnio();
+        int semana = this.objectsContainer.getCobranza().getSemana();
 
-        objectsContainer.setPagosVistaToCobranza(DashboardPorDiaPWAThread.pagServ.darrpagUtilModFindByAgenciaAnioAndSemanaToCobranza(objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(), objectsContainer.getDashboard().getSemana()));
+        CalendarioEntity calendarioEntity = new CalendarioEntity();
+        calendarioEntity.setAnio(anio);
+        calendarioEntity.setSemana(semana);
+        CobranzaUtil.funSemanaAnterior(calendarioEntity);
+
+        objectsContainer.setPagosVistaToCobranza(DashboardPorDiaPWAThread.pagServ
+                .darrpagUtilModFindByAgenciaAnioAndSemanaToCobranza(agencia, calendarioEntity.getAnio(),
+                        calendarioEntity.getSemana()));
     }
 
     public void setPagosToDashboard() {
-        objectsContainer.setPagEntPagoModelsToDashboard(DashboardPorDiaPWAThread.pagServ.darrpagModFindByAgenciaFechaPagoAndNoPrimerPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
+        objectsContainer.setPagEntPagoModelsToDashboard(DashboardPorDiaPWAThread.pagServ
+                .darrpagModFindByAgenciaFechaPagoAndNoPrimerPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
 
         try {
             threads[0].join();

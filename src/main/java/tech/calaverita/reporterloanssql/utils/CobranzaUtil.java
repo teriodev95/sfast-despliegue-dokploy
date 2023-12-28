@@ -1,10 +1,23 @@
 package tech.calaverita.reporterloanssql.utils;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import tech.calaverita.reporterloanssql.persistence.entities.CalendarioEntity;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
+import tech.calaverita.reporterloanssql.services.CalendarioService;
 import tech.calaverita.reporterloanssql.threads.CobranzaThread;
 
+@Component
 public class CobranzaUtil implements Runnable {
-    public ObjectsContainer objectsContainer;
+    private ObjectsContainer objectsContainer;
+    private static CalendarioService calendarioService;
+
+    @Autowired
+    public CobranzaUtil(
+            CalendarioService calendarioService
+    ) {
+        CobranzaUtil.calendarioService = calendarioService;
+    }
 
     public CobranzaUtil(
             ObjectsContainer objectsContainer_S
@@ -41,5 +54,27 @@ public class CobranzaUtil implements Runnable {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public static void funSemanaAnterior(
+            CalendarioEntity calendarioEntity
+    ) {
+        // To easy code
+        int anio = calendarioEntity.getAnio();
+        int semana = calendarioEntity.getSemana();
+
+        if (
+                semana == 1
+        ) {
+            anio = anio - 1;
+            semana = CobranzaUtil.calendarioService
+                    .existsByAnioAndSemana(anio, 53) ? 53 : 52;
+        } //
+        else {
+            semana = semana - 1;
+        }
+
+        calendarioEntity.setAnio(anio);
+        calendarioEntity.setSemana(semana);
     }
 }
