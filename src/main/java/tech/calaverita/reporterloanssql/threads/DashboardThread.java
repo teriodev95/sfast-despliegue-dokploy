@@ -85,13 +85,14 @@ public class DashboardThread implements Runnable {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setPrestamosToCobranza() {
         // To easy code
-        String agencia = this.objectsContainer.getCobranza().getAgencia();
-        int anio = this.objectsContainer.getCobranza().getAnio();
-        int semana = this.objectsContainer.getCobranza().getSemana();
+        String agencia = this.objectsContainer.getDashboard().getAgencia();
+        int anio = this.objectsContainer.getDashboard().getAnio();
+        int semana = this.objectsContainer.getDashboard().getSemana();
 
         CalendarioEntity calendarioEntity = new CalendarioEntity();
         calendarioEntity.setAnio(anio);
         calendarioEntity.setSemana(semana);
+
         CobranzaUtil.funSemanaAnterior(calendarioEntity);
 
         this.objectsContainer.setPrestamosToCobranza(DashboardThread.prestServ
@@ -113,9 +114,9 @@ public class DashboardThread implements Runnable {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setPagosToCobranza() {
         // To easy code
-        String agencia = this.objectsContainer.getCobranza().getAgencia();
-        int anio = this.objectsContainer.getCobranza().getAnio();
-        int semana = this.objectsContainer.getCobranza().getSemana();
+        String agencia = this.objectsContainer.getDashboard().getAgencia();
+        int anio = this.objectsContainer.getDashboard().getAnio();
+        int semana = this.objectsContainer.getDashboard().getSemana();
 
         CalendarioEntity calendarioEntity = new CalendarioEntity();
         calendarioEntity.setAnio(anio);

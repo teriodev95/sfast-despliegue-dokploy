@@ -83,9 +83,9 @@ public class DashboardPorDiaPWAThread implements Runnable {
         }
 
         // To easy code
-        String agencia = this.objectsContainer.getCobranza().getAgencia();
-        int anio = this.objectsContainer.getCobranza().getAnio();
-        int semana = this.objectsContainer.getCobranza().getSemana();
+        String agencia = this.objectsContainer.getDashboard().getAgencia();
+        int anio = this.objectsContainer.getDashboard().getAnio();
+        int semana = this.objectsContainer.getDashboard().getSemana();
 
         CalendarioEntity calendarioEntity = new CalendarioEntity();
         calendarioEntity.setAnio(anio);
@@ -112,9 +112,9 @@ public class DashboardPorDiaPWAThread implements Runnable {
             throw new RuntimeException(e);
         }
         // To easy code
-        String agencia = this.objectsContainer.getCobranza().getAgencia();
-        int anio = this.objectsContainer.getCobranza().getAnio();
-        int semana = this.objectsContainer.getCobranza().getSemana();
+        String agencia = this.objectsContainer.getDashboard().getAgencia();
+        int anio = this.objectsContainer.getDashboard().getAnio();
+        int semana = this.objectsContainer.getDashboard().getSemana();
 
         CalendarioEntity calendarioEntity = new CalendarioEntity();
         calendarioEntity.setAnio(anio);

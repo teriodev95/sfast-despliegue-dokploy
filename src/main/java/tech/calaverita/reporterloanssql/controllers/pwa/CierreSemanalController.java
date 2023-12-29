@@ -110,6 +110,8 @@ public final class CierreSemanalController {
                     usuarioModels.add(this.usuarServ.usuarModFindByUsuario(usuarioModels.get(0).getGerencia()));
                     asignaciones = this.asignServ.getSumaDeAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
 
+                    System.out.println(dashboard.toString());
+
                     cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(dashboard, usuarioModels, asignaciones);
                 } //
                 else {
