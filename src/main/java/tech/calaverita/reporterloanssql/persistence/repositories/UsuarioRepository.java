@@ -76,4 +76,10 @@ public interface UsuarioRepository extends CrudRepository<UsuarioEntity, Integer
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     boolean existsByUsuarioAndTipoAndStatus(String usuario, String tipo, boolean status);
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    boolean existsByUsuario(String usuario);
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    boolean existsByUsuarioAndStatus(String usuario, boolean status);
 }

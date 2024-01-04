@@ -76,6 +76,20 @@ public class UsuarioService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public Boolean existsByUsuario(
+            String usuario
+    ) {
+        return this.repo.existsByUsuario(usuario);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public Boolean existsByUsuarioActivo(
+            String usuario
+    ) {
+        return this.repo.existsByUsuarioAndStatus(usuario, true);
+    }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Async("asyncExecutor")
     public CompletableFuture<Optional<UsuarioEntity>> findByUsuarioAsync(
             String usuario

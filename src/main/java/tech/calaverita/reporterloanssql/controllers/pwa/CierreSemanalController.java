@@ -86,12 +86,12 @@ public final class CierreSemanalController {
                 staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")
         ) {
             if (
-                    !this.usuarServ.existsByUsuarioGerente(username)
+                    !this.usuarServ.existsByUsuario(username)
             ) {
                 responseStatus = HttpStatus.FORBIDDEN;
             } //
             else if (
-                    !this.usuarServ.existsByUsuarioGerenteActivo(username)
+                    !this.usuarServ.existsByUsuarioActivo(username)
             ) {
                 responseStatus = HttpStatus.UNAUTHORIZED;
             } //
@@ -109,8 +109,6 @@ public final class CierreSemanalController {
                     usuarioModels.add(this.usuarServ.usuarModFindByUsuario(agencia));
                     usuarioModels.add(this.usuarServ.usuarModFindByUsuario(usuarioModels.get(0).getGerencia()));
                     asignaciones = this.asignServ.getSumaDeAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
-
-                    System.out.println(dashboard.toString());
 
                     cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(dashboard, usuarioModels, asignaciones);
                 } //
