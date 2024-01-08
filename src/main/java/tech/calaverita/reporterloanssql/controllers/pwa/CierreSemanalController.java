@@ -1,7 +1,10 @@
 package tech.calaverita.reporterloanssql.controllers.pwa;
 
+import com.itextpdf.text.DocumentException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.reporterloanssql.controllers.XpressController;
@@ -14,6 +17,9 @@ import tech.calaverita.reporterloanssql.services.UsuarioService;
 import tech.calaverita.reporterloanssql.services.cierre_semanal.*;
 import tech.calaverita.reporterloanssql.utils.CierreSemanalUtil;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -127,13 +133,19 @@ public final class CierreSemanalController {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @PostMapping(path = "/create-one")
     public @ResponseBody ResponseEntity<String> restrCreateCierreSemanal(
-            @RequestBody CierreSemanalDTO cierreSemanalDTO_I,
+            @RequestBody CierreSemanalDTO cierreSemanalDTO,
             @RequestHeader(name = "staticToken") String staticToken,
             @RequestHeader(name = "username") String username
-    ) {
+    ) throws DocumentException, FileNotFoundException {
         String responseText = "";
         HttpStatus responseStatus;
-        CierreSemanalEntity cierreSemanalEntity = this.cierSemServ.getCierreSemanalEntity(cierreSemanalDTO_I);
+        CierreSemanalEntity cierreSemanalEntity = this.cierSemServ.getCierreSemanalEntity(cierreSemanalDTO);
+
+        // To easy code
+        String urlPDF = "https://sfast-api.terio.xyz/xpress/v1/pwa/cierres_semanales/pdf/"
+                + cierreSemanalEntity.getId() + ".pdf";
+
+        cierreSemanalEntity.setPdf(urlPDF);
 
         if (
                 staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")
@@ -152,29 +164,29 @@ public final class CierreSemanalController {
                 if (
                         this.cierSemServ.findById(cierreSemanalEntity.getId()).isEmpty()
                 ) {
-                    BalanceAgenciaEntity balanceAgenciaEntity = this.balAgencServ.getBalanceAgenciaEntity(cierreSemanalDTO_I
-                            .getBalanceAgencia());
+                    BalanceAgenciaEntity balanceAgenciaEntity = this.balAgencServ
+                            .getBalanceAgenciaEntity(cierreSemanalDTO.getBalanceAgencia());
                     balanceAgenciaEntity.setId(cierreSemanalEntity.getBalanceAgenciaId());
                     this.balAgencServ.save(balanceAgenciaEntity);
 
-                    EgresosAgenteEntity egresosAgenteEntity = this.egrAgentServ.getEgresosGerenteEntity(cierreSemanalDTO_I
-                            .getEgresosAgente());
+                    EgresosAgenteEntity egresosAgenteEntity = this.egrAgentServ
+                            .getEgresosGerenteEntity(cierreSemanalDTO.getEgresosAgente());
                     egresosAgenteEntity.setId(cierreSemanalEntity.getEgresosAgenteId());
                     this.egrAgentServ.save(egresosAgenteEntity);
 
-                    EgresosGerenteEntity egresosGerenteEntity = this.egrGerServ.getEgresosGerenteEntity(cierreSemanalDTO_I
-                            .getEgresosGerente());
+                    EgresosGerenteEntity egresosGerenteEntity = this.egrGerServ
+                            .getEgresosGerenteEntity(cierreSemanalDTO.getEgresosGerente());
                     egresosGerenteEntity.setId(cierreSemanalEntity.getEgresosGerenteId());
                     this.egrGerServ.save(egresosGerenteEntity);
 
-                    IngresosAgenteEntity ingresosAgenteEntity = this.ingrAgentServ.getIngresosAgenteEntity(cierreSemanalDTO_I
-                            .getIngresosAgente());
+                    IngresosAgenteEntity ingresosAgenteEntity = this.ingrAgentServ
+                            .getIngresosAgenteEntity(cierreSemanalDTO.getIngresosAgente());
                     ingresosAgenteEntity.setId(cierreSemanalEntity.getIngresosAgenteId());
                     this.ingrAgentServ.save(ingresosAgenteEntity);
 
                     this.cierSemServ.save(cierreSemanalEntity);
 
-                    responseText = "Cierre semanal registrado con éxito";
+                    responseText = urlPDF;
                     responseStatus = HttpStatus.CREATED;
                 } //
                 else {
@@ -187,6 +199,17 @@ public final class CierreSemanalController {
             responseStatus = HttpStatus.BAD_REQUEST;
         }
 
+        CierreSemanalUtil.createCierreSemanalPDF(cierreSemanalDTO);
+
         return new ResponseEntity<>(responseText, responseStatus);
+    }
+
+    @GetMapping(path = "/pdf/{file}", produces = MediaType.APPLICATION_PDF_VALUE)
+    public @ResponseBody ResponseEntity<InputStreamResource> getPdf2(
+            @PathVariable("file") String file
+    ) throws IOException {
+        FileInputStream fileInputStream = new FileInputStream("src/cierres_semanales/" + file);
+
+        return new ResponseEntity<>(new InputStreamResource(fileInputStream), HttpStatus.OK);
     }
 }

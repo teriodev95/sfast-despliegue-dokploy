@@ -19,6 +19,7 @@ public class CierreSemanalEntity {
     private Integer anio;
     private Integer dia;
     private String mes;
+    private String pdf;
     private String selfieAgente;
     private String selfieGerente;
 }
