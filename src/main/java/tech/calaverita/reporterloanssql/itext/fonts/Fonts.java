@@ -22,7 +22,7 @@ public class Fonts {
     }
 
     public Paragraph bold(String text, int size, int alignment, BaseColor baseColor) {
-        Font font = createFont(BASE_PATH + "SourceCodePro-Bold.ttf", size);
+        Font font = createFont(BASE_PATH + "SF-Pro-Display-Semibold.otf", size);
         font.setColor(baseColor);
         return createParagraph(text, font, alignment);
     }
@@ -33,7 +33,7 @@ public class Fonts {
     }
 
     public Paragraph regular(String text, int size, BaseColor baseColor) {
-        Font font = createFont(BASE_PATH + "SourceCodePro-Regular.ttf", size);
+        Font font = createFont(BASE_PATH + "consolas_regular.ttf", size);
         font.setColor(baseColor);
         return createParagraph(text, font);
     }
