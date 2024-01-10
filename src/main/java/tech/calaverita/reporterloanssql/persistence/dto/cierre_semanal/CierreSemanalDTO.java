@@ -8,6 +8,7 @@ public class CierreSemanalDTO {
     private Integer anio;
     private Integer dia;
     private String mes;
+    private String PDF;
     private String selfieAgente;
     private String selfieGerente;
     private BalanceAgenciaDTO balanceAgencia;

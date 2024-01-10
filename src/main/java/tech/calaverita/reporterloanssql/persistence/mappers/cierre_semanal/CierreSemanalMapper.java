@@ -15,6 +15,7 @@ public final class CierreSemanalMapper implements IMapper<CierreSemanalEntity, C
             cierreSemanalDTO.setAnio(out.getAnio());
             cierreSemanalDTO.setDia(out.getDia());
             cierreSemanalDTO.setMes(out.getMes());
+            cierreSemanalDTO.setPDF(out.getPDF());
             cierreSemanalDTO.setSelfieAgente(out.getSelfieAgente());
             cierreSemanalDTO.setSelfieGerente(out.getSelfieGerente());
         }
