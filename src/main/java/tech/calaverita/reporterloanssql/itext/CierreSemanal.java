@@ -46,7 +46,7 @@ public class CierreSemanal {
         ingresosAgenteDTO.setTotal(0.0);
 
         cierreSemanalDTO.setAnio(2023);
-        cierreSemanalDTO.setSemana(46);
+        cierreSemanalDTO.setSemana(47);
         cierreSemanalDTO.setBalanceAgencia(balanceAgenciaDTO);
         cierreSemanalDTO.setEgresosAgente(egresosAgenteDTO);
         cierreSemanalDTO.setEgresosGerente(egresosGerenteDTO);
