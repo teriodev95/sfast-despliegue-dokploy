@@ -11,6 +11,7 @@ import tech.calaverita.reporterloanssql.services.LiquidacionService;
 import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.view.PrestamoService;
 import tech.calaverita.reporterloanssql.utils.CobranzaUtil;
+import tech.calaverita.reporterloanssql.utils.MyUtil;
 
 import java.util.Optional;
 
@@ -99,8 +100,8 @@ public class DashboardThread implements Runnable {
                 .darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(agencia, calendarioEntity.getAnio(),
                         calendarioEntity.getSemana()));
 
-        setGerencia();
-        setClientes();
+        this.setGerencia();
+        this.setClientes();
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -133,10 +134,10 @@ public class DashboardThread implements Runnable {
             System.out.println("Ha fallado el seteoDeDebitos " + e);
         }
 
-        setDebitoMiercoles();
-        setDebitoJueves();
-        setDebitoViernes();
-        setDebitoTotal();
+        this.setDebitoMiercoles();
+        this.setDebitoJueves();
+        this.setDebitoViernes();
+        this.setDebitoTotal();
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -158,7 +159,7 @@ public class DashboardThread implements Runnable {
             System.out.println("Ha fallado el setMontoExcedente " + e);
         }
 
-        setMontoExcedente();
+        this.setMontoExcedente();
 
         try {
             this.threads[4].join();
@@ -166,7 +167,7 @@ public class DashboardThread implements Runnable {
             System.out.println("Ha fallado el setTotalCobranzaPura " + e);
         }
 
-        setTotalCobranzaPura();
+        this.setTotalCobranzaPura();
 
         try {
             this.threads[2].join();
@@ -174,7 +175,7 @@ public class DashboardThread implements Runnable {
             System.out.println("Ha fallado el setMontoDeDebitoFaltante " + e);
         }
 
-        setMontoDeDebitoFaltante();
+        this.setMontoDeDebitoFaltante();
 
         try {
             this.threads[2].join();
@@ -182,7 +183,7 @@ public class DashboardThread implements Runnable {
             System.out.println("Ha fallado el setRendimiento " + e);
         }
 
-        setRendmiento();
+        this.setRendmiento();
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -192,8 +193,8 @@ public class DashboardThread implements Runnable {
                         this.objectsContainer.getDashboard().getAnio(), this.objectsContainer.getDashboard()
                                 .getSemana()));
 
-        setNumeroDeLiquidaciones();
-        setTotalDeDescuento();
+        this.setNumeroDeLiquidaciones();
+        this.setTotalDeDescuento();
 
         try {
             this.threads[5].join();
@@ -201,7 +202,7 @@ public class DashboardThread implements Runnable {
             System.out.println("Ha fallado el setLiquidaciones " + e);
         }
 
-        setLiquidaciones();
+        this.setLiquidaciones();
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -226,7 +227,7 @@ public class DashboardThread implements Runnable {
             System.out.println("Ha fallado el setEfectivoEnCampo " + e);
         }
 
-        setEfectivoEnCampo();
+        this.setEfectivoEnCampo();
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -326,7 +327,7 @@ public class DashboardThread implements Runnable {
             }
 
         }
-        this.objectsContainer.getDashboard().setDebitoMiercoles(debitoMiercoles);
+        this.objectsContainer.getDashboard().setDebitoMiercoles(MyUtil.getDouble(debitoMiercoles));
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -346,7 +347,7 @@ public class DashboardThread implements Runnable {
                     debitoJueves += this.objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
             }
         }
-        this.objectsContainer.getDashboard().setDebitoJueves(debitoJueves);
+        this.objectsContainer.getDashboard().setDebitoJueves(MyUtil.getDouble(debitoJueves));
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -366,7 +367,7 @@ public class DashboardThread implements Runnable {
                     debitoViernes += this.objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
             }
         }
-        this.objectsContainer.getDashboard().setDebitoViernes(debitoViernes);
+        this.objectsContainer.getDashboard().setDebitoViernes(MyUtil.getDouble(debitoViernes));
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -384,7 +385,7 @@ public class DashboardThread implements Runnable {
             else
                 debitoTotal += this.objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
         }
-        this.objectsContainer.getDashboard().setDebitoTotal(debitoTotal);
+        this.objectsContainer.getDashboard().setDebitoTotal(MyUtil.getDouble(debitoTotal));
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -399,7 +400,7 @@ public class DashboardThread implements Runnable {
             }
         }
 
-        this.objectsContainer.getDashboard().setTotalDeDescuento(totalDeDescuento);
+        this.objectsContainer.getDashboard().setTotalDeDescuento(MyUtil.getDouble(totalDeDescuento));
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -422,7 +423,7 @@ public class DashboardThread implements Runnable {
             }
         }
 
-        this.objectsContainer.getDashboard().setMontoExcedente(montoExcedente);
+        this.objectsContainer.getDashboard().setMontoExcedente(MyUtil.getDouble(montoExcedente));
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -440,7 +441,7 @@ public class DashboardThread implements Runnable {
             }
         }
 
-        this.objectsContainer.getDashboard().setLiquidaciones(liquidaciones);
+        this.objectsContainer.getDashboard().setLiquidaciones(MyUtil.getDouble(liquidaciones));
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -451,7 +452,7 @@ public class DashboardThread implements Runnable {
             cobranzaTotal += this.objectsContainer.getPagosVistaToDashboard().get(i).getMonto();
         }
 
-        this.objectsContainer.getDashboard().setCobranzaTotal(cobranzaTotal);
+        this.objectsContainer.getDashboard().setCobranzaTotal(MyUtil.getDouble(cobranzaTotal));
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -467,20 +468,19 @@ public class DashboardThread implements Runnable {
             }
         }
 
-        this.objectsContainer.getDashboard().setTotalCobranzaPura(totalCobranzaPura);
-
+        this.objectsContainer.getDashboard().setTotalCobranzaPura(MyUtil.getDouble(totalCobranzaPura));
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setMontoDeDebitoFaltante() {
-        this.objectsContainer.getDashboard().setMontoDeDebitoFaltante(this.objectsContainer.getDashboard()
-                .getDebitoTotal() - this.objectsContainer.getDashboard().getTotalCobranzaPura());
+        Double montoDebitoFaltante = this.objectsContainer.getDashboard()
+                .getDebitoTotal() - this.objectsContainer.getDashboard().getTotalCobranzaPura();
+
+        this.objectsContainer.getDashboard().setMontoDeDebitoFaltante(MyUtil.getDouble(montoDebitoFaltante));
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setEfectivoEnCampo() {
-
-
         double asignaciones = 0;
 
         if (

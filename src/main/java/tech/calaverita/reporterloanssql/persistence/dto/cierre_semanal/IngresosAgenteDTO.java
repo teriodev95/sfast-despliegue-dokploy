@@ -11,7 +11,7 @@ public class IngresosAgenteDTO {
     private Double montoExcedente;
     private Double liquidaciones;
     private Double multas;
-    private Double otros;
-    private String motivoOtros;
+    private Double otros = 0.0;
+    private String motivoOtros = "";
     private Double total;
 }

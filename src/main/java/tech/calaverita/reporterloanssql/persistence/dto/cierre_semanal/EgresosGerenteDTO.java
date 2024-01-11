@@ -10,7 +10,7 @@ public class EgresosGerenteDTO {
     private Integer porcentajeComisionCobranza;
     private Integer porcentajeBonoMensual;
     private Double pagoComisionCobranza;
-    private Double pagoComisionVentas;
+    private Double pagoComisionVentas = 0.0;
     private Double bonos;
     private Double efectivoRestanteCierre;
 }

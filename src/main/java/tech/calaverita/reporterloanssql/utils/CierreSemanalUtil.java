@@ -133,7 +133,8 @@ public class CierreSemanalUtil {
             egresosAgenteDTO.setAsignaciones(asignaciones);
 
             cobranzaTotal.join();
-            egresosAgenteDTO.setEfectivoEntregadoCierre(cobranzaTotal.get() - egresosAgenteDTO.getAsignaciones());
+            Double efectivoEntregadoEnCierre = cobranzaTotal.get() - egresosAgenteDTO.getAsignaciones();
+            egresosAgenteDTO.setEfectivoEntregadoCierre(MyUtil.getDouble(efectivoEntregadoEnCierre));
         }
 
         EgresosGerenteDTO egresosGerenteDTO = new EgresosGerenteDTO();
@@ -151,9 +152,11 @@ public class CierreSemanalUtil {
 
             cobranzaTotal.join();
 
-            egresosGerenteDTO.setPagoComisionCobranza(cobranzaTotal.get() / 100
-                    * egresosGerenteDTO.getPorcentajeComisionCobranza());
-            egresosGerenteDTO.setBonos(cobranzaTotal.get() / 100 * egresosGerenteDTO.getPorcentajeBonoMensual());
+            Double pagoComisionCobranza = cobranzaTotal.get() / 100 * egresosGerenteDTO.getPorcentajeComisionCobranza();
+            egresosGerenteDTO.setPagoComisionCobranza(MyUtil.getDouble(pagoComisionCobranza));
+
+            Double bonos = cobranzaTotal.get() / 100 * egresosGerenteDTO.getPorcentajeBonoMensual();
+            egresosGerenteDTO.setBonos(bonos);
         }
 
         IngresosAgenteDTO ingresosAgenteDTO = new IngresosAgenteDTO();
@@ -196,7 +199,7 @@ public class CierreSemanalUtil {
                 + dto.getAnio() + '-' + dto.getSemana();
 
         PdfWriter.getInstance(document, new FileOutputStream(System.getProperty("user.dir")
-                + "/src/cierres_semanales/"+ id + ".pdf"));
+                + "/src/cierres_semanales/" + id + ".pdf"));
         document.open();
 
         PdfPTable tablaCierreSemanal = new PdfPTable(3);
