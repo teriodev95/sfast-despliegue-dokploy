@@ -2,17 +2,30 @@ package tech.calaverita.reporterloanssql.itext;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPCellEvent;
+import com.itextpdf.text.pdf.PdfPTable;
 
 public class PdfStyleManager {
 
-    public static void setStyleForCellTitles(PdfPCell cell) {
+    public static void setStyleForCellTitlesFill(PdfPCell cell) {
         cell.setPadding(6);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         cell.setBackgroundColor(getPrimaryBasecolor());
         cell.setPadding(4f);
         cell.setBorder(0);
+    }
+
+    public static void setStyleForCellTitles(PdfPCell cell) {
+        cell.setPadding(6);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cell.setBorder(PdfPCell.NO_BORDER); // Desactiva el borde predeterminado
+        cell.setCellEvent(new DottedBorder()); // Aplica el borde punteado personalizado
+
     }
 
     public static void setStyleNormalCell(PdfPCell cell) {
@@ -28,7 +41,7 @@ public class PdfStyleManager {
         cell.setBorder(0);
     }
 
-    private static void commonCellStyle(PdfPCell cell) {
+    public static void commonCellStyle(PdfPCell cell) {
         cell.setPadding(4);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -47,5 +60,6 @@ public class PdfStyleManager {
     public static BaseColor getWhiteBaseColor() {
         return new BaseColor(255, 255, 255);
     }
+
 
 }

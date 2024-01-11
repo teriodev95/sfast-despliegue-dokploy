@@ -1,9 +1,6 @@
 package tech.calaverita.reporterloanssql.utils;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -19,7 +16,10 @@ import tech.calaverita.reporterloanssql.services.cierre_semanal.*;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
@@ -191,7 +191,7 @@ public class CierreSemanalUtil {
     public static void createCierreSemanalPDF(
             CierreSemanalDTO dto
     ) throws DocumentException, FileNotFoundException {
-        Rectangle hoja = new Rectangle(612f, 360f);
+        Rectangle hoja = new Rectangle(612f, 380f);
         Document document = new Document(hoja, 0f, 0f, 5f, 5f);
 
         // To easy code
@@ -240,17 +240,47 @@ public class CierreSemanalUtil {
         tablaCierreSemanal.addCell(columnaDerecha);
 
         document.add(tablaCierreSemanal);
+
+        /*
+             Chunk linebreak = new Chunk(new DottedLineSeparator());
+        document.add(linebreak);
+         */
+        document.add(new Paragraph("\n"));
+        document.add(getTerminosTable());
+
         document.close();
     }
+
+    private static PdfPTable getTerminosTable() {
+        PdfPTable table = new PdfPTable(1);
+        table.setWidthPercentage(95);
+
+        PdfPCell pdfPCell = new PdfPCell(getTerminosParagraph());
+        PdfStyleManager.commonCellStyle(pdfPCell);
+        table.addCell(pdfPCell);
+        return table;
+    }
+
+    private static Paragraph getTerminosParagraph() {
+        Font font = FontFactory.getFont(FontFactory.HELVETICA, 6, PdfStyleManager.getPrimaryBasecolor());
+        Paragraph paragraph = new Paragraph(terminosTxt(), font);
+        paragraph.setAlignment(Element.ALIGN_JUSTIFIED);
+        return paragraph;
+    }
+
+    private static String terminosTxt() {
+        return "Por política de la empresa, es necesario revisar y garantizar que este comprobante sea completado de manera adecuada antes de proceder con la firma. Le recordamos que dicho comprobante constituye el respaldo del efectivo entregado al gerente, y será requerido en caso de aclaraciones o auditorías. Tenga en cuenta que cualquier comprobante que presente tachaduras o enmendaduras no será aceptado.";
+    }
+
 
     private static PdfPCell getTitulo() {
         PdfPCell cellTitulo = new PdfPCell();
         PdfStyleManager.setStyleForCellTitles(cellTitulo);
 
-        Paragraph titulo = fuentes.bold("CIERRE SEMANAL", 18, 1,
-                PdfStyleManager.getWhiteBaseColor());
-        Paragraph subTitulo = fuentes.bold("BALANCE DE AGENCIA", 11, 1,
-                PdfStyleManager.getWhiteBaseColor());
+        Paragraph titulo = fuentes.bold("CIERRE SEMANAL", 12, 1,
+                PdfStyleManager.getPrimaryBasecolor());
+        Paragraph subTitulo = fuentes.bold("BALANCE DE AGENCIA", 12, 1,
+                PdfStyleManager.getPrimaryBasecolor());
 
         cellTitulo.addElement(titulo);
         cellTitulo.addElement(subTitulo);
@@ -268,24 +298,44 @@ public class CierreSemanalUtil {
         PdfPTable tablaBalanceAgencia = new PdfPTable(1);
         tablaBalanceAgencia.setWidthPercentage(100);
 
-        PdfPCell cellZonaYGerente = new PdfPCell(fuentes.regular("ZONA: " + balanceAgenciaDTO.getZona()
-                        + "   GERENTE: " + balanceAgenciaDTO.getGerente(), 9,
-                PdfStyleManager.getPrimaryBasecolor()));
-        PdfStyleManager.setStyleNormalCell(cellZonaYGerente);
 
-        PdfPCell cellAgenciaYAgente = new PdfPCell(fuentes.regular("AG: " + balanceAgenciaDTO.getAgencia()
-                        + "   AGENTE: " + balanceAgenciaDTO.getAgente(), 9,
-                PdfStyleManager.getPrimaryBasecolor()));
-        PdfStyleManager.setStyleFillColorCell(cellAgenciaYAgente);
+        Font fontBold = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8, PdfStyleManager.getPrimaryBasecolor());
+        Font fontRegular = FontFactory.getFont(FontFactory.HELVETICA, 8, PdfStyleManager.getPrimaryBasecolor());
 
-        PdfPCell cellRendimientoYNivel = new PdfPCell(fuentes.regular("% DE AG: " + balanceAgenciaDTO
-                        .getRendimiento() + "   NIVEL: " + balanceAgenciaDTO.getNivel(), 9,
-                PdfStyleManager.getPrimaryBasecolor()));
-        PdfStyleManager.setStyleNormalCell(cellRendimientoYNivel);
 
-        tablaBalanceAgencia.addCell(cellZonaYGerente);
-        tablaBalanceAgencia.addCell(cellAgenciaYAgente);
-        tablaBalanceAgencia.addCell(cellRendimientoYNivel);
+        Paragraph zonaGerenteParagraph = new Paragraph();
+        zonaGerenteParagraph.add(new Chunk("ZONA: ", fontBold));
+        zonaGerenteParagraph.add(new Chunk(balanceAgenciaDTO.getZona(), fontRegular));
+        zonaGerenteParagraph.add(new Chunk("  ·  GERENTE: ", fontBold));
+        zonaGerenteParagraph.add(new Chunk(balanceAgenciaDTO.getGerente(), fontRegular));
+
+
+        PdfPCell zonaGerenteCell = new PdfPCell(zonaGerenteParagraph);
+        PdfStyleManager.setStyleNormalCell(zonaGerenteCell);
+
+
+        Paragraph agenciaYAgenteParagraph = new Paragraph();
+        agenciaYAgenteParagraph.add(new Chunk("AGENCIA: ", fontBold));
+        agenciaYAgenteParagraph.add(new Chunk(balanceAgenciaDTO.getAgencia(), fontRegular));
+        agenciaYAgenteParagraph.add(new Chunk("  ·  AGENTE: ", fontBold));
+        agenciaYAgenteParagraph.add(new Chunk(balanceAgenciaDTO.getAgente(), fontRegular));
+
+        PdfPCell agenciaYAgenteCell = new PdfPCell(agenciaYAgenteParagraph);
+        PdfStyleManager.setStyleNormalCell(agenciaYAgenteCell);
+
+
+        Paragraph rendimientoYNivelParagraph = new Paragraph();
+        rendimientoYNivelParagraph.add(new Chunk("% DE AGENCIA: ", fontBold));
+        rendimientoYNivelParagraph.add(new Chunk(balanceAgenciaDTO.getRendimiento() + "", fontRegular));
+        rendimientoYNivelParagraph.add(new Chunk("  ·  NIVEL: ", fontBold));
+        rendimientoYNivelParagraph.add(new Chunk(balanceAgenciaDTO.getNivel(), fontRegular));
+        PdfPCell rendimientoYNivelCell = new PdfPCell(rendimientoYNivelParagraph);
+        PdfStyleManager.setStyleNormalCell(rendimientoYNivelCell);
+
+
+        tablaBalanceAgencia.addCell(zonaGerenteCell);
+        tablaBalanceAgencia.addCell(agenciaYAgenteCell);
+        tablaBalanceAgencia.addCell(rendimientoYNivelCell);
 
         cellBalanceAgencia.addElement(tablaBalanceAgencia);
         return cellBalanceAgencia;
@@ -303,53 +353,52 @@ public class CierreSemanalUtil {
         tablaIngresosAgente.setWidthPercentage(100);
         tablaIngresosAgente.setWidths(new float[]{1.3f, .7f});
 
-        PdfPCell cellTitulo = new PdfPCell(fuentes.regular("INGRESOS DEL AGENTE", 11,
-                PdfStyleManager.getWhiteBaseColor()));
+        PdfPCell cellTitulo = new PdfPCell(fuentes.bold("INGRESOS DEL AGENTE", 11,
+                PdfStyleManager.getPrimaryBasecolor()));
         cellTitulo.setColspan(2);
         PdfStyleManager.setStyleForCellTitles(cellTitulo);
 
-        PdfPCell cellCobranzaPura = new PdfPCell(fuentes.regular("COBRANZA PURA:", 9,
+        PdfPCell cellCobranzaPura = new PdfPCell(fuentes.bold("COBRANZA PURA:", 9,
                 PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleNormalCell(cellCobranzaPura);
 
-        PdfPCell cellMontoExcedente = new PdfPCell(fuentes.regular("MONTO EXCEDENTE:", 9,
+        PdfPCell cellMontoExcedente = new PdfPCell(fuentes.bold("MONTO EXCEDENTE:", 9,
                 PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleFillColorCell(cellMontoExcedente);
 
-        PdfPCell cellLiquidaciones = new PdfPCell(fuentes.regular("LIQUIDACIONES:", 9,
+        PdfPCell cellLiquidaciones = new PdfPCell(fuentes.bold("LIQUIDACIONES:", 9,
                 PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleNormalCell(cellLiquidaciones);
 
-        PdfPCell cellMultas = new PdfPCell(fuentes.regular("MULTAS:", 9,
+        PdfPCell cellMultas = new PdfPCell(fuentes.bold("MULTAS:", 9,
                 PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleFillColorCell(cellMultas);
 
-        PdfPCell cellOtros = new PdfPCell(fuentes.regular("OTROS (" + ingresosAgenteDTO.getMotivoOtros() + "):", 9,
+        PdfPCell cellOtros = new PdfPCell(fuentes.bold("OTROS (" + ingresosAgenteDTO.getMotivoOtros() + "):", 9,
                 PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleNormalCell(cellOtros);
 
-        PdfPCell cellTotalIngresos = new PdfPCell(fuentes.regular("TOTAL DE INGRESOS: $" + ingresosAgenteDTO
-                .getTotal(), 11, PdfStyleManager.getPrimaryBasecolor()));
+        PdfPCell cellTotalIngresos = new PdfPCell(fuentes.bold("TOTAL DE INGRESOS: " + money(ingresosAgenteDTO
+                .getTotal()), 11, PdfStyleManager.getPrimaryBasecolor()));
         cellTotalIngresos.setColspan(2);
         PdfStyleManager.setStyleFillColorCell(cellTotalIngresos);
 
-        PdfPCell cellCobranzaPura2 = new PdfPCell(fuentes.regular("$" + ingresosAgenteDTO.getCobranzaPura(),
+        PdfPCell cellCobranzaPura2 = new PdfPCell(fuentes.regular(money(ingresosAgenteDTO.getCobranzaPura()),
                 9, PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleNormalCell(cellCobranzaPura2);
 
-        PdfPCell cellMontoExcedente2 = new PdfPCell(fuentes.regular("$" + ingresosAgenteDTO.getMontoExcedente(),
+        PdfPCell cellMontoExcedente2 = new PdfPCell(fuentes.regular(money(ingresosAgenteDTO.getMontoExcedente()),
                 9, PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleFillColorCell(cellMontoExcedente2);
 
-        PdfPCell cellLiquidaciones2 = new PdfPCell(fuentes.regular("$" + ingresosAgenteDTO
-                .getLiquidaciones(), 9, PdfStyleManager.getPrimaryBasecolor()));
+        PdfPCell cellLiquidaciones2 = new PdfPCell(fuentes.regular(money(ingresosAgenteDTO.getLiquidaciones()), 9, PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleNormalCell(cellLiquidaciones2);
 
-        PdfPCell cellMultas2 = new PdfPCell(fuentes.regular("$" + ingresosAgenteDTO.getMultas(), 9,
+        PdfPCell cellMultas2 = new PdfPCell(fuentes.regular(money(ingresosAgenteDTO.getMultas()), 9,
                 PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleFillColorCell(cellMultas2);
 
-        PdfPCell cellOtros2 = new PdfPCell(fuentes.regular("$" + ingresosAgenteDTO.getOtros(), 9,
+        PdfPCell cellOtros2 = new PdfPCell(fuentes.regular(money(ingresosAgenteDTO.getOtros()), 9,
                 PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleNormalCell(cellOtros2);
 
@@ -391,8 +440,15 @@ public class CierreSemanalUtil {
                 .getPorcentajeBonoMensual() + "%", 9, PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleFillColorCell(cellBonoMensual);
 
+
+        PdfPCell cellValidation = new PdfPCell(fuentes.regular("* La generacion de este documento PDF se lleva a cabo de manera automatizada unicamente si el cierre es validado mediante la firma con fotografia y codigo PIN, tanto por parte del agente como del gerente. "
+                , 6, PdfStyleManager.getPrimaryBasecolor()));
+        PdfStyleManager.commonCellStyle(cellValidation);
+
         tablaPorcentajesEgresosGerente.addCell(cellComisionCobranza);
         tablaPorcentajesEgresosGerente.addCell(cellBonoMensual);
+        tablaPorcentajesEgresosGerente.addCell(cellValidation);
+
 
         cellPorcentajesEgresosGerente.addElement(tablaPorcentajesEgresosGerente);
 
@@ -405,10 +461,10 @@ public class CierreSemanalUtil {
         PdfPCell cellSemana = new PdfPCell();
         PdfStyleManager.setStyleForCellTitles(cellSemana);
 
-        Paragraph semana = fuentes.bold("SEM: " + dto.getSemana() + " AÑO: " + dto.getAnio(), 11, 1,
-                PdfStyleManager.getWhiteBaseColor());
-        Paragraph fecha = fuentes.bold("FECHA: D " + dto.getDia() + " /M " + dto.getMes(), 9, 1,
-                PdfStyleManager.getWhiteBaseColor());
+        Paragraph semana = fuentes.bold("SEM: " + dto.getSemana() + " ANIO: " + dto.getAnio(), 11, 1,
+                PdfStyleManager.getPrimaryBasecolor());
+        Paragraph fecha = fuentes.bold(mxFormatFullCurrent().toUpperCase(), 9, 1,
+                PdfStyleManager.getPrimaryBasecolor());
 
         cellSemana.addElement(semana);
         cellSemana.addElement(fecha);
@@ -426,26 +482,47 @@ public class CierreSemanalUtil {
         PdfPTable tablaBalanceAgencia = new PdfPTable(1);
         tablaBalanceAgencia.setWidthPercentage(100);
 
-        PdfPCell cellClientes = new PdfPCell(fuentes.regular("Total de clientes de la agencia: "
-                + balanceAgenciaDTO.getClientes(), 9, PdfStyleManager.getPrimaryBasecolor()));
-        PdfStyleManager.setStyleNormalCell(cellClientes);
 
-        PdfPCell cellPagoReducido = new PdfPCell(fuentes.regular("Total de clientes con PAGO REDUCIDO: "
-                + balanceAgenciaDTO.getPagosReducidos(), 9, PdfStyleManager.getPrimaryBasecolor()));
-        PdfStyleManager.setStyleFillColorCell(cellPagoReducido);
+        Font fontBold = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, PdfStyleManager.getPrimaryBasecolor());
+        Font fontRegular = FontFactory.getFont(FontFactory.HELVETICA, 8, PdfStyleManager.getPrimaryBasecolor());
 
-        PdfPCell cellNoPago = new PdfPCell(fuentes.regular("Total de clientes con NO PAGO: "
-                + balanceAgenciaDTO.getNoPagos(), 9, PdfStyleManager.getPrimaryBasecolor()));
-        PdfStyleManager.setStyleNormalCell(cellNoPago);
 
-        PdfPCell cellLiquidaciones = new PdfPCell(fuentes.regular("Total de clientes liquidados: "
-                + balanceAgenciaDTO.getLiquidaciones(), 9, PdfStyleManager.getPrimaryBasecolor()));
-        PdfStyleManager.setStyleFillColorCell(cellLiquidaciones);
+        Paragraph totalClientesParagraph = new Paragraph();
+        totalClientesParagraph.add(new Chunk("TOTAL DE CLIENTES DE LA AGENCIA: ", fontRegular));
+        totalClientesParagraph.add(new Chunk(balanceAgenciaDTO.getClientes() + "*", fontBold));
 
-        tablaBalanceAgencia.addCell(cellClientes);
-        tablaBalanceAgencia.addCell(cellPagoReducido);
-        tablaBalanceAgencia.addCell(cellNoPago);
-        tablaBalanceAgencia.addCell(cellLiquidaciones);
+        PdfPCell totalClientesCell = new PdfPCell(totalClientesParagraph);
+        PdfStyleManager.setStyleNormalCell(totalClientesCell);
+
+
+        Paragraph pagoReducidoParagraph = new Paragraph();
+        pagoReducidoParagraph.add(new Chunk("TOTAL DE CLIENTES CON PAGO REDUCIDO: ", fontRegular));
+        pagoReducidoParagraph.add(new Chunk(balanceAgenciaDTO.getPagosReducidos() + "*", fontBold));
+
+        PdfPCell pagoReducidoCell = new PdfPCell(pagoReducidoParagraph);
+        PdfStyleManager.setStyleFillColorCell(pagoReducidoCell);
+
+
+        Paragraph noPagoParagraph = new Paragraph();
+        noPagoParagraph.add(new Chunk("TOTAL DE CLIENTES CON NO PAGO: ", fontRegular));
+        noPagoParagraph.add(new Chunk(balanceAgenciaDTO.getNoPagos() + "*", fontBold));
+
+        PdfPCell noPagoCell = new PdfPCell(noPagoParagraph);
+        PdfStyleManager.setStyleNormalCell(noPagoCell);
+
+
+        Paragraph liquidacionesParagraph = new Paragraph();
+        liquidacionesParagraph.add(new Chunk("TOTAL DE CLIENTES LIQUIDADOS: ", fontRegular));
+        liquidacionesParagraph.add(new Chunk(balanceAgenciaDTO.getLiquidaciones() + "*", fontBold));
+
+        PdfPCell liquidacionesCell = new PdfPCell(liquidacionesParagraph);
+        PdfStyleManager.setStyleFillColorCell(liquidacionesCell);
+
+
+        tablaBalanceAgencia.addCell(totalClientesCell);
+        tablaBalanceAgencia.addCell(pagoReducidoCell);
+        tablaBalanceAgencia.addCell(noPagoCell);
+        tablaBalanceAgencia.addCell(liquidacionesCell);
 
         cellCobranza.addElement(tablaBalanceAgencia);
         return cellCobranza;
@@ -463,39 +540,39 @@ public class CierreSemanalUtil {
         tablaIngresosAgente.setWidthPercentage(100);
         tablaIngresosAgente.setWidths(new float[]{1.3f, .7f});
 
-        PdfPCell cellTitulo = new PdfPCell(fuentes.regular("EGRESOS DEL AGENTE", 11,
-                PdfStyleManager.getWhiteBaseColor()));
+        PdfPCell cellTitulo = new PdfPCell(fuentes.bold("EGRESOS DEL AGENTE", 11,
+                PdfStyleManager.getPrimaryBasecolor()));
         cellTitulo.setColspan(2);
         PdfStyleManager.setStyleForCellTitles(cellTitulo);
 
-        PdfPCell cellAsignaciones = new PdfPCell(fuentes.regular("ASIGNACIONES PREVIAS DE EFECTIVO:", 9,
+        PdfPCell cellAsignaciones = new PdfPCell(fuentes.bold("ASIGNACIONES PREVIAS DE EFECTIVO:", 9,
                 PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleNormalCell(cellAsignaciones);
 
-        PdfPCell cellOtros = new PdfPCell(fuentes.regular("OTROS (" + egresosAgenteDTO.getMotivoOtros() + "):", 9,
+        PdfPCell cellOtros = new PdfPCell(fuentes.bold("OTROS (" + egresosAgenteDTO.getMotivoOtros() + "):", 9,
                 PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleFillColorCell(cellOtros);
 
-        PdfPCell cellEfectivoEntregadoCierre = new PdfPCell(fuentes.regular("EFECTIVO ENTREGADO EN CIERRE:",
+        PdfPCell cellEfectivoEntregadoCierre = new PdfPCell(fuentes.bold("EFECTIVO ENTREGADO EN CIERRE:",
                 9, PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleNormalCell(cellEfectivoEntregadoCierre);
 
-        PdfPCell cellTotalEgresos = new PdfPCell(fuentes.regular("TOTAL DE EGRESOS: $" + egresosAgenteDTO
-                .getTotal(), 9, PdfStyleManager.getPrimaryBasecolor()));
+        PdfPCell cellTotalEgresos = new PdfPCell(fuentes.bold("TOTAL DE EGRESOS: " + money(egresosAgenteDTO
+                .getTotal()), 11, PdfStyleManager.getPrimaryBasecolor()));
         cellTotalEgresos.setColspan(2);
         PdfStyleManager.setStyleFillColorCell(cellTotalEgresos);
 
-        PdfPCell cellAsignaciones2 = new PdfPCell(fuentes.regular("$" + egresosAgenteDTO.getAsignaciones(), 9,
+        PdfPCell cellAsignaciones2 = new PdfPCell(fuentes.regular(money(egresosAgenteDTO.getAsignaciones()), 9,
                 PdfStyleManager.getPrimaryBasecolor()));
         cellTitulo.setColspan(2);
         PdfStyleManager.setStyleNormalCell(cellAsignaciones2);
 
-        PdfPCell cellOtros2 = new PdfPCell(fuentes.regular("$" + egresosAgenteDTO.getOtros(), 9,
+        PdfPCell cellOtros2 = new PdfPCell(fuentes.regular(money(egresosAgenteDTO.getOtros()), 9,
                 PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleFillColorCell(cellOtros2);
 
-        PdfPCell cellEfectivoEntregadoCierre2 = new PdfPCell(fuentes.regular("$" + egresosAgenteDTO
-                .getEfectivoEntregadoCierre(), 9, PdfStyleManager.getPrimaryBasecolor()));
+        PdfPCell cellEfectivoEntregadoCierre2 = new PdfPCell(fuentes.regular(money(egresosAgenteDTO
+                .getEfectivoEntregadoCierre()), 9, PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleNormalCell(cellEfectivoEntregadoCierre2);
 
         tablaIngresosAgente.addCell(cellTitulo);
@@ -524,37 +601,37 @@ public class CierreSemanalUtil {
         tablaIngresosAgente.setWidthPercentage(100);
         tablaIngresosAgente.setWidths(new float[]{1.3f, .7f});
 
-        PdfPCell cellTitulo = new PdfPCell(fuentes.regular("EGRESOS DEL GERENTE (Pagos a agente en CIERRE)",
-                11, PdfStyleManager.getWhiteBaseColor()));
+        PdfPCell cellTitulo = new PdfPCell(fuentes.bold("EGRESOS DEL GERENTE (Pagos a agente en CIERRE)",
+                11, PdfStyleManager.getPrimaryBasecolor()));
         cellTitulo.setColspan(2);
         PdfStyleManager.setStyleForCellTitles(cellTitulo);
 
-        PdfPCell cellPagoComisionCobranza = new PdfPCell(fuentes.regular("PAGO DE COMISION POR COBRANZA:",
+        PdfPCell cellPagoComisionCobranza = new PdfPCell(fuentes.bold("PAGO DE COMISION POR COBRANZA:",
                 9, PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleNormalCell(cellPagoComisionCobranza);
 
-        PdfPCell cellPagoComisionVentas = new PdfPCell(fuentes.regular("PAGO DE COMISION POR VENTAS:", 9,
+        PdfPCell cellPagoComisionVentas = new PdfPCell(fuentes.bold("PAGO DE COMISION POR VENTAS:", 9,
                 PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleFillColorCell(cellPagoComisionVentas);
 
-        PdfPCell cellBonos = new PdfPCell(fuentes.regular("BONOS:", 9,
+        PdfPCell cellBonos = new PdfPCell(fuentes.bold("BONOS:", 9,
                 PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleNormalCell(cellBonos);
 
-        PdfPCell cellEfectivoRestanteCierre = new PdfPCell(fuentes.regular("EFECTIVO RESTANTE DE CIERRE: $"
-                + egresosGerenteDTO.getEfectivoRestanteCierre(), 9, PdfStyleManager.getPrimaryBasecolor()));
+        PdfPCell cellEfectivoRestanteCierre = new PdfPCell(fuentes.bold("EFECTIVO RESTANTE DE CIERRE: "
+                + money(egresosGerenteDTO.getEfectivoRestanteCierre()), 11, PdfStyleManager.getPrimaryBasecolor()));
         cellEfectivoRestanteCierre.setColspan(2);
         PdfStyleManager.setStyleFillColorCell(cellEfectivoRestanteCierre);
 
-        PdfPCell cellPagoComisionCobranza2 = new PdfPCell(fuentes.regular("$" + egresosGerenteDTO
-                .getPagoComisionCobranza(), 9, PdfStyleManager.getPrimaryBasecolor()));
+        PdfPCell cellPagoComisionCobranza2 = new PdfPCell(fuentes.regular(money(egresosGerenteDTO
+                .getPagoComisionCobranza()), 9, PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleNormalCell(cellPagoComisionCobranza2);
 
-        PdfPCell cellPagoComisionVentas2 = new PdfPCell(fuentes.regular("$" + egresosGerenteDTO.getPagoComisionVentas(),
+        PdfPCell cellPagoComisionVentas2 = new PdfPCell(fuentes.regular(money(egresosGerenteDTO.getPagoComisionVentas()),
                 9, PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleFillColorCell(cellPagoComisionVentas2);
 
-        PdfPCell cellBonos2 = new PdfPCell(fuentes.regular("$" + egresosGerenteDTO.getBonos(), 9,
+        PdfPCell cellBonos2 = new PdfPCell(fuentes.regular(money(egresosGerenteDTO.getBonos()), 9,
                 PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleNormalCell(cellBonos2);
 
@@ -570,5 +647,23 @@ public class CierreSemanalUtil {
         cellIngresosAgente.addElement(tablaIngresosAgente);
 
         return cellIngresosAgente;
+    }
+
+
+    //TODO - mover a otra clase helper o util
+    public static String mxFormatFullCurrent() {
+        LocalDateTime currentDate = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE d 'de' MMMM 'de' yyyy h:mm a", new Locale("es", "MX"));
+        return currentDate.format(formatter);
+    }
+
+    public static String decimal(double numero) {
+        DecimalFormat decimalesformato = new DecimalFormat("###,###,###.00");
+        return decimalesformato.format(numero);
+    }
+
+    public static String money(double numero) {
+        DecimalFormat decimalesformato = new DecimalFormat("###,###,###.00");
+        return "$" + decimalesformato.format(numero);
     }
 }
