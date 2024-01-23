@@ -132,7 +132,7 @@ public final class CierreSemanalController {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @PostMapping(path = "/create-one")
-    public @ResponseBody ResponseEntity<String> restrCreateCierreSemanal(
+    public @ResponseBody ResponseEntity<String> createCierreSemanal(
             @RequestBody CierreSemanalDTO cierreSemanalDTO,
             @RequestHeader(name = "staticToken") String staticToken,
             @RequestHeader(name = "username") String username
@@ -199,6 +199,7 @@ public final class CierreSemanalController {
             responseStatus = HttpStatus.BAD_REQUEST;
         }
 
+        CierreSemanalUtil.subSendCierreSemanalMessage(cierreSemanalDTO);
         CierreSemanalUtil.createCierreSemanalPDF(cierreSemanalDTO);
 
         return new ResponseEntity<>(responseText, responseStatus);

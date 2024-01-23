@@ -7,6 +7,7 @@ public class CierreSemanalDTO {
     private Integer semana;
     private Integer anio;
     private Integer dia;
+    private String sucursal;
     private String mes;
     private String PDF;
     private String selfieAgente;

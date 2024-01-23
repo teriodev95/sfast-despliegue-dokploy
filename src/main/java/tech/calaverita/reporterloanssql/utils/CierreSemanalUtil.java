@@ -1,9 +1,11 @@
 package tech.calaverita.reporterloanssql.utils;
 
+import com.google.gson.Gson;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import okhttp3.*;
 import org.springframework.stereotype.Component;
 import tech.calaverita.reporterloanssql.itext.PdfStyleManager;
 import tech.calaverita.reporterloanssql.itext.fonts.Fonts;
@@ -12,10 +14,12 @@ import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.cierre_semanal.*;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.services.PagoService;
+import tech.calaverita.reporterloanssql.services.SucursalService;
 import tech.calaverita.reporterloanssql.services.cierre_semanal.*;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,6 +39,7 @@ public class CierreSemanalUtil {
     private static EgresosGerenteService egresosGerenteService;
     private static IngresosAgenteService ingresosAgenteService;
     private static PagoService pagoService;
+    private static SucursalService sucursalService;
     private static Fonts fuentes = new Fonts();
 
     public CierreSemanalUtil(
@@ -43,7 +48,8 @@ public class CierreSemanalUtil {
             EgresosAgenteService egresosAgenteService,
             EgresosGerenteService egresosGerenteService,
             IngresosAgenteService ingresosAgenteService,
-            PagoService pagoService
+            PagoService pagoService,
+            SucursalService sucursalService
     ) {
         CierreSemanalUtil.balanceAgenciaService = balanceAgenciaService;
         CierreSemanalUtil.cierreSemanalService = cierreSemanalService;
@@ -51,6 +57,7 @@ public class CierreSemanalUtil {
         CierreSemanalUtil.egresosGerenteService = egresosGerenteService;
         CierreSemanalUtil.ingresosAgenteService = ingresosAgenteService;
         CierreSemanalUtil.pagoService = pagoService;
+        CierreSemanalUtil.sucursalService = sucursalService;
     }
 
     public static CierreSemanalDTO getCierreSemanalDTO(
@@ -176,6 +183,7 @@ public class CierreSemanalUtil {
         cierreSemanalDTO.setPinAgente(agenteUsuarioEntity.getPin());
         cierreSemanalDTO.setIsAgenciaCerrada(false);
         cierreSemanalDTO.setDia(LocalDate.now().getDayOfMonth());
+        cierreSemanalDTO.setSucursal(sucursalService.getSucursalByGerenciaId(dashboard.getGerencia()));
 
         String mes = LocalDate.now().getMonth().getDisplayName(TextStyle.FULL, new Locale("es",
                 "ES"));
@@ -665,5 +673,33 @@ public class CierreSemanalUtil {
     public static String money(double numero) {
         DecimalFormat decimalesformato = new DecimalFormat("###,###,###.00");
         return "$" + decimalesformato.format(numero);
+    }
+
+    public static void subSendCierreSemanalMessage(
+            CierreSemanalDTO cierreSemanalDTO
+    ) {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://fast-n8n.terio.xyz/webhook/08cff6e3-a379-4dc1-8d77-afc188147b99")
+                .post(CierreSemanalUtil.requestBodyCierreSemanal(cierreSemanalDTO))
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            // Do something with the response.
+        } catch (
+                IOException e
+        ) {
+            e.printStackTrace();
+        }
+    }
+
+    private static RequestBody requestBodyCierreSemanal(
+            CierreSemanalDTO cierreSemanalDTO
+    ) {
+        String cierreSemanalJSON = new Gson().toJson(cierreSemanalDTO);
+
+        return RequestBody.create(MediaType.parse("application/json"), cierreSemanalJSON);
     }
 }

@@ -41,4 +41,13 @@ public class SucursalService {
 
         return CompletableFuture.completedFuture(entity);
     }
+
+    public String getSucursalByGerenciaId(
+            String gerenciaId
+    ) {
+        String sucursalId = gerenciaId.substring(0, 4);
+        SucursalEntity entity = this.repo.findBySucursalId(sucursalId);
+
+        return entity.getNombre().split(" ")[0];
+    }
 }
