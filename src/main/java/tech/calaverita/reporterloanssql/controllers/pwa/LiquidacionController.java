@@ -11,6 +11,7 @@ import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.utils.LiquidacionUtil;
 import tech.calaverita.reporterloanssql.utils.PagoUtil;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/xpress/v1/pwa/payoffs")
 public class LiquidacionController {
