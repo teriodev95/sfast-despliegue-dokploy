@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.calaverita.reporterloanssql.Constants;
 import tech.calaverita.reporterloanssql.controllers.XpressController;
 import tech.calaverita.reporterloanssql.persistence.dto.cierre_semanal.CierreSemanalDTO;
 import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
@@ -211,7 +212,7 @@ public final class CierreSemanalController {
     public @ResponseBody ResponseEntity<InputStreamResource> getPdf2(
             @PathVariable("file") String file
     ) throws IOException {
-        FileInputStream fileInputStream = new FileInputStream("src/cierres_semanales/" + file);
+        FileInputStream fileInputStream = new FileInputStream(Constants.RUTA_PDF_PRODUCCION + file);
 
         return new ResponseEntity<>(new InputStreamResource(fileInputStream), HttpStatus.OK);
     }
