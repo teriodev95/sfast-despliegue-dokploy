@@ -7,6 +7,7 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import okhttp3.*;
 import org.springframework.stereotype.Component;
+import tech.calaverita.reporterloanssql.Constants;
 import tech.calaverita.reporterloanssql.itext.PdfStyleManager;
 import tech.calaverita.reporterloanssql.itext.fonts.Fonts;
 import tech.calaverita.reporterloanssql.persistence.dto.cierre_semanal.*;
@@ -212,8 +213,7 @@ public class CierreSemanalUtil {
         String id = dto.getBalanceAgencia().getZona() + '-' + dto.getBalanceAgencia().getAgencia() + '-'
                 + dto.getAnio() + '-' + dto.getSemana();
 
-        PdfWriter.getInstance(document, new FileOutputStream(System.getProperty("user.dir")
-                + "/src/cierres_semanales/" + id + ".pdf"));
+        PdfWriter.getInstance(document, new FileOutputStream(Constants.RUTA_PDF_PRODUCCION + id + ".pdf"));
         document.open();
 
         PdfPTable tablaCierreSemanal = new PdfPTable(3);
