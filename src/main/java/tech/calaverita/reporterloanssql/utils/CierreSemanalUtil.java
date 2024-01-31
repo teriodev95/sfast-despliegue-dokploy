@@ -13,6 +13,7 @@ import tech.calaverita.reporterloanssql.persistence.dto.cierre_semanal.*;
 import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.cierre_semanal.*;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
+import tech.calaverita.reporterloanssql.services.AgenciaService;
 import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.SucursalService;
 import tech.calaverita.reporterloanssql.services.cierre_semanal.*;
@@ -40,6 +41,7 @@ public class CierreSemanalUtil {
     private static IngresosAgenteService ingresosAgenteService;
     private static PagoService pagoService;
     private static SucursalService sucursalService;
+    private static AgenciaService agenciaService;
     private static Fonts fuentes = new Fonts();
 
     public CierreSemanalUtil(
@@ -49,7 +51,8 @@ public class CierreSemanalUtil {
             EgresosGerenteService egresosGerenteService,
             IngresosAgenteService ingresosAgenteService,
             PagoService pagoService,
-            SucursalService sucursalService
+            SucursalService sucursalService,
+            AgenciaService agenciaService
     ) {
         CierreSemanalUtil.balanceAgenciaService = balanceAgenciaService;
         CierreSemanalUtil.cierreSemanalService = cierreSemanalService;
@@ -58,6 +61,7 @@ public class CierreSemanalUtil {
         CierreSemanalUtil.ingresosAgenteService = ingresosAgenteService;
         CierreSemanalUtil.pagoService = pagoService;
         CierreSemanalUtil.sucursalService = sucursalService;
+        CierreSemanalUtil.agenciaService = agenciaService;
     }
 
     public static CierreSemanalDTO getCierreSemanalDTO(
@@ -129,6 +133,7 @@ public class CierreSemanalUtil {
             balanceAgenciaDTO.setRendimiento(dashboard.getRendimiento());
             balanceAgenciaDTO.setNivel(BalanceAgenciaUtil.getNivelAgente(dashboard.getClientes(),
                     dashboard.getRendimiento() / 100, agenteUsuarioEntity));
+            balanceAgenciaDTO.setNivelCalculado(balanceAgenciaDTO.getNivel());
             balanceAgenciaDTO.setClientes(dashboard.getClientes());
             balanceAgenciaDTO.setPagosReducidos(dashboard.getPagosReducidos());
             balanceAgenciaDTO.setNoPagos(dashboard.getNoPagos());
@@ -184,6 +189,7 @@ public class CierreSemanalUtil {
         cierreSemanalDTO.setIsAgenciaCerrada(false);
         cierreSemanalDTO.setDia(LocalDate.now().getDayOfMonth());
         cierreSemanalDTO.setSucursal(sucursalService.getSucursalByGerenciaId(dashboard.getGerencia()));
+        cierreSemanalDTO.setStatusAgencia(agenciaService.getStatusByAgenciaId(dashboard.getAgencia()));
 
         String mes = LocalDate.now().getMonth().getDisplayName(TextStyle.FULL, new Locale("es",
                 "ES"));

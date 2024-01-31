@@ -16,6 +16,7 @@ import tech.calaverita.reporterloanssql.services.AsignacionService;
 import tech.calaverita.reporterloanssql.services.UsuarioService;
 import tech.calaverita.reporterloanssql.services.cierre_semanal.*;
 import tech.calaverita.reporterloanssql.utils.CierreSemanalUtil;
+import tech.calaverita.reporterloanssql.utils.LogUtil;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,36 +33,36 @@ public final class CierreSemanalController {
     //------------------------------------------------------------------------------------------------------------------
     /*INSTANCE VARIABLES*/
     //------------------------------------------------------------------------------------------------------------------
-    private final AsignacionService asignServ;
-    private final UsuarioService usuarServ;
-    private final XpressController xprContr;
-    private final BalanceAgenciaService balAgencServ;
-    private final CierreSemanalService cierSemServ;
-    private final EgresosAgenteService egrAgentServ;
-    private final EgresosGerenteService egrGerServ;
-    private final IngresosAgenteService ingrAgentServ;
+    private final AsignacionService asignacionService;
+    private final UsuarioService usuarioService;
+    private final XpressController xpressController;
+    private final BalanceAgenciaService balanceAgenciaService;
+    private final CierreSemanalService cierreSemanalService;
+    private final EgresosAgenteService egresosAgenteService;
+    private final EgresosGerenteService egresosGerenteService;
+    private final IngresosAgenteService ingresosAgenteService;
 
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
     //------------------------------------------------------------------------------------------------------------------
     private CierreSemanalController(
-            AsignacionService asignServ_S,
-            UsuarioService usuarServ_S,
-            XpressController xprContr_S,
-            BalanceAgenciaService balAgencServ_S,
-            CierreSemanalService cierSemServ_S,
-            EgresosAgenteService egrAgentServ_S,
-            EgresosGerenteService egrGerServ_S,
-            IngresosAgenteService ingrAgentServ_S
+            AsignacionService asignacionService,
+            UsuarioService usuarioService,
+            XpressController xpressController,
+            BalanceAgenciaService balanceAgenciaService,
+            CierreSemanalService cierreSemanalService,
+            EgresosAgenteService egresosAgenteService,
+            EgresosGerenteService egresosGerenteService,
+            IngresosAgenteService ingresosAgenteService
     ) {
-        this.asignServ = asignServ_S;
-        this.usuarServ = usuarServ_S;
-        this.xprContr = xprContr_S;
-        this.balAgencServ = balAgencServ_S;
-        this.cierSemServ = cierSemServ_S;
-        this.egrAgentServ = egrAgentServ_S;
-        this.egrGerServ = egrGerServ_S;
-        this.ingrAgentServ = ingrAgentServ_S;
+        this.asignacionService = asignacionService;
+        this.usuarioService = usuarioService;
+        this.xpressController = xpressController;
+        this.balanceAgenciaService = balanceAgenciaService;
+        this.cierreSemanalService = cierreSemanalService;
+        this.egresosAgenteService = egresosAgenteService;
+        this.egresosGerenteService = egresosGerenteService;
+        this.ingresosAgenteService = ingresosAgenteService;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -85,19 +86,19 @@ public final class CierreSemanalController {
         List<UsuarioEntity> usuarioModels;
         double asignaciones;
 
-        Optional<CierreSemanalEntity> cierreSemanalEntity = this.cierSemServ.findByAgenciaAnioAndSemana(agencia, anio,
+        Optional<CierreSemanalEntity> cierreSemanalEntity = this.cierreSemanalService.findByAgenciaAnioAndSemana(agencia, anio,
                 semana);
 
         if (
                 staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")
         ) {
             if (
-                    !this.usuarServ.existsByUsuario(username)
+                    !this.usuarioService.existsByUsuario(username)
             ) {
                 responseStatus = HttpStatus.FORBIDDEN;
             } //
             else if (
-                    !this.usuarServ.existsByUsuarioActivo(username)
+                    !this.usuarioService.existsByUsuarioActivo(username)
             ) {
                 responseStatus = HttpStatus.UNAUTHORIZED;
             } //
@@ -108,13 +109,13 @@ public final class CierreSemanalController {
                     cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(cierreSemanalEntity.get());
                 } //
                 else if (
-                        this.usuarServ.findByUsuario(agencia).isPresent()
+                        this.usuarioService.findByUsuario(agencia).isPresent()
                 ) {
-                    dashboard = xprContr.getDashboardByAgenciaAnioAndSemana(agencia, anio, semana).getBody();
+                    dashboard = xpressController.getDashboardByAgenciaAnioAndSemana(agencia, anio, semana).getBody();
                     usuarioModels = new ArrayList<>();
-                    usuarioModels.add(this.usuarServ.usuarModFindByUsuario(agencia));
-                    usuarioModels.add(this.usuarServ.usuarModFindByUsuario(usuarioModels.get(0).getGerencia()));
-                    asignaciones = this.asignServ.getSumaDeAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
+                    usuarioModels.add(this.usuarioService.usuarModFindByUsuario(agencia));
+                    usuarioModels.add(this.usuarioService.usuarModFindByUsuario(usuarioModels.get(0).getGerencia()));
+                    asignaciones = this.asignacionService.getSumaDeAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
 
                     cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(dashboard, usuarioModels, asignaciones);
                 } //
@@ -139,52 +140,53 @@ public final class CierreSemanalController {
     ) throws DocumentException, FileNotFoundException {
         String responseText = "";
         HttpStatus responseStatus;
-        CierreSemanalEntity cierreSemanalEntity = this.cierSemServ.getCierreSemanalEntity(cierreSemanalDTO);
+        CierreSemanalEntity cierreSemanalEntity = this.cierreSemanalService.getCierreSemanalEntity(cierreSemanalDTO);
 
         // To easy code
         String urlPDF = "https://sfast-api.terio.xyz/xpress/v1/pwa/cierres_semanales/pdf/"
                 + cierreSemanalEntity.getId() + ".pdf";
 
         cierreSemanalEntity.setPDF(urlPDF);
+        cierreSemanalEntity.setLog(LogUtil.getLogCierreSemanal(cierreSemanalDTO.getBalanceAgencia()));
 
         if (
                 staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")
         ) {
             if (
-                    !this.usuarServ.existsByUsuarioGerente(username)
+                    !this.usuarioService.existsByUsuarioGerente(username)
             ) {
                 responseStatus = HttpStatus.FORBIDDEN;
             } //
             else if (
-                    !this.usuarServ.existsByUsuarioGerenteActivo(username)
+                    !this.usuarioService.existsByUsuarioGerenteActivo(username)
             ) {
                 responseStatus = HttpStatus.UNAUTHORIZED;
             } //
             else {
                 if (
-                        this.cierSemServ.findById(cierreSemanalEntity.getId()).isEmpty()
+                        this.cierreSemanalService.findById(cierreSemanalEntity.getId()).isEmpty()
                 ) {
-                    BalanceAgenciaEntity balanceAgenciaEntity = this.balAgencServ
+                    BalanceAgenciaEntity balanceAgenciaEntity = this.balanceAgenciaService
                             .getBalanceAgenciaEntity(cierreSemanalDTO.getBalanceAgencia());
                     balanceAgenciaEntity.setId(cierreSemanalEntity.getBalanceAgenciaId());
-                    this.balAgencServ.save(balanceAgenciaEntity);
+                    this.balanceAgenciaService.save(balanceAgenciaEntity);
 
-                    EgresosAgenteEntity egresosAgenteEntity = this.egrAgentServ
+                    EgresosAgenteEntity egresosAgenteEntity = this.egresosAgenteService
                             .getEgresosGerenteEntity(cierreSemanalDTO.getEgresosAgente());
                     egresosAgenteEntity.setId(cierreSemanalEntity.getEgresosAgenteId());
-                    this.egrAgentServ.save(egresosAgenteEntity);
+                    this.egresosAgenteService.save(egresosAgenteEntity);
 
-                    EgresosGerenteEntity egresosGerenteEntity = this.egrGerServ
+                    EgresosGerenteEntity egresosGerenteEntity = this.egresosGerenteService
                             .getEgresosGerenteEntity(cierreSemanalDTO.getEgresosGerente());
                     egresosGerenteEntity.setId(cierreSemanalEntity.getEgresosGerenteId());
-                    this.egrGerServ.save(egresosGerenteEntity);
+                    this.egresosGerenteService.save(egresosGerenteEntity);
 
-                    IngresosAgenteEntity ingresosAgenteEntity = this.ingrAgentServ
+                    IngresosAgenteEntity ingresosAgenteEntity = this.ingresosAgenteService
                             .getIngresosAgenteEntity(cierreSemanalDTO.getIngresosAgente());
                     ingresosAgenteEntity.setId(cierreSemanalEntity.getIngresosAgenteId());
-                    this.ingrAgentServ.save(ingresosAgenteEntity);
+                    this.ingresosAgenteService.save(ingresosAgenteEntity);
 
-                    this.cierSemServ.save(cierreSemanalEntity);
+                    this.cierreSemanalService.save(cierreSemanalEntity);
 
                     responseText = urlPDF;
                     responseStatus = HttpStatus.CREATED;

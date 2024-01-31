@@ -28,4 +28,5 @@ public class Dashboard {
     private Double cobranzaTotal;
     private Double montoDeDebitoFaltante;
     private Double efectivoEnCampo;
+    private String statusAgencia;
 }

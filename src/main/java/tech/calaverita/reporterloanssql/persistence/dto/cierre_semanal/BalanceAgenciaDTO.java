@@ -13,6 +13,7 @@ public class BalanceAgenciaDTO {
     private String agente;
     private Double rendimiento;
     private String nivel;
+    private String nivelCalculado;
     private Integer clientes;
     private Integer pagosReducidos;
     private Integer noPagos;

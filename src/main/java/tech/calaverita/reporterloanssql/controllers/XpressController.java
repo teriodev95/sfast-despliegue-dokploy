@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
 import tech.calaverita.reporterloanssql.pojos.Cobranza;
+import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.pojos.LoginResponse;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.security.AuthCredentials;
@@ -120,7 +121,7 @@ public final class XpressController {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @CrossOrigin
     @GetMapping(path = "/dashboard-agencia/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<tech.calaverita.reporterloanssql.pojos.Dashboard> getDashboardByAgenciaAnioAndSemana(
+    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgenciaAnioAndSemana(
             @PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana
     ) {
         tech.calaverita.reporterloanssql.pojos.Dashboard dashboard = new tech.calaverita.reporterloanssql.pojos.Dashboard();
@@ -141,7 +142,7 @@ public final class XpressController {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @CrossOrigin
     @GetMapping(path = "/dashboard-gerencia/{gerencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<tech.calaverita.reporterloanssql.pojos.Dashboard> getDashboardByGerencia(
+    public @ResponseBody ResponseEntity<Dashboard> getDashboardByGerencia(
             @PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio,
             @PathVariable("semana") int semana
     ) {

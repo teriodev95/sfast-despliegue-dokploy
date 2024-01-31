@@ -56,4 +56,12 @@ public class AgenciaService {
     ) {
         return this.repo.findById(id);
     }
+
+    public String getStatusByAgenciaId(
+            String agenciaId
+    ){
+        Optional<AgenciaEntity> entity = repo.findById(agenciaId);
+
+        return entity.get().getStatus();
+    }
 }

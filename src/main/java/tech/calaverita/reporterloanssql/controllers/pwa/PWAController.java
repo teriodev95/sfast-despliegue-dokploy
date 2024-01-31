@@ -9,6 +9,7 @@ import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.pojos.pwa.CobranzaPWA;
 import tech.calaverita.reporterloanssql.pojos.pwa.HistoricoPWA;
+import tech.calaverita.reporterloanssql.services.AgenciaService;
 import tech.calaverita.reporterloanssql.services.AsignacionService;
 import tech.calaverita.reporterloanssql.services.CalendarioService;
 import tech.calaverita.reporterloanssql.utils.DashboardPorDiaUtil;
@@ -27,18 +28,21 @@ public final class PWAController {
     //------------------------------------------------------------------------------------------------------------------
     /*INSTANCE VARIABLES*/
     //------------------------------------------------------------------------------------------------------------------
-    private final AsignacionService asignServ;
-    private final CalendarioService calServ;
+    private final AsignacionService asignacionService;
+    private final CalendarioService calendarioService;
+    private final AgenciaService agenciaService;
 
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
     //------------------------------------------------------------------------------------------------------------------
     PWAController(
-            AsignacionService asignServ_S,
-            CalendarioService calServ_S
+            AsignacionService asignacionService,
+            CalendarioService calendarioService,
+            AgenciaService agenciaService
     ) {
-        this.asignServ = asignServ_S;
-        this.calServ = calServ_S;
+        this.asignacionService = asignacionService;
+        this.calendarioService = calendarioService;
+        this.agenciaService = agenciaService;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -62,7 +66,7 @@ public final class PWAController {
     public ResponseEntity<CalendarioEntity> getSemanaActual() {
         String fechaActual = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
-        CalendarioEntity calendarioEntity = this.calServ.findByFechaActual(fechaActual);
+        CalendarioEntity calendarioEntity = this.calendarioService.findByFechaActual(fechaActual);
 
         return new ResponseEntity<>(calendarioEntity, HttpStatus.OK);
     }
@@ -73,6 +77,7 @@ public final class PWAController {
             @PathVariable("agencia") String agencia, @PathVariable("fecha") String fecha
     ) {
         Dashboard dashboard = new Dashboard();
+        dashboard.setStatusAgencia(this.agenciaService.getStatusByAgenciaId(agencia));
         ObjectsContainer objectsContainer = new ObjectsContainer();
 
         dashboard.setAgencia(agencia);
@@ -127,7 +132,7 @@ public final class PWAController {
     public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> getAsignacionesByAgenciaAnioAndSemana(
             @PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana
     ) {
-        ArrayList<AsignacionEntity> darrasignEnt = this.asignServ
+        ArrayList<AsignacionEntity> darrasignEnt = this.asignacionService
                 .darrasignModFindByAgenciaAnioAndSemana(agencia, anio, semana);
 
         if (darrasignEnt.isEmpty()) {

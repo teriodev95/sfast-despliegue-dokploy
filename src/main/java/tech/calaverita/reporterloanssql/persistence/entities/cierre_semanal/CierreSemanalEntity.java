@@ -22,4 +22,5 @@ public class CierreSemanalEntity {
     private String PDF;
     private String selfieAgente;
     private String selfieGerente;
+    private String log;
 }
