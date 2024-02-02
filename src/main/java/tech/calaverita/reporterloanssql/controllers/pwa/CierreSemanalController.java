@@ -147,6 +147,7 @@ public final class CierreSemanalController {
         String urlPDF = "https://sfast-api.terio.xyz/xpress/v1/pwa/cierres_semanales/pdf/"
                 + cierreSemanalEntity.getId() + ".pdf";
 
+        cierreSemanalDTO.setPDF(urlPDF);
         cierreSemanalEntity.setPDF(urlPDF);
         cierreSemanalEntity.setLog(LogUtil.getLogCierreSemanal(cierreSemanalDTO.getBalanceAgencia()));
 
