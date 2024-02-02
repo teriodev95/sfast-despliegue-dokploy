@@ -22,8 +22,8 @@ public final class XpressController {
     //------------------------------------------------------------------------------------------------------------------
     /*INSTANCE VARIABLES*/
     //------------------------------------------------------------------------------------------------------------------
-    private final AgenciaService agencServ;
-    private final UsuarioService usuarServ;
+    private final AgenciaService agenciaService;
+    private final UsuarioService usuarioService;
 
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
@@ -32,8 +32,8 @@ public final class XpressController {
             AgenciaService agencServ_S,
             UsuarioService usuarServ_S
     ) {
-        this.agencServ = agencServ_S;
-        this.usuarServ = usuarServ_S;
+        this.agenciaService = agencServ_S;
+        this.usuarioService = usuarServ_S;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ public final class XpressController {
     public @ResponseBody ResponseEntity<?> login(
             @RequestBody AuthCredentials login
     ) {
-        UsuarioEntity usuarioEntity = this.usuarServ.usuarModFindByUsuarioAndPin(login.getUsername(), login.getPassword());
+        UsuarioEntity usuarioEntity = this.usuarioService.usuarModFindByUsuarioAndPin(login.getUsername(), login.getPassword());
         LoginResponse loginResponse = new LoginResponse();
 
         if (usuarioEntity == null) {
@@ -51,7 +51,7 @@ public final class XpressController {
         }
 
         loginResponse.setSolicitante(usuarioEntity);
-        loginResponse.setInvolucrados(this.usuarServ.darrUsuarModFindByGerencia(usuarioEntity.getGerencia()));
+        loginResponse.setInvolucrados(this.usuarioService.darrUsuarModFindByGerencia(usuarioEntity.getGerencia()));
 
         return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }
@@ -84,7 +84,7 @@ public final class XpressController {
             @PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio,
             @PathVariable("semana") int semana
     ) {
-        ArrayList<String> agencias = this.agencServ.darrstrAgenciaIdFindByGerenciaId(gerencia);
+        ArrayList<String> agencias = this.agenciaService.darrstrAgenciaIdFindByGerenciaId(gerencia);
 
         Thread[] threads = new Thread[agencias.size()];
         Cobranza[] cobranzas = new Cobranza[agencias.size()];
@@ -124,7 +124,8 @@ public final class XpressController {
     public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgenciaAnioAndSemana(
             @PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana
     ) {
-        tech.calaverita.reporterloanssql.pojos.Dashboard dashboard = new tech.calaverita.reporterloanssql.pojos.Dashboard();
+        Dashboard dashboard = new tech.calaverita.reporterloanssql.pojos.Dashboard();
+        dashboard.setStatusAgencia(this.agenciaService.getStatusByAgenciaId(agencia));
         ObjectsContainer objectsContainer = new ObjectsContainer();
 
         objectsContainer.setDashboard(dashboard);
@@ -148,7 +149,7 @@ public final class XpressController {
     ) {
         tech.calaverita.reporterloanssql.pojos.Dashboard dashboardResponse;
 
-        ArrayList<String> agencias = this.agencServ.darrstrAgenciaIdFindByGerenciaId(gerencia);
+        ArrayList<String> agencias = this.agenciaService.darrstrAgenciaIdFindByGerenciaId(gerencia);
 
         Thread[] threads = new Thread[agencias.size()];
         tech.calaverita.reporterloanssql.pojos.Dashboard[] dashboards = new tech.calaverita.reporterloanssql.pojos
