@@ -2,6 +2,7 @@ package tech.calaverita.reporterloanssql.controllers.pwa;
 
 import com.itextpdf.text.DocumentException;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Data;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,17 +15,21 @@ import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.cierre_semanal.*;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.services.AsignacionService;
+import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.UsuarioService;
 import tech.calaverita.reporterloanssql.services.cierre_semanal.*;
 import tech.calaverita.reporterloanssql.utils.CierreSemanalUtil;
+import tech.calaverita.reporterloanssql.utils.CobranzaUtil;
 import tech.calaverita.reporterloanssql.utils.LogUtil;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @CrossOrigin
@@ -216,5 +221,42 @@ public final class CierreSemanalController {
         FileInputStream fileInputStream = new FileInputStream(Constants.RUTA_PDF_PRODUCCION + file);
 
         return new ResponseEntity<>(new InputStreamResource(fileInputStream), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/{agencia}/{anio}/{semana}/{nivel}")
+    public @ResponseBody ResponseEntity<ComisionCobranza> getComisionCobranzaByAgenciaAnioSemanaAndNivel(
+            @PathVariable("agencia") String agencia,
+            @PathVariable("anio") int anio,
+            @PathVariable("semana") int semana,
+            @PathVariable("nivel") String nivel
+    ) throws ExecutionException, InterruptedException {
+        HashMap<String, Integer> porcentajesComision = new HashMap<>();
+        porcentajesComision.put("SILVER", 7);
+        porcentajesComision.put("GOLD", 8);
+        porcentajesComision.put("PLATINUM", 9);
+        porcentajesComision.put("DIAMOND", 10);
+
+        int porcentajeComision = porcentajesComision.get(nivel);
+
+        double cobranzaTotal = CierreSemanalUtil.getCobranzaTotalByAgenciaAnioAndSemana(agencia, anio, semana);
+
+        ComisionCobranza comisionCobranza = new ComisionCobranza(porcentajeComision,
+                cobranzaTotal / 100 * porcentajeComision);
+
+        return new ResponseEntity<>(comisionCobranza, HttpStatus.OK);
+    }
+
+    @Data
+    public static class ComisionCobranza{
+        private Integer porcentajeComisionCobranza;
+        private Double pagoComisionCobranza;
+
+        public ComisionCobranza(
+                Integer porcentajeComisionCobranza,
+                Double pagoComisionCobranza
+        ){
+            this.porcentajeComisionCobranza = porcentajeComisionCobranza;
+            this.pagoComisionCobranza = pagoComisionCobranza;
+        }
     }
 }

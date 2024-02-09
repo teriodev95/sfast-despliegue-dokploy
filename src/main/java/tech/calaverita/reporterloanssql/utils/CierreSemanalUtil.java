@@ -708,4 +708,16 @@ public class CierreSemanalUtil {
 
         return RequestBody.create(MediaType.parse("application/json"), cierreSemanalJSON);
     }
+
+    public static double getCobranzaTotalByAgenciaAnioAndSemana(
+            String agencia,
+            int anio,
+            int semana
+    ) throws ExecutionException, InterruptedException {
+        CompletableFuture<Double> cobranzaTotal = CierreSemanalUtil.pagoService
+                .getCobranzaTotalByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
+        cobranzaTotal.join();
+
+        return cobranzaTotal.get();
+    }
 }
