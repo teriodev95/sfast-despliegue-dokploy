@@ -15,11 +15,9 @@ import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.cierre_semanal.*;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.services.AsignacionService;
-import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.UsuarioService;
 import tech.calaverita.reporterloanssql.services.cierre_semanal.*;
 import tech.calaverita.reporterloanssql.utils.CierreSemanalUtil;
-import tech.calaverita.reporterloanssql.utils.CobranzaUtil;
 import tech.calaverita.reporterloanssql.utils.LogUtil;
 
 import java.io.FileInputStream;
@@ -29,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @CrossOrigin
@@ -115,12 +112,12 @@ public final class CierreSemanalController {
                     cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(cierreSemanalEntity.get());
                 } //
                 else if (
-                        this.usuarioService.findByUsuario(agencia).isPresent()
+                        this.usuarioService.findByAgencia(agencia).isPresent()
                 ) {
                     dashboard = xpressController.getDashboardByAgenciaAnioAndSemana(agencia, anio, semana).getBody();
                     usuarioModels = new ArrayList<>();
-                    usuarioModels.add(this.usuarioService.usuarModFindByUsuario(agencia));
-                    usuarioModels.add(this.usuarioService.usuarModFindByUsuario(usuarioModels.get(0).getGerencia()));
+                    usuarioModels.add(this.usuarioService.findByAgencia(agencia).get());
+                    usuarioModels.add(this.usuarioService.findGerenteByGerencia(usuarioModels.get(0).getGerencia()));
                     asignaciones = this.asignacionService.getSumaDeAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
 
                     cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(dashboard, usuarioModels, asignaciones);

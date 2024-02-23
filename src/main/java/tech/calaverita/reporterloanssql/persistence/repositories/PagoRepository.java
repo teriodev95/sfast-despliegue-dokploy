@@ -248,12 +248,12 @@ public interface PagoRepository extends CrudRepository<PagoEntity, String> {
     );
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @Query("SELECT COUNT(pag) " +
-            "FROM PagoAgrupadoEntity pag " +
+    @Query(value = "SELECT COUNT(*) " +
+            "FROM pagos_agrupados pag " +
             "WHERE pag.agente = :agencia " +
             "AND pag.anio = :anio " +
             "AND pag.semana = :semana " +
-            "AND pag.monto >= IF((pag.abreCon > pag.tarifa), pag.tarifa, pag.abreCon)")
+            "AND pag.monto >= IF((pag.abreCon > pag.tarifa), pag.tarifa, pag.abreCon)", nativeQuery = true)
     Integer getClientesPagoCompletoByAgenciaAnioAndSemana(
             String agencia,
             int anio,

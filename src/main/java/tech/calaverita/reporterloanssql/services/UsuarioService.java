@@ -55,10 +55,10 @@ public class UsuarioService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public Optional<UsuarioEntity> findByUsuario(
-            String usuario
+    public Optional<UsuarioEntity> findByAgencia(
+            String agencia
     ) {
-        return this.repo.findByUsuario(usuario);
+        return this.repo.findByAgencia(agencia);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -66,6 +66,12 @@ public class UsuarioService {
             String usuario
     ) {
         return this.repo.existsByUsuarioAndTipo(usuario, "Gerente");
+    }
+
+    public UsuarioEntity findGerenteByGerencia(
+            String agencia
+    ) {
+        return this.repo.findByGerenciaAndTipo(agencia, "Gerente").orElseThrow();
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

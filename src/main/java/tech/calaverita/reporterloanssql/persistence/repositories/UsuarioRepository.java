@@ -71,8 +71,12 @@ public interface UsuarioRepository extends CrudRepository<UsuarioEntity, Integer
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     Optional<UsuarioEntity> findByUsuario(String usuario);
 
+    Optional<UsuarioEntity> findByAgencia(String agencia);
+
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     boolean existsByUsuarioAndTipo(String usuario, String tipo);
+
+    Optional<UsuarioEntity> findByGerenciaAndTipo(String usuario, String tipo);
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     boolean existsByUsuarioAndTipoAndStatus(String usuario, String tipo, boolean status);
