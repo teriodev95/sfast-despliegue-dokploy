@@ -111,10 +111,18 @@ public final class GerenciaController {
             ArrayList<String> darrstrGerenciaIdAux = new ArrayList<>();
 
             for (String strGerenciaId : darrstrGerenciaId) {
-                if (
-                        strSucursalId.equals(strGerenciaId.substring(0, 4))
-                ) {
-                    darrstrGerenciaIdAux.add(strGerenciaId);
+                if(strGerenciaId.length() == 7){
+                    if (
+                            strSucursalId.equals(strGerenciaId.substring(0, 4))
+                    ) {
+                        darrstrGerenciaIdAux.add(strGerenciaId);
+                    }
+                } else if (strGerenciaId.length() == 8) {
+                    if (
+                            strSucursalId.equals(strGerenciaId.substring(0, 5))
+                    ) {
+                        darrstrGerenciaIdAux.add(strGerenciaId);
+                    }
                 }
             }
 
