@@ -482,4 +482,14 @@ public interface PagoRepository extends CrudRepository<PagoEntity, String> {
             int semana,
             String fecha
     );
+
+    @Query(value = "select * from pagos_v3 pag " +
+            "inner join agencias agenc " +
+            "on agenc.AgenciaID = pag.Agente " +
+            "and pag.tipo = :tipo " +
+            "and pag.anio = :anio " +
+            "and pag.semana = :semana " +
+            "and agenc.GerenciaID in :gerencias " +
+            "group by pag.prestamoId", nativeQuery = true)
+    ArrayList<PagoEntity> findByGerenciasAndAnioAndSemanaAndTipo(ArrayList<String> gerencias, int anio, int semana, String tipo);
 }

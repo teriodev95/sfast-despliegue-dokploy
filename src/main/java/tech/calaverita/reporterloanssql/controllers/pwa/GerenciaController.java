@@ -32,7 +32,7 @@ public final class GerenciaController {
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
     //------------------------------------------------------------------------------------------------------------------
-    GerenciaController(
+    public GerenciaController(
             GerenciaService gerServ_S,
             SucursalService sucServ_S,
             UsuarioService usuarServ_S,
@@ -64,7 +64,7 @@ public final class GerenciaController {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/{usuario}")
-    public ResponseEntity<ArrayList<String>> redarrstrGerenciaIdGetByStrUsuario(
+    public ResponseEntity<ArrayList<String>> getGerenciaIdsByUsuario(
             @PathVariable("usuario") String strUsuario_I
     ) {
         UsuarioEntity usuarMod;

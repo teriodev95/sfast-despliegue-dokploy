@@ -3,6 +3,7 @@ package tech.calaverita.reporterloanssql.persistence.repositories;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import tech.calaverita.reporterloanssql.persistence.entities.PagoEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.VisitaEntity;
 
 import java.util.ArrayList;
@@ -55,4 +56,12 @@ public interface VisitaRepository extends CrudRepository<VisitaEntity, String> {
             int anio,
             int semana
     );
+
+    @Query(value = "select * from visitas vis " +
+            "inner join agencias agenc " +
+            "on agenc.AgenciaID = vis.Agente " +
+            "and vis.anio = :anio " +
+            "and vis.semana = :semana " +
+            "and agenc.GerenciaID in :gerencias", nativeQuery = true)
+    ArrayList<VisitaEntity> findByGerenciasAndAnioAndSemana(ArrayList<String> gerencias, int anio, int semana);
 }

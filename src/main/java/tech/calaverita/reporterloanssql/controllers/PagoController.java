@@ -4,16 +4,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.reporterloanssql.persistence.entities.PagoEntity;
+import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
+import tech.calaverita.reporterloanssql.persistence.entities.VisitaEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.view.PagoAgrupadoEntity;
 import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoEntity;
 import tech.calaverita.reporterloanssql.pojos.ModelValidation;
 import tech.calaverita.reporterloanssql.pojos.PagoConLiquidacion;
+import tech.calaverita.reporterloanssql.services.AgenciaService;
 import tech.calaverita.reporterloanssql.services.PagoService;
+import tech.calaverita.reporterloanssql.services.UsuarioService;
+import tech.calaverita.reporterloanssql.services.VisitaService;
+import tech.calaverita.reporterloanssql.services.relation.UsuarioGerenciaService;
 import tech.calaverita.reporterloanssql.services.view.PrestamoService;
 import tech.calaverita.reporterloanssql.utils.PagoUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping(path = "/xpress/v1/pays")
@@ -21,18 +29,30 @@ public final class PagoController {
     //------------------------------------------------------------------------------------------------------------------
     /*INSTANCE VARIABLES*/
     //------------------------------------------------------------------------------------------------------------------
-    private final PagoService pagServ;
-    private final PrestamoService prestServ;
+    private final PagoService pagoService;
+    private final PrestamoService prestamoService;
+    private final UsuarioGerenciaService usuarioGerenciaService;
+    private final UsuarioService usuarioService;
+    private final VisitaService visitaService;
+    private final AgenciaService agenciaService;
 
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
     //------------------------------------------------------------------------------------------------------------------
     private PagoController(
-            PagoService pagServ_S,
-            PrestamoService prestServ_S
+            PagoService pagoService,
+            PrestamoService prestamoService,
+            UsuarioGerenciaService usuarioGerenciaService,
+            UsuarioService usuarioService,
+            VisitaService visitaService,
+            AgenciaService agenciaService
     ) {
-        this.pagServ = pagServ_S;
-        this.prestServ = prestServ_S;
+        this.pagoService = pagoService;
+        this.prestamoService = prestamoService;
+        this.usuarioGerenciaService = usuarioGerenciaService;
+        this.usuarioService = usuarioService;
+        this.visitaService = visitaService;
+        this.agenciaService = agenciaService;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -45,7 +65,7 @@ public final class PagoController {
             @PathVariable("anio") int intAnio_I,
             @PathVariable("semana") int intSemana_I
     ) {
-        ArrayList<PagoEntity> darrpagMod_O = this.pagServ.darrpagModFindByAgenciaAnioAndSemana(strAgencia_I, intAnio_I,
+        ArrayList<PagoEntity> darrpagMod_O = this.pagoService.darrpagModFindByAgenciaAnioAndSemana(strAgencia_I, intAnio_I,
                 intSemana_I);
 
         HttpStatus httpStatus_O = HttpStatus.OK;
@@ -72,7 +92,7 @@ public final class PagoController {
             @RequestBody PagoConLiquidacion pagConLiq_I
     ) {
         ModelValidation modVal;
-        PrestamoEntity prestMod = this.prestServ.prestModFindByPrestamoId(pagConLiq_I.getPrestamoId());
+        PrestamoEntity prestMod = this.prestamoService.prestModFindByPrestamoId(pagConLiq_I.getPrestamoId());
         modVal = PagoUtil.modValPagoModelValidation(pagConLiq_I, prestMod);
 
         if (
@@ -96,7 +116,7 @@ public final class PagoController {
             HashMap<String, Object> dirobjeto = new HashMap<>();
 
             ModelValidation modVal;
-            PrestamoEntity prestMod = this.prestServ.prestModFindByPrestamoId(pagConLiq.getPrestamoId());
+            PrestamoEntity prestMod = this.prestamoService.prestModFindByPrestamoId(pagConLiq.getPrestamoId());
             modVal = PagoUtil.modValPagoModelValidation(pagConLiq, prestMod);
 
             if (
@@ -120,7 +140,7 @@ public final class PagoController {
     public @ResponseBody ResponseEntity<ArrayList<PagoAgrupadoEntity>> redarrpagAgrModGetHistory(
             @PathVariable("id") String strId_I
     ) {
-        ArrayList<PagoAgrupadoEntity> pagAgrMod_O = this.pagServ.darrpagAgrModGetHistorialDePagosToApp(strId_I);
+        ArrayList<PagoAgrupadoEntity> pagAgrMod_O = this.pagoService.darrpagAgrModGetHistorialDePagosToApp(strId_I);
         HttpStatus httpStatus_O = HttpStatus.OK;
 
         if (
@@ -130,5 +150,69 @@ public final class PagoController {
         }
 
         return new ResponseEntity<>(pagAgrMod_O, httpStatus_O);
+    }
+
+    @CrossOrigin
+    @GetMapping(path = "/noPagosWithVisitas/{usuario}/{anio}/{semana}")
+    public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> getNoPagosConVisitasByUsuarioAnioAndSemana(
+            @PathVariable("usuario") String usuario,
+            @PathVariable("anio") int anio,
+            @PathVariable("semana") int semana
+    ) throws ExecutionException, InterruptedException {
+        UsuarioEntity usuarioEntity = this.usuarioService.usuarModFindByUsuario(usuario);
+        ArrayList<String> gerenciaIds = this.usuarioGerenciaService
+                .darrstrGerenciaIdFindByUsuarioId(usuarioEntity.getUsuarioId());
+
+        CompletableFuture<ArrayList<PagoEntity>> pagoEntitiesCompletableFuture = this.pagoService
+                .findByGerenciasAnioSemanaAndTipoAsync(gerenciaIds, anio, semana);
+        CompletableFuture<ArrayList<VisitaEntity>> visitaEntitiesCompletableFuture = this.visitaService
+                .findByGerenciasAnioAndSemanaAsync(gerenciaIds, anio, semana);
+
+        CompletableFuture.allOf(pagoEntitiesCompletableFuture, visitaEntitiesCompletableFuture);
+
+        ArrayList<HashMap<String, Object>> noPagosConVisitas = new ArrayList<>();
+        pagoEntitiesCompletableFuture.get().parallelStream().forEach(noPago -> {
+            HashMap<String, Object> noPagoConVisitasHM = new HashMap<>();
+            noPagoConVisitasHM.put("pagoId", noPago.getPagoId());
+            noPagoConVisitasHM.put("prestamoId", noPago.getPrestamoId());
+            noPagoConVisitasHM.put("monto", noPago.getMonto());
+            noPagoConVisitasHM.put("semana", noPago.getSemana());
+            noPagoConVisitasHM.put("anio", noPago.getAnio());
+            noPagoConVisitasHM.put("tarifa", noPago.getTarifa());
+            noPagoConVisitasHM.put("cliente", noPago.getCliente());
+            noPagoConVisitasHM.put("agente", noPago.getAgente());
+            noPagoConVisitasHM.put("creadoDesde", noPago.getCreadoDesde());
+            noPagoConVisitasHM.put("fechaPago", noPago.getFechaPago());
+            noPagoConVisitasHM.put("lat", noPago.getLat());
+            noPagoConVisitasHM.put("lng", noPago.getLng());
+            noPagoConVisitasHM.put("gerencia", this.agenciaService.agencModFindByAgenciaId(noPago.getAgente())
+                    .getGerenciaId());
+
+            ArrayList<HashMap<String, Object>> visitas = new ArrayList<>();
+            try {
+                visitaEntitiesCompletableFuture.get().parallelStream().forEach(visita -> {
+                    if (noPago.getPrestamoId().equals(visita.getPrestamoId())) {
+                        HashMap<String, Object> visitaHM = new HashMap<>();
+                        visitaHM.put("visitaId", visita.getVisitaId());
+                        visitaHM.put("prestamoId", visita.getPrestamoId());
+                        visitaHM.put("semana", visita.getSemana());
+                        visitaHM.put("anio", visita.getAnio());
+                        visitaHM.put("cliente", visita.getCliente());
+                        visitaHM.put("agente", visita.getAgente());
+                        visitaHM.put("fecha", visita.getFecha());
+                        visitaHM.put("lat", visita.getLat());
+                        visitaHM.put("lng", visita.getLng());
+                        visitas.add(visitaHM);
+                    }
+                });
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+            noPagoConVisitasHM.put("visitas", visitas);
+
+            noPagosConVisitas.add(noPagoConVisitasHM);
+        });
+
+        return new ResponseEntity<>(noPagosConVisitas, HttpStatus.OK);
     }
 }

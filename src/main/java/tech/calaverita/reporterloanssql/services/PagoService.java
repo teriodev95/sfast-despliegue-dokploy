@@ -423,4 +423,10 @@ public class PagoService {
     ) {
         return this.mapper.mapIn(liquidacionDTO);
     }
+
+    @Async("asyncExecutor")
+    public CompletableFuture<ArrayList<PagoEntity>> findByGerenciasAnioSemanaAndTipoAsync(ArrayList<String> gerencias, int anio, int semana) {
+        String tipo = "No_pago";
+        return CompletableFuture.completedFuture(this.repo.findByGerenciasAndAnioAndSemanaAndTipo(gerencias, anio, semana, tipo));
+    }
 }
