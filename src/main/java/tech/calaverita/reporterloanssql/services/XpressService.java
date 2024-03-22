@@ -1,7 +1,7 @@
 package tech.calaverita.reporterloanssql.services;
 
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.repositories.XpressRepository;
+import tech.calaverita.reporterloanssql.repositories.XpressRepository;
 
 @Service
 public final class XpressService {

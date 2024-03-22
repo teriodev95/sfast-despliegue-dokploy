@@ -1,12 +1,12 @@
 package tech.calaverita.reporterloanssql.utils.reportes;
 
 import org.springframework.stereotype.Component;
-import tech.calaverita.reporterloanssql.persistence.documents.ReporteDiarioAgenciasDocument;
-import tech.calaverita.reporterloanssql.persistence.dto.reporte_diario_agencias.AgenciaReporteDiarioAgenciasDTO;
-import tech.calaverita.reporterloanssql.persistence.dto.reporte_diario_agencias.DashboardSemanaActualReporteDiarioAgenciasDTO;
-import tech.calaverita.reporterloanssql.persistence.dto.reporte_diario_agencias.DashboardSemanaAnteriorReporteDiarioAgenciasDTO;
-import tech.calaverita.reporterloanssql.persistence.dto.reporte_diario_agencias.EncabezadoReporteDiarioAgenciasDTO;
-import tech.calaverita.reporterloanssql.persistence.entities.*;
+import tech.calaverita.reporterloanssql.dto.reporte_diario_agencias.AgenciaReporteDiarioAgenciasDTO;
+import tech.calaverita.reporterloanssql.dto.reporte_diario_agencias.DashboardSemanaActualReporteDiarioAgenciasDTO;
+import tech.calaverita.reporterloanssql.dto.reporte_diario_agencias.DashboardSemanaAnteriorReporteDiarioAgenciasDTO;
+import tech.calaverita.reporterloanssql.dto.reporte_diario_agencias.EncabezadoReporteDiarioAgenciasDTO;
+import tech.calaverita.reporterloanssql.models.mariaDB.*;
+import tech.calaverita.reporterloanssql.models.mongoDB.ReporteDiarioAgenciasDocument;
 import tech.calaverita.reporterloanssql.services.*;
 import tech.calaverita.reporterloanssql.services.reportes.ReporteDiarioAgenciasService;
 
@@ -46,15 +46,15 @@ public final class ReporteDiarioAgenciasUtil {
     }
 
     public static ReporteDiarioAgenciasDocument getReporte(
-            GerenciaEntity gerenciaEntity
+            GerenciaModel gerenciaModel
     ) throws ExecutionException, InterruptedException {
         ReporteDiarioAgenciasDocument reporte = new ReporteDiarioAgenciasDocument();
         {
             HashMap<String, Integer> anioAndSemana = ReporteDiarioAgenciasUtil.getAnioAndSemana();
 
-            reporte.setId(ReporteDiarioAgenciasUtil.getId(gerenciaEntity));
-            reporte.setEncabezado(ReporteDiarioAgenciasUtil.getEncabezado(gerenciaEntity));
-            reporte.setAgencias(ReporteDiarioAgenciasUtil.getAgencias(gerenciaEntity, anioAndSemana));
+            reporte.setId(ReporteDiarioAgenciasUtil.getId(gerenciaModel));
+            reporte.setEncabezado(ReporteDiarioAgenciasUtil.getEncabezado(gerenciaModel));
+            reporte.setAgencias(ReporteDiarioAgenciasUtil.getAgencias(gerenciaModel, anioAndSemana));
         }
 
         return reporte;
@@ -63,7 +63,7 @@ public final class ReporteDiarioAgenciasUtil {
     private static HashMap<String, Integer> getAnioAndSemana() throws ExecutionException, InterruptedException {
         LocalDate date = LocalDate.now();
 
-        CompletableFuture<CalendarioEntity> calendarioEntity = ReporteDiarioAgenciasUtil.calendarioService
+        CompletableFuture<CalendarioModel> calendarioEntity = ReporteDiarioAgenciasUtil.calendarioService
                 .findByFechaActualAsync(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
         calendarioEntity.join();
@@ -75,11 +75,11 @@ public final class ReporteDiarioAgenciasUtil {
     }
 
     private static String getId(
-            GerenciaEntity gerenciaEntity
+            GerenciaModel gerenciaModel
     ) throws ExecutionException, InterruptedException {
         LocalDate date = LocalDate.now();
 
-        CompletableFuture<CalendarioEntity> calendarioEntity = ReporteDiarioAgenciasUtil.calendarioService
+        CompletableFuture<CalendarioModel> calendarioEntity = ReporteDiarioAgenciasUtil.calendarioService
                 .findByFechaActualAsync(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
         date = date.plusDays(1);
@@ -90,22 +90,22 @@ public final class ReporteDiarioAgenciasUtil {
         int anioActual = calendarioEntity.get().getAnio();
         int semanaActual = calendarioEntity.get().getSemana();
 
-        return String.format("%s-%d-%d-%s", gerenciaEntity.getGerenciaId(), anioActual, semanaActual, diaSemana);
+        return String.format("%s-%d-%d-%s", gerenciaModel.getGerenciaId(), anioActual, semanaActual, diaSemana);
     }
 
     private static EncabezadoReporteDiarioAgenciasDTO getEncabezado(
-            GerenciaEntity gerenciaEntity
+            GerenciaModel gerenciaModel
     ) throws ExecutionException, InterruptedException {
         EncabezadoReporteDiarioAgenciasDTO encabezado = new EncabezadoReporteDiarioAgenciasDTO();
         {
-            CompletableFuture<Optional<UsuarioEntity>> usuarioEntityGerente = ReporteDiarioAgenciasUtil.usuarioService
-                    .findByUsuarioAsync(gerenciaEntity.getGerenciaId());
-            CompletableFuture<UsuarioEntity> usuarioEntitySeguridad = ReporteDiarioAgenciasUtil.usuarioService
-                    .findByUsuarioIdAsync(gerenciaEntity.getSeguridadId());
-            CompletableFuture<SucursalEntity> sucursalEntity = ReporteDiarioAgenciasUtil.sucursalService
-                    .findBySucursalIdAsync(gerenciaEntity.getSucursalId());
+            CompletableFuture<Optional<UsuarioModel>> usuarioEntityGerente = ReporteDiarioAgenciasUtil.usuarioService
+                    .findByUsuarioAsync(gerenciaModel.getGerenciaId());
+            CompletableFuture<UsuarioModel> usuarioEntitySeguridad = ReporteDiarioAgenciasUtil.usuarioService
+                    .findByUsuarioIdAsync(gerenciaModel.getSeguridadId());
+            CompletableFuture<SucursalModel> sucursalEntity = ReporteDiarioAgenciasUtil.sucursalService
+                    .findBySucursalIdAsync(gerenciaModel.getSucursalId());
 
-            encabezado.setZona(gerenciaEntity.getGerenciaId());
+            encabezado.setZona(gerenciaModel.getGerenciaId());
             encabezado.setFecha(ReporteDiarioAgenciasUtil.getFecha());
             encabezado.setSemana(ReporteDiarioAgenciasUtil.getSemana());
             encabezado.setHora("8:00");
@@ -155,7 +155,7 @@ public final class ReporteDiarioAgenciasUtil {
     private static String getSemana() throws ExecutionException, InterruptedException {
         LocalDate date = LocalDate.now();
 
-        CompletableFuture<CalendarioEntity> calendarioEntity = ReporteDiarioAgenciasUtil.calendarioService
+        CompletableFuture<CalendarioModel> calendarioEntity = ReporteDiarioAgenciasUtil.calendarioService
                 .findByFechaActualAsync(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
         date = date.plusDays(1);
@@ -186,23 +186,23 @@ public final class ReporteDiarioAgenciasUtil {
     }
 
     private static ArrayList<AgenciaReporteDiarioAgenciasDTO> getAgencias(
-            GerenciaEntity gerenciaEntity,
+            GerenciaModel gerenciaModel,
             HashMap<String, Integer> anioAndSemana
     ) throws ExecutionException, InterruptedException {
-        CompletableFuture<ArrayList<AgenciaEntity>> agenciaEntities = ReporteDiarioAgenciasUtil.agenciaService
-                .findByGerenciaIdAsync(gerenciaEntity.getGerenciaId());
+        CompletableFuture<ArrayList<AgenciaModel>> agenciaEntities = ReporteDiarioAgenciasUtil.agenciaService
+                .findByGerenciaIdAsync(gerenciaModel.getGerenciaId());
 
         agenciaEntities.join();
 
         ArrayList<AgenciaReporteDiarioAgenciasDTO> agencias = new ArrayList<>();
 
-        for (AgenciaEntity agenciaEntity : agenciaEntities.get()) {
-            CompletableFuture<Optional<UsuarioEntity>> usuarioEntityAgente = ReporteDiarioAgenciasUtil
-                    .usuarioService.findByUsuarioAsync(agenciaEntity.getId());
+        for (AgenciaModel agenciaModel : agenciaEntities.get()) {
+            CompletableFuture<Optional<UsuarioModel>> usuarioEntityAgente = ReporteDiarioAgenciasUtil
+                    .usuarioService.findByUsuarioAsync(agenciaModel.getId());
 
             AgenciaReporteDiarioAgenciasDTO agencia = new AgenciaReporteDiarioAgenciasDTO();
             {
-                agencia.setAgencia(agenciaEntity.getId());
+                agencia.setAgencia(agenciaModel.getId());
 
                 String nombreCompletoAgente;
                 {

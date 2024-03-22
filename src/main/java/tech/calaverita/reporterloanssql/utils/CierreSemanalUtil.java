@@ -8,11 +8,11 @@ import com.itextpdf.text.pdf.PdfWriter;
 import okhttp3.*;
 import org.springframework.stereotype.Component;
 import tech.calaverita.reporterloanssql.Constants;
+import tech.calaverita.reporterloanssql.dto.cierre_semanal.*;
 import tech.calaverita.reporterloanssql.itext.PdfStyleManager;
 import tech.calaverita.reporterloanssql.itext.fonts.Fonts;
-import tech.calaverita.reporterloanssql.persistence.dto.cierre_semanal.*;
-import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.cierre_semanal.*;
+import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.cierre_semanal.*;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.services.AgenciaService;
 import tech.calaverita.reporterloanssql.services.PagoService;
@@ -66,19 +66,19 @@ public class CierreSemanalUtil {
     }
 
     public static CierreSemanalDTO getCierreSemanalDTO(
-            CierreSemanalEntity cierreSemanalEntity
+            CierreSemanalModel cierreSemanalModel
     ) throws ExecutionException, InterruptedException {
         CierreSemanalDTO cierreSemanalDTO = CierreSemanalUtil.cierreSemanalService
-                .getCierreSemanalDTO(cierreSemanalEntity);
+                .getCierreSemanalDTO(cierreSemanalModel);
 
-        CompletableFuture<Optional<BalanceAgenciaEntity>> balanceAgenciaEntity = CierreSemanalUtil.balanceAgenciaService
-                .findById(cierreSemanalEntity.getId());
-        CompletableFuture<Optional<EgresosAgenteEntity>> egresosAgenteEntity = CierreSemanalUtil.egresosAgenteService
-                .findById(cierreSemanalEntity.getId());
-        CompletableFuture<Optional<EgresosGerenteEntity>> egresosGerenteEntity = CierreSemanalUtil.egresosGerenteService
-                .findById(cierreSemanalEntity.getId());
-        CompletableFuture<Optional<IngresosAgenteEntity>> ingresosAgenteEntity = CierreSemanalUtil.ingresosAgenteService
-                .findById(cierreSemanalEntity.getId());
+        CompletableFuture<Optional<BalanceAgenciaModel>> balanceAgenciaEntity = CierreSemanalUtil.balanceAgenciaService
+                .findById(cierreSemanalModel.getId());
+        CompletableFuture<Optional<EgresosAgenteModel>> egresosAgenteEntity = CierreSemanalUtil.egresosAgenteService
+                .findById(cierreSemanalModel.getId());
+        CompletableFuture<Optional<EgresosGerenteModel>> egresosGerenteEntity = CierreSemanalUtil.egresosGerenteService
+                .findById(cierreSemanalModel.getId());
+        CompletableFuture<Optional<IngresosAgenteModel>> ingresosAgenteEntity = CierreSemanalUtil.ingresosAgenteService
+                .findById(cierreSemanalModel.getId());
 
         CompletableFuture.allOf(balanceAgenciaEntity, egresosAgenteEntity, egresosGerenteEntity,
                 ingresosAgenteEntity);
@@ -104,7 +104,7 @@ public class CierreSemanalUtil {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public static CierreSemanalDTO getCierreSemanalDTO(
             Dashboard dashboard,
-            List<UsuarioEntity> darrusuarEnt,
+            List<UsuarioModel> darrusuarEnt,
             double asignaciones
     ) throws ExecutionException, InterruptedException {
         CierreSemanalDTO cierreSemanalDTO = new CierreSemanalDTO();
@@ -118,12 +118,12 @@ public class CierreSemanalUtil {
                         dashboard.getSemana());
 
         // To easy code
-        UsuarioEntity agenteUsuarioEntity = darrusuarEnt.get(0);
-        UsuarioEntity gerenteUsuarioEntity = darrusuarEnt.get(1);
-        String nombreAgente = agenteUsuarioEntity.getNombre() + " " + agenteUsuarioEntity.getApellidoPaterno() + " "
-                + agenteUsuarioEntity.getApellidoMaterno();
-        String nombreGerente = gerenteUsuarioEntity.getNombre() + " " + gerenteUsuarioEntity.getApellidoPaterno()
-                + " " + gerenteUsuarioEntity.getApellidoMaterno();
+        UsuarioModel agenteUsuarioModel = darrusuarEnt.get(0);
+        UsuarioModel gerenteUsuarioModel = darrusuarEnt.get(1);
+        String nombreAgente = agenteUsuarioModel.getNombre() + " " + agenteUsuarioModel.getApellidoPaterno() + " "
+                + agenteUsuarioModel.getApellidoMaterno();
+        String nombreGerente = gerenteUsuarioModel.getNombre() + " " + gerenteUsuarioModel.getApellidoPaterno()
+                + " " + gerenteUsuarioModel.getApellidoMaterno();
 
         BalanceAgenciaDTO balanceAgenciaDTO = new BalanceAgenciaDTO();
         {
@@ -133,7 +133,7 @@ public class CierreSemanalUtil {
             balanceAgenciaDTO.setAgente(nombreAgente);
             balanceAgenciaDTO.setRendimiento(dashboard.getRendimiento());
             balanceAgenciaDTO.setNivel(BalanceAgenciaUtil.getNivelAgente(dashboard.getClientes(),
-                    dashboard.getRendimiento() / 100, agenteUsuarioEntity));
+                    dashboard.getRendimiento() / 100, agenteUsuarioModel));
             balanceAgenciaDTO.setNivelCalculado(balanceAgenciaDTO.getNivel());
             balanceAgenciaDTO.setClientes(dashboard.getClientes());
             balanceAgenciaDTO.setPagosReducidos(dashboard.getPagosReducidos());
@@ -159,7 +159,7 @@ public class CierreSemanalUtil {
 
             // To easy code
             int porcentajeBonoMensual = BalanceAgenciaUtil.getPorcentajeBonoMensual(clientePagoCompleto.get(),
-                    dashboard.getRendimiento(), agenteUsuarioEntity);
+                    dashboard.getRendimiento(), agenteUsuarioModel);
 
             egresosGerenteDTO.setPorcentajeBonoMensual(porcentajeBonoMensual);
 
@@ -186,7 +186,7 @@ public class CierreSemanalUtil {
         cierreSemanalDTO.setEgresosAgente(egresosAgenteDTO);
         cierreSemanalDTO.setEgresosGerente(egresosGerenteDTO);
         cierreSemanalDTO.setIngresosAgente(ingresosAgenteDTO);
-        cierreSemanalDTO.setPinAgente(agenteUsuarioEntity.getPin());
+        cierreSemanalDTO.setPinAgente(agenteUsuarioModel.getPin());
         cierreSemanalDTO.setIsAgenciaCerrada(false);
         cierreSemanalDTO.setDia(LocalDate.now().getDayOfMonth());
         cierreSemanalDTO.setSucursal(sucursalService.getSucursalByGerenciaId(dashboard.getGerencia()));

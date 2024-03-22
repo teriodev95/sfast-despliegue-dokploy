@@ -2,10 +2,10 @@ package tech.calaverita.reporterloanssql.services.cierre_semanal;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.dto.cierre_semanal.IngresosAgenteDTO;
-import tech.calaverita.reporterloanssql.persistence.entities.cierre_semanal.IngresosAgenteEntity;
-import tech.calaverita.reporterloanssql.persistence.mappers.cierre_semanal.IngresosAgenteMapper;
-import tech.calaverita.reporterloanssql.persistence.repositories.cierre_semanal.IngresosAgenteRepository;
+import tech.calaverita.reporterloanssql.dto.cierre_semanal.IngresosAgenteDTO;
+import tech.calaverita.reporterloanssql.mappers.cierre_semanal.IngresosAgenteMapper;
+import tech.calaverita.reporterloanssql.models.mariaDB.cierre_semanal.IngresosAgenteModel;
+import tech.calaverita.reporterloanssql.repositories.cierre_semanal.IngresosAgenteRepository;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -24,27 +24,27 @@ public class IngresosAgenteService {
     }
 
     public void save(
-            IngresosAgenteEntity ingrAgentEnt_I
+            IngresosAgenteModel ingrAgentEnt_I
     ) {
         this.repo.save(ingrAgentEnt_I);
     }
 
     @Async("asyncExecutor")
 
-    public CompletableFuture<Optional<IngresosAgenteEntity>> findById(
+    public CompletableFuture<Optional<IngresosAgenteModel>> findById(
             String id
     ) {
-        Optional<IngresosAgenteEntity> entity = this.repo.findById(id);
+        Optional<IngresosAgenteModel> entity = this.repo.findById(id);
         return CompletableFuture.completedFuture(entity);
     }
 
     public IngresosAgenteDTO getIngresosAgenteDTO(
-            IngresosAgenteEntity entity
+            IngresosAgenteModel entity
     ) {
         return this.mapper.mapOut(entity);
     }
 
-    public IngresosAgenteEntity getIngresosAgenteEntity(
+    public IngresosAgenteModel getIngresosAgenteEntity(
             IngresosAgenteDTO DTO
     ) {
         return this.mapper.mapIn(DTO);

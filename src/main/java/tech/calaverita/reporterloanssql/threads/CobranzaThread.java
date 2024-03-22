@@ -2,7 +2,7 @@ package tech.calaverita.reporterloanssql.threads;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import tech.calaverita.reporterloanssql.persistence.entities.CalendarioEntity;
+import tech.calaverita.reporterloanssql.models.mariaDB.CalendarioModel;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.view.PrestamoService;
@@ -114,14 +114,14 @@ public class CobranzaThread implements Runnable {
         int anio = this.objectsContainer.getCobranza().getAnio();
         int semana = this.objectsContainer.getCobranza().getSemana();
 
-        CalendarioEntity calendarioEntity = new CalendarioEntity();
-        calendarioEntity.setAnio(anio);
-        calendarioEntity.setSemana(semana);
-        CobranzaUtil.funSemanaAnterior(calendarioEntity);
+        CalendarioModel calendarioModel = new CalendarioModel();
+        calendarioModel.setAnio(anio);
+        calendarioModel.setSemana(semana);
+        CobranzaUtil.funSemanaAnterior(calendarioModel);
 
         this.objectsContainer.setPrestamosToCobranza(CobranzaThread.prestServ
-                .darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(agencia, calendarioEntity.getAnio(),
-                        calendarioEntity.getSemana()));
+                .darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(agencia, calendarioModel.getAnio(),
+                        calendarioModel.getSemana()));
         this.objectsContainer.getCobranza().setPrestamos(this.objectsContainer.getPrestamosToCobranza());
     }
 
@@ -132,14 +132,14 @@ public class CobranzaThread implements Runnable {
         int anio = this.objectsContainer.getCobranza().getAnio();
         int semana = this.objectsContainer.getCobranza().getSemana();
 
-        CalendarioEntity calendarioEntity = new CalendarioEntity();
-        calendarioEntity.setAnio(anio);
-        calendarioEntity.setSemana(semana);
-        CobranzaUtil.funSemanaAnterior(calendarioEntity);
+        CalendarioModel calendarioModel = new CalendarioModel();
+        calendarioModel.setAnio(anio);
+        calendarioModel.setSemana(semana);
+        CobranzaUtil.funSemanaAnterior(calendarioModel);
 
         objectsContainer.setPagosVistaToCobranza(CobranzaThread.pagServ
-                .darrpagUtilModFindByAgenciaAnioAndSemanaToCobranza(agencia, calendarioEntity.getAnio(),
-                        calendarioEntity.getSemana()));
+                .darrpagUtilModFindByAgenciaAnioAndSemanaToCobranza(agencia, calendarioModel.getAnio(),
+                        calendarioModel.getSemana()));
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

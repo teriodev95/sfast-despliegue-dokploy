@@ -2,8 +2,8 @@ package tech.calaverita.reporterloanssql.threads.pwa;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import tech.calaverita.reporterloanssql.persistence.entities.view.PagoAgrupadoEntity;
-import tech.calaverita.reporterloanssql.pojos.pwa.PagoHistoricoPWA;
+import tech.calaverita.reporterloanssql.models.view.PagoAgrupadoModel;
+import tech.calaverita.reporterloanssql.pojos.PWA.PagoHistoricoPWA;
 import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.VisitaService;
 import tech.calaverita.reporterloanssql.utils.pwa.PWAUtil;
@@ -13,7 +13,7 @@ public class PagoHistoricoPWAThread implements Runnable {
     //------------------------------------------------------------------------------------------------------------------
     /*INSTANCE VARIABLES*/
     //------------------------------------------------------------------------------------------------------------------
-    private PagoAgrupadoEntity pagoAgrupadoEntity;
+    private PagoAgrupadoModel pagoAgrupadoModel;
     private PagoHistoricoPWA pagoHistoricoPWA;
     private static PagoService pagServ;
     private static VisitaService visServ;
@@ -32,10 +32,10 @@ public class PagoHistoricoPWAThread implements Runnable {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public PagoHistoricoPWAThread(
-            PagoAgrupadoEntity pagoAgrupadoEntity,
+            PagoAgrupadoModel pagoAgrupadoModel,
             PagoHistoricoPWA pagoHistoricoPWA
     ) {
-        this.pagoAgrupadoEntity = pagoAgrupadoEntity;
+        this.pagoAgrupadoModel = pagoAgrupadoModel;
         this.pagoHistoricoPWA = pagoHistoricoPWA;
     }
 
@@ -49,16 +49,16 @@ public class PagoHistoricoPWAThread implements Runnable {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getPagoHistoricoPWAFromPagoVistaModel() {
-        pagoHistoricoPWA.setMonto(pagoAgrupadoEntity.getMonto());
-        pagoHistoricoPWA.setTipo(pagoAgrupadoEntity.getTipo());
-        pagoHistoricoPWA.setPrestamoId(pagoAgrupadoEntity.getPrestamoId());
-        pagoHistoricoPWA.setPrestamo(pagoAgrupadoEntity.getPrestamo());
-        pagoHistoricoPWA.setSemana(pagoAgrupadoEntity.getSemana());
-        pagoHistoricoPWA.setAnio(pagoAgrupadoEntity.getAnio());
-        pagoHistoricoPWA.setTarifa(pagoAgrupadoEntity.getTarifa());
-        pagoHistoricoPWA.setCliente(pagoAgrupadoEntity.getCliente());
-        pagoHistoricoPWA.setAgente(pagoAgrupadoEntity.getAgente());
-        pagoHistoricoPWA.setIdentificador(pagoAgrupadoEntity.getIdentificador());
+        pagoHistoricoPWA.setMonto(pagoAgrupadoModel.getMonto());
+        pagoHistoricoPWA.setTipo(pagoAgrupadoModel.getTipo());
+        pagoHistoricoPWA.setPrestamoId(pagoAgrupadoModel.getPrestamoId());
+        pagoHistoricoPWA.setPrestamo(pagoAgrupadoModel.getPrestamo());
+        pagoHistoricoPWA.setSemana(pagoAgrupadoModel.getSemana());
+        pagoHistoricoPWA.setAnio(pagoAgrupadoModel.getAnio());
+        pagoHistoricoPWA.setTarifa(pagoAgrupadoModel.getTarifa());
+        pagoHistoricoPWA.setCliente(pagoAgrupadoModel.getCliente());
+        pagoHistoricoPWA.setAgente(pagoAgrupadoModel.getAgente());
+        pagoHistoricoPWA.setIdentificador(pagoAgrupadoModel.getIdentificador());
         pagoHistoricoPWA.setPagos(PWAUtil.darrpagoPwaFromPagoModels(PagoHistoricoPWAThread.pagServ.darrpagModFindByPrestamoIdAnioSemanaAndNoPrimerPago(pagoHistoricoPWA.getPrestamoId(), pagoHistoricoPWA.getAnio(), pagoHistoricoPWA.getSemana())));
         pagoHistoricoPWA.setVisitas(PagoHistoricoPWAThread.visServ.darrVisModFindByPrestamoIdAnioAndSemana(pagoHistoricoPWA.getPrestamoId(), pagoHistoricoPWA.getAnio(), pagoHistoricoPWA.getSemana()));
     }

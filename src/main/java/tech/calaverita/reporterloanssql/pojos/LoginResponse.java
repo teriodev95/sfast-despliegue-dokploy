@@ -1,12 +1,12 @@
 package tech.calaverita.reporterloanssql.pojos;
 
 import lombok.Data;
-import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
+import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
 
 import java.util.ArrayList;
 
 @Data
 public class LoginResponse {
-    private UsuarioEntity solicitante;
-    private ArrayList<UsuarioEntity> involucrados = new ArrayList<>();
+    private UsuarioModel solicitante;
+    private ArrayList<UsuarioModel> involucrados = new ArrayList<>();
 }

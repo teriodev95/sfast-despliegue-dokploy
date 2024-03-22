@@ -1,6 +1,6 @@
 package tech.calaverita.reporterloanssql.utils;
 
-import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
+import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,10 +10,10 @@ public class BalanceAgenciaUtil {
     public static String getNivelAgente(
             int clientesPagoCompleto,
             double cobroAlJueves,
-            UsuarioEntity agenteUsuarioEntity
+            UsuarioModel agenteUsuarioModel
     ) {
         String nivel;
-        int antiguedadEnSemanas = BalanceAgenciaUtil.getAntiguedadAgenteEnSemanas(agenteUsuarioEntity);
+        int antiguedadEnSemanas = BalanceAgenciaUtil.getAntiguedadAgenteEnSemanas(agenteUsuarioModel);
 
         if (antiguedadEnSemanas >= 52 && clientesPagoCompleto >= 80 && cobroAlJueves >= .9) {
             nivel = "DIAMOND";
@@ -43,11 +43,11 @@ public class BalanceAgenciaUtil {
     public static int getPorcentajeBonoMensual(
             int clientesPagoCompleto,
             double rendimiento,
-            UsuarioEntity agenteUsuarioEntity
+            UsuarioModel agenteUsuarioModel
     ) {
         int porcentajeBonoMensual = 0;
 
-        int antiguedadEnMeses = BalanceAgenciaUtil.getAntiguedadAgenteEnMeses(agenteUsuarioEntity);
+        int antiguedadEnMeses = BalanceAgenciaUtil.getAntiguedadAgenteEnMeses(agenteUsuarioModel);
 
         if (
                 clientesPagoCompleto >= 90 && rendimiento >= 95 && antiguedadEnMeses >= 12
@@ -67,13 +67,13 @@ public class BalanceAgenciaUtil {
     }
 
     private static int getAntiguedadAgenteEnSemanas(
-            UsuarioEntity agenteUsuarioEntity
+            UsuarioModel agenteUsuarioModel
     ) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date fechaIngresoAgente;
 
         try {
-            fechaIngresoAgente = format.parse(agenteUsuarioEntity.getFechaIngreso());
+            fechaIngresoAgente = format.parse(agenteUsuarioModel.getFechaIngreso());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -83,13 +83,13 @@ public class BalanceAgenciaUtil {
     }
 
     private static int getAntiguedadAgenteEnMeses(
-            UsuarioEntity agenteUsuarioEntity
+            UsuarioModel agenteUsuarioModel
     ) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date fechaIngresoAgente;
 
         try {
-            fechaIngresoAgente = format.parse(agenteUsuarioEntity.getFechaIngreso());
+            fechaIngresoAgente = format.parse(agenteUsuarioModel.getFechaIngreso());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

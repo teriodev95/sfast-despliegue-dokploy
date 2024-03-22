@@ -3,8 +3,8 @@ package tech.calaverita.reporterloanssql.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoEntity;
-import tech.calaverita.reporterloanssql.persistence.repositories.view.PrestRepoPrestamoRepository;
+import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
+import tech.calaverita.reporterloanssql.repositories.view.PrestRepoPrestamoRepository;
 import tech.calaverita.reporterloanssql.utils.PrestamoUtil;
 
 @RestController
@@ -29,10 +29,10 @@ public final class PrestamoController {
     //------------------------------------------------------------------------------------------------------------------
     @CrossOrigin
     @GetMapping(path = "/{id}")
-    public ResponseEntity<PrestamoEntity> represtModGetByStrId(
+    public ResponseEntity<PrestamoModel> represtModGetByStrId(
             @PathVariable("id") String strId_I
     ) {
-        PrestamoEntity prestMod_O = prestRepo.prestEntFindByPrestamoId(strId_I);
+        PrestamoModel prestMod_O = prestRepo.prestEntFindByPrestamoId(strId_I);
 
         if (
                 prestMod_O == null

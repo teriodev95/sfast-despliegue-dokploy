@@ -1,8 +1,7 @@
 package tech.calaverita.reporterloanssql.itext;
 
 import com.itextpdf.text.DocumentException;
-import org.checkerframework.checker.units.qual.C;
-import tech.calaverita.reporterloanssql.persistence.dto.cierre_semanal.*;
+import tech.calaverita.reporterloanssql.dto.cierre_semanal.*;
 import tech.calaverita.reporterloanssql.utils.CierreSemanalUtil;
 
 import java.io.FileNotFoundException;

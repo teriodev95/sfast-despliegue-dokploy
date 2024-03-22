@@ -2,8 +2,8 @@ package tech.calaverita.reporterloanssql.services;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.entities.VisitaEntity;
-import tech.calaverita.reporterloanssql.persistence.repositories.VisitaRepository;
+import tech.calaverita.reporterloanssql.models.mariaDB.VisitaModel;
+import tech.calaverita.reporterloanssql.repositories.VisitaRepository;
 
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
@@ -28,31 +28,31 @@ public class VisitaService {
     /*METHODS*/
     //------------------------------------------------------------------------------------------------------------------
     public void save(
-            VisitaEntity visMod_I
+            VisitaModel visMod_I
     ) {
         this.repo.save(visMod_I);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<VisitaEntity> darrvisModFindAll() {
+    public ArrayList<VisitaModel> darrvisModFindAll() {
         return repo.darrvisEntFindAll();
     }
 
-    public VisitaEntity visModFindByVisitaId(
+    public VisitaModel visModFindByVisitaId(
             String strVisitaId_I
     ) {
         return this.repo.visEntFindByVisitaId(strVisitaId_I);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<VisitaEntity> darrvisModFindByPrestamoId(
+    public ArrayList<VisitaModel> darrvisModFindByPrestamoId(
             String strPrestamoId_I
     ) {
         return this.repo.darrvisEntFindByPrestamoId(strPrestamoId_I);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<VisitaEntity> darrvisModFindByAgenciaAnioAndSemana(
+    public ArrayList<VisitaModel> darrvisModFindByAgenciaAnioAndSemana(
             String strAgencia_I,
             int intAnio_I,
             int intSemana_I
@@ -61,7 +61,7 @@ public class VisitaService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<VisitaEntity> darrVisModFindByPrestamoIdAnioAndSemana(
+    public ArrayList<VisitaModel> darrVisModFindByPrestamoIdAnioAndSemana(
             String strPrestamoId_I,
             int intAnio_I,
             int intSemana_I
@@ -70,7 +70,7 @@ public class VisitaService {
     }
 
     @Async("asyncExecutor")
-    public CompletableFuture<ArrayList<VisitaEntity>> findByGerenciasAnioAndSemanaAsync(ArrayList<String> gerencias, int anio, int semana) {
+    public CompletableFuture<ArrayList<VisitaModel>> findByGerenciasAnioAndSemanaAsync(ArrayList<String> gerencias, int anio, int semana) {
         return CompletableFuture.completedFuture(this.repo.findByGerenciasAndAnioAndSemana(gerencias, anio, semana));
     }
 }

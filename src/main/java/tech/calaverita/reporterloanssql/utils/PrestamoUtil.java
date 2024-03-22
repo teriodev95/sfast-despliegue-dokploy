@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoEntity;
+import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
 import tech.calaverita.reporterloanssql.services.view.PrestamoService;
 
 @Component
@@ -21,9 +21,9 @@ public class PrestamoUtil {
     public static boolean blnIsPrestamo(
             String prestamoId_I
     ) {
-        PrestamoEntity prestamoEntity = prestamoService.prestModFindByPrestamoId(prestamoId_I);
+        PrestamoModel prestamoModel = prestamoService.prestModFindByPrestamoId(prestamoId_I);
 
-        return prestamoEntity != null;
+        return prestamoModel != null;
     }
 
     public static ResponseEntity<String> restrCheckPrestamoByPrestamoId(
@@ -42,14 +42,14 @@ public class PrestamoUtil {
         return responseEntity;
     }
 
-    public static PrestamoEntity prestamoModelAsignarPorcentajeCobrado(
-            PrestamoEntity prestamoEntity_M
+    public static PrestamoModel prestamoModelAsignarPorcentajeCobrado(
+            PrestamoModel prestamoModel_M
     ) {
-        Double dblTotalAPagar = prestamoEntity_M.getTotalAPagar();
-        Double dblCobrado = prestamoEntity_M.getCobrado();
+        Double dblTotalAPagar = prestamoModel_M.getTotalAPagar();
+        Double dblCobrado = prestamoModel_M.getCobrado();
 
-        prestamoEntity_M.setPorcentajeCobrado(Math.round(dblCobrado / dblTotalAPagar * 100.0) / 100.0 * 100);
+        prestamoModel_M.setPorcentajeCobrado(Math.round(dblCobrado / dblTotalAPagar * 100.0) / 100.0 * 100);
 
-        return prestamoEntity_M;
+        return prestamoModel_M;
     }
 }

@@ -2,7 +2,7 @@ package tech.calaverita.reporterloanssql.threads.pwa;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import tech.calaverita.reporterloanssql.persistence.entities.CalendarioEntity;
+import tech.calaverita.reporterloanssql.models.mariaDB.CalendarioModel;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.services.AsignacionService;
 import tech.calaverita.reporterloanssql.services.CalendarioService;
@@ -70,9 +70,9 @@ public class DashboardPorDiaPWAThread implements Runnable {
     }
 
     public void setCalendario() {
-        objectsContainer.setCalendarioEntity(DashboardPorDiaPWAThread.calServ.findByFechaActual(objectsContainer.getFechaPago()));
-        objectsContainer.getDashboard().setAnio(objectsContainer.getCalendarioEntity().getAnio());
-        objectsContainer.getDashboard().setSemana(objectsContainer.getCalendarioEntity().getSemana());
+        objectsContainer.setCalendarioModel(DashboardPorDiaPWAThread.calServ.findByFechaActual(objectsContainer.getFechaPago()));
+        objectsContainer.getDashboard().setAnio(objectsContainer.getCalendarioModel().getAnio());
+        objectsContainer.getDashboard().setSemana(objectsContainer.getCalendarioModel().getSemana());
     }
 
     public void setPrestamosToCobranza() {
@@ -87,14 +87,14 @@ public class DashboardPorDiaPWAThread implements Runnable {
         int anio = this.objectsContainer.getDashboard().getAnio();
         int semana = this.objectsContainer.getDashboard().getSemana();
 
-        CalendarioEntity calendarioEntity = new CalendarioEntity();
-        calendarioEntity.setAnio(anio);
-        calendarioEntity.setSemana(semana);
-        CobranzaUtil.funSemanaAnterior(calendarioEntity);
+        CalendarioModel calendarioModel = new CalendarioModel();
+        calendarioModel.setAnio(anio);
+        calendarioModel.setSemana(semana);
+        CobranzaUtil.funSemanaAnterior(calendarioModel);
 
         objectsContainer.setPrestamosToCobranza(DashboardPorDiaPWAThread.prestServ
-                .darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(agencia, calendarioEntity.getAnio(),
-                        calendarioEntity.getSemana()));
+                .darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(agencia, calendarioModel.getAnio(),
+                        calendarioModel.getSemana()));
 
         setGerencia();
         setClientes();
@@ -116,14 +116,14 @@ public class DashboardPorDiaPWAThread implements Runnable {
         int anio = this.objectsContainer.getDashboard().getAnio();
         int semana = this.objectsContainer.getDashboard().getSemana();
 
-        CalendarioEntity calendarioEntity = new CalendarioEntity();
-        calendarioEntity.setAnio(anio);
-        calendarioEntity.setSemana(semana);
-        CobranzaUtil.funSemanaAnterior(calendarioEntity);
+        CalendarioModel calendarioModel = new CalendarioModel();
+        calendarioModel.setAnio(anio);
+        calendarioModel.setSemana(semana);
+        CobranzaUtil.funSemanaAnterior(calendarioModel);
 
         objectsContainer.setPagosVistaToCobranza(DashboardPorDiaPWAThread.pagServ
-                .darrpagUtilModFindByAgenciaAnioAndSemanaToCobranza(agencia, calendarioEntity.getAnio(),
-                        calendarioEntity.getSemana()));
+                .darrpagUtilModFindByAgenciaAnioAndSemanaToCobranza(agencia, calendarioModel.getAnio(),
+                        calendarioModel.getSemana()));
     }
 
     public void setPagosToDashboard() {

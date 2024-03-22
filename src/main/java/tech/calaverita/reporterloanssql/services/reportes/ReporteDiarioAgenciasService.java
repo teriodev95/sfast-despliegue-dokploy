@@ -1,8 +1,8 @@
 package tech.calaverita.reporterloanssql.services.reportes;
 
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.documents.ReporteDiarioAgenciasDocument;
-import tech.calaverita.reporterloanssql.persistence.repositories.reportes.ReporteDiarioAgenciasRepository;
+import tech.calaverita.reporterloanssql.models.mongoDB.ReporteDiarioAgenciasDocument;
+import tech.calaverita.reporterloanssql.repositories.reportes.ReporteDiarioAgenciasRepository;
 
 import java.util.ArrayList;
 import java.util.List;

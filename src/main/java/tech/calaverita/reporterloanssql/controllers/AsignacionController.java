@@ -5,8 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import retrofit2.Call;
-import tech.calaverita.reporterloanssql.persistence.entities.AsignacionEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
+import tech.calaverita.reporterloanssql.models.mariaDB.AsignacionModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
 import tech.calaverita.reporterloanssql.retrofit.RetrofitOdoo;
 import tech.calaverita.reporterloanssql.retrofit.pojos.AsignacionBody;
 import tech.calaverita.reporterloanssql.retrofit.pojos.AsignacionList;
@@ -43,8 +43,8 @@ public class AsignacionController {
     /*METHODS*/
     //------------------------------------------------------------------------------------------------------------------
     @GetMapping(path = "/all")
-    public @ResponseBody ResponseEntity<Iterable<AsignacionEntity>> reiteasignModGet() {
-        Iterable<AsignacionEntity> iteasignMod_O = this.asignServ.iteasignModFindAll();
+    public @ResponseBody ResponseEntity<Iterable<AsignacionModel>> reiteasignModGet() {
+        Iterable<AsignacionModel> iteasignMod_O = this.asignServ.iteasignModFindAll();
 
         if (
                 !iteasignMod_O.iterator().hasNext()
@@ -57,13 +57,13 @@ public class AsignacionController {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Iterable<AsignacionEntity>>
+    public @ResponseBody ResponseEntity<Iterable<AsignacionModel>>
     reiteasignModGetByStrAgenciaIntAnioAndIntSemana(
             @PathVariable("agencia") String strAgencia_I,
             @PathVariable("anio") int intAnio_I,
             @PathVariable("semana") int intSemana_I
     ) {
-        Iterable<AsignacionEntity> iteasignMod_O = this.asignServ
+        Iterable<AsignacionModel> iteasignMod_O = this.asignServ
                 .darrasignModFindByAgenciaAnioAndSemana(strAgencia_I, intAnio_I, intSemana_I);
 
         if (
@@ -77,10 +77,10 @@ public class AsignacionController {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/one/{id}")
-    public @ResponseBody ResponseEntity<Optional<AsignacionEntity>> reoptasignModGetById(
+    public @ResponseBody ResponseEntity<Optional<AsignacionModel>> reoptasignModGetById(
             @PathVariable("id") String strId_I
     ) {
-        Optional<AsignacionEntity> optAsignMod_O = this.asignServ.optasignModFindById(strId_I);
+        Optional<AsignacionModel> optAsignMod_O = this.asignServ.optasignModFindById(strId_I);
 
         if (
                 optAsignMod_O.isEmpty()
@@ -94,11 +94,11 @@ public class AsignacionController {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @PostMapping(path = "/create-one")
     public @ResponseBody ResponseEntity<String> restrAsignModCreate(
-            @RequestBody AsignacionEntity asignMod_I
+            @RequestBody AsignacionModel asignMod_I
     ) {
         String strSession = "session_id=76d814874514726176f0615260848da2aab725ea";
 
-        Optional<AsignacionEntity> optasignMod = this.asignServ
+        Optional<AsignacionModel> optasignMod = this.asignServ
                 .optasignModFindById(asignMod_I.getAsignacionId());
 
         if (
@@ -107,7 +107,7 @@ public class AsignacionController {
             return new ResponseEntity<>("La Asignación Ya Existe", HttpStatus.CONFLICT);
         }
 
-        Optional<UsuarioEntity> optusuarMod = this.usuarServ.optusuarEntFindById(asignMod_I.getQuienRecibioUsuarioId());
+        Optional<UsuarioModel> optusuarMod = this.usuarServ.optusuarEntFindById(asignMod_I.getQuienRecibioUsuarioId());
 
         if (
                 optusuarMod.isEmpty()
@@ -147,19 +147,19 @@ public class AsignacionController {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @PostMapping(path = "/create-many")
     public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> redarrdicasignModCreate(
-            @RequestBody ArrayList<AsignacionEntity> darrasignMod_I
+            @RequestBody ArrayList<AsignacionModel> darrasignMod_I
     ) {
         String strSession = "session_id=76d814874514726176f0615260848da2aab725ea";
 
         ArrayList<HashMap<String, Object>> darrdicasignMod_O = new ArrayList<>();
 
-        for (AsignacionEntity asignMod : darrasignMod_I) {
+        for (AsignacionModel asignMod : darrasignMod_I) {
             HashMap<String, Object> objeto = new HashMap<>();
             String strMsg = "OK";
             String strMsgAux = "";
             boolean boolIsOnline = true;
 
-            Optional<AsignacionEntity> optasignMod = this.asignServ.optasignModFindById(asignMod.getAsignacionId());
+            Optional<AsignacionModel> optasignMod = this.asignServ.optasignModFindById(asignMod.getAsignacionId());
 
             if (
                     !optasignMod.isEmpty()
@@ -168,7 +168,7 @@ public class AsignacionController {
                 boolIsOnline = false;
             }
 
-            Optional<UsuarioEntity> optusuarMod = this.usuarServ.optusuarEntFindById(asignMod.getQuienRecibioUsuarioId());
+            Optional<UsuarioModel> optusuarMod = this.usuarServ.optusuarEntFindById(asignMod.getQuienRecibioUsuarioId());
 
             if (
                     optusuarMod.isEmpty()

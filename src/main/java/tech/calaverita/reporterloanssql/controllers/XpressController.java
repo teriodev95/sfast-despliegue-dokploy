@@ -3,7 +3,7 @@ package tech.calaverita.reporterloanssql.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
+import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
 import tech.calaverita.reporterloanssql.pojos.Cobranza;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.pojos.LoginResponse;
@@ -43,15 +43,15 @@ public final class XpressController {
     public @ResponseBody ResponseEntity<?> login(
             @RequestBody AuthCredentials login
     ) {
-        UsuarioEntity usuarioEntity = this.usuarioService.usuarModFindByUsuarioAndPin(login.getUsername(), login.getPassword());
+        UsuarioModel usuarioModel = this.usuarioService.usuarModFindByUsuarioAndPin(login.getUsername(), login.getPassword());
         LoginResponse loginResponse = new LoginResponse();
 
-        if (usuarioEntity == null) {
+        if (usuarioModel == null) {
             return new ResponseEntity<>("Usuario y/o contraseña incorrecto", HttpStatus.BAD_REQUEST);
         }
 
-        loginResponse.setSolicitante(usuarioEntity);
-        loginResponse.setInvolucrados(this.usuarioService.darrUsuarModFindByGerencia(usuarioEntity.getGerencia()));
+        loginResponse.setSolicitante(usuarioModel);
+        loginResponse.setInvolucrados(this.usuarioService.darrUsuarModFindByGerencia(usuarioModel.getGerencia()));
 
         return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }

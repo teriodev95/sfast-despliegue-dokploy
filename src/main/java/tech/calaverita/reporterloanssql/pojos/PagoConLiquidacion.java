@@ -1,7 +1,7 @@
 package tech.calaverita.reporterloanssql.pojos;
 
 import lombok.Data;
-import tech.calaverita.reporterloanssql.persistence.entities.LiquidacionEntity;
+import tech.calaverita.reporterloanssql.models.mariaDB.LiquidacionModel;
 
 @Data
 public class PagoConLiquidacion {
@@ -29,5 +29,5 @@ public class PagoConLiquidacion {
     private String updatedAt;
     private String log;
     private String quienPago;
-    private LiquidacionEntity infoLiquidacion;
+    private LiquidacionModel infoLiquidacion;
 }

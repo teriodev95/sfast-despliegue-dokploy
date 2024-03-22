@@ -1,12 +1,11 @@
 package tech.calaverita.reporterloanssql.services;
 
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.dto.LiquidacionDTO;
-import tech.calaverita.reporterloanssql.persistence.entities.LiquidacionEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoEntity;
-import tech.calaverita.reporterloanssql.persistence.mappers.LiquidacionMapper;
-import tech.calaverita.reporterloanssql.persistence.repositories.LiquidacionRepository;
-import tech.calaverita.reporterloanssql.utils.LiquidacionUtil;
+import tech.calaverita.reporterloanssql.dto.LiquidacionDTO;
+import tech.calaverita.reporterloanssql.mappers.LiquidacionMapper;
+import tech.calaverita.reporterloanssql.models.mariaDB.LiquidacionModel;
+import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
+import tech.calaverita.reporterloanssql.repositories.LiquidacionRepository;
 
 import java.util.ArrayList;
 
@@ -32,14 +31,14 @@ public final class LiquidacionService {
     //------------------------------------------------------------------------------------------------------------------
     /*METHODS*/
     //------------------------------------------------------------------------------------------------------------------
-    public LiquidacionEntity save(
-            LiquidacionEntity liqMod_I
+    public LiquidacionModel save(
+            LiquidacionModel liqMod_I
     ) {
         return this.repo.save(liqMod_I);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<LiquidacionEntity> darrliqModFindByAgenciaAnioAndSemanaToDashboard(
+    public ArrayList<LiquidacionModel> darrliqModFindByAgenciaAnioAndSemanaToDashboard(
             String strAgencia_I,
             int intAnio_I,
             int intSemana_I
@@ -49,7 +48,7 @@ public final class LiquidacionService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<LiquidacionEntity> darrliqModFindByAgenciaAndFechaPagoToDashboard(
+    public ArrayList<LiquidacionModel> darrliqModFindByAgenciaAndFechaPagoToDashboard(
             String strAgencia_I,
             String strFechaPago_I
     ) {
@@ -57,7 +56,7 @@ public final class LiquidacionService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public LiquidacionEntity getLiquidacionEntity(
+    public LiquidacionModel getLiquidacionEntity(
             LiquidacionDTO DTO
     ) {
         return this.mapper.mapIn(DTO);
@@ -65,7 +64,7 @@ public final class LiquidacionService {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public LiquidacionDTO getLiquidacionDTO(
-            PrestamoEntity entity
+            PrestamoModel entity
     ) {
         return this.mapper.mapOut(entity);
     }

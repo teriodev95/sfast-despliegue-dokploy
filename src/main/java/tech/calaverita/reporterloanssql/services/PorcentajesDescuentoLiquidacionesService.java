@@ -1,8 +1,8 @@
 package tech.calaverita.reporterloanssql.services;
 
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.entities.PorcentajesDescuentoLiquidacionesEntity;
-import tech.calaverita.reporterloanssql.persistence.repositories.PorcentajesDescuentoLiquidacionesRepository;
+import tech.calaverita.reporterloanssql.models.mariaDB.PorcentajesDescuentoLiquidacionesModel;
+import tech.calaverita.reporterloanssql.repositories.PorcentajesDescuentoLiquidacionesRepository;
 
 import java.util.Optional;
 
@@ -16,7 +16,7 @@ public class PorcentajesDescuentoLiquidacionesService {
         this.repo = repo;
     }
 
-    public Optional<PorcentajesDescuentoLiquidacionesEntity> findById(
+    public Optional<PorcentajesDescuentoLiquidacionesModel> findById(
             String id
     ) {
         return this.repo.findById(id);

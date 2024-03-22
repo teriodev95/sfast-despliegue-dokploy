@@ -2,10 +2,10 @@ package tech.calaverita.reporterloanssql.services.cierre_semanal;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.dto.cierre_semanal.EgresosAgenteDTO;
-import tech.calaverita.reporterloanssql.persistence.entities.cierre_semanal.EgresosAgenteEntity;
-import tech.calaverita.reporterloanssql.persistence.mappers.cierre_semanal.EgresosAgenteMapper;
-import tech.calaverita.reporterloanssql.persistence.repositories.cierre_semanal.EgresosAgenteRepository;
+import tech.calaverita.reporterloanssql.dto.cierre_semanal.EgresosAgenteDTO;
+import tech.calaverita.reporterloanssql.mappers.cierre_semanal.EgresosAgenteMapper;
+import tech.calaverita.reporterloanssql.models.mariaDB.cierre_semanal.EgresosAgenteModel;
+import tech.calaverita.reporterloanssql.repositories.cierre_semanal.EgresosAgenteRepository;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -24,27 +24,27 @@ public class EgresosAgenteService {
     }
 
     public void save(
-            EgresosAgenteEntity egrAgentEnt_I
+            EgresosAgenteModel egrAgentEnt_I
     ) {
         this.repo.save(egrAgentEnt_I);
     }
 
     @Async("asyncExecutor")
 
-    public CompletableFuture<Optional<EgresosAgenteEntity>> findById(
+    public CompletableFuture<Optional<EgresosAgenteModel>> findById(
             String id
     ) {
-        Optional<EgresosAgenteEntity> entity = this.repo.findById(id);
+        Optional<EgresosAgenteModel> entity = this.repo.findById(id);
         return CompletableFuture.completedFuture(entity);
     }
 
     public EgresosAgenteDTO getEgresosGerenteDTO(
-            EgresosAgenteEntity entity
+            EgresosAgenteModel entity
     ) {
         return this.mapper.mapOut(entity);
     }
 
-    public EgresosAgenteEntity getEgresosGerenteEntity(
+    public EgresosAgenteModel getEgresosGerenteEntity(
             EgresosAgenteDTO DTO
     ) {
         return this.mapper.mapIn(DTO);

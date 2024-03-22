@@ -2,12 +2,12 @@ package tech.calaverita.reporterloanssql.services;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.dto.LiquidacionDTO;
-import tech.calaverita.reporterloanssql.persistence.entities.PagoEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.view.PagoAgrupadoEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.view.PagoUtilEntity;
-import tech.calaverita.reporterloanssql.persistence.mappers.PagoMapper;
-import tech.calaverita.reporterloanssql.persistence.repositories.PagoRepository;
+import tech.calaverita.reporterloanssql.dto.LiquidacionDTO;
+import tech.calaverita.reporterloanssql.mappers.PagoMapper;
+import tech.calaverita.reporterloanssql.models.mariaDB.PagoModel;
+import tech.calaverita.reporterloanssql.models.view.PagoAgrupadoModel;
+import tech.calaverita.reporterloanssql.models.view.PagoUtilModel;
+import tech.calaverita.reporterloanssql.repositories.PagoRepository;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -35,21 +35,21 @@ public class PagoService {
     //------------------------------------------------------------------------------------------------------------------
     /*METHODS*/
     //------------------------------------------------------------------------------------------------------------------
-    public PagoEntity save(
-            PagoEntity pagMod_I
+    public PagoModel save(
+            PagoModel pagMod_I
     ) {
         return this.repo.save(pagMod_I);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public Optional<PagoEntity> optpagModFindById(
+    public Optional<PagoModel> optpagModFindById(
             String strId_I
     ) {
         return this.repo.optpagEntFindById(strId_I);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public PagoEntity pagModFindByAgenteAnioAndSemana(
+    public PagoModel pagModFindByAgenteAnioAndSemana(
             String strPrestamoId_I,
             int intAnio_I,
             int intSemana_I
@@ -58,7 +58,7 @@ public class PagoService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<PagoEntity> darrpagModFindByPrestamoIdAnioAndSemana(
+    public ArrayList<PagoModel> darrpagModFindByPrestamoIdAnioAndSemana(
             String strPrestamoId_I,
             int intAnio_I,
             int intSemana_I
@@ -67,14 +67,14 @@ public class PagoService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<PagoAgrupadoEntity> darrpagAgrModGetHistorialDePagosToApp(
+    public ArrayList<PagoAgrupadoModel> darrpagAgrModGetHistorialDePagosToApp(
             String strPrestamoId_I
     ) {
         return this.repo.darrpagAgrEntGetHistorialDePagosToApp(strPrestamoId_I);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<PagoEntity> darrpagModFindByAgenciaAnioAndSemana(
+    public ArrayList<PagoModel> darrpagModFindByAgenciaAnioAndSemana(
             String strAgencia_I,
             int intAnio_I,
             int intSemana_I
@@ -83,14 +83,14 @@ public class PagoService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<PagoEntity> darrpagModFindByPrestamoId(
+    public ArrayList<PagoModel> darrpagModFindByPrestamoId(
             String strPrestamoId_I
     ) {
         return this.repo.darrpagEntFindByPrestamoId(strPrestamoId_I);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<PagoAgrupadoEntity> darrpagAgrModFindByAgenciaAnioAndSemana(
+    public ArrayList<PagoAgrupadoModel> darrpagAgrModFindByAgenciaAnioAndSemana(
             String strAgencia_I,
             int intAnio_I,
             int intSemana_I
@@ -99,14 +99,14 @@ public class PagoService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<PagoAgrupadoEntity> darrpagAgrModFindByPrestamoId(
+    public ArrayList<PagoAgrupadoModel> darrpagAgrModFindByPrestamoId(
             String strPrestamoId_I
     ) {
         return this.repo.darrpagAgrEntFindByPrestamoId(strPrestamoId_I);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<PagoEntity> darrpagModFindByPrestamoIdAnioSemanaAndNoPrimerPago(
+    public ArrayList<PagoModel> darrpagModFindByPrestamoIdAnioSemanaAndNoPrimerPago(
             String strPrestamoId_I,
             int intAnio_I,
             int intSemana_I
@@ -115,14 +115,14 @@ public class PagoService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<PagoAgrupadoEntity> darrpagAgrModGetHistorialDePagosToPGS(
+    public ArrayList<PagoAgrupadoModel> darrpagAgrModGetHistorialDePagosToPGS(
             String strPrestamoId_I
     ) {
         return this.repo.darrpagAgrEntGetHistorialDePagosToPGS(strPrestamoId_I);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<PagoUtilEntity> darrpagUtilModFindByAgenciaAnioAndSemanaToCobranza(
+    public ArrayList<PagoUtilModel> darrpagUtilModFindByAgenciaAnioAndSemanaToCobranza(
             String strAgencia_I,
             int intAnio_I,
             int intSemana_I
@@ -131,7 +131,7 @@ public class PagoService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<PagoUtilEntity> darrpagUtilModFindByAgenciaAnioAndSemanaToDashboard(
+    public ArrayList<PagoUtilModel> darrpagUtilModFindByAgenciaAnioAndSemanaToDashboard(
             String strAgencia_I,
             int intAnio_I,
             int intSemana_I
@@ -140,7 +140,7 @@ public class PagoService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<PagoEntity> darrpagModFindByAgenciaFechaPagoAndNoPrimerPagoToDashboard(
+    public ArrayList<PagoModel> darrpagModFindByAgenciaFechaPagoAndNoPrimerPagoToDashboard(
             String strAgencia_I,
             String strFechaPago_I
     ) {
@@ -148,7 +148,7 @@ public class PagoService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<PagoEntity> darrpagModFindByAgenciaAnioAndSemanaToDashboard(
+    public ArrayList<PagoModel> darrpagModFindByAgenciaAnioAndSemanaToDashboard(
             String strAgencia_I,
             int intAnio_I,
             int intSemana_I
@@ -157,7 +157,7 @@ public class PagoService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<PagoEntity> darrpagModFindByAgenciaAndFechaPagoToDashboard(
+    public ArrayList<PagoModel> darrpagModFindByAgenciaAndFechaPagoToDashboard(
             String strAgencia_I,
             String strFechaPago_I
     ) {
@@ -418,14 +418,14 @@ public class PagoService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public PagoEntity getPagoEntity(
+    public PagoModel getPagoEntity(
             LiquidacionDTO liquidacionDTO
     ) {
         return this.mapper.mapIn(liquidacionDTO);
     }
 
     @Async("asyncExecutor")
-    public CompletableFuture<ArrayList<PagoEntity>> findByGerenciasAnioSemanaAndTipoAsync(ArrayList<String> gerencias, int anio, int semana) {
+    public CompletableFuture<ArrayList<PagoModel>> findByGerenciasAnioSemanaAndTipoAsync(ArrayList<String> gerencias, int anio, int semana) {
         String tipo = "No_pago";
         return CompletableFuture.completedFuture(this.repo.findByGerenciasAndAnioAndSemanaAndTipo(gerencias, anio, semana, tipo));
     }

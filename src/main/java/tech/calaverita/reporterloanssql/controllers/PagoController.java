@@ -3,11 +3,11 @@ package tech.calaverita.reporterloanssql.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.calaverita.reporterloanssql.persistence.entities.PagoEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.UsuarioEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.VisitaEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.view.PagoAgrupadoEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoEntity;
+import tech.calaverita.reporterloanssql.models.mariaDB.PagoModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.VisitaModel;
+import tech.calaverita.reporterloanssql.models.view.PagoAgrupadoModel;
+import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
 import tech.calaverita.reporterloanssql.pojos.ModelValidation;
 import tech.calaverita.reporterloanssql.pojos.PagoConLiquidacion;
 import tech.calaverita.reporterloanssql.services.AgenciaService;
@@ -60,12 +60,12 @@ public final class PagoController {
     //------------------------------------------------------------------------------------------------------------------
     @CrossOrigin
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<ArrayList<PagoEntity>> redarrpagModGetByAgenciaAnioAndSemana(
+    public @ResponseBody ResponseEntity<ArrayList<PagoModel>> redarrpagModGetByAgenciaAnioAndSemana(
             @PathVariable("agencia") String strAgencia_I,
             @PathVariable("anio") int intAnio_I,
             @PathVariable("semana") int intSemana_I
     ) {
-        ArrayList<PagoEntity> darrpagMod_O = this.pagoService.darrpagModFindByAgenciaAnioAndSemana(strAgencia_I, intAnio_I,
+        ArrayList<PagoModel> darrpagMod_O = this.pagoService.darrpagModFindByAgenciaAnioAndSemana(strAgencia_I, intAnio_I,
                 intSemana_I);
 
         HttpStatus httpStatus_O = HttpStatus.OK;
@@ -92,7 +92,7 @@ public final class PagoController {
             @RequestBody PagoConLiquidacion pagConLiq_I
     ) {
         ModelValidation modVal;
-        PrestamoEntity prestMod = this.prestamoService.prestModFindByPrestamoId(pagConLiq_I.getPrestamoId());
+        PrestamoModel prestMod = this.prestamoService.prestModFindByPrestamoId(pagConLiq_I.getPrestamoId());
         modVal = PagoUtil.modValPagoModelValidation(pagConLiq_I, prestMod);
 
         if (
@@ -116,7 +116,7 @@ public final class PagoController {
             HashMap<String, Object> dirobjeto = new HashMap<>();
 
             ModelValidation modVal;
-            PrestamoEntity prestMod = this.prestamoService.prestModFindByPrestamoId(pagConLiq.getPrestamoId());
+            PrestamoModel prestMod = this.prestamoService.prestModFindByPrestamoId(pagConLiq.getPrestamoId());
             modVal = PagoUtil.modValPagoModelValidation(pagConLiq, prestMod);
 
             if (
@@ -137,10 +137,10 @@ public final class PagoController {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @CrossOrigin
     @GetMapping(path = "/history/{id}")
-    public @ResponseBody ResponseEntity<ArrayList<PagoAgrupadoEntity>> redarrpagAgrModGetHistory(
+    public @ResponseBody ResponseEntity<ArrayList<PagoAgrupadoModel>> redarrpagAgrModGetHistory(
             @PathVariable("id") String strId_I
     ) {
-        ArrayList<PagoAgrupadoEntity> pagAgrMod_O = this.pagoService.darrpagAgrModGetHistorialDePagosToApp(strId_I);
+        ArrayList<PagoAgrupadoModel> pagAgrMod_O = this.pagoService.darrpagAgrModGetHistorialDePagosToApp(strId_I);
         HttpStatus httpStatus_O = HttpStatus.OK;
 
         if (
@@ -159,19 +159,21 @@ public final class PagoController {
             @PathVariable("anio") int anio,
             @PathVariable("semana") int semana
     ) throws ExecutionException, InterruptedException {
-        UsuarioEntity usuarioEntity = this.usuarioService.usuarModFindByUsuario(usuario);
+        UsuarioModel usuarioModel = this.usuarioService.usuarModFindByUsuario(usuario);
         ArrayList<String> gerenciaIds = this.usuarioGerenciaService
-                .darrstrGerenciaIdFindByUsuarioId(usuarioEntity.getUsuarioId());
+                .darrstrGerenciaIdFindByUsuarioId(usuarioModel.getUsuarioId());
 
-        CompletableFuture<ArrayList<PagoEntity>> pagoEntitiesCompletableFuture = this.pagoService
+        CompletableFuture<ArrayList<PagoModel>> pagoEntitiesCF = this.pagoService
                 .findByGerenciasAnioSemanaAndTipoAsync(gerenciaIds, anio, semana);
-        CompletableFuture<ArrayList<VisitaEntity>> visitaEntitiesCompletableFuture = this.visitaService
+        CompletableFuture<ArrayList<VisitaModel>> visitaEntitiesCF = this.visitaService
                 .findByGerenciasAnioAndSemanaAsync(gerenciaIds, anio, semana);
 
-        CompletableFuture.allOf(pagoEntitiesCompletableFuture, visitaEntitiesCompletableFuture);
+        CompletableFuture.allOf(pagoEntitiesCF, visitaEntitiesCF);
+        ArrayList<PagoModel> pagoEntities = pagoEntitiesCF.get();
+        ArrayList<VisitaModel> visitaEntities = visitaEntitiesCF.get();
 
         ArrayList<HashMap<String, Object>> noPagosConVisitas = new ArrayList<>();
-        pagoEntitiesCompletableFuture.get().parallelStream().forEach(noPago -> {
+        pagoEntities.parallelStream().forEach(noPago -> {
             HashMap<String, Object> noPagoConVisitasHM = new HashMap<>();
             noPagoConVisitasHM.put("pagoId", noPago.getPagoId());
             noPagoConVisitasHM.put("prestamoId", noPago.getPrestamoId());
@@ -189,25 +191,21 @@ public final class PagoController {
                     .getGerenciaId());
 
             ArrayList<HashMap<String, Object>> visitas = new ArrayList<>();
-            try {
-                visitaEntitiesCompletableFuture.get().parallelStream().forEach(visita -> {
-                    if (noPago.getPrestamoId().equals(visita.getPrestamoId())) {
-                        HashMap<String, Object> visitaHM = new HashMap<>();
-                        visitaHM.put("visitaId", visita.getVisitaId());
-                        visitaHM.put("prestamoId", visita.getPrestamoId());
-                        visitaHM.put("semana", visita.getSemana());
-                        visitaHM.put("anio", visita.getAnio());
-                        visitaHM.put("cliente", visita.getCliente());
-                        visitaHM.put("agente", visita.getAgente());
-                        visitaHM.put("fecha", visita.getFecha());
-                        visitaHM.put("lat", visita.getLat());
-                        visitaHM.put("lng", visita.getLng());
-                        visitas.add(visitaHM);
-                    }
-                });
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
-            }
+            visitaEntities.forEach(visita -> {
+                if (noPago.getPrestamoId().equals(visita.getPrestamoId())) {
+                    HashMap<String, Object> visitaHM = new HashMap<>();
+                    visitaHM.put("visitaId", visita.getVisitaId());
+                    visitaHM.put("prestamoId", visita.getPrestamoId());
+                    visitaHM.put("semana", visita.getSemana());
+                    visitaHM.put("anio", visita.getAnio());
+                    visitaHM.put("cliente", visita.getCliente());
+                    visitaHM.put("agente", visita.getAgente());
+                    visitaHM.put("fecha", visita.getFecha());
+                    visitaHM.put("lat", visita.getLat());
+                    visitaHM.put("lng", visita.getLng());
+                    visitas.add(visitaHM);
+                }
+            });
             noPagoConVisitasHM.put("visitas", visitas);
 
             noPagosConVisitas.add(noPagoConVisitasHM);

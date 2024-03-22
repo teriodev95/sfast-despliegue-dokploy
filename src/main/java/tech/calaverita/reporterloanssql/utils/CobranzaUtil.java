@@ -2,7 +2,7 @@ package tech.calaverita.reporterloanssql.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import tech.calaverita.reporterloanssql.persistence.entities.CalendarioEntity;
+import tech.calaverita.reporterloanssql.models.mariaDB.CalendarioModel;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.services.CalendarioService;
 import tech.calaverita.reporterloanssql.threads.CobranzaThread;
@@ -57,11 +57,11 @@ public class CobranzaUtil implements Runnable {
     }
 
     public static void funSemanaAnterior(
-            CalendarioEntity calendarioEntity
+            CalendarioModel calendarioModel
     ) {
         // To easy code
-        int anio = calendarioEntity.getAnio();
-        int semana = calendarioEntity.getSemana();
+        int anio = calendarioModel.getAnio();
+        int semana = calendarioModel.getSemana();
 
         if (
                 semana == 1
@@ -74,7 +74,7 @@ public class CobranzaUtil implements Runnable {
             semana = semana - 1;
         }
 
-        calendarioEntity.setAnio(anio);
-        calendarioEntity.setSemana(semana);
+        calendarioModel.setAnio(anio);
+        calendarioModel.setSemana(semana);
     }
 }

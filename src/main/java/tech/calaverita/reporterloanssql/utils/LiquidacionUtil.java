@@ -1,12 +1,12 @@
 package tech.calaverita.reporterloanssql.utils;
 
 import org.springframework.stereotype.Component;
-import tech.calaverita.reporterloanssql.persistence.dto.LiquidacionDTO;
-import tech.calaverita.reporterloanssql.persistence.entities.CalendarioEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.LiquidacionEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.PagoEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.PorcentajesDescuentoLiquidacionesEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoEntity;
+import tech.calaverita.reporterloanssql.dto.LiquidacionDTO;
+import tech.calaverita.reporterloanssql.models.mariaDB.CalendarioModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.LiquidacionModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.PagoModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.PorcentajesDescuentoLiquidacionesModel;
+import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
 import tech.calaverita.reporterloanssql.services.CalendarioService;
 import tech.calaverita.reporterloanssql.services.LiquidacionService;
 import tech.calaverita.reporterloanssql.services.PorcentajesDescuentoLiquidacionesService;
@@ -41,7 +41,7 @@ public class LiquidacionUtil {
     ) {
         LiquidacionDTO liquidacionDTO = null;
 
-        Optional<PrestamoEntity> prestamoEntity = prestamoService.findById(prestamoId);
+        Optional<PrestamoModel> prestamoEntity = prestamoService.findById(prestamoId);
 
         if (
                 prestamoEntity.isPresent()
@@ -70,7 +70,7 @@ public class LiquidacionUtil {
     ) {
         int descuentoPorcentaje = 0;
 
-        Optional<PorcentajesDescuentoLiquidacionesEntity> porcentajeDescuentoLiquidacionesEntity = LiquidacionUtil
+        Optional<PorcentajesDescuentoLiquidacionesModel> porcentajeDescuentoLiquidacionesEntity = LiquidacionUtil
                 .porcentajesDescuentoLiquidacionesService.findById(identificadorCredito);
 
         if (
@@ -85,37 +85,37 @@ public class LiquidacionUtil {
     }
 
     private static int getDescuentoPorcentajeAux(
-            PorcentajesDescuentoLiquidacionesEntity porcentajesDescuentoLiquidacionesEntity,
+            PorcentajesDescuentoLiquidacionesModel porcentajesDescuentoLiquidacionesModel,
             int semanasTranscurridas
     ) {
         int descuentoPorcentaje = 0;
 
         switch (semanasTranscurridas - 1) {
-            case 0 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana1();
-            case 1 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana2();
-            case 2 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana3();
-            case 3 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana4();
-            case 4 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana5();
-            case 5 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana6();
-            case 6 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana7();
-            case 7 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana8();
-            case 8 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana9();
-            case 9 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana10();
-            case 10 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana11();
-            case 11 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana12();
-            case 12 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana13();
-            case 13 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana14();
-            case 14 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana15();
-            case 15 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana16();
-            case 16 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana17();
-            case 17 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana18();
-            case 18 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana19();
-            case 19 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana20();
-            case 20 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana21();
-            case 21 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana22();
-            case 22 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana23();
-            case 23 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana24();
-            case 24 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesEntity.getSemana25();
+            case 0 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana1();
+            case 1 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana2();
+            case 2 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana3();
+            case 3 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana4();
+            case 4 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana5();
+            case 5 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana6();
+            case 6 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana7();
+            case 7 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana8();
+            case 8 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana9();
+            case 9 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana10();
+            case 10 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana11();
+            case 11 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana12();
+            case 12 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana13();
+            case 13 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana14();
+            case 14 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana15();
+            case 15 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana16();
+            case 16 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana17();
+            case 17 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana18();
+            case 18 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana19();
+            case 19 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana20();
+            case 20 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana21();
+            case 21 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana22();
+            case 22 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana23();
+            case 23 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana24();
+            case 24 -> descuentoPorcentaje = porcentajesDescuentoLiquidacionesModel.getSemana25();
         }
         return descuentoPorcentaje;
     }
@@ -131,27 +131,27 @@ public class LiquidacionUtil {
             int anio,
             int semana
     ) {
-        CalendarioEntity semanaEntregaCalendarioEntity = new CalendarioEntity();
+        CalendarioModel semanaEntregaCalendarioModel = new CalendarioModel();
         {
-            semanaEntregaCalendarioEntity.setAnio(anio);
-            semanaEntregaCalendarioEntity.setSemana(semana);
+            semanaEntregaCalendarioModel.setAnio(anio);
+            semanaEntregaCalendarioModel.setSemana(semana);
         }
 
         // To easy code
         String fechaActual = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        CalendarioEntity semanaActualCalendarioEntity = LiquidacionUtil.calendarioService
+        CalendarioModel semanaActualCalendarioModel = LiquidacionUtil.calendarioService
                 .findByFechaActual(fechaActual);
         boolean existsSemana53 = LiquidacionUtil.calendarioService
                 .existsByAnioAndSemana(anio, 53);
 
         int semanasTranscurridas = 0;
         while (!(
-                Objects.equals(semanaEntregaCalendarioEntity.getAnio(), semanaActualCalendarioEntity.getAnio())
-                        && Objects.equals(semanaEntregaCalendarioEntity.getSemana(), semanaActualCalendarioEntity
+                Objects.equals(semanaEntregaCalendarioModel.getAnio(), semanaActualCalendarioModel.getAnio())
+                        && Objects.equals(semanaEntregaCalendarioModel.getSemana(), semanaActualCalendarioModel
                         .getSemana())
         )) {
-            LiquidacionUtil.funSemanaSiguiente(semanaEntregaCalendarioEntity, existsSemana53);
+            LiquidacionUtil.funSemanaSiguiente(semanaEntregaCalendarioModel, existsSemana53);
             semanasTranscurridas++;
         }
 
@@ -159,12 +159,12 @@ public class LiquidacionUtil {
     }
 
     private static void funSemanaSiguiente(
-            CalendarioEntity calendarioEntity,
+            CalendarioModel calendarioModel,
             boolean existsSemana53
     ) {
         // To easy code
-        int anio = calendarioEntity.getAnio();
-        int semana = calendarioEntity.getSemana();
+        int anio = calendarioModel.getAnio();
+        int semana = calendarioModel.getSemana();
 
         if (
                 semana == 52 && existsSemana53
@@ -182,8 +182,8 @@ public class LiquidacionUtil {
             semana = semana + 1;
         }
 
-        calendarioEntity.setAnio(anio);
-        calendarioEntity.setSemana(semana);
+        calendarioModel.setAnio(anio);
+        calendarioModel.setSemana(semana);
     }
 
     private static double getLiquidaCon(
@@ -193,16 +193,16 @@ public class LiquidacionUtil {
         return saldo - descuentoDinero;
     }
 
-    public static LiquidacionEntity getLiquidacionEntity(
+    public static LiquidacionModel getLiquidacionEntity(
             LiquidacionDTO liquidacionDTO,
-            PagoEntity pagoEntity
+            PagoModel pagoModel
     ) {
-        LiquidacionEntity liquidacionEntity = LiquidacionUtil.liquidacionService.getLiquidacionEntity(liquidacionDTO);
+        LiquidacionModel liquidacionModel = LiquidacionUtil.liquidacionService.getLiquidacionEntity(liquidacionDTO);
         {
-            liquidacionEntity.setAnio(pagoEntity.getAnio());
-            liquidacionEntity.setSemana(pagoEntity.getSemana());
-            liquidacionEntity.setPagoId(pagoEntity.getPagoId());
+            liquidacionModel.setAnio(pagoModel.getAnio());
+            liquidacionModel.setSemana(pagoModel.getSemana());
+            liquidacionModel.setPagoId(pagoModel.getPagoId());
         }
-        return liquidacionEntity;
+        return liquidacionModel;
     }
 }

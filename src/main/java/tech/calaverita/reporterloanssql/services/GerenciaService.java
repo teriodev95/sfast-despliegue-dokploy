@@ -2,8 +2,8 @@ package tech.calaverita.reporterloanssql.services;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.entities.GerenciaEntity;
-import tech.calaverita.reporterloanssql.persistence.repositories.GerenciaRepository;
+import tech.calaverita.reporterloanssql.models.mariaDB.GerenciaModel;
+import tech.calaverita.reporterloanssql.repositories.GerenciaRepository;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -42,24 +42,24 @@ public class GerenciaService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<GerenciaEntity> darrGerModFindAll() {
+    public ArrayList<GerenciaModel> darrGerModFindAll() {
         return this.repo.darrGerEntFindAll();
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Async("asyncExecutor")
-    public CompletableFuture<ArrayList<GerenciaEntity>> findAllAsync() {
-        ArrayList<GerenciaEntity> entity = this.repo.darrGerEntFindAll();
+    public CompletableFuture<ArrayList<GerenciaModel>> findAllAsync() {
+        ArrayList<GerenciaModel> entity = this.repo.darrGerEntFindAll();
 
         return CompletableFuture.completedFuture(entity);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Async("asyncExecutor")
-    public CompletableFuture<Optional<GerenciaEntity>> findByIdAsync(
+    public CompletableFuture<Optional<GerenciaModel>> findByIdAsync(
             String id
     ) {
-        Optional<GerenciaEntity> entity = this.repo.findById(id);
+        Optional<GerenciaModel> entity = this.repo.findById(id);
 
         return CompletableFuture.completedFuture(entity);
     }
@@ -70,7 +70,7 @@ public class GerenciaService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public GerenciaEntity gerModFindByGerenciaId(
+    public GerenciaModel gerModFindByGerenciaId(
             String gerenciaId
     ) {
         return this.repo.gerEntFindByGerenciaId(gerenciaId);

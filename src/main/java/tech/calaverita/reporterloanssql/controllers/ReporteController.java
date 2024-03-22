@@ -3,10 +3,10 @@ package tech.calaverita.reporterloanssql.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.calaverita.reporterloanssql.persistence.documents.ReporteDiarioAgenciasDocument;
-import tech.calaverita.reporterloanssql.persistence.documents.ReporteGeneralGerenciaDocument;
-import tech.calaverita.reporterloanssql.persistence.entities.CalendarioEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.GerenciaEntity;
+import tech.calaverita.reporterloanssql.models.mariaDB.CalendarioModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.GerenciaModel;
+import tech.calaverita.reporterloanssql.models.mongoDB.ReporteDiarioAgenciasDocument;
+import tech.calaverita.reporterloanssql.models.mongoDB.ReporteGeneralGerenciaDocument;
 import tech.calaverita.reporterloanssql.services.CalendarioService;
 import tech.calaverita.reporterloanssql.services.GerenciaService;
 import tech.calaverita.reporterloanssql.services.reportes.ReporteDiarioAgenciasService;
@@ -48,7 +48,7 @@ public final class ReporteController {
     public @ResponseBody ResponseEntity<ReporteDiarioAgenciasDocument> getReporteDiarioAgencias(
             @PathVariable("gerencia") String gerencia
     ) throws ExecutionException, InterruptedException {
-        CompletableFuture<Optional<GerenciaEntity>> gerenciaEntity = this.gerenciaService
+        CompletableFuture<Optional<GerenciaModel>> gerenciaEntity = this.gerenciaService
                 .findByIdAsync(gerencia);
 
         gerenciaEntity.join();
@@ -69,7 +69,7 @@ public final class ReporteController {
     public @ResponseBody ResponseEntity<ReporteGeneralGerenciaDocument> getReporteGeneralGerencia(
             @PathVariable("gerencia") String gerencia
     ) throws ExecutionException, InterruptedException {
-        CompletableFuture<Optional<GerenciaEntity>> gerenciaEntity = this.gerenciaService
+        CompletableFuture<Optional<GerenciaModel>> gerenciaEntity = this.gerenciaService
                 .findByIdAsync(gerencia);
 
         gerenciaEntity.join();
@@ -97,10 +97,10 @@ public final class ReporteController {
     public @ResponseBody List<ReporteDiarioAgenciasDocument> createReportesDiariosAgencias() throws ExecutionException, InterruptedException, ParseException {
         ArrayList<ReporteDiarioAgenciasDocument> reportes = new ArrayList<>();
         {
-            ArrayList<GerenciaEntity> gerenciasEntities = this.gerenciaService.darrGerModFindAll();
+            ArrayList<GerenciaModel> gerenciasEntities = this.gerenciaService.darrGerModFindAll();
 
-            for (GerenciaEntity gerenciaEntity : gerenciasEntities) {
-                reportes.add(ReporteDiarioAgenciasUtil.getReporte(gerenciaEntity));
+            for (GerenciaModel gerenciaModel : gerenciasEntities) {
+                reportes.add(ReporteDiarioAgenciasUtil.getReporte(gerenciaModel));
             }
         }
 
@@ -113,7 +113,7 @@ public final class ReporteController {
             @PathVariable("anio") int anio,
             @PathVariable("semana") int semana
     ) throws ExecutionException, InterruptedException {
-        CompletableFuture<CalendarioEntity> calendarioEntity = this.calendarioService
+        CompletableFuture<CalendarioModel> calendarioEntity = this.calendarioService
                 .findByAnioAndSemanaAsync(anio, semana);
 
         calendarioEntity.join();
@@ -123,12 +123,12 @@ public final class ReporteController {
 
         ArrayList<ReporteGeneralGerenciaDocument> reportes = new ArrayList<>();
         {
-            ArrayList<GerenciaEntity> gerenciasEntities = this.gerenciaService.darrGerModFindAll();
+            ArrayList<GerenciaModel> gerenciasEntities = this.gerenciaService.darrGerModFindAll();
 
-            for (GerenciaEntity gerenciaEntity : gerenciasEntities) {
+            for (GerenciaModel gerenciaModel : gerenciasEntities) {
                 for (String fechaDiaSemana : fechaDiasSemana) {
 
-                    reportes.add(ReporteGeneralGerenciaMigracionUtil.getReporte(gerenciaEntity, calendarioEntity.get(),
+                    reportes.add(ReporteGeneralGerenciaMigracionUtil.getReporte(gerenciaModel, calendarioEntity.get(),
                             fechaDiaSemana));
 
                     calendarioEntity = this.calendarioService

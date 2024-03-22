@@ -1,10 +1,10 @@
 package tech.calaverita.reporterloanssql.services.cierre_semanal;
 
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.dto.cierre_semanal.CierreSemanalDTO;
-import tech.calaverita.reporterloanssql.persistence.entities.cierre_semanal.CierreSemanalEntity;
-import tech.calaverita.reporterloanssql.persistence.mappers.cierre_semanal.CierreSemanalMapper;
-import tech.calaverita.reporterloanssql.persistence.repositories.cierre_semanal.CierreSemanalRepository;
+import tech.calaverita.reporterloanssql.dto.cierre_semanal.CierreSemanalDTO;
+import tech.calaverita.reporterloanssql.mappers.cierre_semanal.CierreSemanalMapper;
+import tech.calaverita.reporterloanssql.models.mariaDB.cierre_semanal.CierreSemanalModel;
+import tech.calaverita.reporterloanssql.repositories.cierre_semanal.CierreSemanalRepository;
 
 import java.util.Optional;
 
@@ -22,18 +22,18 @@ public class CierreSemanalService {
     }
 
     public void save(
-            CierreSemanalEntity cierSemEnt_I
+            CierreSemanalModel cierSemEnt_I
     ) {
         this.repo.save(cierSemEnt_I);
     }
 
-    public Optional<CierreSemanalEntity> findById(
+    public Optional<CierreSemanalModel> findById(
             String id
     ) {
         return this.repo.findById(id);
     }
 
-    public Optional<CierreSemanalEntity> findByAgenciaAnioAndSemana(
+    public Optional<CierreSemanalModel> findByAgenciaAnioAndSemana(
             String agencia,
             int anio,
             int semana
@@ -42,12 +42,12 @@ public class CierreSemanalService {
     }
 
     public CierreSemanalDTO getCierreSemanalDTO(
-            CierreSemanalEntity entity
+            CierreSemanalModel entity
     ) {
         return this.mapper.mapOut(entity);
     }
 
-    public CierreSemanalEntity getCierreSemanalEntity(
+    public CierreSemanalModel getCierreSemanalEntity(
             CierreSemanalDTO DTO
     ) {
         return this.mapper.mapIn(DTO);

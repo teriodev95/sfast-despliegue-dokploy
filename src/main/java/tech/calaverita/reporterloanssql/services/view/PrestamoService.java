@@ -1,9 +1,9 @@
 package tech.calaverita.reporterloanssql.services.view;
 
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoEntity;
-import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoUtilEntity;
-import tech.calaverita.reporterloanssql.persistence.repositories.view.PrestRepoPrestamoRepository;
+import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
+import tech.calaverita.reporterloanssql.models.view.PrestamoUtilModel;
+import tech.calaverita.reporterloanssql.repositories.view.PrestRepoPrestamoRepository;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -27,7 +27,7 @@ public final class PrestamoService {
     //------------------------------------------------------------------------------------------------------------------
     /*METHODS*/
     //------------------------------------------------------------------------------------------------------------------
-    public ArrayList<PrestamoUtilEntity> darrprestUtilModFindByAgenciaAnioAndSemanaToDashboard(
+    public ArrayList<PrestamoUtilModel> darrprestUtilModFindByAgenciaAnioAndSemanaToDashboard(
             String strAgencia_I,
             int intAnio_I,
             int intSemana_I
@@ -36,7 +36,7 @@ public final class PrestamoService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<PrestamoUtilEntity> darrPrestUtilModFindByAgenciaAnioAndSemanaToCobranza(
+    public ArrayList<PrestamoUtilModel> darrPrestUtilModFindByAgenciaAnioAndSemanaToCobranza(
             String strAgencia_I,
             int intAnio_I,
             int intSemana_I
@@ -45,7 +45,7 @@ public final class PrestamoService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<PrestamoEntity> darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(
+    public ArrayList<PrestamoModel> darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(
             String strAgencia_I,
             int intAnio_I,
             int intSemana_I) {
@@ -53,7 +53,7 @@ public final class PrestamoService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<PrestamoUtilEntity> darrprestUtilModByAgenciaAndFechaPagoToDashboard(
+    public ArrayList<PrestamoUtilModel> darrprestUtilModByAgenciaAndFechaPagoToDashboard(
             String strAgencia_I,
             String strFechaPago_I
     ) {
@@ -61,14 +61,14 @@ public final class PrestamoService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public PrestamoEntity prestModFindByPrestamoId(
+    public PrestamoModel prestModFindByPrestamoId(
             String strPrestamoId_I
     ) {
         return this.prestRepo.prestEntFindByPrestamoId(strPrestamoId_I);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public Optional<PrestamoEntity> findById(
+    public Optional<PrestamoModel> findById(
             String strPrestamoId_I
     ) {
         return this.prestRepo.findById(strPrestamoId_I);

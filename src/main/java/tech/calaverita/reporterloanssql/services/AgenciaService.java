@@ -2,8 +2,8 @@ package tech.calaverita.reporterloanssql.services;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.entities.AgenciaEntity;
-import tech.calaverita.reporterloanssql.persistence.repositories.AgenciaRepository;
+import tech.calaverita.reporterloanssql.models.mariaDB.AgenciaModel;
+import tech.calaverita.reporterloanssql.repositories.AgenciaRepository;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -28,7 +28,7 @@ public class AgenciaService {
     //------------------------------------------------------------------------------------------------------------------
     /*METHODS*/
     //------------------------------------------------------------------------------------------------------------------
-    public AgenciaEntity agencModFindByAgenciaId(
+    public AgenciaModel agencModFindByAgenciaId(
             String agenciaId
     ) {
         return this.repo.agencModFindByAgenciaId(agenciaId);
@@ -43,15 +43,15 @@ public class AgenciaService {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Async("asyncExecutor")
-    public CompletableFuture<ArrayList<AgenciaEntity>> findByGerenciaIdAsync(
+    public CompletableFuture<ArrayList<AgenciaModel>> findByGerenciaIdAsync(
             String gerenciaId
     ) {
-        ArrayList<AgenciaEntity> entities = this.repo.findByGerenciaId(gerenciaId);
+        ArrayList<AgenciaModel> entities = this.repo.findByGerenciaId(gerenciaId);
 
         return CompletableFuture.completedFuture(entities);
     }
 
-    public Optional<AgenciaEntity> findById(
+    public Optional<AgenciaModel> findById(
             String id
     ) {
         return this.repo.findById(id);
@@ -59,8 +59,8 @@ public class AgenciaService {
 
     public String getStatusByAgenciaId(
             String agenciaId
-    ){
-        Optional<AgenciaEntity> entity = repo.findById(agenciaId);
+    ) {
+        Optional<AgenciaModel> entity = repo.findById(agenciaId);
 
         return entity.get().getStatus();
     }

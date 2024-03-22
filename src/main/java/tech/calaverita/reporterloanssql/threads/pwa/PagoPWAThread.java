@@ -1,23 +1,23 @@
 package tech.calaverita.reporterloanssql.threads.pwa;
 
-import tech.calaverita.reporterloanssql.persistence.entities.PagoEntity;
-import tech.calaverita.reporterloanssql.pojos.pwa.PagoPWA;
+import tech.calaverita.reporterloanssql.models.mariaDB.PagoModel;
+import tech.calaverita.reporterloanssql.pojos.PWA.PagoPWA;
 
 public class PagoPWAThread implements Runnable {
     //------------------------------------------------------------------------------------------------------------------
     /*INSTANCE VARIABLES*/
     //------------------------------------------------------------------------------------------------------------------
-    private final PagoEntity pagoEntity;
+    private final PagoModel pagoModel;
     private final PagoPWA pagoPWA;
 
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
     //------------------------------------------------------------------------------------------------------------------
     public PagoPWAThread(
-            PagoEntity pagoEntity,
+            PagoModel pagoModel,
             PagoPWA pagoPWA
     ) {
-        this.pagoEntity = pagoEntity;
+        this.pagoModel = pagoModel;
         this.pagoPWA = pagoPWA;
     }
 
@@ -31,21 +31,21 @@ public class PagoPWAThread implements Runnable {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getPagoPWAFromPagoModel() {
-        pagoPWA.setPagoId(pagoEntity.getPagoId());
-        pagoPWA.setMonto(pagoEntity.getMonto());
-        pagoPWA.setEsPrimerPago(pagoEntity.getEsPrimerPago());
-        pagoPWA.setAbreCon(pagoEntity.getAbreCon());
-        pagoPWA.setCierraCon(pagoEntity.getCierraCon());
-        pagoPWA.setTipo(pagoEntity.getTipo());
-        pagoPWA.setCreadoDesde(pagoEntity.getCreadoDesde());
-        pagoPWA.setFechaPago(pagoEntity.getFechaPago());
-        pagoPWA.setLat(pagoEntity.getLat());
-        pagoPWA.setLng(pagoEntity.getLng());
-        pagoPWA.setComentario(pagoEntity.getComentario());
-        pagoPWA.setDatosMigracion(pagoEntity.getDatosMigracion());
-        pagoPWA.setCreatedAt(pagoEntity.getCreatedAt());
-        pagoPWA.setUpdatedAt(pagoEntity.getUpdatedAt());
-        pagoPWA.setLog(pagoEntity.getLog());
-        pagoPWA.setQuienPago(pagoEntity.getQuienPago());
+        pagoPWA.setPagoId(pagoModel.getPagoId());
+        pagoPWA.setMonto(pagoModel.getMonto());
+        pagoPWA.setEsPrimerPago(pagoModel.getEsPrimerPago());
+        pagoPWA.setAbreCon(pagoModel.getAbreCon());
+        pagoPWA.setCierraCon(pagoModel.getCierraCon());
+        pagoPWA.setTipo(pagoModel.getTipo());
+        pagoPWA.setCreadoDesde(pagoModel.getCreadoDesde());
+        pagoPWA.setFechaPago(pagoModel.getFechaPago());
+        pagoPWA.setLat(pagoModel.getLat());
+        pagoPWA.setLng(pagoModel.getLng());
+        pagoPWA.setComentario(pagoModel.getComentario());
+        pagoPWA.setDatosMigracion(pagoModel.getDatosMigracion());
+        pagoPWA.setCreatedAt(pagoModel.getCreatedAt());
+        pagoPWA.setUpdatedAt(pagoModel.getUpdatedAt());
+        pagoPWA.setLog(pagoModel.getLog());
+        pagoPWA.setQuienPago(pagoModel.getQuienPago());
     }
 }

@@ -2,10 +2,10 @@ package tech.calaverita.reporterloanssql.services.cierre_semanal;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.dto.cierre_semanal.EgresosGerenteDTO;
-import tech.calaverita.reporterloanssql.persistence.entities.cierre_semanal.EgresosGerenteEntity;
-import tech.calaverita.reporterloanssql.persistence.mappers.cierre_semanal.EgresosGerenteMapper;
-import tech.calaverita.reporterloanssql.persistence.repositories.cierre_semanal.EgresosGerenteRepository;
+import tech.calaverita.reporterloanssql.dto.cierre_semanal.EgresosGerenteDTO;
+import tech.calaverita.reporterloanssql.mappers.cierre_semanal.EgresosGerenteMapper;
+import tech.calaverita.reporterloanssql.models.mariaDB.cierre_semanal.EgresosGerenteModel;
+import tech.calaverita.reporterloanssql.repositories.cierre_semanal.EgresosGerenteRepository;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -24,27 +24,27 @@ public class EgresosGerenteService {
     }
 
     public void save(
-            EgresosGerenteEntity egrGerEnt_I
+            EgresosGerenteModel egrGerEnt_I
     ) {
         this.repo.save(egrGerEnt_I);
     }
 
     @Async("asyncExecutor")
 
-    public CompletableFuture<Optional<EgresosGerenteEntity>> findById(
+    public CompletableFuture<Optional<EgresosGerenteModel>> findById(
             String id
     ) {
-        Optional<EgresosGerenteEntity> entity = this.repo.findById(id);
+        Optional<EgresosGerenteModel> entity = this.repo.findById(id);
         return CompletableFuture.completedFuture(entity);
     }
 
     public EgresosGerenteDTO getEgresosGerenteDTO(
-            EgresosGerenteEntity entity
+            EgresosGerenteModel entity
     ) {
         return this.mapper.mapOut(entity);
     }
 
-    public EgresosGerenteEntity getEgresosGerenteEntity(
+    public EgresosGerenteModel getEgresosGerenteEntity(
             EgresosGerenteDTO DTO
     ) {
         return this.mapper.mapIn(DTO);

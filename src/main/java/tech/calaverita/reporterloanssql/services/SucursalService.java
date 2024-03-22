@@ -2,8 +2,8 @@ package tech.calaverita.reporterloanssql.services;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.entities.SucursalEntity;
-import tech.calaverita.reporterloanssql.persistence.repositories.SucursalRepository;
+import tech.calaverita.reporterloanssql.models.mariaDB.SucursalModel;
+import tech.calaverita.reporterloanssql.repositories.SucursalRepository;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -26,7 +26,7 @@ public class SucursalService {
     //------------------------------------------------------------------------------------------------------------------
     /*METHODS*/
     //------------------------------------------------------------------------------------------------------------------
-    public SucursalEntity findBySucursalId(
+    public SucursalModel findBySucursalId(
             String sucursalId
     ) {
         return this.repo.findBySucursalId(sucursalId);
@@ -34,10 +34,10 @@ public class SucursalService {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Async("asyncExecutor")
-    public CompletableFuture<SucursalEntity> findBySucursalIdAsync(
+    public CompletableFuture<SucursalModel> findBySucursalIdAsync(
             String sucursalId
     ) {
-        SucursalEntity entity = this.repo.findBySucursalId(sucursalId);
+        SucursalModel entity = this.repo.findBySucursalId(sucursalId);
 
         return CompletableFuture.completedFuture(entity);
     }
@@ -46,7 +46,7 @@ public class SucursalService {
             String gerenciaId
     ) {
         String sucursalId = gerenciaId.substring(0, 4);
-        SucursalEntity entity = this.repo.findBySucursalId(sucursalId);
+        SucursalModel entity = this.repo.findBySucursalId(sucursalId);
 
         return entity.getNombre().split(" ")[0];
     }

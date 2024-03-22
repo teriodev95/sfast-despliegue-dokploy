@@ -1,7 +1,7 @@
 package tech.calaverita.reporterloanssql.utils;
 
 import com.google.gson.Gson;
-import tech.calaverita.reporterloanssql.persistence.dto.cierre_semanal.BalanceAgenciaDTO;
+import tech.calaverita.reporterloanssql.dto.cierre_semanal.BalanceAgenciaDTO;
 
 import java.util.HashMap;
 

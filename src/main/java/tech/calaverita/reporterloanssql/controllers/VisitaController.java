@@ -3,7 +3,7 @@ package tech.calaverita.reporterloanssql.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.calaverita.reporterloanssql.persistence.entities.VisitaEntity;
+import tech.calaverita.reporterloanssql.models.mariaDB.VisitaModel;
 import tech.calaverita.reporterloanssql.services.VisitaService;
 import tech.calaverita.reporterloanssql.utils.VisitaUtil;
 
@@ -30,8 +30,8 @@ public final class VisitaController {
     /*METHODS*/
     //------------------------------------------------------------------------------------------------------------------
     @GetMapping
-    public ResponseEntity<ArrayList<VisitaEntity>> getVisitaModels() {
-        ArrayList<VisitaEntity> visEntVisitaEntities = visServ.darrvisModFindAll();
+    public ResponseEntity<ArrayList<VisitaModel>> getVisitaModels() {
+        ArrayList<VisitaModel> visEntVisitaEntities = visServ.darrvisModFindAll();
 
         if (visEntVisitaEntities.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -42,24 +42,24 @@ public final class VisitaController {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/{visitaId}")
-    public ResponseEntity<VisitaEntity> getVisitaModelByVisitaId(
+    public ResponseEntity<VisitaModel> getVisitaModelByVisitaId(
             @PathVariable(name = "visitaId") String visitaId
     ) {
-        VisitaEntity visitaEntity = visServ.visModFindByVisitaId(visitaId);
+        VisitaModel visitaModel = visServ.visModFindByVisitaId(visitaId);
 
-        if (visitaEntity == null) {
+        if (visitaModel == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return new ResponseEntity<>(visitaEntity, HttpStatus.OK);
+        return new ResponseEntity<>(visitaModel, HttpStatus.OK);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/prestamo-id/{prestamoId}")
-    public ResponseEntity<ArrayList<VisitaEntity>> getVisitaModelsByPrestamoId(
+    public ResponseEntity<ArrayList<VisitaModel>> getVisitaModelsByPrestamoId(
             @PathVariable(name = "prestamoId") String prestamoId
     ) {
-        ArrayList<VisitaEntity> visEntVisitaEntities = visServ.darrvisModFindByPrestamoId(prestamoId);
+        ArrayList<VisitaModel> visEntVisitaEntities = visServ.darrvisModFindByPrestamoId(prestamoId);
 
         if (visEntVisitaEntities.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -71,13 +71,13 @@ public final class VisitaController {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @PostMapping(path = "/create-one")
     public ResponseEntity<String> createVisitaModel(
-            @RequestBody VisitaEntity visitaEntity
+            @RequestBody VisitaModel visitaModel
     ) {
 
-        ResponseEntity<String> responseEntity = VisitaUtil.restrCheckVisit(visitaEntity);
+        ResponseEntity<String> responseEntity = VisitaUtil.restrCheckVisit(visitaModel);
 
         if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            visServ.save(visitaEntity);
+            visServ.save(visitaModel);
         } else {
             return responseEntity;
         }

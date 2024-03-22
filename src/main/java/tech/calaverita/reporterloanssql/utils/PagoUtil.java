@@ -6,9 +6,9 @@ import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
-import tech.calaverita.reporterloanssql.persistence.dto.LiquidacionDTO;
-import tech.calaverita.reporterloanssql.persistence.entities.*;
-import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoEntity;
+import tech.calaverita.reporterloanssql.dto.LiquidacionDTO;
+import tech.calaverita.reporterloanssql.models.mariaDB.*;
+import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
 import tech.calaverita.reporterloanssql.pojos.ModelValidation;
 import tech.calaverita.reporterloanssql.pojos.PagoConLiquidacion;
 import tech.calaverita.reporterloanssql.retrofit.RetrofitOdoo;
@@ -61,7 +61,7 @@ public final class PagoUtil {
     //------------------------------------------------------------------------------------------------------------------
     public static ModelValidation modValPagoModelValidation(
             PagoConLiquidacion pagConLiq_I,
-            PrestamoEntity prestMod_M
+            PrestamoModel prestMod_M
     ) {
         String strResponse_O = "";
         HttpStatus httpStatus_O = HttpStatus.CREATED;
@@ -75,7 +75,7 @@ public final class PagoUtil {
             boolIsOnline_O = false;
         }
 
-        Optional<PagoEntity> optpagMod = PagoUtil.pagServ.optpagModFindById(pagConLiq_I.getPagoId());
+        Optional<PagoModel> optpagMod = PagoUtil.pagServ.optpagModFindById(pagConLiq_I.getPagoId());
 
         if (
                 ((pagConLiq_I.getPrestamoId() == null) || pagConLiq_I.getPrestamoId()
@@ -118,11 +118,11 @@ public final class PagoUtil {
     public static void subProcessPayment(
             ModelValidation modVal_M,
             PagoConLiquidacion pagConLiq_I,
-            PrestamoEntity prestMod_I
+            PrestamoModel prestMod_I
     ) {
         String strSession = "session_id=76d814874514726176f0615260848da2aab725ea";
-        PagoEntity pagMod = PagoUtil.pagoModelFromPagoConLiquidacion(pagConLiq_I);
-        LiquidacionEntity liqMod = pagConLiq_I.getInfoLiquidacion();
+        PagoModel pagMod = PagoUtil.pagoModelFromPagoConLiquidacion(pagConLiq_I);
+        LiquidacionModel liqMod = pagConLiq_I.getInfoLiquidacion();
 
         modVal_M.setStrResponse("Pago Insertado con Éxito");
         modVal_M.setHttpStatus(HttpStatus.CREATED);
@@ -152,8 +152,8 @@ public final class PagoUtil {
         try {
             PagoUtil.pagServ.save(pagMod);
 
-            AgenciaEntity agencMod = PagoUtil.agencServ.agencModFindByAgenciaId(pagConLiq_I.getAgente());
-            GerenciaEntity gerMod = PagoUtil.gerServ.gerModFindByGerenciaId(agencMod.getGerenciaId());
+            AgenciaModel agencMod = PagoUtil.agencServ.agencModFindByAgenciaId(pagConLiq_I.getAgente());
+            GerenciaModel gerMod = PagoUtil.gerServ.gerModFindByGerenciaId(agencMod.getGerenciaId());
             PagoUtil.subSendPayMessage(prestMod_I, pagMod, gerMod);
 
             retrofit2.Call<ResponseBodyXms> callrespBodyXms = RetrofitOdoo.getInstance().getApi().pagoCreateOne(strSession,
@@ -173,70 +173,70 @@ public final class PagoUtil {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public static PagoEntity pagoModelFromPagoConLiquidacion(
+    public static PagoModel pagoModelFromPagoConLiquidacion(
             PagoConLiquidacion pagoConLiquidacion_I
     ) {
-        PagoEntity pagoEntity_O = new PagoEntity();
+        PagoModel pagoModel_O = new PagoModel();
 
-        pagoEntity_O.setPagoId(pagoConLiquidacion_I.getPagoId());
-        pagoEntity_O.setPrestamoId(pagoConLiquidacion_I.getPrestamoId());
-        pagoEntity_O.setPrestamo(pagoConLiquidacion_I.getPrestamo());
-        pagoEntity_O.setMonto(pagoConLiquidacion_I.getMonto());
-        pagoEntity_O.setSemana(pagoConLiquidacion_I.getSemana());
-        pagoEntity_O.setAnio(pagoConLiquidacion_I.getAnio());
-        pagoEntity_O.setEsPrimerPago(pagoConLiquidacion_I.getEsPrimerPago());
-        pagoEntity_O.setAbreCon(pagoConLiquidacion_I.getAbreCon());
-        pagoEntity_O.setCierraCon(pagoConLiquidacion_I.getCierraCon());
-        pagoEntity_O.setTarifa(pagoConLiquidacion_I.getTarifa());
-        pagoEntity_O.setCliente(pagoConLiquidacion_I.getCliente());
-        pagoEntity_O.setAgente(pagoConLiquidacion_I.getAgente());
-        pagoEntity_O.setTipo(pagoConLiquidacion_I.getTipo());
-        pagoEntity_O.setCreadoDesde(pagoConLiquidacion_I.getCreadoDesde());
-        pagoEntity_O.setIdentificador(pagoConLiquidacion_I.getIdentificador());
-        pagoEntity_O.setFechaPago(pagoConLiquidacion_I.getFechaPago());
-        pagoEntity_O.setLat(pagoConLiquidacion_I.getLat());
-        pagoEntity_O.setLng(pagoConLiquidacion_I.getLng());
-        pagoEntity_O.setComentario(pagoConLiquidacion_I.getComentario());
-        pagoEntity_O.setDatosMigracion(pagoConLiquidacion_I.getDatosMigracion());
-        pagoEntity_O.setCreatedAt(pagoConLiquidacion_I.getCreatedAt());
-        pagoEntity_O.setUpdatedAt(pagoConLiquidacion_I.getUpdatedAt());
-        pagoEntity_O.setLog(pagoConLiquidacion_I.getLog());
-        pagoEntity_O.setQuienPago(pagoConLiquidacion_I.getQuienPago());
+        pagoModel_O.setPagoId(pagoConLiquidacion_I.getPagoId());
+        pagoModel_O.setPrestamoId(pagoConLiquidacion_I.getPrestamoId());
+        pagoModel_O.setPrestamo(pagoConLiquidacion_I.getPrestamo());
+        pagoModel_O.setMonto(pagoConLiquidacion_I.getMonto());
+        pagoModel_O.setSemana(pagoConLiquidacion_I.getSemana());
+        pagoModel_O.setAnio(pagoConLiquidacion_I.getAnio());
+        pagoModel_O.setEsPrimerPago(pagoConLiquidacion_I.getEsPrimerPago());
+        pagoModel_O.setAbreCon(pagoConLiquidacion_I.getAbreCon());
+        pagoModel_O.setCierraCon(pagoConLiquidacion_I.getCierraCon());
+        pagoModel_O.setTarifa(pagoConLiquidacion_I.getTarifa());
+        pagoModel_O.setCliente(pagoConLiquidacion_I.getCliente());
+        pagoModel_O.setAgente(pagoConLiquidacion_I.getAgente());
+        pagoModel_O.setTipo(pagoConLiquidacion_I.getTipo());
+        pagoModel_O.setCreadoDesde(pagoConLiquidacion_I.getCreadoDesde());
+        pagoModel_O.setIdentificador(pagoConLiquidacion_I.getIdentificador());
+        pagoModel_O.setFechaPago(pagoConLiquidacion_I.getFechaPago());
+        pagoModel_O.setLat(pagoConLiquidacion_I.getLat());
+        pagoModel_O.setLng(pagoConLiquidacion_I.getLng());
+        pagoModel_O.setComentario(pagoConLiquidacion_I.getComentario());
+        pagoModel_O.setDatosMigracion(pagoConLiquidacion_I.getDatosMigracion());
+        pagoModel_O.setCreatedAt(pagoConLiquidacion_I.getCreatedAt());
+        pagoModel_O.setUpdatedAt(pagoConLiquidacion_I.getUpdatedAt());
+        pagoModel_O.setLog(pagoConLiquidacion_I.getLog());
+        pagoModel_O.setQuienPago(pagoConLiquidacion_I.getQuienPago());
 
-        return pagoEntity_O;
+        return pagoModel_O;
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public static JSONObject jsonObjectOfPago(
-            PagoEntity pagoEntity_I
+            PagoModel pagoModel_I
     ) {
         JSONObject jsonPago_O = new JSONObject();
 
         try {
-            jsonPago_O.put("pagoId", pagoEntity_I.getPagoId());
-            jsonPago_O.put("prestamoId", pagoEntity_I.getPrestamoId());
-            jsonPago_O.put("prestamo", pagoEntity_I.getPrestamo());
-            jsonPago_O.put("monto", pagoEntity_I.getMonto());
-            jsonPago_O.put("semana", pagoEntity_I.getSemana());
-            jsonPago_O.put("anio", pagoEntity_I.getAnio());
-            jsonPago_O.put("esPrimerPago", pagoEntity_I.getEsPrimerPago());
-            jsonPago_O.put("abreCon", pagoEntity_I.getAbreCon());
-            jsonPago_O.put("cierraCon", pagoEntity_I.getCierraCon());
-            jsonPago_O.put("tarifa", pagoEntity_I.getTarifa());
-            jsonPago_O.put("cliente", pagoEntity_I.getCliente());
-            jsonPago_O.put("agente", pagoEntity_I.getAgente());
-            jsonPago_O.put("tipo", pagoEntity_I.getTipo());
-            jsonPago_O.put("creadoDesde", pagoEntity_I.getCreadoDesde());
-            jsonPago_O.put("identificador", pagoEntity_I.getIdentificador());
-            jsonPago_O.put("fechaPago", pagoEntity_I.getFechaPago());
-            jsonPago_O.put("lat", pagoEntity_I.getLat());
-            jsonPago_O.put("lng", pagoEntity_I.getLng());
-            jsonPago_O.put("comentario", pagoEntity_I.getComentario());
-            jsonPago_O.put("datosMigracion", pagoEntity_I.getDatosMigracion());
-            jsonPago_O.put("createdAt", pagoEntity_I.getCreatedAt());
-            jsonPago_O.put("updatedAt", pagoEntity_I.getUpdatedAt());
-            jsonPago_O.put("log", pagoEntity_I.getLog());
-            jsonPago_O.put("quienPago", pagoEntity_I.getQuienPago());
+            jsonPago_O.put("pagoId", pagoModel_I.getPagoId());
+            jsonPago_O.put("prestamoId", pagoModel_I.getPrestamoId());
+            jsonPago_O.put("prestamo", pagoModel_I.getPrestamo());
+            jsonPago_O.put("monto", pagoModel_I.getMonto());
+            jsonPago_O.put("semana", pagoModel_I.getSemana());
+            jsonPago_O.put("anio", pagoModel_I.getAnio());
+            jsonPago_O.put("esPrimerPago", pagoModel_I.getEsPrimerPago());
+            jsonPago_O.put("abreCon", pagoModel_I.getAbreCon());
+            jsonPago_O.put("cierraCon", pagoModel_I.getCierraCon());
+            jsonPago_O.put("tarifa", pagoModel_I.getTarifa());
+            jsonPago_O.put("cliente", pagoModel_I.getCliente());
+            jsonPago_O.put("agente", pagoModel_I.getAgente());
+            jsonPago_O.put("tipo", pagoModel_I.getTipo());
+            jsonPago_O.put("creadoDesde", pagoModel_I.getCreadoDesde());
+            jsonPago_O.put("identificador", pagoModel_I.getIdentificador());
+            jsonPago_O.put("fechaPago", pagoModel_I.getFechaPago());
+            jsonPago_O.put("lat", pagoModel_I.getLat());
+            jsonPago_O.put("lng", pagoModel_I.getLng());
+            jsonPago_O.put("comentario", pagoModel_I.getComentario());
+            jsonPago_O.put("datosMigracion", pagoModel_I.getDatosMigracion());
+            jsonPago_O.put("createdAt", pagoModel_I.getCreatedAt());
+            jsonPago_O.put("updatedAt", pagoModel_I.getUpdatedAt());
+            jsonPago_O.put("log", pagoModel_I.getLog());
+            jsonPago_O.put("quienPago", pagoModel_I.getQuienPago());
         } catch (
                 JSONException e
         ) {
@@ -248,15 +248,15 @@ public final class PagoUtil {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public static JSONObject jsonObjectOfGerencia(
-            GerenciaEntity gerenciaEntity_I
+            GerenciaModel gerenciaModel_I
     ) {
         JSONObject jsonGerencia_O = new JSONObject();
 
         try {
-            jsonGerencia_O.put("gerenciaId", gerenciaEntity_I.getGerenciaId());
-            jsonGerencia_O.put("status", gerenciaEntity_I.getStatus());
-            jsonGerencia_O.put("chatIdPagos", gerenciaEntity_I.getChatIdPagos());
-            jsonGerencia_O.put("chatIdNumeros", gerenciaEntity_I.getChatIdNumeros());
+            jsonGerencia_O.put("gerenciaId", gerenciaModel_I.getGerenciaId());
+            jsonGerencia_O.put("status", gerenciaModel_I.getStatus());
+            jsonGerencia_O.put("chatIdPagos", gerenciaModel_I.getChatIdPagos());
+            jsonGerencia_O.put("chatIdNumeros", gerenciaModel_I.getChatIdNumeros());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -266,21 +266,21 @@ public final class PagoUtil {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public static RequestBody requestBodyPayMessage(
-            PrestamoEntity prestamoEntity_I,
-            PagoEntity pagoEntity_I,
-            GerenciaEntity gerenciaEntity_I
+            PrestamoModel prestamoModel_I,
+            PagoModel pagoModel_I,
+            GerenciaModel gerenciaModel_I
     ) {
         JSONObject infoPago = new JSONObject();
-        JSONObject jsonPago = jsonObjectOfPago(pagoEntity_I);
-        JSONObject jsonGerencia = jsonObjectOfGerencia(gerenciaEntity_I);
+        JSONObject jsonPago = jsonObjectOfPago(pagoModel_I);
+        JSONObject jsonGerencia = jsonObjectOfGerencia(gerenciaModel_I);
 
         try {
-            infoPago.put("nombresCliente", prestamoEntity_I.getNombres());
-            infoPago.put("nombresAval", prestamoEntity_I.getNombresAval());
-            infoPago.put("montoPago", pagoEntity_I.getMonto());
-            infoPago.put("telefonoCliente", prestamoEntity_I.getTelefonoCliente());
-            infoPago.put("telefonoAval", prestamoEntity_I.getTelefonoAval());
-            infoPago.put("tipoPago", pagoEntity_I.getTipo());
+            infoPago.put("nombresCliente", prestamoModel_I.getNombres());
+            infoPago.put("nombresAval", prestamoModel_I.getNombresAval());
+            infoPago.put("montoPago", pagoModel_I.getMonto());
+            infoPago.put("telefonoCliente", prestamoModel_I.getTelefonoCliente());
+            infoPago.put("telefonoAval", prestamoModel_I.getTelefonoAval());
+            infoPago.put("tipoPago", pagoModel_I.getTipo());
             infoPago.put("pago", jsonPago);
             infoPago.put("gerencia", jsonGerencia);
         } catch (
@@ -294,16 +294,16 @@ public final class PagoUtil {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public static void subSendPayMessage(
-            PrestamoEntity prestamoEntity_I,
-            PagoEntity pagoEntity_I,
-            GerenciaEntity gerenciaEntity_I
+            PrestamoModel prestamoModel_I,
+            PagoModel pagoModel_I,
+            GerenciaModel gerenciaModel_I
     ) {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
                 .url("https://fast-n8n.terio.xyz/webhook/91557792-c1f3-442c-88ed-bdee5407d4ce")
 //                .url("https://yfspvm3deal7jebp1s2andy5.hooks.n8n.cloud/webhook-test/93866ec9-652f-4c92-8314-e3f05a4ce6f7")
-                .post(requestBodyPayMessage(prestamoEntity_I, pagoEntity_I, gerenciaEntity_I))
+                .post(requestBodyPayMessage(prestamoModel_I, pagoModel_I, gerenciaModel_I))
                 .build();
 
         try {
@@ -322,26 +322,26 @@ public final class PagoUtil {
             int anio,
             int semana
     ) {
-        PagoEntity pagoEntity = PagoUtil.pagServ.pagModFindByAgenteAnioAndSemana(prestamoId, anio, semana);
+        PagoModel pagoModel = PagoUtil.pagServ.pagModFindByAgenteAnioAndSemana(prestamoId, anio, semana);
 
         return (
-                pagoEntity != null
+                pagoModel != null
         );
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public static PagoEntity getPagoEntity(
+    public static PagoModel getPagoEntity(
             LiquidacionDTO liquidacionDTO
     ) {
-        PagoEntity entity = PagoUtil.pagServ.getPagoEntity(liquidacionDTO);
+        PagoModel entity = PagoUtil.pagServ.getPagoEntity(liquidacionDTO);
         {
             String fechaActual = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            CalendarioEntity calendarioEntity = PagoUtil.calendarioService.findByFechaActual(fechaActual);
-            Optional<PrestamoEntity> prestamoEntity = PagoUtil.prestamoService.findById(liquidacionDTO.getPrestamoId());
+            CalendarioModel calendarioModel = PagoUtil.calendarioService.findByFechaActual(fechaActual);
+            Optional<PrestamoModel> prestamoEntity = PagoUtil.prestamoService.findById(liquidacionDTO.getPrestamoId());
 
             entity.setPagoId(UUID.randomUUID().toString());
-            entity.setSemana(calendarioEntity.getSemana());
-            entity.setAnio(calendarioEntity.getAnio());
+            entity.setSemana(calendarioModel.getSemana());
+            entity.setAnio(calendarioModel.getAnio());
             entity.setEsPrimerPago(false);
 
             if (

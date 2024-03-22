@@ -1,8 +1,8 @@
 package tech.calaverita.reporterloanssql.services;
 
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.entities.AsignacionEntity;
-import tech.calaverita.reporterloanssql.persistence.repositories.AsignacionRepository;
+import tech.calaverita.reporterloanssql.models.mariaDB.AsignacionModel;
+import tech.calaverita.reporterloanssql.repositories.AsignacionRepository;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -27,25 +27,25 @@ public final class AsignacionService {
     /*METHODS*/
     //------------------------------------------------------------------------------------------------------------------
     public void save(
-            AsignacionEntity asignMod_I
+            AsignacionModel asignMod_I
     ) {
         asignRepo.save(asignMod_I);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public Iterable<AsignacionEntity> iteasignModFindAll() {
+    public Iterable<AsignacionModel> iteasignModFindAll() {
         return asignRepo.findAll();
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public Optional<AsignacionEntity> optasignModFindById(
+    public Optional<AsignacionModel> optasignModFindById(
             String strId_I
     ) {
         return asignRepo.findById(strId_I);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<AsignacionEntity> darrasignModFindByAgenciaAnioAndSemana(
+    public ArrayList<AsignacionModel> darrasignModFindByAgenciaAnioAndSemana(
             String agencia_I,
             int anio_I,
             int semana_I
@@ -54,7 +54,7 @@ public final class AsignacionService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<AsignacionEntity> darrasignModFindByAgenciaAnioAndSemanaToDashboard(
+    public ArrayList<AsignacionModel> darrasignModFindByAgenciaAnioAndSemanaToDashboard(
             String agencia_I,
             int anio_I,
             int semana_I

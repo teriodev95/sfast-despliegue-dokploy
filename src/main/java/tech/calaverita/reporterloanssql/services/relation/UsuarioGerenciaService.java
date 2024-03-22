@@ -1,7 +1,7 @@
 package tech.calaverita.reporterloanssql.services.relation;
 
 import org.springframework.stereotype.Service;
-import tech.calaverita.reporterloanssql.persistence.repositories.relation.UsuarioGerenciaRepository;
+import tech.calaverita.reporterloanssql.repositories.relation.UsuarioGerenciaRepository;
 
 import java.util.ArrayList;
 

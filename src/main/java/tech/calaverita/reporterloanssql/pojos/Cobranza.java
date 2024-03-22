@@ -1,7 +1,7 @@
 package tech.calaverita.reporterloanssql.pojos;
 
 import lombok.Data;
-import tech.calaverita.reporterloanssql.persistence.entities.view.PrestamoEntity;
+import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
 
 import java.util.ArrayList;
 
@@ -16,5 +16,5 @@ public class Cobranza {
     private Double debitoJueves;
     private Double debitoViernes;
     private Double debitoTotal;
-    private ArrayList<PrestamoEntity> prestamos;
+    private ArrayList<PrestamoModel> prestamos;
 }
