@@ -9,7 +9,9 @@ import java.util.ArrayList;
 public class SolicitudMapper implements IMapper<SolicitudModel, SolicitudDTO> {
     @Override
     public SolicitudDTO mapOut(SolicitudModel out) {
-        return new Gson().fromJson(out.getSolicitud(), SolicitudDTO.class);
+        SolicitudDTO solicitudDTO = new Gson().fromJson(out.getSolicitud(), SolicitudDTO.class);
+        solicitudDTO.setStatus(out.getStatus());
+        return solicitudDTO;
     }
 
     @Override
