@@ -112,11 +112,11 @@ public final class CierreSemanalController {
                     cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(cierreSemanalEntity.get());
                 } //
                 else if (
-                        this.usuarioService.findByAgencia(agencia).isPresent()
+                        this.usuarioService.existsByAgencia(agencia)
                 ) {
                     dashboard = xpressController.getDashboardByAgenciaAnioAndSemana(agencia, anio, semana).getBody();
                     usuarioModels = new ArrayList<>();
-                    usuarioModels.add(this.usuarioService.findByAgencia(agencia).get());
+                    usuarioModels.add(this.usuarioService.findByAgencia(agencia));
                     usuarioModels.add(this.usuarioService.findGerenteByGerencia(usuarioModels.get(0).getGerencia()));
                     asignaciones = this.asignacionService.getSumaDeAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
 

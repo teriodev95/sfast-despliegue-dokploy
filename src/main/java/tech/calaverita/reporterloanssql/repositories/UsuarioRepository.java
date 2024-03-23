@@ -86,4 +86,6 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     boolean existsByUsuarioAndStatus(String usuario, boolean status);
+
+    boolean existsByAgencia(String agencia);
 }

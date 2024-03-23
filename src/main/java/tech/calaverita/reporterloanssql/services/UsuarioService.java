@@ -55,10 +55,10 @@ public class UsuarioService {
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public Optional<UsuarioModel> findByAgencia(
+    public UsuarioModel findByAgencia(
             String agencia
     ) {
-        return this.repo.findByAgencia(agencia);
+        return this.repo.findByAgencia(agencia).orElseThrow();
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -141,5 +141,9 @@ public class UsuarioService {
             String gerencia
     ) {
         return this.repo.darrusuarEntFindByGerencia(gerencia);
+    }
+
+    public Boolean existsByAgencia(String agencia) {
+        return this.repo.existsByAgencia(agencia);
     }
 }

@@ -190,6 +190,14 @@ public final class PagoController {
             noPagoConVisitasHM.put("gerencia", this.agenciaService.agencModFindByAgenciaId(noPago.getAgente())
                     .getGerenciaId());
 
+            // To easy code
+            String agente = noPagoConVisitasHM.get("agente").toString();
+            String gerencia = noPagoConVisitasHM.get("gerencia").toString();
+
+            noPagoConVisitasHM.put("numeroCelularAgente", this.usuarioService.findByAgencia(agente).getNumeroCelular());
+            noPagoConVisitasHM.put("numeroCelularGerente", this.usuarioService.findGerenteByGerencia(gerencia)
+                    .getNumeroCelular());
+
             ArrayList<HashMap<String, Object>> visitas = new ArrayList<>();
             visitaEntities.forEach(visita -> {
                 if (noPago.getPrestamoId().equals(visita.getPrestamoId())) {
