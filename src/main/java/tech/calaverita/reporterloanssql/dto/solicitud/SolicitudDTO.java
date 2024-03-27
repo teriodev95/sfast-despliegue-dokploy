@@ -1,9 +1,6 @@
 package tech.calaverita.reporterloanssql.dto.solicitud;
 
-import jakarta.persistence.Transient;
 import lombok.Data;
-import tech.calaverita.reporterloanssql.enums.StatusSolicitudEnum;
-import tech.calaverita.reporterloanssql.models.mariaDB.SolicitudModel;
 
 @Data
 public class SolicitudDTO {
@@ -12,8 +9,8 @@ public class SolicitudDTO {
     private AvalDTO aval;
     private CreditoDTO credito;
     private String fechaSolicitud;
-    private String agente;
-    private String gerente;
+    private String agencia;
+    private String gerencia;
     private int semana;
     private int anio;
     private String status;

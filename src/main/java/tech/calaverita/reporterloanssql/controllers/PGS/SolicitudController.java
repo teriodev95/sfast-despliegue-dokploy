@@ -40,16 +40,16 @@ public class SolicitudController {
         return new ResponseEntity<>(response, httpStatus);
     }
 
-    @GetMapping("/{gerenciaOrAgencia}")
+    @GetMapping("/{filtro}")
     public ResponseEntity<ArrayList<SolicitudDTO>> getSolicitudByGerenciaOrAgencia(
-            @PathVariable("gerenciaOrAgencia") String gerenciaOrAgencia) {
+            @PathVariable("filtro") String filtro) {
         ArrayList<SolicitudDTO> solicitudDTOS = new ArrayList<>();
         HttpStatus httpStatus = HttpStatus.OK;
 
-        if (gerenciaOrAgencia.startsWith("GER")) {
-            solicitudDTOS = new SolicitudMapper().mapOuts(this.solicitudService.findByGerencia(gerenciaOrAgencia));
-        } else if (gerenciaOrAgencia.startsWith("AG")) {
-            solicitudDTOS = new SolicitudMapper().mapOuts(this.solicitudService.findByAgencia(gerenciaOrAgencia));
+        if (filtro.startsWith("GER")) {
+            solicitudDTOS = new SolicitudMapper().mapOuts(this.solicitudService.findByGerencia(filtro));
+        } else if (filtro.startsWith("AG")) {
+            solicitudDTOS = new SolicitudMapper().mapOuts(this.solicitudService.findByAgencia(filtro));
         } else {
             httpStatus = HttpStatus.BAD_REQUEST;
         }
@@ -59,6 +59,20 @@ public class SolicitudController {
         }
 
         return new ResponseEntity<>(solicitudDTOS, httpStatus);
+    }
+
+    @GetMapping("/one/{id}")
+    public ResponseEntity<SolicitudDTO> getSolicitudById(
+            @PathVariable("id") String id) {
+        HttpStatus httpStatus = HttpStatus.OK;
+
+        SolicitudDTO solicitudDTO = new SolicitudMapper().mapOut(this.solicitudService.findById(id));
+
+        if (solicitudDTO == null) {
+            httpStatus = HttpStatus.NO_CONTENT;
+        }
+
+        return new ResponseEntity<>(solicitudDTO, httpStatus);
     }
 
     @PutMapping("/updateStatus")

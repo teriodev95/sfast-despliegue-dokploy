@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 @Service
 public class SolicitudService {
-    private SolicitudRepository repo;
+    private final SolicitudRepository repo;
 
     public SolicitudService(SolicitudRepository repo) {
         this.repo = repo;
@@ -23,14 +23,14 @@ public class SolicitudService {
     }
 
     public ArrayList<SolicitudModel> findByGerencia(String gerencia) {
-        return this.repo.findByGerente(gerencia);
+        return this.repo.findByGerencia(gerencia);
     }
 
     public ArrayList<SolicitudModel> findByAgencia(String agencia) {
-        return this.repo.findByAgente(agencia);
+        return this.repo.findByAgencia(agencia);
     }
 
-    public void updateStatusById(String id, String status) {
-        this.repo.updateStatusById(id, status);
+    public SolicitudModel findById(String id) {
+        return this.repo.findById(id).orElseThrow();
     }
 }

@@ -19,8 +19,8 @@ public class SolicitudMapper implements IMapper<SolicitudModel, SolicitudDTO> {
         SolicitudModel solicitudModel = new SolicitudModel();
         {
             solicitudModel.setId(in.getSolicitudId());
-            solicitudModel.setAgente(in.getAgente());
-            solicitudModel.setGerente(in.getGerente());
+            solicitudModel.setAgencia(in.getAgencia());
+            solicitudModel.setGerencia(in.getGerencia());
             solicitudModel.setSemana(in.getSemana());
             solicitudModel.setAnio(in.getAnio());
             solicitudModel.setStatus(in.getStatus());
