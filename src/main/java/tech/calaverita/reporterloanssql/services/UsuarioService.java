@@ -27,15 +27,19 @@ public class UsuarioService {
     }
 
     public boolean existsByUsuarioGerente(String usuario) {
-        return this.repo.existsByUsuarioAndTipo(usuario, "Gerente");
+        String tipo = "Gerente";
+        return this.repo.existsByUsuarioAndTipo(usuario, tipo);
     }
 
     public boolean existsByUsuarioActivo(String usuario) {
-        return this.repo.existsByUsuarioAndStatus(usuario, true);
+        boolean status = true;
+        return this.repo.existsByUsuarioAndStatus(usuario, status);
     }
 
     public boolean existsByUsuarioGerenteActivo(String usuario) {
-        return this.repo.existsByUsuarioAndTipoAndStatus(usuario, "Gerente", true);
+        String tipo = "Gerente";
+        boolean status = true;
+        return this.repo.existsByUsuarioAndTipoAndStatus(usuario, tipo, status);
     }
 
     public UsuarioModel findById(int id) {
@@ -55,7 +59,8 @@ public class UsuarioService {
     }
 
     public UsuarioModel findGerenteByGerencia(String gerencia) {
-        return this.repo.findByGerenciaAndTipo(gerencia, "Gerente").get(0);
+        String tipo = "Gerente";
+        return this.repo.findByGerenciaAndTipo(gerencia, tipo).get(0);
     }
 
     public ArrayList<UsuarioModel> findByGerencia(String gerencia) {
@@ -67,7 +72,9 @@ public class UsuarioService {
     }
 
     public ArrayList<String> findGerentesByGerencias(ArrayList<String> gerencias) {
-        return this.repo.findGerentesByGerenciaAndTipo(gerencias, "Gerente");
+        String tipo = "Gerente";
+        boolean status = true;
+        return this.repo.findGerentesByGerenciaAndTipoAndStatus(gerencias, tipo, status);
     }
 
     @Async("asyncExecutor")
@@ -81,7 +88,10 @@ public class UsuarioService {
     }
 
     @Async("asyncExecutor")
-    public CompletableFuture<ArrayList<String>> findAgentesByGerencia(String gerencia) {
-        return CompletableFuture.completedFuture(this.repo.findAgentesByGerenciaAndTipo(gerencia, "Agente"));
+    public CompletableFuture<ArrayList<String>> findAgentesByGerenciaAsync(String gerencia) {
+        String tipo = "Agente";
+        boolean status = true;
+        return CompletableFuture.completedFuture(this.repo.findAgentesByGerenciaAndTipoAndStatus(gerencia, tipo,
+                status));
     }
 }

@@ -60,7 +60,7 @@ public final class LoginController {
     public ResponseEntity<ArrayList<String>> redarrstrAgenciaIdGetByStrGerencia(
             @PathVariable("gerencia") String gerencia) throws ExecutionException, InterruptedException {
         CompletableFuture<ArrayList<String>> agenciasCF = this.agenciaService.findIdsByGerenciaIdAsync(gerencia);
-        CompletableFuture<ArrayList<String>> agentesCF = this.usuarioService.findAgentesByGerencia(gerencia);
+        CompletableFuture<ArrayList<String>> agentesCF = this.usuarioService.findAgentesByGerenciaAsync(gerencia);
 
         CompletableFuture.allOf(agenciasCF, agentesCF);
 
@@ -70,6 +70,31 @@ public final class LoginController {
 //            agenciaYAgenteHM.put("agencia", agenciasCF.get().get(i));
 //            agenciaYAgenteHM.put("agente", agentesCF.get().get(i));
             agenciasYAgentesHM.add(agenciasCF.get().get(i));
+        }
+
+        if (
+                agenciasCF.get() == null
+        ) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(agenciasYAgentesHM, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/agencias")
+    public ResponseEntity<ArrayList<HashMap<String, String>>> getAgenciasByGerencia(
+            @RequestParam String gerencia) throws ExecutionException, InterruptedException {
+        CompletableFuture<ArrayList<String>> agenciasCF = this.agenciaService.findIdsByGerenciaIdAsync(gerencia);
+        CompletableFuture<ArrayList<String>> agentesCF = this.usuarioService.findAgentesByGerenciaAsync(gerencia);
+
+        CompletableFuture.allOf(agenciasCF, agentesCF);
+
+        ArrayList<HashMap<String, String>> agenciasYAgentesHM = new ArrayList<>();
+        for (int i = 0; i < agenciasCF.get().size(); i++) {
+            HashMap<String, String> agenciaYAgenteHM = new HashMap<>();
+            agenciaYAgenteHM.put("agencia", agenciasCF.get().get(i));
+            agenciaYAgenteHM.put("agente", agentesCF.get().get(i));
+            agenciasYAgentesHM.add(agenciaYAgenteHM);
         }
 
         if (

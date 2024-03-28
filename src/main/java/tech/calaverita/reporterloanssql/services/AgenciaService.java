@@ -21,7 +21,8 @@ public class AgenciaService {
     }
 
     public ArrayList<String> findIdsByGerenciaId(String gerenciaId) {
-        return this.repo.findIdsByGerenciaId(gerenciaId);
+        String status = "ACTIVA";
+        return this.repo.findIdsByGerenciaIdAndStatus(gerenciaId, status);
     }
 
     public String findStatusById(String id) {
@@ -35,6 +36,7 @@ public class AgenciaService {
 
     @Async("asyncExecutor")
     public CompletableFuture<ArrayList<String>> findIdsByGerenciaIdAsync(String gerenciaId) {
-        return CompletableFuture.completedFuture(this.repo.findIdsByGerenciaId(gerenciaId));
+        String status = "ACTIVA";
+        return CompletableFuture.completedFuture(this.repo.findIdsByGerenciaIdAndStatus(gerenciaId, status));
     }
 }

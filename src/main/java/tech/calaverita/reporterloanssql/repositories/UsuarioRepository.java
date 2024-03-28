@@ -28,12 +28,14 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
     ArrayList<UsuarioModel> findByGerenciaAndTipo(String gerencia, String tipo);
 
     @Query("SELECT CONCAT(usuar.nombre, ' ' , usuar.apellidoPaterno, ' ', usuar.apellidoMaterno) FROM UsuarioModel " +
-            "usuar WHERE usuar.gerencia = :gerencia AND usuar.tipo = :tipo ORDER BY usuar.agencia")
-    ArrayList<String> findAgentesByGerenciaAndTipo(String gerencia, String tipo);
+            "usuar WHERE usuar.gerencia = :gerencia AND usuar.tipo = :tipo AND usuar.status = :status " +
+            "ORDER BY usuar.agencia")
+    ArrayList<String> findAgentesByGerenciaAndTipoAndStatus(String gerencia, String tipo, boolean status);
 
     @Query("SELECT CONCAT(usuar.nombre, ' ' , usuar.apellidoPaterno, ' ', usuar.apellidoMaterno) FROM UsuarioModel " +
-            "usuar WHERE usuar.gerencia IN :gerencias AND usuar.tipo = :tipo ORDER BY usuar.gerencia")
-    ArrayList<String> findGerentesByGerenciaAndTipo(ArrayList<String> gerencias, String tipo);
+            "usuar WHERE usuar.gerencia IN :gerencias AND usuar.tipo = :tipo AND usuar.status = :status " +
+            "ORDER BY usuar.gerencia")
+    ArrayList<String> findGerentesByGerenciaAndTipoAndStatus(ArrayList<String> gerencias, String tipo, boolean status);
 
     @Query("SELECT us " +
             "FROM UsuarioModel us " +
