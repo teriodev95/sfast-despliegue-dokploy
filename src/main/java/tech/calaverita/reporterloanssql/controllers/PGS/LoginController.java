@@ -57,19 +57,19 @@ public final class LoginController {
     }
 
     @GetMapping(path = "/agencias/{gerencia}")
-    public ResponseEntity<ArrayList<HashMap<String, String>>> redarrstrAgenciaIdGetByStrGerencia(
+    public ResponseEntity<ArrayList<String>> redarrstrAgenciaIdGetByStrGerencia(
             @PathVariable("gerencia") String gerencia) throws ExecutionException, InterruptedException {
         CompletableFuture<ArrayList<String>> agenciasCF = this.agenciaService.findIdsByGerenciaIdAsync(gerencia);
         CompletableFuture<ArrayList<String>> agentesCF = this.usuarioService.findAgentesByGerencia(gerencia);
 
         CompletableFuture.allOf(agenciasCF, agentesCF);
 
-        ArrayList<HashMap<String, String>> agenciasYAgentesHM = new ArrayList<>();
+        ArrayList<String> agenciasYAgentesHM = new ArrayList<>();
         for (int i = 0; i < agenciasCF.get().size(); i++) {
             HashMap<String, String> agenciaYAgenteHM = new HashMap<>();
-            agenciaYAgenteHM.put("agencia", agenciasCF.get().get(i));
-            agenciaYAgenteHM.put("agente", agentesCF.get().get(i));
-            agenciasYAgentesHM.add(agenciaYAgenteHM);
+//            agenciaYAgenteHM.put("agencia", agenciasCF.get().get(i));
+//            agenciaYAgenteHM.put("agente", agentesCF.get().get(i));
+            agenciasYAgentesHM.add(agenciasCF.get().get(i));
         }
 
         if (
