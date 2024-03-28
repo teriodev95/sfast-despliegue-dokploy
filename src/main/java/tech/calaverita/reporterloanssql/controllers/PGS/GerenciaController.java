@@ -40,18 +40,18 @@ public final class GerenciaController {
         this.usuarioSucursalService = usuarioSucursalService;
     }
 
-    @GetMapping(path = "")
-    public ResponseEntity<ArrayList<GerenciaModel>> redarrgerModGet() {
-        ArrayList<GerenciaModel> darrgerMod_O = this.gerenciaService.findAll();
-
-        if (
-                darrgerMod_O.isEmpty()
-        ) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-
-        return new ResponseEntity<>(darrgerMod_O, HttpStatus.OK);
-    }
+//    @GetMapping(path = "")
+//    public ResponseEntity<ArrayList<GerenciaModel>> redarrgerModGet() {
+//        ArrayList<GerenciaModel> darrgerMod_O = this.gerenciaService.findAll();
+//
+//        if (
+//                darrgerMod_O.isEmpty()
+//        ) {
+//            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//        }
+//
+//        return new ResponseEntity<>(darrgerMod_O, HttpStatus.OK);
+//    }
 
     @GetMapping(path = "/{usuario}")
     public ResponseEntity<ArrayList<String>> getGerenciaIdsByUsuario(@PathVariable("usuario") String usuario) {
@@ -116,6 +116,60 @@ public final class GerenciaController {
                         gerenciaYGerenteHM.put("gerencia", gerenciaIds.get(i));
                         gerenciaYGerenteHM.put("gerente", gerentes.get(i));
                         gerenciasYGerentesHM.add(gerenciaIds.get(i));
+                    }
+                }
+            }
+
+            SucursalModel sucursalModel = this.sucursalService.findBySucursalId(sucursalId);
+            gerenciasYGerentesBySucursalHM.put(sucursalModel.getNombre(), gerenciasYGerentesHM);
+        }
+
+        return new ResponseEntity<>(gerenciasYGerentesBySucursalHM, HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<HashMap<String, ArrayList<HashMap<String, String>>>> getGerenciasByUsuario(
+            @RequestParam String usuario) {
+        UsuarioModel usuarioModel;
+        HashMap<String, ArrayList<HashMap<String, String>>> gerenciasYGerentesBySucursalHM = new HashMap<>();
+
+        try {
+            usuarioModel = this.usuarioService.findByUsuario(usuario);
+        } //
+        catch (
+                NoSuchElementException e
+        ) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        ArrayList<String> sucursalIds = this.usuarioSucursalService
+                .darrstrSucursalIdFindByUsuarioId(usuarioModel.getUsuarioId());
+        ArrayList<String> gerenciaIds = this.usuarioGerenciaService
+                .darrstrGerenciaIdFindByUsuarioId(usuarioModel.getUsuarioId());
+        ArrayList<String> gerentes = this.usuarioService
+                .findGerentesByGerencias(gerenciaIds);
+
+        for (String sucursalId : sucursalIds) {
+            ArrayList<HashMap<String, String>> gerenciasYGerentesHM = new ArrayList<>();
+
+            for (int i = 0; i < gerenciaIds.size(); i++) {
+                if (gerenciaIds.get(i).length() == 7) {
+                    if (
+                            sucursalId.equals(gerenciaIds.get(i).substring(0, 4))
+                    ) {
+                        HashMap<String, String> gerenciaYGerenteHM = new HashMap<>();
+                        gerenciaYGerenteHM.put("gerencia", gerenciaIds.get(i));
+                        gerenciaYGerenteHM.put("gerente", gerentes.get(i));
+                        gerenciasYGerentesHM.add(gerenciaYGerenteHM);
+                    }
+                } else if (gerenciaIds.get(i).length() == 8) {
+                    if (
+                            sucursalId.equals(gerenciaIds.get(i).substring(0, 5))
+                    ) {
+                        HashMap<String, String> gerenciaYGerenteHM = new HashMap<>();
+                        gerenciaYGerenteHM.put("gerencia", gerenciaIds.get(i));
+                        gerenciaYGerenteHM.put("gerente", gerentes.get(i));
+                        gerenciasYGerentesHM.add(gerenciaYGerenteHM);
                     }
                 }
             }
