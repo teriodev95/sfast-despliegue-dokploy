@@ -6,47 +6,40 @@ import org.springframework.stereotype.Repository;
 import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Repository
 public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer> {
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
-    @Query("SELECT usu " +
-            "FROM UsuarioModel usu " +
-            "WHERE usu.usuario = :usuario " +
-            "AND usu.pin = :pin")
-    UsuarioModel usuarEntFindByUsuarioAndPin(
-            String usuario,
-            String pin
-    );
+    boolean existsByUsuario(String usuario);
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @Query("SELECT us " +
-            "FROM UsuarioModel us " +
-            "WHERE us.usuario = :usuario")
-    Optional<UsuarioModel> optusuarEntFindByUsuario(
-            String usuario
-    );
+    boolean existsByAgencia(String agencia);
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    boolean existsByUsuarioAndTipo(String usuario, String tipo);
+
+    boolean existsByUsuarioAndStatus(String usuario, boolean status);
+
+    boolean existsByUsuarioAndTipoAndStatus(String usuario, String tipo, boolean status);
+
+    UsuarioModel findByUsuarioAndPin(String usuario, int pin);
+
+    UsuarioModel findByUsuario(String usuario);
+
+    UsuarioModel findByAgencia(String agencia);
+
+    ArrayList<UsuarioModel> findByGerenciaAndTipo(String gerencia, String tipo);
+
+    @Query("SELECT CONCAT(usuar.nombre, ' ' , usuar.apellidoPaterno, ' ', usuar.apellidoMaterno) FROM UsuarioModel " +
+            "usuar WHERE usuar.gerencia = :gerencia AND usuar.tipo = :tipo ORDER BY usuar.agencia")
+    ArrayList<String> findAgentesByGerenciaAndTipo(String gerencia, String tipo);
+
+    @Query("SELECT CONCAT(usuar.nombre, ' ' , usuar.apellidoPaterno, ' ', usuar.apellidoMaterno) FROM UsuarioModel " +
+            "usuar WHERE usuar.gerencia IN :gerencias AND usuar.tipo = :tipo ORDER BY usuar.gerencia")
+    ArrayList<String> findGerentesByGerenciaAndTipo(ArrayList<String> gerencias, String tipo);
+
     @Query("SELECT us " +
             "FROM UsuarioModel us " +
             "WHERE us.tipo = :tipo")
-    ArrayList<UsuarioModel> darrusuarEntFindByTipo(
-            String tipo
-    );
+    ArrayList<UsuarioModel> darrusuarEntFindByTipo(String tipo);
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @Query("SELECT us " +
-            "FROM UsuarioModel us " +
-            "WHERE us.usuarioId = :usuarioId")
-    UsuarioModel usuarEntFindByUsuarioId(
-            int usuarioId
-    );
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Query(value = "SELECT us.* " +
             "FROM usuarios us " +
             "WHERE us.usuarioId = (SELECT suc.regionalId " +
@@ -54,38 +47,12 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
             "WHERE suc.sucursalId = (SELECT ger.sucursalId " +
             "FROM gerencias ger " +
             "WHERE ger.gerenciaId = :gerenciaId))", nativeQuery = true)
-    UsuarioModel usuarEntFindByUsuarioIdFromGerenciaIdOfGerenciaModel(
-            String gerenciaId
-    );
+    UsuarioModel usuarEntFindByUsuarioIdFromGerenciaIdOfGerenciaModel(String gerenciaId);
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Query("SELECT usu " +
             "FROM UsuarioModel usu " +
             "JOIN UsuarioGerenciaModel ugm " +
             "ON usu.usuarioId = ugm.usuarioId " +
             "AND ugm.gerenciaId = :gerencia")
-    ArrayList<UsuarioModel> darrusuarEntFindByGerencia(
-            String gerencia
-    );
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    Optional<UsuarioModel> findByUsuario(String usuario);
-
-    Optional<UsuarioModel> findByAgencia(String agencia);
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    boolean existsByUsuarioAndTipo(String usuario, String tipo);
-
-    Optional<UsuarioModel> findByGerenciaAndTipo(String usuario, String tipo);
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    boolean existsByUsuarioAndTipoAndStatus(String usuario, String tipo, boolean status);
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    boolean existsByUsuario(String usuario);
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    boolean existsByUsuarioAndStatus(String usuario, boolean status);
-
-    boolean existsByAgencia(String agencia);
+    ArrayList<UsuarioModel> darrusuarEntFindByGerencia(String gerencia);
 }

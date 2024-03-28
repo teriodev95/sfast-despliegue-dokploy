@@ -20,38 +20,29 @@ import java.util.NoSuchElementException;
 @RestController
 @RequestMapping("/xpress/v1/pwa/gerencias")
 public final class GerenciaController {
-    //------------------------------------------------------------------------------------------------------------------
-    /*INSTANCE VARIABLES*/
-    //------------------------------------------------------------------------------------------------------------------
-    private final GerenciaService gerServ;
-    private final SucursalService sucServ;
-    private final UsuarioService usuarServ;
-    private final UsuarioGerenciaService usuarGerServ;
-    private final UsuarioSucursalService usuarSucServ;
+    private final GerenciaService gerenciaService;
+    private final SucursalService sucursalService;
+    private final UsuarioService usuarioService;
+    private final UsuarioGerenciaService usuarioGerenciaService;
+    private final UsuarioSucursalService usuarioSucursalService;
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*CONSTRUCTORS*/
-    //------------------------------------------------------------------------------------------------------------------
     public GerenciaController(
-            GerenciaService gerServ_S,
-            SucursalService sucServ_S,
-            UsuarioService usuarServ_S,
-            UsuarioGerenciaService usuarGerServ_S,
-            UsuarioSucursalService usuarSucServ_S
+            GerenciaService gerenciaService,
+            SucursalService sucursalService,
+            UsuarioService usuarioService,
+            UsuarioGerenciaService usuarioGerenciaService,
+            UsuarioSucursalService usuarioSucursalService
     ) {
-        this.gerServ = gerServ_S;
-        this.sucServ = sucServ_S;
-        this.usuarServ = usuarServ_S;
-        this.usuarGerServ = usuarGerServ_S;
-        this.usuarSucServ = usuarSucServ_S;
+        this.gerenciaService = gerenciaService;
+        this.sucursalService = sucursalService;
+        this.usuarioService = usuarioService;
+        this.usuarioGerenciaService = usuarioGerenciaService;
+        this.usuarioSucursalService = usuarioSucursalService;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
     @GetMapping(path = "")
     public ResponseEntity<ArrayList<GerenciaModel>> redarrgerModGet() {
-        ArrayList<GerenciaModel> darrgerMod_O = this.gerServ.darrGerModFindAll();
+        ArrayList<GerenciaModel> darrgerMod_O = this.gerenciaService.findAll();
 
         if (
                 darrgerMod_O.isEmpty()
@@ -62,15 +53,12 @@ public final class GerenciaController {
         return new ResponseEntity<>(darrgerMod_O, HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/{usuario}")
-    public ResponseEntity<ArrayList<String>> getGerenciaIdsByUsuario(
-            @PathVariable("usuario") String strUsuario_I
-    ) {
+    public ResponseEntity<ArrayList<String>> getGerenciaIdsByUsuario(@PathVariable("usuario") String usuario) {
         UsuarioModel usuarMod;
 
         try {
-            usuarMod = this.usuarServ.usuarModFindByUsuario(strUsuario_I);
+            usuarMod = this.usuarioService.findByUsuario(usuario);
         } //
         catch (
                 NoSuchElementException e
@@ -78,23 +66,21 @@ public final class GerenciaController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        //                                                  //To easy code
-        ArrayList<String> darrstrGerencia_O = this.usuarGerServ.darrstrGerenciaIdFindByUsuarioId(usuarMod
+        // To easy code
+        ArrayList<String> darrstrGerencia_O = this.usuarioGerenciaService.darrstrGerenciaIdFindByUsuarioId(usuarMod
                 .getUsuarioId());
 
         return new ResponseEntity<>(darrstrGerencia_O, HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/usuarios/{usuario}")
-    public ResponseEntity<HashMap<String, ArrayList<String>>> redicdarrstrGerenciaIdFromSucursalGetByStrUsuario(
-            @PathVariable("usuario") String strUsuario_I
-    ) {
-        UsuarioModel usuarMod;
-        HashMap<String, ArrayList<String>> dicdarrstrGerencia_O = new HashMap<>();
+    public ResponseEntity<HashMap<String, ArrayList<HashMap<String, String>>>> redicdarrstrGerenciaIdFromSucursalGetByStrUsuario(
+            @PathVariable("usuario") String usuario) {
+        UsuarioModel usuarioModel;
+        HashMap<String, ArrayList<HashMap<String, String>>> gerenciasYGerentesBySucursalHM = new HashMap<>();
 
         try {
-            usuarMod = this.usuarServ.usuarModFindByUsuario(strUsuario_I);
+            usuarioModel = this.usuarioService.findByUsuario(usuario);
         } //
         catch (
                 NoSuchElementException e
@@ -102,34 +88,42 @@ public final class GerenciaController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        ArrayList<String> darrintSucursalId = this.usuarSucServ
-                .darrstrSucursalIdFindByUsuarioId(usuarMod.getUsuarioId());
-        ArrayList<String> darrstrGerenciaId = this.usuarGerServ
-                .darrstrGerenciaIdFindByUsuarioId(usuarMod.getUsuarioId());
+        ArrayList<String> sucursalIds = this.usuarioSucursalService
+                .darrstrSucursalIdFindByUsuarioId(usuarioModel.getUsuarioId());
+        ArrayList<String> gerenciaIds = this.usuarioGerenciaService
+                .darrstrGerenciaIdFindByUsuarioId(usuarioModel.getUsuarioId());
+        ArrayList<String> gerentes = this.usuarioService
+                .findGerentesByGerencias(gerenciaIds);
 
-        for (String strSucursalId : darrintSucursalId) {
-            ArrayList<String> darrstrGerenciaIdAux = new ArrayList<>();
+        for (String sucursalId : sucursalIds) {
+            ArrayList<HashMap<String, String>> gerenciasYGerentesHM = new ArrayList<>();
 
-            for (String strGerenciaId : darrstrGerenciaId) {
-                if (strGerenciaId.length() == 7) {
+            for (int i = 0; i < gerenciaIds.size(); i++) {
+                if (gerenciaIds.get(i).length() == 7) {
                     if (
-                            strSucursalId.equals(strGerenciaId.substring(0, 4))
+                            sucursalId.equals(gerenciaIds.get(i).substring(0, 4))
                     ) {
-                        darrstrGerenciaIdAux.add(strGerenciaId);
+                        HashMap<String, String> gerenciaYGerenteHM = new HashMap<>();
+                        gerenciaYGerenteHM.put("gerencia", gerenciaIds.get(i));
+                        gerenciaYGerenteHM.put("gerente", gerentes.get(i));
+                        gerenciasYGerentesHM.add(gerenciaYGerenteHM);
                     }
-                } else if (strGerenciaId.length() == 8) {
+                } else if (gerenciaIds.get(i).length() == 8) {
                     if (
-                            strSucursalId.equals(strGerenciaId.substring(0, 5))
+                            sucursalId.equals(gerenciaIds.get(i).substring(0, 5))
                     ) {
-                        darrstrGerenciaIdAux.add(strGerenciaId);
+                        HashMap<String, String> gerenciaYGerenteHM = new HashMap<>();
+                        gerenciaYGerenteHM.put("gerencia", gerenciaIds.get(i));
+                        gerenciaYGerenteHM.put("gerente", gerentes.get(i));
+                        gerenciasYGerentesHM.add(gerenciaYGerenteHM);
                     }
                 }
             }
 
-            SucursalModel sucMod = this.sucServ.findBySucursalId(strSucursalId);
-            dicdarrstrGerencia_O.put(sucMod.getNombre(), darrstrGerenciaIdAux);
+            SucursalModel sucursalModel = this.sucursalService.findBySucursalId(sucursalId);
+            gerenciasYGerentesBySucursalHM.put(sucursalModel.getNombre(), gerenciasYGerentesHM);
         }
 
-        return new ResponseEntity<>(dicdarrstrGerencia_O, HttpStatus.OK);
+        return new ResponseEntity<>(gerenciasYGerentesBySucursalHM, HttpStatus.OK);
     }
 }

@@ -77,7 +77,7 @@ public final class PGSController {
             @PathVariable("agencia") String agencia, @PathVariable("fecha") String fecha
     ) {
         Dashboard dashboard = new Dashboard();
-        dashboard.setStatusAgencia(this.agenciaService.getStatusByAgenciaId(agencia));
+        dashboard.setStatusAgencia(this.agenciaService.findStatusById(agencia));
         ObjectsContainer objectsContainer = new ObjectsContainer();
 
         dashboard.setAgencia(agencia);
@@ -133,7 +133,7 @@ public final class PGSController {
             @PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana
     ) {
         ArrayList<AsignacionModel> darrasignEnt = this.asignacionService
-                .darrasignModFindByAgenciaAnioAndSemana(agencia, anio, semana);
+                .findByAgenciaAnioAndSemana(agencia, anio, semana);
 
         if (darrasignEnt.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

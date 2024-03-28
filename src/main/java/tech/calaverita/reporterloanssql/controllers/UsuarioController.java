@@ -40,12 +40,12 @@ public final class UsuarioController {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/one/{usuarioId}")
-    public @ResponseBody ResponseEntity<Optional<UsuarioModel>> getOneUser(
+    public @ResponseBody ResponseEntity<UsuarioModel> getOneUser(
             @PathVariable("usuarioId") Integer usuarioId
     ) {
-        Optional<UsuarioModel> usuario = this.usuarServ.optusuarEntFindById(usuarioId);
+        UsuarioModel usuario = this.usuarServ.findById(usuarioId);
 
-        if (usuario.isEmpty())
+        if (usuario == null)
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         return new ResponseEntity<>(usuario, HttpStatus.OK);

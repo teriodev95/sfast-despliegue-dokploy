@@ -7,21 +7,12 @@ import tech.calaverita.reporterloanssql.models.mariaDB.CalendarioModel;
 
 @Repository
 public interface CalendarioRepository extends CrudRepository<CalendarioModel, Integer> {
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
-    @Query("SELECT ca " +
-            "FROM CalendarioModel ca " +
-            "WHERE ca.desde <= :fechaActual " +
-            "AND ca.hasta >= :fechaActual")
+    boolean existsByAnioAndSemana(int anio, int semana);
+
+    CalendarioModel findByAnioAndSemana(int anio, int semana);
+
+    @Query("SELECT cal FROM CalendarioModel cal WHERE cal.desde <= :fechaActual AND cal.hasta >= :fechaActual")
     CalendarioModel findByFechaActual(
             String fechaActual
     );
-
-    Boolean existsByAnioAndSemana(
-            int anio,
-            int semana
-    );
-
-    CalendarioModel findByAnioAndSemana(int anio, int semana);
 }

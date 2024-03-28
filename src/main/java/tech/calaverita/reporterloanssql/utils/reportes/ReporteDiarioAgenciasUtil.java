@@ -16,7 +16,6 @@ import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -98,10 +97,10 @@ public final class ReporteDiarioAgenciasUtil {
     ) throws ExecutionException, InterruptedException {
         EncabezadoReporteDiarioAgenciasDTO encabezado = new EncabezadoReporteDiarioAgenciasDTO();
         {
-            CompletableFuture<Optional<UsuarioModel>> usuarioEntityGerente = ReporteDiarioAgenciasUtil.usuarioService
+            CompletableFuture<UsuarioModel> usuarioEntityGerente = ReporteDiarioAgenciasUtil.usuarioService
                     .findByUsuarioAsync(gerenciaModel.getGerenciaId());
             CompletableFuture<UsuarioModel> usuarioEntitySeguridad = ReporteDiarioAgenciasUtil.usuarioService
-                    .findByUsuarioIdAsync(gerenciaModel.getSeguridadId());
+                    .findByIdAsync(gerenciaModel.getSeguridadId());
             CompletableFuture<SucursalModel> sucursalEntity = ReporteDiarioAgenciasUtil.sucursalService
                     .findBySucursalIdAsync(gerenciaModel.getSucursalId());
 
@@ -116,14 +115,14 @@ public final class ReporteDiarioAgenciasUtil {
 
             String nombreCompletoGerente;
             {
-                nombreCompletoGerente = usuarioEntityGerente.get().isPresent()
-                        ? usuarioEntityGerente.get().get().getNombre() : null;
+                nombreCompletoGerente = usuarioEntityGerente.get() != null
+                        ? usuarioEntityGerente.get().getNombre() : null;
                 nombreCompletoGerente += " ";
-                nombreCompletoGerente += usuarioEntityGerente.get().isPresent()
-                        ? usuarioEntityGerente.get().get().getApellidoPaterno() : null;
+                nombreCompletoGerente += usuarioEntityGerente.get() != null
+                        ? usuarioEntityGerente.get().getApellidoPaterno() : null;
                 nombreCompletoGerente += " ";
-                nombreCompletoGerente += usuarioEntityGerente.get().isPresent()
-                        ? usuarioEntityGerente.get().get().getApellidoMaterno() : null;
+                nombreCompletoGerente += usuarioEntityGerente.get() != null
+                        ? usuarioEntityGerente.get().getApellidoMaterno() : null;
             }
             encabezado.setGerente(nombreCompletoGerente);
 
@@ -197,7 +196,7 @@ public final class ReporteDiarioAgenciasUtil {
         ArrayList<AgenciaReporteDiarioAgenciasDTO> agencias = new ArrayList<>();
 
         for (AgenciaModel agenciaModel : agenciaEntities.get()) {
-            CompletableFuture<Optional<UsuarioModel>> usuarioEntityAgente = ReporteDiarioAgenciasUtil
+            CompletableFuture<UsuarioModel> usuarioEntityAgente = ReporteDiarioAgenciasUtil
                     .usuarioService.findByUsuarioAsync(agenciaModel.getId());
 
             AgenciaReporteDiarioAgenciasDTO agencia = new AgenciaReporteDiarioAgenciasDTO();
@@ -207,14 +206,14 @@ public final class ReporteDiarioAgenciasUtil {
                 String nombreCompletoAgente;
                 {
                     usuarioEntityAgente.join();
-                    nombreCompletoAgente = usuarioEntityAgente.get().isPresent()
-                            ? usuarioEntityAgente.get().get().getNombre() : null;
+                    nombreCompletoAgente = usuarioEntityAgente.get() != null
+                            ? usuarioEntityAgente.get().getNombre() : null;
                     nombreCompletoAgente += " ";
-                    nombreCompletoAgente += usuarioEntityAgente.get().isPresent()
-                            ? usuarioEntityAgente.get().get().getApellidoPaterno() : null;
+                    nombreCompletoAgente += usuarioEntityAgente.get() != null
+                            ? usuarioEntityAgente.get().getApellidoPaterno() : null;
                     nombreCompletoAgente += " ";
-                    nombreCompletoAgente += usuarioEntityAgente.get().isPresent()
-                            ? usuarioEntityAgente.get().get().getApellidoMaterno() : null;
+                    nombreCompletoAgente += usuarioEntityAgente.get() != null
+                            ? usuarioEntityAgente.get().getApellidoMaterno() : null;
                 }
                 agencia.setAgente(nombreCompletoAgente);
 

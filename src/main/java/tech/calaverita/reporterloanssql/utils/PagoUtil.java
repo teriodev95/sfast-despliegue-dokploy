@@ -152,8 +152,8 @@ public final class PagoUtil {
         try {
             PagoUtil.pagServ.save(pagMod);
 
-            AgenciaModel agencMod = PagoUtil.agencServ.agencModFindByAgenciaId(pagConLiq_I.getAgente());
-            GerenciaModel gerMod = PagoUtil.gerServ.gerModFindByGerenciaId(agencMod.getGerenciaId());
+            AgenciaModel agencMod = PagoUtil.agencServ.findById(pagConLiq_I.getAgente());
+            GerenciaModel gerMod = PagoUtil.gerServ.findById(agencMod.getGerenciaId());
             PagoUtil.subSendPayMessage(prestMod_I, pagMod, gerMod);
 
             retrofit2.Call<ResponseBodyXms> callrespBodyXms = RetrofitOdoo.getInstance().getApi().pagoCreateOne(strSession,

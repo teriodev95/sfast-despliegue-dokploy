@@ -5,29 +5,17 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import tech.calaverita.reporterloanssql.models.mariaDB.AgenciaModel;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Repository
 public interface AgenciaRepository extends CrudRepository<AgenciaModel, String> {
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
-    @Query("SELECT ag FROM AgenciaModel ag WHERE ag.id = :agenciaId")
-    AgenciaModel agencModFindByAgenciaId(
-            String agenciaId
-    );
+    ArrayList<AgenciaModel> findByGerenciaId(String gerenciaId);
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @Query("SELECT ag.id " +
-            "FROM AgenciaModel ag " +
-            "WHERE ag.gerenciaId = :gerenciaId " +
-            "ORDER BY ag.id")
-    ArrayList<String> darrstrAgenciaIdFindByGerenciaId(
-            String gerenciaId
-    );
+    @Query("SELECT agenc.status FROM AgenciaModel agenc WHERE agenc.id = :id")
+    String findStatusById(String id);
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    ArrayList<AgenciaModel> findByGerenciaId(
-            String gerenciaId
-    );
+    @Query("SELECT agenc.id FROM AgenciaModel agenc WHERE agenc.gerenciaId = :gerenciaId ORDER BY agenc.id")
+    ArrayList<String> findIdsByGerenciaId(String gerenciaId);
 }

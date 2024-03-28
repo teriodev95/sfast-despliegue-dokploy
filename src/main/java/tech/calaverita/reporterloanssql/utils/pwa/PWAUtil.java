@@ -163,7 +163,7 @@ public final class PWAUtil {
         ArrayList<HashMap<String, Object>> darrHshMpAsgMdlPwa = new ArrayList<>();
 
         for (AsignacionModel asignacionModel : darrasignacionModelAsigModAsignEnt) {
-            UsuarioModel usuarioModel = PWAUtil.usuarServ.usuarModFindByUsuarioId(asignacionModel
+            UsuarioModel usuarioModel = PWAUtil.usuarServ.findById(asignacionModel
                     .getQuienRecibioUsuarioId());
 
             HashMap<String, Object> recibioHashMap = new HashMap<>();

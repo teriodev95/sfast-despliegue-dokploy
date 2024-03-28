@@ -43,7 +43,7 @@ public final class XpressController {
     public @ResponseBody ResponseEntity<?> login(
             @RequestBody AuthCredentials login
     ) {
-        UsuarioModel usuarioModel = this.usuarioService.usuarModFindByUsuarioAndPin(login.getUsername(), login.getPassword());
+        UsuarioModel usuarioModel = this.usuarioService.findByUsuarioAndPin(login.getUsername(), login.getPassword());
         LoginResponse loginResponse = new LoginResponse();
 
         if (usuarioModel == null) {
@@ -51,7 +51,7 @@ public final class XpressController {
         }
 
         loginResponse.setSolicitante(usuarioModel);
-        loginResponse.setInvolucrados(this.usuarioService.darrUsuarModFindByGerencia(usuarioModel.getGerencia()));
+        loginResponse.setInvolucrados(this.usuarioService.findByGerencia(usuarioModel.getGerencia()));
 
         return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }
@@ -84,7 +84,7 @@ public final class XpressController {
             @PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio,
             @PathVariable("semana") int semana
     ) {
-        ArrayList<String> agencias = this.agenciaService.darrstrAgenciaIdFindByGerenciaId(gerencia);
+        ArrayList<String> agencias = this.agenciaService.findIdsByGerenciaId(gerencia);
 
         Thread[] threads = new Thread[agencias.size()];
         Cobranza[] cobranzas = new Cobranza[agencias.size()];
@@ -125,7 +125,7 @@ public final class XpressController {
             @PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana
     ) {
         Dashboard dashboard = new tech.calaverita.reporterloanssql.pojos.Dashboard();
-        dashboard.setStatusAgencia(this.agenciaService.getStatusByAgenciaId(agencia));
+        dashboard.setStatusAgencia(this.agenciaService.findStatusById(agencia));
         ObjectsContainer objectsContainer = new ObjectsContainer();
 
         objectsContainer.setDashboard(dashboard);
@@ -149,7 +149,7 @@ public final class XpressController {
     ) {
         tech.calaverita.reporterloanssql.pojos.Dashboard dashboardResponse;
 
-        ArrayList<String> agencias = this.agenciaService.darrstrAgenciaIdFindByGerenciaId(gerencia);
+        ArrayList<String> agencias = this.agenciaService.findIdsByGerenciaId(gerencia);
 
         Thread[] threads = new Thread[agencias.size()];
         tech.calaverita.reporterloanssql.pojos.Dashboard[] dashboards = new tech.calaverita.reporterloanssql.pojos

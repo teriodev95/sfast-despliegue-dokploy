@@ -190,7 +190,7 @@ public class CierreSemanalUtil {
         cierreSemanalDTO.setIsAgenciaCerrada(false);
         cierreSemanalDTO.setDia(LocalDate.now().getDayOfMonth());
         cierreSemanalDTO.setSucursal(sucursalService.getSucursalByGerenciaId(dashboard.getGerencia()));
-        cierreSemanalDTO.setStatusAgencia(agenciaService.getStatusByAgenciaId(dashboard.getAgencia()));
+        cierreSemanalDTO.setStatusAgencia(agenciaService.findStatusById(dashboard.getAgencia()));
 
         String mes = LocalDate.now().getMonth().getDisplayName(TextStyle.FULL, new Locale("es",
                 "ES"));
