@@ -74,10 +74,10 @@ public final class GerenciaController {
     }
 
     @GetMapping(path = "/usuarios/{usuario}")
-    public ResponseEntity<HashMap<String, ArrayList<HashMap<String, String>>>> redicdarrstrGerenciaIdFromSucursalGetByStrUsuario(
+    public ResponseEntity<HashMap<String, ArrayList<String>>> redicdarrstrGerenciaIdFromSucursalGetByStrUsuario(
             @PathVariable("usuario") String usuario) {
         UsuarioModel usuarioModel;
-        HashMap<String, ArrayList<HashMap<String, String>>> gerenciasYGerentesBySucursalHM = new HashMap<>();
+        HashMap<String, ArrayList<String>> gerenciasYGerentesBySucursalHM = new HashMap<>();
 
         try {
             usuarioModel = this.usuarioService.findByUsuario(usuario);
@@ -96,7 +96,7 @@ public final class GerenciaController {
                 .findGerentesByGerencias(gerenciaIds);
 
         for (String sucursalId : sucursalIds) {
-            ArrayList<HashMap<String, String>> gerenciasYGerentesHM = new ArrayList<>();
+            ArrayList<String> gerenciasYGerentesHM = new ArrayList<>();
 
             for (int i = 0; i < gerenciaIds.size(); i++) {
                 if (gerenciaIds.get(i).length() == 7) {
@@ -106,7 +106,7 @@ public final class GerenciaController {
                         HashMap<String, String> gerenciaYGerenteHM = new HashMap<>();
                         gerenciaYGerenteHM.put("gerencia", gerenciaIds.get(i));
                         gerenciaYGerenteHM.put("gerente", gerentes.get(i));
-                        gerenciasYGerentesHM.add(gerenciaYGerenteHM);
+                        gerenciasYGerentesHM.add(gerenciaIds.get(i));
                     }
                 } else if (gerenciaIds.get(i).length() == 8) {
                     if (
@@ -115,7 +115,7 @@ public final class GerenciaController {
                         HashMap<String, String> gerenciaYGerenteHM = new HashMap<>();
                         gerenciaYGerenteHM.put("gerencia", gerenciaIds.get(i));
                         gerenciaYGerenteHM.put("gerente", gerentes.get(i));
-                        gerenciasYGerentesHM.add(gerenciaYGerenteHM);
+                        gerenciasYGerentesHM.add(gerenciaIds.get(i));
                     }
                 }
             }
