@@ -48,16 +48,16 @@ public final class ReporteController {
     public @ResponseBody ResponseEntity<ReporteDiarioAgenciasDocument> getReporteDiarioAgencias(
             @PathVariable("gerencia") String gerencia
     ) throws ExecutionException, InterruptedException {
-        CompletableFuture<Optional<GerenciaModel>> gerenciaEntity = this.gerenciaService
+        CompletableFuture<GerenciaModel> gerenciaEntity = this.gerenciaService
                 .findByIdAsync(gerencia);
 
         gerenciaEntity.join();
 
         ReporteDiarioAgenciasDocument reporte = new ReporteDiarioAgenciasDocument();
 
-        if (gerenciaEntity.get().isPresent()) {
+        if (gerenciaEntity.get() != null) {
             reporte = this.reporteDiarioAgenciasService.insert(ReporteDiarioAgenciasUtil
-                    .getReporte(gerenciaEntity.get().get()));
+                    .getReporte(gerenciaEntity.get()));
         }
 
         return new ResponseEntity<>(reporte, HttpStatus.CREATED);
@@ -69,15 +69,15 @@ public final class ReporteController {
     public @ResponseBody ResponseEntity<ReporteGeneralGerenciaDocument> getReporteGeneralGerencia(
             @PathVariable("gerencia") String gerencia
     ) throws ExecutionException, InterruptedException {
-        CompletableFuture<Optional<GerenciaModel>> gerenciaEntity = this.gerenciaService
+        CompletableFuture<GerenciaModel> gerenciaEntity = this.gerenciaService
                 .findByIdAsync(gerencia);
 
         gerenciaEntity.join();
 
         ReporteGeneralGerenciaDocument reporte = new ReporteGeneralGerenciaDocument();
 
-        if (gerenciaEntity.get().isPresent()) {
-            String id = ReporteGeneralGerenciaUtil.getId(gerenciaEntity.get().get());
+        if (gerenciaEntity.get() != null) {
+            String id = ReporteGeneralGerenciaUtil.getId(gerenciaEntity.get());
 
             if (
                     this.reporteGeneralGerenciaService.existsById(id)
@@ -86,7 +86,7 @@ public final class ReporteController {
             }
 
             reporte = this.reporteGeneralGerenciaService.insert(ReporteGeneralGerenciaUtil
-                    .getReporte(gerenciaEntity.get().get()));
+                    .getReporte(gerenciaEntity.get()));
         }
 
         return new ResponseEntity<>(reporte, HttpStatus.OK);
@@ -97,7 +97,7 @@ public final class ReporteController {
     public @ResponseBody List<ReporteDiarioAgenciasDocument> createReportesDiariosAgencias() throws ExecutionException, InterruptedException, ParseException {
         ArrayList<ReporteDiarioAgenciasDocument> reportes = new ArrayList<>();
         {
-            ArrayList<GerenciaModel> gerenciasEntities = this.gerenciaService.darrGerModFindAll();
+            ArrayList<GerenciaModel> gerenciasEntities = this.gerenciaService.findAll();
 
             for (GerenciaModel gerenciaModel : gerenciasEntities) {
                 reportes.add(ReporteDiarioAgenciasUtil.getReporte(gerenciaModel));
@@ -123,7 +123,7 @@ public final class ReporteController {
 
         ArrayList<ReporteGeneralGerenciaDocument> reportes = new ArrayList<>();
         {
-            ArrayList<GerenciaModel> gerenciasEntities = this.gerenciaService.darrGerModFindAll();
+            ArrayList<GerenciaModel> gerenciasEntities = this.gerenciaService.findAll();
 
             for (GerenciaModel gerenciaModel : gerenciasEntities) {
                 for (String fechaDiaSemana : fechaDiasSemana) {

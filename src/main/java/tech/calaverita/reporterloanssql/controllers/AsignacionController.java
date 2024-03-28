@@ -44,7 +44,7 @@ public class AsignacionController {
     //------------------------------------------------------------------------------------------------------------------
     @GetMapping(path = "/all")
     public @ResponseBody ResponseEntity<Iterable<AsignacionModel>> reiteasignModGet() {
-        Iterable<AsignacionModel> iteasignMod_O = this.asignServ.iteasignModFindAll();
+        Iterable<AsignacionModel> iteasignMod_O = this.asignServ.findAll();
 
         if (
                 !iteasignMod_O.iterator().hasNext()
@@ -64,7 +64,7 @@ public class AsignacionController {
             @PathVariable("semana") int intSemana_I
     ) {
         Iterable<AsignacionModel> iteasignMod_O = this.asignServ
-                .darrasignModFindByAgenciaAnioAndSemana(strAgencia_I, intAnio_I, intSemana_I);
+                .findByAgenciaAnioAndSemana(strAgencia_I, intAnio_I, intSemana_I);
 
         if (
                 !iteasignMod_O.iterator().hasNext()
@@ -77,18 +77,18 @@ public class AsignacionController {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/one/{id}")
-    public @ResponseBody ResponseEntity<Optional<AsignacionModel>> reoptasignModGetById(
+    public @ResponseBody ResponseEntity<AsignacionModel> reoptasignModGetById(
             @PathVariable("id") String strId_I
     ) {
-        Optional<AsignacionModel> optAsignMod_O = this.asignServ.optasignModFindById(strId_I);
+        AsignacionModel asignacionModel = this.asignServ.findById(strId_I);
 
         if (
-                optAsignMod_O.isEmpty()
+                asignacionModel == null
         ) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return new ResponseEntity<>(optAsignMod_O, HttpStatus.OK);
+        return new ResponseEntity<>(asignacionModel, HttpStatus.OK);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -98,27 +98,27 @@ public class AsignacionController {
     ) {
         String strSession = "session_id=76d814874514726176f0615260848da2aab725ea";
 
-        Optional<AsignacionModel> optasignMod = this.asignServ
-                .optasignModFindById(asignMod_I.getAsignacionId());
+        AsignacionModel asignacionModel = this.asignServ
+                .findById(asignMod_I.getAsignacionId());
 
         if (
-                !optasignMod.isEmpty()
+                asignacionModel != null
         ) {
             return new ResponseEntity<>("La Asignación Ya Existe", HttpStatus.CONFLICT);
         }
 
-        Optional<UsuarioModel> optusuarMod = this.usuarServ.optusuarEntFindById(asignMod_I.getQuienRecibioUsuarioId());
+        UsuarioModel optusuarMod = this.usuarServ.findById(asignMod_I.getQuienRecibioUsuarioId());
 
         if (
-                optusuarMod.isEmpty()
+                optusuarMod == null
         ) {
             return new ResponseEntity<>("Debe ingresar un quienRecibioUsuarioId válido", HttpStatus.BAD_REQUEST);
         }
 
-        optusuarMod = this.usuarServ.optusuarEntFindById(asignMod_I.getQuienEntregoUsuarioId());
+        optusuarMod = this.usuarServ.findById(asignMod_I.getQuienEntregoUsuarioId());
 
         if (
-                optusuarMod.isEmpty()
+                optusuarMod == null
         ) {
             return new ResponseEntity<>("Debe ingresar un quienEntregoUsuarioId válido", HttpStatus.BAD_REQUEST);
         }
@@ -159,28 +159,28 @@ public class AsignacionController {
             String strMsgAux = "";
             boolean boolIsOnline = true;
 
-            Optional<AsignacionModel> optasignMod = this.asignServ.optasignModFindById(asignMod.getAsignacionId());
+            AsignacionModel optasignMod = this.asignServ.findById(asignMod.getAsignacionId());
 
             if (
-                    !optasignMod.isEmpty()
+                    optasignMod != null
             ) {
                 strMsgAux += "La Asignación Ya Existe|";
                 boolIsOnline = false;
             }
 
-            Optional<UsuarioModel> optusuarMod = this.usuarServ.optusuarEntFindById(asignMod.getQuienRecibioUsuarioId());
+            UsuarioModel optusuarMod = this.usuarServ.findById(asignMod.getQuienRecibioUsuarioId());
 
             if (
-                    optusuarMod.isEmpty()
+                    optusuarMod == null
             ) {
                 strMsgAux += "Debe ingresar un quienRecibioUsuarioId válido|";
                 boolIsOnline = false;
             }
 
-            optusuarMod = this.usuarServ.optusuarEntFindById(asignMod.getQuienEntregoUsuarioId());
+            optusuarMod = this.usuarServ.findById(asignMod.getQuienEntregoUsuarioId());
 
             if (
-                    optusuarMod.isEmpty()
+                    optusuarMod == null
             ) {
                 strMsgAux += "Debe ingresar un quienEntregoUsuarioId válido|";
                 boolIsOnline = false;

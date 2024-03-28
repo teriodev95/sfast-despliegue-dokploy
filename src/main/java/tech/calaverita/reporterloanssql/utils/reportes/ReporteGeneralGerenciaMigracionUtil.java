@@ -115,10 +115,10 @@ public class ReporteGeneralGerenciaMigracionUtil {
     ) throws ExecutionException, InterruptedException {
         EncabezadoReporteGeneralGerenciaDTO encabezado = new EncabezadoReporteGeneralGerenciaDTO();
         {
-            CompletableFuture<Optional<UsuarioModel>> usuarioEntityGerente = ReporteGeneralGerenciaMigracionUtil
+            CompletableFuture<UsuarioModel> usuarioEntityGerente = ReporteGeneralGerenciaMigracionUtil
                     .usuarioService.findByUsuarioAsync(gerenciaModel.getGerenciaId());
             CompletableFuture<UsuarioModel> usuarioEntitySeguridad = ReporteGeneralGerenciaMigracionUtil.usuarioService
-                    .findByUsuarioIdAsync(gerenciaModel.getSeguridadId());
+                    .findByIdAsync(gerenciaModel.getSeguridadId());
             CompletableFuture<SucursalModel> sucursalEntity = ReporteGeneralGerenciaMigracionUtil.sucursalService
                     .findBySucursalIdAsync(gerenciaModel.getSucursalId());
 
@@ -133,14 +133,14 @@ public class ReporteGeneralGerenciaMigracionUtil {
 
             String nombreCompletoGerente;
             {
-                nombreCompletoGerente = usuarioEntityGerente.get().isPresent()
-                        ? usuarioEntityGerente.get().get().getNombre() : null;
+                nombreCompletoGerente = usuarioEntityGerente.get() != null
+                        ? usuarioEntityGerente.get().getNombre() : null;
                 nombreCompletoGerente += " ";
-                nombreCompletoGerente += usuarioEntityGerente.get().isPresent()
-                        ? usuarioEntityGerente.get().get().getApellidoPaterno() : null;
+                nombreCompletoGerente += usuarioEntityGerente.get() != null
+                        ? usuarioEntityGerente.get().getApellidoPaterno() : null;
                 nombreCompletoGerente += " ";
-                nombreCompletoGerente += usuarioEntityGerente.get().isPresent()
-                        ? usuarioEntityGerente.get().get().getApellidoMaterno() : null;
+                nombreCompletoGerente += usuarioEntityGerente.get() != null
+                        ? usuarioEntityGerente.get().getApellidoMaterno() : null;
             }
             encabezado.setGerente(nombreCompletoGerente);
 

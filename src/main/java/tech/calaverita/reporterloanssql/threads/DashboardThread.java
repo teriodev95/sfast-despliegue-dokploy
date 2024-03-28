@@ -216,7 +216,7 @@ public class DashboardThread implements Runnable {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setAsignaciones() {
         this.objectsContainer.setAsignaciones(DashboardThread.asignServ
-                .darrasignModFindByAgenciaAnioAndSemanaToDashboard(this.objectsContainer.getDashboard().getAgencia(),
+                .findByAgenciaAnioAndSemana(this.objectsContainer.getDashboard().getAgencia(),
                         this.objectsContainer.getDashboard().getAnio(), this.objectsContainer.getDashboard()
                                 .getSemana()));
 
@@ -232,13 +232,13 @@ public class DashboardThread implements Runnable {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setGerencia() {
-        Optional<AgenciaModel> agenciaEntity = DashboardThread.agenciaService.findById(this
+        AgenciaModel agenciaEntity = DashboardThread.agenciaService.findById(this
                 .objectsContainer.getDashboard().getAgencia());
 
         if (
-                this.objectsContainer.getDashboard().getGerencia() == null && agenciaEntity.isPresent()
+                this.objectsContainer.getDashboard().getGerencia() == null && agenciaEntity != null
         ) {
-            this.objectsContainer.getDashboard().setGerencia(agenciaEntity.get().getGerenciaId());
+            this.objectsContainer.getDashboard().setGerencia(agenciaEntity.getGerenciaId());
         }
     }
 

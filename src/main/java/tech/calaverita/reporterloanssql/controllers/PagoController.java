@@ -159,7 +159,7 @@ public final class PagoController {
             @PathVariable("anio") int anio,
             @PathVariable("semana") int semana
     ) throws ExecutionException, InterruptedException {
-        UsuarioModel usuarioModel = this.usuarioService.usuarModFindByUsuario(usuario);
+        UsuarioModel usuarioModel = this.usuarioService.findByUsuario(usuario);
         ArrayList<String> gerenciaIds = this.usuarioGerenciaService
                 .darrstrGerenciaIdFindByUsuarioId(usuarioModel.getUsuarioId());
 
@@ -187,7 +187,7 @@ public final class PagoController {
             noPagoConVisitasHM.put("fechaPago", noPago.getFechaPago());
             noPagoConVisitasHM.put("lat", noPago.getLat());
             noPagoConVisitasHM.put("lng", noPago.getLng());
-            noPagoConVisitasHM.put("gerencia", this.agenciaService.agencModFindByAgenciaId(noPago.getAgente())
+            noPagoConVisitasHM.put("gerencia", this.agenciaService.findById(noPago.getAgente())
                     .getGerenciaId());
 
             // To easy code

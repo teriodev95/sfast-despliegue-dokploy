@@ -11,75 +11,26 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public class GerenciaService {
-    //------------------------------------------------------------------------------------------------------------------
-    /*INSTANCE VARIABLES*/
-    //------------------------------------------------------------------------------------------------------------------
     private final GerenciaRepository repo;
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*CONSTRUCTORS*/
-    //------------------------------------------------------------------------------------------------------------------
-    public GerenciaService(
-            GerenciaRepository repo
-    ) {
+    public GerenciaService(GerenciaRepository repo) {
         this.repo = repo;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
-    public ArrayList<String> darrstrGerenciaIdFindBySeguridad(
-            String seguridad
-    ) {
-        return this.repo.darrstrGerenciaIdFindBySeguridad(seguridad);
+    public GerenciaModel findById(String id) {
+        return this.repo.findById(id).orElseThrow();
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<String> darrstrGerenciaIdByRegional(
-            String regional
-    ) {
-        return this.repo.darrstrGerenciaIdByRegional(regional);
+    public ArrayList<GerenciaModel> findAll() {
+        return (ArrayList<GerenciaModel>) this.repo.findAll();
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<GerenciaModel> darrGerModFindAll() {
-        return this.repo.darrGerEntFindAll();
+    public ArrayList<String> findIdsBySucursalId(int sucursalId) {
+        return this.repo.findIdsBySucursalId(sucursalId);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Async("asyncExecutor")
-    public CompletableFuture<ArrayList<GerenciaModel>> findAllAsync() {
-        ArrayList<GerenciaModel> entity = this.repo.darrGerEntFindAll();
-
-        return CompletableFuture.completedFuture(entity);
-    }
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @Async("asyncExecutor")
-    public CompletableFuture<Optional<GerenciaModel>> findByIdAsync(
-            String id
-    ) {
-        Optional<GerenciaModel> entity = this.repo.findById(id);
-
-        return CompletableFuture.completedFuture(entity);
-    }
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<String> darrstrGerenciaIdFindAll() {
-        return this.repo.darrstrGerenciaIdFindAll();
-    }
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public GerenciaModel gerModFindByGerenciaId(
-            String gerenciaId
-    ) {
-        return this.repo.gerEntFindByGerenciaId(gerenciaId);
-    }
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<String> darrstrGerenciaIdFindBySucursalId(
-            int sucursalId
-    ) {
-        return this.repo.darrstrGerenciaIdFindBySucursalId(sucursalId);
+    public CompletableFuture<GerenciaModel> findByIdAsync(String id) {
+        return CompletableFuture.completedFuture(this.repo.findById(id).orElseThrow());
     }
 }

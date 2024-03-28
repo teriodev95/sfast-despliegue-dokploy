@@ -13,47 +13,39 @@ import tech.calaverita.reporterloanssql.services.UsuarioService;
 import tech.calaverita.reporterloanssql.services.relation.UsuarioSucursalService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.NoSuchElementException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/xpress/v1/pwa")
 public final class LoginController {
-    //------------------------------------------------------------------------------------------------------------------
-    /*INSTANCE VARIABLES*/
-    //------------------------------------------------------------------------------------------------------------------
-    private final AgenciaService agencServ;
-    private final GerenciaService gerServ;
-    private final SucursalService sucServ;
-    private final UsuarioService usuarServ;
-    private final UsuarioSucursalService usuarSucServ;
+    private final AgenciaService agenciaService;
+    private final GerenciaService gerenciaService;
+    private final SucursalService sucursalService;
+    private final UsuarioService usuarioService;
+    private final UsuarioSucursalService usuarioSucursalService;
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*CONSTRUCTORS*/
-    //------------------------------------------------------------------------------------------------------------------
-    LoginController(
-            AgenciaService agencServ_S,
-            GerenciaService gerServ_S,
-            SucursalService sucServ_S,
-            UsuarioService usuarServ_S,
-            UsuarioSucursalService usuarSucServ_S
+    public LoginController(
+            AgenciaService agenciaService,
+            GerenciaService gerenciaService,
+            SucursalService sucursalService,
+            UsuarioService usuarioService,
+            UsuarioSucursalService usuarioSucursalService
     ) {
-        this.agencServ = agencServ_S;
-        this.gerServ = gerServ_S;
-        this.sucServ = sucServ_S;
-        this.usuarServ = usuarServ_S;
-        this.usuarSucServ = usuarSucServ_S;
+        this.agenciaService = agenciaService;
+        this.gerenciaService = gerenciaService;
+        this.sucursalService = sucursalService;
+        this.usuarioService = usuarioService;
+        this.usuarioSucursalService = usuarioSucursalService;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
     @PostMapping(path = "/login")
-    public ResponseEntity<?> regenericLogin(
-            @RequestBody AuthCredentials login_I
-    ) {
-        UsuarioModel usuarMod_O = this.usuarServ.usuarModFindByUsuarioAndPin(login_I.getUsername(),
-                login_I.getPassword());
+    public ResponseEntity<?> regenericLogin(@RequestBody AuthCredentials authCredentials) {
+        UsuarioModel usuarMod_O = this.usuarioService.findByUsuarioAndPin(authCredentials.getUsername(),
+                authCredentials.getPassword());
 
         if (
                 usuarMod_O == null
@@ -64,52 +56,55 @@ public final class LoginController {
         return new ResponseEntity<>(usuarMod_O, HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/agencias/{gerencia}")
-    public ResponseEntity<ArrayList<String>> redarrstrAgenciaIdGetByStrGerencia(
-            @PathVariable("gerencia") String strGerencia_I
-    ) {
-        ArrayList<String> darrstrAgencia = this.agencServ.darrstrAgenciaIdFindByGerenciaId(strGerencia_I);
+    public ResponseEntity<ArrayList<HashMap<String, String>>> redarrstrAgenciaIdGetByStrGerencia(
+            @PathVariable("gerencia") String gerencia) throws ExecutionException, InterruptedException {
+        CompletableFuture<ArrayList<String>> agenciasCF = this.agenciaService.findIdsByGerenciaIdAsync(gerencia);
+        CompletableFuture<ArrayList<String>> agentesCF = this.usuarioService.findAgentesByGerencia(gerencia);
 
-        if (
-                darrstrAgencia.isEmpty()
-        ) {
-            return new ResponseEntity<>(darrstrAgencia, HttpStatus.NO_CONTENT);
+        CompletableFuture.allOf(agenciasCF, agentesCF);
+
+        ArrayList<HashMap<String, String>> agenciasYAgentesHM = new ArrayList<>();
+        for (int i = 0; i < agenciasCF.get().size(); i++) {
+            HashMap<String, String> agenciaYAgenteHM = new HashMap<>();
+            agenciaYAgenteHM.put("agencia", agenciasCF.get().get(i));
+            agenciaYAgenteHM.put("agente", agentesCF.get().get(i));
+            agenciasYAgentesHM.add(agenciaYAgenteHM);
         }
 
-        return new ResponseEntity<>(darrstrAgencia, HttpStatus.OK);
+        if (
+                agenciasCF.get() == null
+        ) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(agenciasYAgentesHM, HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/sucursales/usuarios/{usuario}")
-    public ResponseEntity<ArrayList<SucursalModel>> getSucursalIdByUsuario(
-            @PathVariable("usuario") String usuario
-    ) {
+    public ResponseEntity<ArrayList<SucursalModel>> getSucursalIdByUsuario(@PathVariable("usuario") String usuario) {
         UsuarioModel usuarioModel;
         ArrayList<SucursalModel> sucEntSucursalEntities = new ArrayList<>();
 
         try {
-            usuarioModel = this.usuarServ.usuarModFindByUsuario(usuario);
+            usuarioModel = this.usuarioService.findByUsuario(usuario);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        ArrayList<String> darrintSucursalId = this.usuarSucServ
+        ArrayList<String> darrintSucursalId = this.usuarioSucursalService
                 .darrstrSucursalIdFindByUsuarioId(usuarioModel.getUsuarioId());
 
         for (String strSucursalId : darrintSucursalId) {
-            sucEntSucursalEntities.add(this.sucServ.findBySucursalId(strSucursalId));
+            sucEntSucursalEntities.add(this.sucursalService.findBySucursalId(strSucursalId));
         }
 
         return new ResponseEntity<>(sucEntSucursalEntities, HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "gerencias/sucursales/{id}")
-    public ResponseEntity<ArrayList<String>> getGerenciaIdsBySucursalId(
-            @PathVariable("id") int intId_I
-    ) {
-        ArrayList<String> darrstrGerencia = this.gerServ.darrstrGerenciaIdFindBySucursalId(intId_I);
+    public ResponseEntity<ArrayList<String>> getGerenciaIdsBySucursalId(@PathVariable("id") int id) {
+        ArrayList<String> darrstrGerencia = this.gerenciaService.findIdsBySucursalId(id);
 
         if (
                 darrstrGerencia.isEmpty()

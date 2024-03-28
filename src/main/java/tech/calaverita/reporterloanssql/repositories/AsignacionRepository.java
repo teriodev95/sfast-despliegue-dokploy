@@ -9,41 +9,9 @@ import java.util.ArrayList;
 
 @Repository
 public interface AsignacionRepository extends CrudRepository<AsignacionModel, String> {
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
-    @Query("SELECT am " +
-            "FROM AsignacionModel am " +
-            "WHERE am.agencia = :agencia " +
-            "AND am.anio = :anio " +
-            "AND am.semana = :semana")
-    ArrayList<AsignacionModel> darrasignModFindByAgenciaAnioAndSemana(
-            String agencia,
-            int anio,
-            int semana
-    );
+    ArrayList<AsignacionModel> findByAgenciaAndAnioAndSemana(String agencia, int anio, int semana);
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @Query("SELECT asi " +
-            "FROM AsignacionModel asi " +
-            "WHERE asi.agencia = :agencia " +
-            "AND asi.anio = :anio " +
-            "AND asi.semana = :semana")
-    ArrayList<AsignacionModel> darrasignModFindByAgenciaAnioAndSemanaToDashboard(
-            String agencia,
-            int anio,
-            int semana
-    );
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @Query(value = "SELECT IF(SUM(am.monto) is null, 0, SUM(am.monto)) " +
-            "FROM asignaciones am " +
-            "WHERE am.agencia = :agencia " +
-            "AND am.anio = :anio " +
-            "AND am.semana = :semana", nativeQuery = true)
-    double getSumaDeAsigancionesByAgenciaAnioAndSemana(
-            String agencia,
-            int anio,
-            int semana
-    );
+    @Query("SELECT IF((SUM(asign.monto) IS NULL), 0, SUM(asign.monto)) FROM AsignacionModel asign " +
+            "WHERE asign.agencia = :agencia AND asign.anio = :anio AND asign.semana = :semana")
+    double findSumaAsigancionesByAgenciaAnioAndSemana(String agencia, int anio, int semana);
 }
