@@ -23,7 +23,7 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
 
     UsuarioModel findByUsuario(String usuario);
 
-    UsuarioModel findByAgencia(String agencia);
+    UsuarioModel findByAgenciaAndStatus(String agencia, boolean status);
 
     ArrayList<UsuarioModel> findByGerenciaAndTipo(String gerencia, String tipo);
 
