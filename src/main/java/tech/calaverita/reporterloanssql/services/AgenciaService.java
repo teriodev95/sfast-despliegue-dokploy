@@ -17,7 +17,7 @@ public class AgenciaService {
     }
 
     public AgenciaModel findById(String agenciaId) {
-        return this.repo.findById(agenciaId).orElseThrow();
+        return this.repo.findById(agenciaId).orElse(null);
     }
 
     public ArrayList<String> findIdsByGerenciaId(String gerenciaId) {

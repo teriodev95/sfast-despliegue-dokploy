@@ -17,70 +17,58 @@ import tech.calaverita.reporterloanssql.utils.RetrofitOdooUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/xpress/v1/assignments")
 public class AsignacionController {
-    //------------------------------------------------------------------------------------------------------------------
-    /*INSTANCE VARIABLES*/
-    //------------------------------------------------------------------------------------------------------------------
-    private final AsignacionService asignServ;
-    private final UsuarioService usuarServ;
+    private final AsignacionService asignacionService;
+    private final UsuarioService usuarioService;
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*CONSTRUCTORS*/
-    //------------------------------------------------------------------------------------------------------------------
     private AsignacionController(
-            AsignacionService asignServ_S,
-            UsuarioService usuarServ_S
+            AsignacionService asignacionService,
+            UsuarioService usuarioService
     ) {
-        this.asignServ = asignServ_S;
-        this.usuarServ = usuarServ_S;
+        this.asignacionService = asignacionService;
+        this.usuarioService = usuarioService;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
     @GetMapping(path = "/all")
-    public @ResponseBody ResponseEntity<Iterable<AsignacionModel>> reiteasignModGet() {
-        Iterable<AsignacionModel> iteasignMod_O = this.asignServ.findAll();
+    public @ResponseBody ResponseEntity<Iterable<AsignacionModel>> getAll() {
+        Iterable<AsignacionModel> asignacionModelIterable = this.asignacionService.findAll();
 
         if (
-                !iteasignMod_O.iterator().hasNext()
+                !asignacionModelIterable.iterator().hasNext()
         ) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return new ResponseEntity<>(iteasignMod_O, HttpStatus.OK);
+        return new ResponseEntity<>(asignacionModelIterable, HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Iterable<AsignacionModel>>
-    reiteasignModGetByStrAgenciaIntAnioAndIntSemana(
-            @PathVariable("agencia") String strAgencia_I,
-            @PathVariable("anio") int intAnio_I,
-            @PathVariable("semana") int intSemana_I
+    public @ResponseBody ResponseEntity<Iterable<AsignacionModel>> getByAgenciaAnioAndSemana(
+            @PathVariable("agencia") String agencia,
+            @PathVariable("anio") int anio,
+            @PathVariable("semana") int semana
     ) {
-        Iterable<AsignacionModel> iteasignMod_O = this.asignServ
-                .findByAgenciaAnioAndSemana(strAgencia_I, intAnio_I, intSemana_I);
+        Iterable<AsignacionModel> asignacionModelIterable = this.asignacionService
+                .findByAgenciaAnioAndSemana(agencia, anio, semana);
 
         if (
-                !iteasignMod_O.iterator().hasNext()
+                !asignacionModelIterable.iterator().hasNext()
         ) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return new ResponseEntity<>(iteasignMod_O, HttpStatus.OK);
+        return new ResponseEntity<>(asignacionModelIterable, HttpStatus.OK);
     }
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/one/{id}")
-    public @ResponseBody ResponseEntity<AsignacionModel> reoptasignModGetById(
+    public @ResponseBody ResponseEntity<AsignacionModel> getOneById(
             @PathVariable("id") String strId_I
     ) {
-        AsignacionModel asignacionModel = this.asignServ.findById(strId_I);
+        AsignacionModel asignacionModel = this.asignacionService.findById(strId_I);
 
         if (
                 asignacionModel == null
@@ -93,21 +81,16 @@ public class AsignacionController {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @PostMapping(path = "/create-one")
-    public @ResponseBody ResponseEntity<String> restrAsignModCreate(
-            @RequestBody AsignacionModel asignMod_I
-    ) {
+    public @ResponseBody ResponseEntity<String> postCreateOne(@RequestBody AsignacionModel asignacionModel) {
         String strSession = "session_id=76d814874514726176f0615260848da2aab725ea";
 
-        AsignacionModel asignacionModel = this.asignServ
-                .findById(asignMod_I.getAsignacionId());
-
         if (
-                asignacionModel != null
+                this.asignacionService.existById(asignacionModel.getAsignacionId())
         ) {
             return new ResponseEntity<>("La Asignación Ya Existe", HttpStatus.CONFLICT);
         }
 
-        UsuarioModel optusuarMod = this.usuarServ.findById(asignMod_I.getQuienRecibioUsuarioId());
+        UsuarioModel optusuarMod = this.usuarioService.findById(asignacionModel.getQuienRecibioUsuarioId());
 
         if (
                 optusuarMod == null
@@ -115,7 +98,7 @@ public class AsignacionController {
             return new ResponseEntity<>("Debe ingresar un quienRecibioUsuarioId válido", HttpStatus.BAD_REQUEST);
         }
 
-        optusuarMod = this.usuarServ.findById(asignMod_I.getQuienEntregoUsuarioId());
+        optusuarMod = this.usuarioService.findById(asignacionModel.getQuienEntregoUsuarioId());
 
         if (
                 optusuarMod == null
@@ -124,21 +107,21 @@ public class AsignacionController {
         }
 
         if (
-                !asignMod_I.getLog().contains("{")
+                !asignacionModel.getLog().contains("{")
         ) {
             return new ResponseEntity<>("Debe ingresar un log con formato json", HttpStatus.BAD_REQUEST);
         }
 
         if (
-                !asignMod_I.getLog().contains("}")
+                !asignacionModel.getLog().contains("}")
         ) {
             return new ResponseEntity<>("Debe ingresar un log con formato json", HttpStatus.BAD_REQUEST);
         }
 
-        this.asignServ.save(asignMod_I);
+        this.asignacionService.save(asignacionModel);
 
         Call<ResponseBodyXms> callrespBodyXms = RetrofitOdoo.getInstance().getApi().asignacionCreateOne(strSession,
-                new AsignacionBody(new AsignacionList(asignMod_I)));
+                new AsignacionBody(new AsignacionList(asignacionModel)));
         RetrofitOdooUtil.sendCall(callrespBodyXms);
 
         return new ResponseEntity<>("Asignación Creada con Éxito", HttpStatus.CREATED);
@@ -146,20 +129,20 @@ public class AsignacionController {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @PostMapping(path = "/create-many")
-    public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> redarrdicasignModCreate(
-            @RequestBody ArrayList<AsignacionModel> darrasignMod_I
+    public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> postCreateMany(
+            @RequestBody ArrayList<AsignacionModel> asignacionModels
     ) {
         String strSession = "session_id=76d814874514726176f0615260848da2aab725ea";
 
         ArrayList<HashMap<String, Object>> darrdicasignMod_O = new ArrayList<>();
 
-        for (AsignacionModel asignMod : darrasignMod_I) {
+        for (AsignacionModel asignMod : asignacionModels) {
             HashMap<String, Object> objeto = new HashMap<>();
             String strMsg = "OK";
             String strMsgAux = "";
             boolean boolIsOnline = true;
 
-            AsignacionModel optasignMod = this.asignServ.findById(asignMod.getAsignacionId());
+            AsignacionModel optasignMod = this.asignacionService.findById(asignMod.getAsignacionId());
 
             if (
                     optasignMod != null
@@ -168,7 +151,7 @@ public class AsignacionController {
                 boolIsOnline = false;
             }
 
-            UsuarioModel optusuarMod = this.usuarServ.findById(asignMod.getQuienRecibioUsuarioId());
+            UsuarioModel optusuarMod = this.usuarioService.findById(asignMod.getQuienRecibioUsuarioId());
 
             if (
                     optusuarMod == null
@@ -177,7 +160,7 @@ public class AsignacionController {
                 boolIsOnline = false;
             }
 
-            optusuarMod = this.usuarServ.findById(asignMod.getQuienEntregoUsuarioId());
+            optusuarMod = this.usuarioService.findById(asignMod.getQuienEntregoUsuarioId());
 
             if (
                     optusuarMod == null
@@ -204,7 +187,7 @@ public class AsignacionController {
                 if (
                         boolIsOnline
                 ) {
-                    this.asignServ.save(asignMod);
+                    this.asignacionService.save(asignMod);
 
                     Call<ResponseBodyXms> callrespBodyXms = RetrofitOdoo.getInstance().getApi()
                             .asignacionCreateOne(strSession,

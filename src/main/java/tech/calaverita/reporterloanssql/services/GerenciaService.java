@@ -18,7 +18,7 @@ public class GerenciaService {
     }
 
     public GerenciaModel findById(String id) {
-        return this.repo.findById(id).orElseThrow();
+        return this.repo.findById(id).orElse(null);
     }
 
     public ArrayList<GerenciaModel> findAll() {
@@ -31,6 +31,6 @@ public class GerenciaService {
 
     @Async("asyncExecutor")
     public CompletableFuture<GerenciaModel> findByIdAsync(String id) {
-        return CompletableFuture.completedFuture(this.repo.findById(id).orElseThrow());
+        return CompletableFuture.completedFuture(this.repo.findById(id).orElse(null));
     }
 }

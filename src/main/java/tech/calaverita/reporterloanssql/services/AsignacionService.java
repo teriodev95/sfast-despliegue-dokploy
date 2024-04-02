@@ -5,6 +5,7 @@ import tech.calaverita.reporterloanssql.models.mariaDB.AsignacionModel;
 import tech.calaverita.reporterloanssql.repositories.AsignacionRepository;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 public final class AsignacionService {
@@ -14,12 +15,16 @@ public final class AsignacionService {
         this.repo = repo;
     }
 
+    public boolean existById(String id) {
+        return this.repo.existsById(id);
+    }
+
     public AsignacionModel save(AsignacionModel model) {
         return this.repo.save(model);
     }
 
     public AsignacionModel findById(String id) {
-        return this.repo.findById(id).orElseThrow();
+        return this.repo.findById(id).orElse(null);
     }
 
     public ArrayList<AsignacionModel> findByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
