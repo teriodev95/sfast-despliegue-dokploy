@@ -1,8 +1,10 @@
 package tech.calaverita.reporterloanssql.controllers.PGS;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.calaverita.reporterloanssql.Constants;
 import tech.calaverita.reporterloanssql.models.mariaDB.SucursalModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
 import tech.calaverita.reporterloanssql.security.AuthCredentials;
@@ -42,14 +44,18 @@ public final class LoginController {
         this.usuarioSucursalService = usuarioSucursalService;
     }
 
+    @ModelAttribute
+    public void setResponseHeader(HttpServletResponse response) {
+        response.setHeader("Version", Constants.VERSION);
+        response.setHeader("Last-Modified", Constants.LAST_MODIFIED);
+    }
+
     @PostMapping(path = "/login")
     public ResponseEntity<?> regenericLogin(@RequestBody AuthCredentials authCredentials) {
         UsuarioModel usuarMod_O = this.usuarioService.findByUsuarioAndPin(authCredentials.getUsername(),
                 authCredentials.getPassword());
 
-        if (
-                usuarMod_O == null
-        ) {
+        if (usuarMod_O == null) {
             return new ResponseEntity<>("Usuario y/o contraseña incorrecto", HttpStatus.BAD_REQUEST);
         }
 
@@ -131,9 +137,7 @@ public final class LoginController {
     public ResponseEntity<ArrayList<String>> getGerenciaIdsBySucursalId(@PathVariable("id") int id) {
         ArrayList<String> darrstrGerencia = this.gerenciaService.findIdsBySucursalId(id);
 
-        if (
-                darrstrGerencia.isEmpty()
-        ) {
+        if (darrstrGerencia.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 

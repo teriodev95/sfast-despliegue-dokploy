@@ -1,10 +1,12 @@
 package tech.calaverita.reporterloanssql.controllers;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import retrofit2.Call;
+import tech.calaverita.reporterloanssql.Constants;
 import tech.calaverita.reporterloanssql.models.mariaDB.AsignacionModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
 import tech.calaverita.reporterloanssql.retrofit.RetrofitOdoo;
@@ -20,16 +22,22 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping(path = "/xpress/v1/assignments")
-public class AsignacionController {
+public final class AsignacionController {
     private final AsignacionService asignacionService;
     private final UsuarioService usuarioService;
 
-    private AsignacionController(
+    public AsignacionController(
             AsignacionService asignacionService,
             UsuarioService usuarioService
     ) {
         this.asignacionService = asignacionService;
         this.usuarioService = usuarioService;
+    }
+
+    @ModelAttribute
+    public void setResponseHeader(HttpServletResponse response) {
+        response.setHeader("Version", Constants.VERSION);
+        response.setHeader("Last-Modified", Constants.LAST_MODIFIED);
     }
 
     @GetMapping(path = "/all")
@@ -63,7 +71,6 @@ public class AsignacionController {
         return new ResponseEntity<>(asignacionModelIterable, HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/one/{id}")
     public @ResponseBody ResponseEntity<AsignacionModel> getOneById(
             @PathVariable("id") String strId_I
@@ -79,7 +86,6 @@ public class AsignacionController {
         return new ResponseEntity<>(asignacionModel, HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @PostMapping(path = "/create-one")
     public @ResponseBody ResponseEntity<String> postCreateOne(@RequestBody AsignacionModel asignacionModel) {
         String strSession = "session_id=76d814874514726176f0615260848da2aab725ea";
@@ -127,7 +133,6 @@ public class AsignacionController {
         return new ResponseEntity<>("Asignación Creada con Éxito", HttpStatus.CREATED);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @PostMapping(path = "/create-many")
     public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> postCreateMany(
             @RequestBody ArrayList<AsignacionModel> asignacionModels

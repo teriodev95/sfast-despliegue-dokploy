@@ -1,8 +1,10 @@
 package tech.calaverita.reporterloanssql.controllers;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.calaverita.reporterloanssql.Constants;
 import tech.calaverita.reporterloanssql.models.mariaDB.PagoModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.VisitaModel;
@@ -26,9 +28,6 @@ import java.util.concurrent.ExecutionException;
 @RestController
 @RequestMapping(path = "/xpress/v1/pays")
 public final class PagoController {
-    //------------------------------------------------------------------------------------------------------------------
-    /*INSTANCE VARIABLES*/
-    //------------------------------------------------------------------------------------------------------------------
     private final PagoService pagoService;
     private final PrestamoService prestamoService;
     private final UsuarioGerenciaService usuarioGerenciaService;
@@ -36,10 +35,7 @@ public final class PagoController {
     private final VisitaService visitaService;
     private final AgenciaService agenciaService;
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*CONSTRUCTORS*/
-    //------------------------------------------------------------------------------------------------------------------
-    private PagoController(
+    public PagoController(
             PagoService pagoService,
             PrestamoService prestamoService,
             UsuarioGerenciaService usuarioGerenciaService,
@@ -55,9 +51,12 @@ public final class PagoController {
         this.agenciaService = agenciaService;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
+    @ModelAttribute
+    public void setResponseHeader(HttpServletResponse response) {
+        response.setHeader("Version", Constants.VERSION);
+        response.setHeader("Last-Modified", Constants.LAST_MODIFIED);
+    }
+
     @CrossOrigin
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<ArrayList<PagoModel>> redarrpagModGetByAgenciaAnioAndSemana(
@@ -79,7 +78,6 @@ public final class PagoController {
         return new ResponseEntity<>(darrpagMod_O, httpStatus_O);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @PostMapping(path = "/create-one")
     public @ResponseBody ResponseEntity<String> restrCreatePagMod(
             //                                              //Dentro de este endpoint se puede recibir el pago con la
@@ -104,7 +102,6 @@ public final class PagoController {
         return new ResponseEntity<>(modVal.getStrResponse(), modVal.getHttpStatus());
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @PostMapping(path = "/create-many")
     public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> redarrdicobjectCreatePagMod(
             @RequestBody ArrayList<PagoConLiquidacion> darrpagConLiq_I
@@ -134,7 +131,6 @@ public final class PagoController {
         return new ResponseEntity<>(darrdicpagMod_O, httpStatus_O);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @CrossOrigin
     @GetMapping(path = "/history/{id}")
     public @ResponseBody ResponseEntity<ArrayList<PagoAgrupadoModel>> redarrpagAgrModGetHistory(

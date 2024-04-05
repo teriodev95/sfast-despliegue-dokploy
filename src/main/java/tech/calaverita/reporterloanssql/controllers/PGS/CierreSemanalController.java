@@ -2,6 +2,7 @@ package tech.calaverita.reporterloanssql.controllers.PGS;
 
 import com.itextpdf.text.DocumentException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
@@ -33,9 +34,6 @@ import java.util.concurrent.ExecutionException;
 @RestController
 @RequestMapping("/xpress/v1/pwa/cierres_semanales")
 public final class CierreSemanalController {
-    //------------------------------------------------------------------------------------------------------------------
-    /*INSTANCE VARIABLES*/
-    //------------------------------------------------------------------------------------------------------------------
     private final AsignacionService asignacionService;
     private final UsuarioService usuarioService;
     private final XpressController xpressController;
@@ -45,10 +43,7 @@ public final class CierreSemanalController {
     private final EgresosGerenteService egresosGerenteService;
     private final IngresosAgenteService ingresosAgenteService;
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*CONSTRUCTORS*/
-    //------------------------------------------------------------------------------------------------------------------
-    private CierreSemanalController(
+    public CierreSemanalController(
             AsignacionService asignacionService,
             UsuarioService usuarioService,
             XpressController xpressController,
@@ -68,11 +63,14 @@ public final class CierreSemanalController {
         this.ingresosAgenteService = ingresosAgenteService;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
+    @ModelAttribute
+    public void setResponseHeader(HttpServletResponse response) {
+        response.setHeader("Version", Constants.VERSION);
+        response.setHeader("Last-Modified", Constants.LAST_MODIFIED);
+    }
+
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<?> getCierreSemanalByAgenciaAnioAndSemana(
+    public @ResponseBody ResponseEntity<?> getByAgenciaAnioAndSemana(
             @RequestHeader(name = "staticToken") String staticToken,
             @RequestHeader(name = "username") String username,
             @PathVariable("agencia") String agencia,
@@ -92,28 +90,15 @@ public final class CierreSemanalController {
         Optional<CierreSemanalModel> cierreSemanalEntity = this.cierreSemanalService.findByAgenciaAnioAndSemana(agencia, anio,
                 semana);
 
-        if (
-                staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")
-        ) {
-            if (
-                    !this.usuarioService.existsByUsuario(username)
-            ) {
+        if (staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")) {
+            if (!this.usuarioService.existsByUsuario(username)) {
                 responseStatus = HttpStatus.FORBIDDEN;
-            } //
-            else if (
-                    !this.usuarioService.existsByUsuarioActivo(username)
-            ) {
+            } else if (!this.usuarioService.existsByUsuarioActivo(username)) {
                 responseStatus = HttpStatus.UNAUTHORIZED;
-            } //
-            else {
-                if (
-                        cierreSemanalEntity.isPresent()
-                ) {
+            } else {
+                if (cierreSemanalEntity.isPresent()) {
                     cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(cierreSemanalEntity.get());
-                } //
-                else if (
-                        this.usuarioService.existsByAgencia(agencia)
-                ) {
+                } else if (this.usuarioService.existsByAgencia(agencia)) {
                     dashboard = xpressController.getDashboardByAgenciaAnioAndSemana(agencia, anio, semana).getBody();
                     usuarioModels = new ArrayList<>();
                     usuarioModels.add(this.usuarioService.findByAgencia(agencia));
@@ -121,22 +106,19 @@ public final class CierreSemanalController {
                     asignaciones = this.asignacionService.findSumaAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
 
                     cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(dashboard, usuarioModels, asignaciones);
-                } //
-                else {
+                } else {
                     return new ResponseEntity<>("La agencia no existe", HttpStatus.BAD_REQUEST);
                 }
             }
-        } //
-        else {
+        } else {
             responseStatus = HttpStatus.BAD_REQUEST;
         }
 
         return new ResponseEntity<>(cierreSemanalDTO, responseStatus);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @PostMapping(path = "/create-one")
-    public @ResponseBody ResponseEntity<String> createCierreSemanal(
+    public @ResponseBody ResponseEntity<String> createOne(
             @RequestBody CierreSemanalDTO cierreSemanalDTO,
             @RequestHeader(name = "staticToken") String staticToken,
             @RequestHeader(name = "username") String username
@@ -153,23 +135,13 @@ public final class CierreSemanalController {
         cierreSemanalModel.setPDF(urlPDF);
         cierreSemanalModel.setLog(LogUtil.getLogCierreSemanal(cierreSemanalDTO.getBalanceAgencia()));
 
-        if (
-                staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")
-        ) {
-            if (
-                    !this.usuarioService.existsByUsuarioGerente(username)
-            ) {
+        if (staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")) {
+            if (!this.usuarioService.existsByUsuarioGerente(username)) {
                 responseStatus = HttpStatus.FORBIDDEN;
-            } //
-            else if (
-                    !this.usuarioService.existsByUsuarioGerenteActivo(username)
-            ) {
+            } else if (!this.usuarioService.existsByUsuarioGerenteActivo(username)) {
                 responseStatus = HttpStatus.UNAUTHORIZED;
-            } //
-            else {
-                if (
-                        this.cierreSemanalService.findById(cierreSemanalModel.getId()).isEmpty()
-                ) {
+            } else {
+                if (this.cierreSemanalService.findById(cierreSemanalModel.getId()).isEmpty()) {
                     BalanceAgenciaModel balanceAgenciaModel = this.balanceAgenciaService
                             .getBalanceAgenciaEntity(cierreSemanalDTO.getBalanceAgencia());
                     balanceAgenciaModel.setId(cierreSemanalModel.getBalanceAgenciaId());
@@ -194,14 +166,12 @@ public final class CierreSemanalController {
 
                     responseText = urlPDF;
                     responseStatus = HttpStatus.CREATED;
-                } //
-                else {
+                } else {
                     responseText = "No se pudo registrar el cierre semanal porque ya existe";
                     responseStatus = HttpStatus.CONFLICT;
                 }
             }
-        } //
-        else {
+        } else {
             responseStatus = HttpStatus.BAD_REQUEST;
         }
 
@@ -212,7 +182,7 @@ public final class CierreSemanalController {
     }
 
     @GetMapping(path = "/pdf/{file}", produces = MediaType.APPLICATION_PDF_VALUE)
-    public @ResponseBody ResponseEntity<InputStreamResource> getPdf2(
+    public @ResponseBody ResponseEntity<InputStreamResource> getPdfByRuta(
             @PathVariable("file") String file
     ) throws IOException {
         FileInputStream fileInputStream = new FileInputStream(Constants.RUTA_PDF_PRODUCCION + file);

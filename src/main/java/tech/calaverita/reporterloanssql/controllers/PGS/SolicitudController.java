@@ -1,8 +1,10 @@
 package tech.calaverita.reporterloanssql.controllers.PGS;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.calaverita.reporterloanssql.Constants;
 import tech.calaverita.reporterloanssql.dto.solicitud.SolicitudDTO;
 import tech.calaverita.reporterloanssql.mappers.SolicitudMapper;
 import tech.calaverita.reporterloanssql.models.mariaDB.SolicitudModel;
@@ -13,11 +15,17 @@ import java.util.ArrayList;
 @CrossOrigin
 @RestController
 @RequestMapping("/xpress/v1/pwa/solicitudes")
-public class SolicitudController {
+public final class SolicitudController {
     private final SolicitudService solicitudService;
 
     public SolicitudController(SolicitudService solicitudService) {
         this.solicitudService = solicitudService;
+    }
+
+    @ModelAttribute
+    public void setResponseHeader(HttpServletResponse response) {
+        response.setHeader("Version", Constants.VERSION);
+        response.setHeader("Last-Modified", Constants.LAST_MODIFIED);
     }
 
     @PostMapping("/create-one")

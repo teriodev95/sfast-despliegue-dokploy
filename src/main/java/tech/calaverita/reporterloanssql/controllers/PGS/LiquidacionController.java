@@ -1,8 +1,10 @@
 package tech.calaverita.reporterloanssql.controllers.PGS;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.calaverita.reporterloanssql.Constants;
 import tech.calaverita.reporterloanssql.dto.LiquidacionDTO;
 import tech.calaverita.reporterloanssql.models.mariaDB.LiquidacionModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.PagoModel;
@@ -14,7 +16,7 @@ import tech.calaverita.reporterloanssql.utils.PagoUtil;
 @CrossOrigin
 @RestController
 @RequestMapping("/xpress/v1/pwa/payoffs")
-public class LiquidacionController {
+public final class LiquidacionController {
     private final LiquidacionService liquidacionService;
     private final PagoService pagoService;
 
@@ -26,6 +28,12 @@ public class LiquidacionController {
         this.pagoService = pagoService;
     }
 
+    @ModelAttribute
+    public void setResponseHeader(HttpServletResponse response) {
+        response.setHeader("Version", Constants.VERSION);
+        response.setHeader("Last-Modified", Constants.LAST_MODIFIED);
+    }
+
     @GetMapping(path = "/data/{prestamoId}")
     public @ResponseBody ResponseEntity<LiquidacionDTO> getDatosLiquidacion(
             @PathVariable(name = "prestamoId") String prestamoId
@@ -34,9 +42,7 @@ public class LiquidacionController {
     }
 
     @PostMapping(path = "/create-one")
-    public @ResponseBody ResponseEntity<String> createLiquidacion(
-            @RequestBody LiquidacionDTO liquidacionDTO
-    ) {
+    public @ResponseBody ResponseEntity<String> createLiquidacion(@RequestBody LiquidacionDTO liquidacionDTO) {
         String responseText = "Se creó la liquidación correctamente";
         HttpStatus responseStatus = HttpStatus.CREATED;
 

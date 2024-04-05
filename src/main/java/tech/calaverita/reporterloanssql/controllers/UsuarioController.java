@@ -1,36 +1,31 @@
 package tech.calaverita.reporterloanssql.controllers;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.calaverita.reporterloanssql.Constants;
 import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
 import tech.calaverita.reporterloanssql.services.UsuarioService;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/xpress/v1/users")
 public final class UsuarioController {
-    //------------------------------------------------------------------------------------------------------------------
-    /*INSTANCE VARIABLES*/
-    //------------------------------------------------------------------------------------------------------------------
-    private final UsuarioService usuarServ;
+    private final UsuarioService usuarioService;
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*CONSTRUCTORS*/
-    //------------------------------------------------------------------------------------------------------------------
-    private UsuarioController(
-            UsuarioService usuarServ_S
-    ) {
-        this.usuarServ = usuarServ_S;
+    public UsuarioController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
+    @ModelAttribute
+    public void setResponseHeader(HttpServletResponse response) {
+        response.setHeader("Version", Constants.VERSION);
+        response.setHeader("Last-Modified", Constants.LAST_MODIFIED);
+    }
+
     @GetMapping(path = "/all")
     public @ResponseBody ResponseEntity<Iterable<UsuarioModel>> getAllUsers() {
-        Iterable<UsuarioModel> usuarios = this.usuarServ.findAll();
+        Iterable<UsuarioModel> usuarios = this.usuarioService.findAll();
 
         if (!usuarios.iterator().hasNext())
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -38,12 +33,11 @@ public final class UsuarioController {
         return new ResponseEntity<>(usuarios, HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/one/{usuarioId}")
     public @ResponseBody ResponseEntity<UsuarioModel> getOneUser(
             @PathVariable("usuarioId") Integer usuarioId
     ) {
-        UsuarioModel usuario = this.usuarServ.findById(usuarioId);
+        UsuarioModel usuario = this.usuarioService.findById(usuarioId);
 
         if (usuario == null)
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

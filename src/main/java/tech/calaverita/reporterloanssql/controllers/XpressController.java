@@ -1,8 +1,10 @@
 package tech.calaverita.reporterloanssql.controllers;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.calaverita.reporterloanssql.Constants;
 import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
 import tech.calaverita.reporterloanssql.pojos.Cobranza;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
@@ -19,26 +21,23 @@ import java.util.ArrayList;
 @RestController()
 @RequestMapping(path = "/xpress/v1")
 public final class XpressController {
-    //------------------------------------------------------------------------------------------------------------------
-    /*INSTANCE VARIABLES*/
-    //------------------------------------------------------------------------------------------------------------------
     private final AgenciaService agenciaService;
     private final UsuarioService usuarioService;
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*CONSTRUCTORS*/
-    //------------------------------------------------------------------------------------------------------------------
-    private XpressController(
-            AgenciaService agencServ_S,
-            UsuarioService usuarServ_S
+    public XpressController(
+            AgenciaService agenciaService,
+            UsuarioService usuarioService
     ) {
-        this.agenciaService = agencServ_S;
-        this.usuarioService = usuarServ_S;
+        this.agenciaService = agenciaService;
+        this.usuarioService = usuarioService;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
+    @ModelAttribute
+    public void setResponseHeader(HttpServletResponse response) {
+        response.setHeader("Version", Constants.VERSION);
+        response.setHeader("Last-Modified", Constants.LAST_MODIFIED);
+    }
+
     @PostMapping(path = "/login")
     public @ResponseBody ResponseEntity<?> login(
             @RequestBody AuthCredentials login
@@ -56,7 +55,6 @@ public final class XpressController {
         return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/cobranza/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<Cobranza> getCobranzaByAgencia(
             @PathVariable("agencia") String agencia,
@@ -78,7 +76,6 @@ public final class XpressController {
         return new ResponseEntity<>(objectsContainer.getCobranza(), HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/cobranza-gerencia/{gerencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<Cobranza[]> getCobranzaByGerencia(
             @PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio,
@@ -118,7 +115,6 @@ public final class XpressController {
         return new ResponseEntity<>(cobranzas, HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @CrossOrigin
     @GetMapping(path = "/dashboard-agencia/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgenciaAnioAndSemana(
@@ -140,7 +136,6 @@ public final class XpressController {
         return new ResponseEntity<>(objectsContainer.getDashboard(), HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @CrossOrigin
     @GetMapping(path = "/dashboard-gerencia/{gerencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<Dashboard> getDashboardByGerencia(

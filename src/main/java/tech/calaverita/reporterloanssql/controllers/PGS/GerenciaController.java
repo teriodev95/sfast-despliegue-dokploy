@@ -1,8 +1,10 @@
 package tech.calaverita.reporterloanssql.controllers.PGS;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.calaverita.reporterloanssql.Constants;
 import tech.calaverita.reporterloanssql.models.mariaDB.GerenciaModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.SucursalModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
@@ -20,38 +22,28 @@ import java.util.NoSuchElementException;
 @RestController
 @RequestMapping("/xpress/v1/pwa/gerencias")
 public final class GerenciaController {
-    private final GerenciaService gerenciaService;
     private final SucursalService sucursalService;
     private final UsuarioService usuarioService;
     private final UsuarioGerenciaService usuarioGerenciaService;
     private final UsuarioSucursalService usuarioSucursalService;
 
     public GerenciaController(
-            GerenciaService gerenciaService,
             SucursalService sucursalService,
             UsuarioService usuarioService,
             UsuarioGerenciaService usuarioGerenciaService,
             UsuarioSucursalService usuarioSucursalService
     ) {
-        this.gerenciaService = gerenciaService;
         this.sucursalService = sucursalService;
         this.usuarioService = usuarioService;
         this.usuarioGerenciaService = usuarioGerenciaService;
         this.usuarioSucursalService = usuarioSucursalService;
     }
 
-//    @GetMapping(path = "")
-//    public ResponseEntity<ArrayList<GerenciaModel>> redarrgerModGet() {
-//        ArrayList<GerenciaModel> darrgerMod_O = this.gerenciaService.findAll();
-//
-//        if (
-//                darrgerMod_O.isEmpty()
-//        ) {
-//            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//        }
-//
-//        return new ResponseEntity<>(darrgerMod_O, HttpStatus.OK);
-//    }
+    @ModelAttribute
+    public void setResponseHeader(HttpServletResponse response) {
+        response.setHeader("Version", Constants.VERSION);
+        response.setHeader("Last-Modified", Constants.LAST_MODIFIED);
+    }
 
     @GetMapping(path = "/{usuario}")
     public ResponseEntity<ArrayList<String>> getGerenciaIdsByUsuario(@PathVariable("usuario") String usuario) {
@@ -59,10 +51,7 @@ public final class GerenciaController {
 
         try {
             usuarMod = this.usuarioService.findByUsuario(usuario);
-        } //
-        catch (
-                NoSuchElementException e
-        ) {
+        } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -81,10 +70,7 @@ public final class GerenciaController {
 
         try {
             usuarioModel = this.usuarioService.findByUsuario(usuario);
-        } //
-        catch (
-                NoSuchElementException e
-        ) {
+        } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -135,10 +121,7 @@ public final class GerenciaController {
 
         try {
             usuarioModel = this.usuarioService.findByUsuario(usuario);
-        } //
-        catch (
-                NoSuchElementException e
-        ) {
+        } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -154,18 +137,14 @@ public final class GerenciaController {
 
             for (int i = 0; i < gerenciaIds.size(); i++) {
                 if (gerenciaIds.get(i).length() == 7) {
-                    if (
-                            sucursalId.equals(gerenciaIds.get(i).substring(0, 4))
-                    ) {
+                    if (sucursalId.equals(gerenciaIds.get(i).substring(0, 4))) {
                         HashMap<String, String> gerenciaYGerenteHM = new HashMap<>();
                         gerenciaYGerenteHM.put("gerencia", gerenciaIds.get(i));
                         gerenciaYGerenteHM.put("gerente", gerentes.get(i));
                         gerenciasYGerentesHM.add(gerenciaYGerenteHM);
                     }
                 } else if (gerenciaIds.get(i).length() == 8) {
-                    if (
-                            sucursalId.equals(gerenciaIds.get(i).substring(0, 5))
-                    ) {
+                    if (sucursalId.equals(gerenciaIds.get(i).substring(0, 5))) {
                         HashMap<String, String> gerenciaYGerenteHM = new HashMap<>();
                         gerenciaYGerenteHM.put("gerencia", gerenciaIds.get(i));
                         gerenciaYGerenteHM.put("gerente", gerentes.get(i));

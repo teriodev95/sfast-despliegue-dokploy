@@ -1,8 +1,10 @@
 package tech.calaverita.reporterloanssql.controllers.PGS;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.calaverita.reporterloanssql.Constants;
 import tech.calaverita.reporterloanssql.models.mariaDB.AsignacionModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.CalendarioModel;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
@@ -25,17 +27,11 @@ import java.util.HashMap;
 @RestController
 @RequestMapping("/xpress/v1/pwa")
 public final class PGSController {
-    //------------------------------------------------------------------------------------------------------------------
-    /*INSTANCE VARIABLES*/
-    //------------------------------------------------------------------------------------------------------------------
     private final AsignacionService asignacionService;
     private final CalendarioService calendarioService;
     private final AgenciaService agenciaService;
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*CONSTRUCTORS*/
-    //------------------------------------------------------------------------------------------------------------------
-    PGSController(
+    public PGSController(
             AsignacionService asignacionService,
             CalendarioService calendarioService,
             AgenciaService agenciaService
@@ -45,14 +41,15 @@ public final class PGSController {
         this.agenciaService = agenciaService;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
+    @ModelAttribute
+    public void setResponseHeader(HttpServletResponse response) {
+        response.setHeader("Version", Constants.VERSION);
+        response.setHeader("Last-Modified", Constants.LAST_MODIFIED);
+    }
+
     @GetMapping(path = "/cobranza/{agencia}/{anio}/{semana}")
-    public ResponseEntity<CobranzaPWA> getCobranzaByAgenciaAnioAndSemana(
-            @PathVariable("agencia") String agencia,
-            @PathVariable("anio") int anio,
-            @PathVariable("semana") int semana
+    public ResponseEntity<CobranzaPWA> getCobranzaByAgenciaAnioAndSemana(@PathVariable("agencia") String agencia,
+            @PathVariable("anio") int anio, @PathVariable("semana") int semana
     ) {
         CobranzaPWA cobranzaPwa = new CobranzaPWA();
 
@@ -61,7 +58,6 @@ public final class PGSController {
         return new ResponseEntity<>(cobranzaPwa, HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/semana_actual")
     public ResponseEntity<CalendarioModel> getSemanaActual() {
         String fechaActual = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
@@ -71,7 +67,6 @@ public final class PGSController {
         return new ResponseEntity<>(calendarioModel, HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/dashboard-fecha/{agencia}/{fecha}")
     public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgencia(
             @PathVariable("agencia") String agencia, @PathVariable("fecha") String fecha
@@ -112,7 +107,6 @@ public final class PGSController {
         return new ResponseEntity<>(objectsContainer.getDashboard(), HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/historico/{prestamoId}")
     public ResponseEntity<HistoricoPWA> getHistorial(
             @PathVariable("prestamoId") String prestamoId
@@ -127,7 +121,6 @@ public final class PGSController {
         return new ResponseEntity<>(historicoPWA, HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> getAsignacionesByAgenciaAnioAndSemana(
             @PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana

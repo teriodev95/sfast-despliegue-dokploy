@@ -1,38 +1,37 @@
 package tech.calaverita.reporterloanssql.controllers;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.calaverita.reporterloanssql.Constants;
 import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
-import tech.calaverita.reporterloanssql.repositories.view.PrestRepoPrestamoRepository;
+import tech.calaverita.reporterloanssql.repositories.view.PrestamoRepository;
 import tech.calaverita.reporterloanssql.utils.PrestamoUtil;
 
 @RestController
 @RequestMapping(path = "/xpress/v1/loans")
 public final class PrestamoController {
-    //------------------------------------------------------------------------------------------------------------------
-    /*INSTANCE VARIABLES*/
-    //------------------------------------------------------------------------------------------------------------------
-    private final PrestRepoPrestamoRepository prestRepo;
+    private final PrestamoRepository prestamoRepository;
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*CONSTRUCTORS*/
-    //------------------------------------------------------------------------------------------------------------------
-    private PrestamoController(
-            PrestRepoPrestamoRepository prestRepo_S
+    public PrestamoController(
+            PrestamoRepository prestamoRepository
     ) {
-        this.prestRepo = prestRepo_S;
+        this.prestamoRepository = prestamoRepository;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
+    @ModelAttribute
+    public void setResponseHeader(HttpServletResponse response) {
+        response.setHeader("Version", Constants.VERSION);
+        response.setHeader("Last-Modified", Constants.LAST_MODIFIED);
+    }
+
     @CrossOrigin
     @GetMapping(path = "/{id}")
     public ResponseEntity<PrestamoModel> represtModGetByStrId(
             @PathVariable("id") String strId_I
     ) {
-        PrestamoModel prestMod_O = prestRepo.prestEntFindByPrestamoId(strId_I);
+        PrestamoModel prestMod_O = prestamoRepository.prestEntFindByPrestamoId(strId_I);
 
         if (
                 prestMod_O == null

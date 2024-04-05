@@ -3,7 +3,7 @@ package tech.calaverita.reporterloanssql.services.view;
 import org.springframework.stereotype.Service;
 import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
 import tech.calaverita.reporterloanssql.models.view.PrestamoUtilModel;
-import tech.calaverita.reporterloanssql.repositories.view.PrestRepoPrestamoRepository;
+import tech.calaverita.reporterloanssql.repositories.view.PrestamoRepository;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -13,13 +13,13 @@ public final class PrestamoService {
     //------------------------------------------------------------------------------------------------------------------
     /*INSTANCE VARIABLES*/
     //------------------------------------------------------------------------------------------------------------------
-    private final PrestRepoPrestamoRepository prestRepo;
+    private final PrestamoRepository prestRepo;
 
     //------------------------------------------------------------------------------------------------------------------
     /*CONSTRUCTORS*/
     //------------------------------------------------------------------------------------------------------------------
     private PrestamoService(
-            PrestRepoPrestamoRepository prestRepo_S
+            PrestamoRepository prestRepo_S
     ) {
         this.prestRepo = prestRepo_S;
     }

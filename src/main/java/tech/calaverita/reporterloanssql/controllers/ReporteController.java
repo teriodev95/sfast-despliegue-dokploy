@@ -1,8 +1,10 @@
 package tech.calaverita.reporterloanssql.controllers;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.calaverita.reporterloanssql.Constants;
 import tech.calaverita.reporterloanssql.models.mariaDB.CalendarioModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.GerenciaModel;
 import tech.calaverita.reporterloanssql.models.mongoDB.ReporteDiarioAgenciasDocument;
@@ -30,7 +32,7 @@ public final class ReporteController {
     private final GerenciaService gerenciaService;
     private final CalendarioService calendarioService;
 
-    private ReporteController(
+    public ReporteController(
             ReporteDiarioAgenciasService reporteDiarioAgenciasService,
             ReporteGeneralGerenciaService reporteGeneralGerenciaService,
             GerenciaService gerenciaService,
@@ -42,7 +44,12 @@ public final class ReporteController {
         this.calendarioService = calendarioService;
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @ModelAttribute
+    public void setResponseHeader(HttpServletResponse response) {
+        response.setHeader("Version", Constants.VERSION);
+        response.setHeader("Last-Modified", Constants.LAST_MODIFIED);
+    }
+
     @CrossOrigin
     @PostMapping(path = "/diario_agencias/create-one/{gerencia}")
     public @ResponseBody ResponseEntity<ReporteDiarioAgenciasDocument> getReporteDiarioAgencias(
@@ -63,7 +70,6 @@ public final class ReporteController {
         return new ResponseEntity<>(reporte, HttpStatus.CREATED);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @CrossOrigin
     @GetMapping(path = "/general_gerencia/create-one/{gerencia}")
     public @ResponseBody ResponseEntity<ReporteGeneralGerenciaDocument> getReporteGeneralGerencia(
@@ -92,7 +98,6 @@ public final class ReporteController {
         return new ResponseEntity<>(reporte, HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping
     public @ResponseBody List<ReporteDiarioAgenciasDocument> createReportesDiariosAgencias() throws ExecutionException, InterruptedException, ParseException {
         ArrayList<ReporteDiarioAgenciasDocument> reportes = new ArrayList<>();
@@ -107,7 +112,6 @@ public final class ReporteController {
         return this.reporteDiarioAgenciasService.insert(reportes);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/rgg/{anio}/{semana}")
     public void createReportesGeneralesGerencia(
             @PathVariable("anio") int anio,

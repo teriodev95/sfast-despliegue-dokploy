@@ -9,10 +9,7 @@ import tech.calaverita.reporterloanssql.models.view.PrestamoUtilModel;
 import java.util.ArrayList;
 
 @Repository
-public interface PrestRepoPrestamoRepository extends CrudRepository<PrestamoModel, String> {
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
+public interface PrestamoRepository extends CrudRepository<PrestamoModel, String> {
     @Query("SELECT pr " +
             "FROM PrestamoModel pr " +
             "WHERE pr.prestamoId = :prestamoId")
@@ -20,7 +17,6 @@ public interface PrestRepoPrestamoRepository extends CrudRepository<PrestamoMode
             String prestamoId
     );
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Query("SELECT pr " +
             "FROM PrestamoModel pr " +
             "INNER JOIN PagoAgrupadoModel pa " +
@@ -35,7 +31,6 @@ public interface PrestRepoPrestamoRepository extends CrudRepository<PrestamoMode
             int semana
     );
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Query("SELECT pr " +
             "FROM PrestamoUtilModel pr " +
             "INNER JOIN PagoAgrupadoModel pa " +
@@ -50,7 +45,6 @@ public interface PrestRepoPrestamoRepository extends CrudRepository<PrestamoMode
             int semana
     );
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Query("SELECT pr " +
             "FROM PrestamoUtilModel pr " +
             "INNER JOIN PagoAgrupadoModel pa " +
@@ -64,7 +58,6 @@ public interface PrestRepoPrestamoRepository extends CrudRepository<PrestamoMode
             int anio,
             int semana);
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Query("SELECT distinct(pr)" +
             "FROM PrestamoUtilModel pr " +
             "INNER JOIN PagoModel pa " +
