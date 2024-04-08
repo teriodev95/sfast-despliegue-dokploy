@@ -1,7 +1,7 @@
 package tech.calaverita.reporterloanssql.pojos;
 
 import lombok.Data;
-import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.views.PrestamoModel;
 
 import java.util.ArrayList;
 

@@ -5,33 +5,30 @@ import org.springframework.stereotype.Component;
 import tech.calaverita.reporterloanssql.models.mariaDB.CalendarioModel;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
 import tech.calaverita.reporterloanssql.services.PagoService;
-import tech.calaverita.reporterloanssql.services.view.PrestamoService;
+import tech.calaverita.reporterloanssql.services.views.PagoUtilService;
+import tech.calaverita.reporterloanssql.services.views.PrestamoService;
 import tech.calaverita.reporterloanssql.utils.CobranzaUtil;
 
 @Component
 public class CobranzaThread implements Runnable {
-    //------------------------------------------------------------------------------------------------------------------
-    /*INSTANCE VARIABLES*/
-    //------------------------------------------------------------------------------------------------------------------
     private ObjectsContainer objectsContainer;
     private int opc;
     private Thread[] threads;
-    private static PagoService pagServ;
-    private static PrestamoService prestServ;
+    private static PagoService pagoService;
+    private static PrestamoService prestamoService;
+    private static PagoUtilService pagoUtilService;
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*CONSTRUCTORS*/
-    //------------------------------------------------------------------------------------------------------------------
     @Autowired
     private CobranzaThread(
-            PagoService pagServ_S,
-            PrestamoService prestServ_S
+            PagoService pagoService,
+            PrestamoService prestamoService,
+            PagoUtilService pagoUtilService
     ) {
-        CobranzaThread.pagServ = pagServ_S;
-        CobranzaThread.prestServ = prestServ_S;
+        CobranzaThread.pagoService = pagoService;
+        CobranzaThread.prestamoService = prestamoService;
+        CobranzaThread.pagoUtilService = pagoUtilService;
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public CobranzaThread(
             ObjectsContainer objectsContainer,
             int ope
@@ -40,7 +37,6 @@ public class CobranzaThread implements Runnable {
         this.opc = ope;
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public CobranzaThread(
             ObjectsContainer objectsContainer,
             int ope,
@@ -51,9 +47,6 @@ public class CobranzaThread implements Runnable {
         this.threads = threads;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
     @Override
     public void run() {
         switch (this.opc) {
@@ -84,7 +77,6 @@ public class CobranzaThread implements Runnable {
         }
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getGerencia() {
         try {
             this.threads[0].join();
@@ -96,7 +88,6 @@ public class CobranzaThread implements Runnable {
                 .getGerencia());
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getClientes() {
         try {
             this.threads[0].join();
@@ -107,7 +98,6 @@ public class CobranzaThread implements Runnable {
         this.objectsContainer.getCobranza().setClientes(this.objectsContainer.getPrestamosToCobranza().size());
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getPrestamos() {
         // To easy code
         String agencia = this.objectsContainer.getCobranza().getAgencia();
@@ -119,13 +109,12 @@ public class CobranzaThread implements Runnable {
         calendarioModel.setSemana(semana);
         CobranzaUtil.funSemanaAnterior(calendarioModel);
 
-        this.objectsContainer.setPrestamosToCobranza(CobranzaThread.prestServ
+        this.objectsContainer.setPrestamosToCobranza(CobranzaThread.prestamoService
                 .darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(agencia, calendarioModel.getAnio(),
                         calendarioModel.getSemana()));
         this.objectsContainer.getCobranza().setPrestamos(this.objectsContainer.getPrestamosToCobranza());
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getPagos() {
         // To easy code
         String agencia = this.objectsContainer.getCobranza().getAgencia();
@@ -137,12 +126,12 @@ public class CobranzaThread implements Runnable {
         calendarioModel.setSemana(semana);
         CobranzaUtil.funSemanaAnterior(calendarioModel);
 
-        objectsContainer.setPagosVistaToCobranza(CobranzaThread.pagServ
-                .darrpagUtilModFindByAgenciaAnioAndSemanaToCobranza(agencia, calendarioModel.getAnio(),
-                        calendarioModel.getSemana()));
+        double cierraConGreaterThan = 0;
+        objectsContainer.setPagosVistaToCobranza(CobranzaThread.pagoUtilService
+                .findByAgenciaAnioSemanaAndCierraConGreaterThan(agencia, calendarioModel.getAnio(),
+                        calendarioModel.getSemana(), cierraConGreaterThan));
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getDebitoMiercoles() {
         try {
             this.threads[0].join();
@@ -170,7 +159,6 @@ public class CobranzaThread implements Runnable {
         }
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getDebitoJueves() {
         try {
             this.threads[0].join();
@@ -198,7 +186,6 @@ public class CobranzaThread implements Runnable {
         }
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getDebitoViernes() {
         try {
             threads[0].join();
@@ -226,7 +213,6 @@ public class CobranzaThread implements Runnable {
         }
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getDebitoTotal() {
         try {
             this.threads[0].join();

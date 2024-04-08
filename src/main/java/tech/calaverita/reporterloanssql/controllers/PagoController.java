@@ -8,8 +8,8 @@ import tech.calaverita.reporterloanssql.Constants;
 import tech.calaverita.reporterloanssql.models.mariaDB.PagoModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.VisitaModel;
-import tech.calaverita.reporterloanssql.models.view.PagoAgrupadoModel;
-import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.views.PagoAgrupadoModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.views.PrestamoModel;
 import tech.calaverita.reporterloanssql.pojos.ModelValidation;
 import tech.calaverita.reporterloanssql.pojos.PagoConLiquidacion;
 import tech.calaverita.reporterloanssql.services.AgenciaService;
@@ -17,7 +17,8 @@ import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.UsuarioService;
 import tech.calaverita.reporterloanssql.services.VisitaService;
 import tech.calaverita.reporterloanssql.services.relation.UsuarioGerenciaService;
-import tech.calaverita.reporterloanssql.services.view.PrestamoService;
+import tech.calaverita.reporterloanssql.services.views.PagoAgrupadoService;
+import tech.calaverita.reporterloanssql.services.views.PrestamoService;
 import tech.calaverita.reporterloanssql.utils.PagoUtil;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public final class PagoController {
     private final UsuarioService usuarioService;
     private final VisitaService visitaService;
     private final AgenciaService agenciaService;
+    private final PagoAgrupadoService pagoAgrupadoService;
 
     public PagoController(
             PagoService pagoService,
@@ -41,7 +43,8 @@ public final class PagoController {
             UsuarioGerenciaService usuarioGerenciaService,
             UsuarioService usuarioService,
             VisitaService visitaService,
-            AgenciaService agenciaService
+            AgenciaService agenciaService,
+            PagoAgrupadoService pagoAgrupadoService
     ) {
         this.pagoService = pagoService;
         this.prestamoService = prestamoService;
@@ -49,6 +52,7 @@ public final class PagoController {
         this.usuarioService = usuarioService;
         this.visitaService = visitaService;
         this.agenciaService = agenciaService;
+        this.pagoAgrupadoService = pagoAgrupadoService;
     }
 
     @ModelAttribute
@@ -59,44 +63,38 @@ public final class PagoController {
 
     @CrossOrigin
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<ArrayList<PagoModel>> redarrpagModGetByAgenciaAnioAndSemana(
-            @PathVariable("agencia") String strAgencia_I,
-            @PathVariable("anio") int intAnio_I,
-            @PathVariable("semana") int intSemana_I
+    public @ResponseBody ResponseEntity<ArrayList<PagoModel>> getPagoModelsByAgenciaAnioAndSemana(
+            @PathVariable("agencia") String agencia,
+            @PathVariable("anio") int anio,
+            @PathVariable("semana") int semana
     ) {
-        ArrayList<PagoModel> darrpagMod_O = this.pagoService.darrpagModFindByAgenciaAnioAndSemana(strAgencia_I, intAnio_I,
-                intSemana_I);
+        boolean esPrimerPago = false;
+        ArrayList<PagoModel> pagoModels = this.pagoService.findByAgenciaAnioSemanaAndEsPrimerPago(agencia, anio,
+                semana, esPrimerPago);
 
-        HttpStatus httpStatus_O = HttpStatus.OK;
+        HttpStatus httpStatus = HttpStatus.OK;
 
-        if (
-                darrpagMod_O.isEmpty()
-        ) {
-            httpStatus_O = HttpStatus.NO_CONTENT;
+        if (pagoModels.isEmpty()) {
+            httpStatus = HttpStatus.NO_CONTENT;
         }
 
-        return new ResponseEntity<>(darrpagMod_O, httpStatus_O);
+        return new ResponseEntity<>(pagoModels, httpStatus);
     }
 
     @PostMapping(path = "/create-one")
     public @ResponseBody ResponseEntity<String> restrCreatePagMod(
-            //                                              //Dentro de este endpoint se puede recibir el pago con la
-            //                                              //      liquidación, si el pago mandado cuenta con
-            //                                              //      liquidacion se hará el proceso correspondiente para
-            //                                              //      guardar dicha liquidacion y ajustar la propiedad
-            //                                              //      cierraCon de pago, si se manda solo el pago solo se
-            //                                              //      realizará el proceso para guardar el pago.
+            // Dentro de este endpoint se puede recibir el pago con la liquidación, si el pago mandado cuenta con
+            // liquidacion se hará el proceso correspondiente para guardar dicha liquidacion y ajustar la propiedad
+            // cierraCon de pago, si se manda solo el pago solo se realizará el proceso para guardar el pago.
 
-            @RequestBody PagoConLiquidacion pagConLiq_I
+            @RequestBody PagoConLiquidacion pagoConLiquidacion
     ) {
         ModelValidation modVal;
-        PrestamoModel prestMod = this.prestamoService.prestModFindByPrestamoId(pagConLiq_I.getPrestamoId());
-        modVal = PagoUtil.modValPagoModelValidation(pagConLiq_I, prestMod);
+        PrestamoModel prestMod = this.prestamoService.prestModFindByPrestamoId(pagoConLiquidacion.getPrestamoId());
+        modVal = PagoUtil.modValPagoModelValidation(pagoConLiquidacion, prestMod);
 
-        if (
-                modVal.isBoolIsOnline()
-        ) {
-            PagoUtil.subProcessPayment(modVal, pagConLiq_I, prestMod);
+        if (modVal.isBoolIsOnline()) {
+            PagoUtil.subProcessPayment(modVal, pagoConLiquidacion, prestMod);
         }
 
         return new ResponseEntity<>(modVal.getStrResponse(), modVal.getHttpStatus());
@@ -136,7 +134,7 @@ public final class PagoController {
     public @ResponseBody ResponseEntity<ArrayList<PagoAgrupadoModel>> redarrpagAgrModGetHistory(
             @PathVariable("id") String strId_I
     ) {
-        ArrayList<PagoAgrupadoModel> pagAgrMod_O = this.pagoService.darrpagAgrModGetHistorialDePagosToApp(strId_I);
+        ArrayList<PagoAgrupadoModel> pagAgrMod_O = this.pagoAgrupadoService.findByPrestamoIdOrderByAnioAscSemanaAsc(strId_I);
         HttpStatus httpStatus_O = HttpStatus.OK;
 
         if (

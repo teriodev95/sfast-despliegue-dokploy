@@ -1,36 +1,14 @@
-package tech.calaverita.reporterloanssql.repositories.view;
+package tech.calaverita.reporterloanssql.repositories.views;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
-import tech.calaverita.reporterloanssql.models.view.PrestamoUtilModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.views.PrestamoUtilModel;
 
 import java.util.ArrayList;
 
 @Repository
-public interface PrestamoRepository extends CrudRepository<PrestamoModel, String> {
-    @Query("SELECT pr " +
-            "FROM PrestamoModel pr " +
-            "WHERE pr.prestamoId = :prestamoId")
-    PrestamoModel prestEntFindByPrestamoId(
-            String prestamoId
-    );
-
-    @Query("SELECT pr " +
-            "FROM PrestamoModel pr " +
-            "INNER JOIN PagoAgrupadoModel pa " +
-            "ON pr.prestamoId = pa.prestamoId " +
-            "WHERE pa.agente = :agencia " +
-            "AND pa.anio = :anio " +
-            "AND pa.semana = :semana " +
-            "AND pa.cierraCon > 0")
-    ArrayList<PrestamoModel> darrprestEntFindByAgenciaAnioAndSemanaToCobranzaPGS(
-            String agencia,
-            int anio,
-            int semana
-    );
-
+public interface PrestamoUtilRepository extends CrudRepository<PrestamoUtilModel, String> {
     @Query("SELECT pr " +
             "FROM PrestamoUtilModel pr " +
             "INNER JOIN PagoAgrupadoModel pa " +

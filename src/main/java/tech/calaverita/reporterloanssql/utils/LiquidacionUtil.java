@@ -6,11 +6,11 @@ import tech.calaverita.reporterloanssql.models.mariaDB.CalendarioModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.LiquidacionModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.PagoModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.PorcentajesDescuentoLiquidacionesModel;
-import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.views.PrestamoModel;
 import tech.calaverita.reporterloanssql.services.CalendarioService;
 import tech.calaverita.reporterloanssql.services.LiquidacionService;
 import tech.calaverita.reporterloanssql.services.PorcentajesDescuentoLiquidacionesService;
-import tech.calaverita.reporterloanssql.services.view.PrestamoService;
+import tech.calaverita.reporterloanssql.services.views.PrestamoService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

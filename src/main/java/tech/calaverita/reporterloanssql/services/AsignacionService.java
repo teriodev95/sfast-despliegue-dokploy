@@ -19,8 +19,8 @@ public final class AsignacionService {
         return this.repo.existsById(id);
     }
 
-    public AsignacionModel save(AsignacionModel model) {
-        return this.repo.save(model);
+    public AsignacionModel save(AsignacionModel asignacionModel) {
+        return this.repo.save(asignacionModel);
     }
 
     public AsignacionModel findById(String id) {

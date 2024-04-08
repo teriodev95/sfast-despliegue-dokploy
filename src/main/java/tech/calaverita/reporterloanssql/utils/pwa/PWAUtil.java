@@ -5,15 +5,15 @@ import tech.calaverita.reporterloanssql.models.mariaDB.AsignacionModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.CalendarioModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.PagoModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
-import tech.calaverita.reporterloanssql.models.view.PagoAgrupadoModel;
-import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.views.PagoAgrupadoModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.views.PrestamoModel;
 import tech.calaverita.reporterloanssql.pojos.PWA.PagoHistoricoPWA;
 import tech.calaverita.reporterloanssql.pojos.PWA.PagoPWA;
 import tech.calaverita.reporterloanssql.pojos.PWA.PrestamoCobranzaPWA;
 import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.UsuarioService;
-import tech.calaverita.reporterloanssql.services.cierre_semanal.*;
-import tech.calaverita.reporterloanssql.services.view.PrestamoService;
+import tech.calaverita.reporterloanssql.services.views.PagoAgrupadoService;
+import tech.calaverita.reporterloanssql.services.views.PrestamoService;
 import tech.calaverita.reporterloanssql.threads.pwa.CobranzaPWAThread;
 import tech.calaverita.reporterloanssql.threads.pwa.PagoHistoricoPWAThread;
 import tech.calaverita.reporterloanssql.threads.pwa.PagoPWAThread;
@@ -24,48 +24,23 @@ import java.util.HashMap;
 
 @Component
 public final class PWAUtil {
-    //------------------------------------------------------------------------------------------------------------------
-    /*INSTANCE VARIABLES*/
-    //------------------------------------------------------------------------------------------------------------------
-    private static PagoService pagServ;
-    private static PrestamoService prestServ;
-    private static UsuarioService usuarServ;
-    private static CierreSemanalService cierreSemanalService;
-    private static BalanceAgenciaService balanceAgenciaService;
+    private static PagoService pagoService;
+    private static PrestamoService prestamoService;
+    private static UsuarioService usuarioService;
+    private static PagoAgrupadoService pagoAgrupadoService;
 
-    private static EgresosAgenteService egresosAgenteService;
-
-    private static EgresosGerenteService egresosGerenteService;
-
-    private static IngresosAgenteService ingresosAgenteService;
-
-
-    //------------------------------------------------------------------------------------------------------------------
-    /*CONSTRUCTORS*/
-    //------------------------------------------------------------------------------------------------------------------
-    private PWAUtil(
-            PagoService pagServ,
-            PrestamoService prestServ,
-            UsuarioService usuarServ,
-            CierreSemanalService cierreSemanalService,
-            BalanceAgenciaService balanceAgenciaService,
-            EgresosAgenteService egresosAgenteService,
-            EgresosGerenteService egresosGerenteService,
-            IngresosAgenteService ingresosAgenteService
+    public PWAUtil(
+            PagoService pagoService,
+            PrestamoService prestamoService,
+            UsuarioService usuarioService,
+            PagoAgrupadoService pagoAgrupadoService
     ) {
-        PWAUtil.pagServ = pagServ;
-        PWAUtil.prestServ = prestServ;
-        PWAUtil.usuarServ = usuarServ;
-        PWAUtil.cierreSemanalService = cierreSemanalService;
-        PWAUtil.balanceAgenciaService = balanceAgenciaService;
-        PWAUtil.egresosAgenteService = egresosAgenteService;
-        PWAUtil.egresosGerenteService = egresosGerenteService;
-        PWAUtil.ingresosAgenteService = ingresosAgenteService;
+        PWAUtil.pagoService = pagoService;
+        PWAUtil.prestamoService = prestamoService;
+        PWAUtil.usuarioService = usuarioService;
+        PWAUtil.pagoAgrupadoService = pagoAgrupadoService;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
     public static ArrayList<PrestamoCobranzaPWA> darrprestamoCobranzaPwaFromPrestamoModelsAndPagoModels(
             String agencia, int anio, int semana
     ) {
@@ -74,7 +49,7 @@ public final class PWAUtil {
         calendarioModel.setSemana(semana);
         CobranzaUtil.funSemanaAnterior(calendarioModel);
 
-        ArrayList<PrestamoModel> prestEntPrestamoEntities = PWAUtil.prestServ
+        ArrayList<PrestamoModel> prestEntPrestamoEntities = PWAUtil.prestamoService
                 .darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(
                         agencia, calendarioModel.getAnio(), calendarioModel.getSemana());
         ArrayList<PrestamoCobranzaPWA> prestamoCobranzaPWAs = new ArrayList<>();
@@ -100,7 +75,6 @@ public final class PWAUtil {
         return prestamoCobranzaPWAs;
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public static ArrayList<PagoPWA> darrpagoPwaFromPagoModels(
             ArrayList<PagoModel> pagEntPagoEntities
     ) {
@@ -127,12 +101,11 @@ public final class PWAUtil {
         return pagoPWAs;
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public static ArrayList<PagoHistoricoPWA> darrpagoHistoricoPwaFromPagoVistaModelsByPrestamoId(
             String prestamoId
     ) {
-        ArrayList<PagoAgrupadoModel> pagAgrEntPagoAgrupadoEntities = PWAUtil.pagServ
-                .darrpagAgrModFindByPrestamoId(prestamoId);
+        ArrayList<PagoAgrupadoModel> pagAgrEntPagoAgrupadoEntities = PWAUtil.pagoAgrupadoService
+                .findByPrestamoIdOrderByAnioAscSemanaAsc(prestamoId);
         ArrayList<PagoHistoricoPWA> pagoHistoricoPWAs = new ArrayList<>();
 
         Thread[] threads = new Thread[pagAgrEntPagoAgrupadoEntities.size()];
@@ -156,14 +129,13 @@ public final class PWAUtil {
         return pagoHistoricoPWAs;
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public static ArrayList<HashMap<String, Object>> darrdicasignacionModelPwa(
             ArrayList<AsignacionModel> darrasignacionModelAsigModAsignEnt
     ) {
         ArrayList<HashMap<String, Object>> darrHshMpAsgMdlPwa = new ArrayList<>();
 
         for (AsignacionModel asignacionModel : darrasignacionModelAsigModAsignEnt) {
-            UsuarioModel usuarioModel = PWAUtil.usuarServ.findById(asignacionModel
+            UsuarioModel usuarioModel = PWAUtil.usuarioService.findById(asignacionModel
                     .getQuienRecibioUsuarioId());
 
             HashMap<String, Object> recibioHashMap = new HashMap<>();

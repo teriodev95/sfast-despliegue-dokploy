@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
-import tech.calaverita.reporterloanssql.services.view.PrestamoService;
+import tech.calaverita.reporterloanssql.models.mariaDB.views.PrestamoModel;
+import tech.calaverita.reporterloanssql.services.views.PrestamoService;
 
 @Component
 public class PrestamoUtil {

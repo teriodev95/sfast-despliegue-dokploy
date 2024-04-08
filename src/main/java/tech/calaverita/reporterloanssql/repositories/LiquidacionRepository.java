@@ -7,31 +7,11 @@ import tech.calaverita.reporterloanssql.models.mariaDB.LiquidacionModel;
 import java.util.ArrayList;
 
 public interface LiquidacionRepository extends CrudRepository<LiquidacionModel, Integer> {
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
-    @Query("SELECT li " +
-            "FROM LiquidacionModel li " +
-            "INNER JOIN PagoModel pa " +
-            "ON li.pagoId = pa.pagoId " +
-            "AND pa.agente = :agencia " +
-            "AND li.anio = :anio " +
-            "AND li.semana = :semana")
-    ArrayList<LiquidacionModel> darrliqEntFindByAgenciaAnioAndSemanaToDashboard(
-            String agencia,
-            int anio,
-            int semana
-    );
+    @Query("SELECT liq FROM LiquidacionModel liq INNER JOIN PagoModel pag ON liq.pagoId = pag.pagoId " +
+            "AND pag.agente = :agencia AND liq.anio = :anio AND liq.semana = :semana")
+    ArrayList<LiquidacionModel> findByAgenciaAndAnioAndSemana(String agencia, int anio, int semana);
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @Query("SELECT li " +
-            "FROM LiquidacionModel li " +
-            "INNER JOIN PagoModel pa " +
-            "ON li.pagoId = pa.pagoId " +
-            "AND pa.agente = :agencia " +
-            "AND pa.fechaPago like :fechaPago%")
-    ArrayList<LiquidacionModel> darrliqEntFindByAgenciaAndFechaPagoToDashboard(
-            String agencia,
-            String fechaPago
-    );
+    @Query("SELECT liq FROM LiquidacionModel liq INNER JOIN PagoModel pag ON liq.pagoId = pag.pagoId " +
+            "AND pag.agente = :agencia AND pag.fechaPago like :fechaPago%")
+    ArrayList<LiquidacionModel> findByAgenciaAndFechaPago(String agencia, String fechaPago);
 }

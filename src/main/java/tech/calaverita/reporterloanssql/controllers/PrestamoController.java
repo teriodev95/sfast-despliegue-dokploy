@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.reporterloanssql.Constants;
-import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
-import tech.calaverita.reporterloanssql.repositories.view.PrestamoRepository;
+import tech.calaverita.reporterloanssql.models.mariaDB.views.PrestamoModel;
+import tech.calaverita.reporterloanssql.repositories.views.PrestamoRepository;
 import tech.calaverita.reporterloanssql.utils.PrestamoUtil;
 
 @RestController

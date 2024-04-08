@@ -1,4 +1,4 @@
-package tech.calaverita.reporterloanssql.models.relation;
+package tech.calaverita.reporterloanssql.models.mariaDB.relation;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

@@ -5,9 +5,9 @@ import tech.calaverita.reporterloanssql.models.mariaDB.AsignacionModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.CalendarioModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.LiquidacionModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.PagoModel;
-import tech.calaverita.reporterloanssql.models.view.PagoUtilModel;
-import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
-import tech.calaverita.reporterloanssql.models.view.PrestamoUtilModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.views.PagoUtilModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.views.PrestamoModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.views.PrestamoUtilModel;
 
 import java.util.ArrayList;
 

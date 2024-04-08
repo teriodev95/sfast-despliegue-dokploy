@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import tech.calaverita.reporterloanssql.enums.CobranzaStatusPWAEnum;
 import tech.calaverita.reporterloanssql.models.mariaDB.CalendarioModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.PagoModel;
-import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.views.PrestamoModel;
 import tech.calaverita.reporterloanssql.pojos.PWA.PrestamoCobranzaPWA;
 import tech.calaverita.reporterloanssql.services.CalendarioService;
 import tech.calaverita.reporterloanssql.services.PagoService;

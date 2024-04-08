@@ -12,7 +12,5 @@ public interface CalendarioRepository extends CrudRepository<CalendarioModel, In
     CalendarioModel findByAnioAndSemana(int anio, int semana);
 
     @Query("SELECT cal FROM CalendarioModel cal WHERE cal.desde <= :fechaActual AND cal.hasta >= :fechaActual")
-    CalendarioModel findByFechaActual(
-            String fechaActual
-    );
+    CalendarioModel findByFechaActual(String fechaActual);
 }

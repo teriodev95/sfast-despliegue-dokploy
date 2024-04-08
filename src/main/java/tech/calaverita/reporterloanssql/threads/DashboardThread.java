@@ -9,45 +9,44 @@ import tech.calaverita.reporterloanssql.services.AgenciaService;
 import tech.calaverita.reporterloanssql.services.AsignacionService;
 import tech.calaverita.reporterloanssql.services.LiquidacionService;
 import tech.calaverita.reporterloanssql.services.PagoService;
-import tech.calaverita.reporterloanssql.services.view.PrestamoService;
+import tech.calaverita.reporterloanssql.services.views.PagoUtilService;
+import tech.calaverita.reporterloanssql.services.views.PrestamoService;
+import tech.calaverita.reporterloanssql.services.views.PrestamoUtilService;
 import tech.calaverita.reporterloanssql.utils.CobranzaUtil;
 import tech.calaverita.reporterloanssql.utils.MyUtil;
 
-import java.util.Optional;
-
 @Component
 public class DashboardThread implements Runnable {
-    //------------------------------------------------------------------------------------------------------------------
-    /*INSTANCE VARIABLES*/
-    //------------------------------------------------------------------------------------------------------------------
     private ObjectsContainer objectsContainer;
     private int opc;
     private Thread[] threads;
-    private static AsignacionService asignServ;
-    private static LiquidacionService liqServ;
-    private static PagoService pagServ;
-    private static PrestamoService prestServ;
+    private static AsignacionService asignacionService;
+    private static LiquidacionService liquidacionService;
+    private static PagoService pagoService;
+    private static PrestamoService prestamoService;
     private static AgenciaService agenciaService;
+    private static PrestamoUtilService prestamoUtilService;
+    private static PagoUtilService pagoUtilService;
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*CONSTRUCTORS*/
-    //------------------------------------------------------------------------------------------------------------------
     @Autowired
     private DashboardThread(
-            AsignacionService asignServ,
-            LiquidacionService liqServ,
-            PagoService pagServ,
-            PrestamoService prestServ,
-            AgenciaService agenciaService
+            AsignacionService asignacionService,
+            LiquidacionService liquidacionService,
+            PagoService pagoService,
+            PrestamoService prestamoService,
+            AgenciaService agenciaService,
+            PrestamoUtilService prestamoUtilService,
+            PagoUtilService pagoUtilService
     ) {
-        DashboardThread.asignServ = asignServ;
-        DashboardThread.liqServ = liqServ;
-        DashboardThread.pagServ = pagServ;
-        DashboardThread.prestServ = prestServ;
+        DashboardThread.asignacionService = asignacionService;
+        DashboardThread.liquidacionService = liquidacionService;
+        DashboardThread.pagoService = pagoService;
+        DashboardThread.prestamoService = prestamoService;
         DashboardThread.agenciaService = agenciaService;
+        DashboardThread.prestamoUtilService = prestamoUtilService;
+        DashboardThread.pagoUtilService = pagoUtilService;
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public DashboardThread(
             ObjectsContainer objectsContainer,
             int opc
@@ -56,7 +55,6 @@ public class DashboardThread implements Runnable {
         this.opc = opc;
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public DashboardThread(
             ObjectsContainer objectsContainer,
             int opc,
@@ -67,9 +65,6 @@ public class DashboardThread implements Runnable {
         this.threads = threads;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
     @Override
     public void run() {
         switch (this.opc) {
@@ -83,7 +78,6 @@ public class DashboardThread implements Runnable {
         }
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setPrestamosToCobranza() {
         // To easy code
         String agencia = this.objectsContainer.getDashboard().getAgencia();
@@ -96,7 +90,7 @@ public class DashboardThread implements Runnable {
 
         CobranzaUtil.funSemanaAnterior(calendarioModel);
 
-        this.objectsContainer.setPrestamosToCobranza(DashboardThread.prestServ
+        this.objectsContainer.setPrestamosToCobranza(DashboardThread.prestamoService
                 .darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(agencia, calendarioModel.getAnio(),
                         calendarioModel.getSemana()));
 
@@ -104,15 +98,13 @@ public class DashboardThread implements Runnable {
         this.setClientes();
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setPrestamosToDashboard() {
-        this.objectsContainer.setPrestamosToDashboard(DashboardThread.prestServ
+        this.objectsContainer.setPrestamosToDashboard(DashboardThread.prestamoUtilService
                 .darrprestUtilModFindByAgenciaAnioAndSemanaToDashboard(this.objectsContainer.getDashboard()
                         .getAgencia(), this.objectsContainer.getDashboard().getAnio(), this.objectsContainer
                         .getDashboard().getSemana()));
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setPagosToCobranza() {
         // To easy code
         String agencia = this.objectsContainer.getDashboard().getAgencia();
@@ -124,9 +116,10 @@ public class DashboardThread implements Runnable {
         calendarioModel.setSemana(semana);
         CobranzaUtil.funSemanaAnterior(calendarioModel);
 
-        this.objectsContainer.setPagosVistaToCobranza(DashboardThread.pagServ
-                .darrpagUtilModFindByAgenciaAnioAndSemanaToCobranza(agencia, calendarioModel.getAnio(),
-                        calendarioModel.getSemana()));
+        double cierraConGreaterThan = 0;
+        this.objectsContainer.setPagosVistaToCobranza(DashboardThread.pagoUtilService
+                .findByAgenciaAnioSemanaAndCierraConGreaterThan(agencia, calendarioModel.getAnio(),
+                        calendarioModel.getSemana(), cierraConGreaterThan));
 
         try {
             this.threads[0].join();
@@ -140,12 +133,12 @@ public class DashboardThread implements Runnable {
         this.setDebitoTotal();
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setPagosToDashboard() {
-        this.objectsContainer.setPagosVistaToDashboard(DashboardThread.pagServ
-                .darrpagUtilModFindByAgenciaAnioAndSemanaToDashboard(this.objectsContainer.getDashboard().getAgencia(),
+        boolean esPrimerPago = false;
+        this.objectsContainer.setPagosVistaToDashboard(DashboardThread.pagoUtilService
+                .findByAgenciaAnioSemanaAndEsPrimerPago(this.objectsContainer.getDashboard().getAgencia(),
                         this.objectsContainer.getDashboard().getAnio(), this.objectsContainer.getDashboard()
-                                .getSemana()));
+                                .getSemana(), esPrimerPago));
 
         this.setClientesCobrados();
         this.setMultas();
@@ -186,10 +179,9 @@ public class DashboardThread implements Runnable {
         this.setRendmiento();
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setLiquidacionesBd() {
-        this.objectsContainer.setLiquidaciones(DashboardThread.liqServ
-                .darrliqModFindByAgenciaAnioAndSemanaToDashboard(this.objectsContainer.getDashboard().getAgencia(),
+        this.objectsContainer.setLiquidaciones(DashboardThread.liquidacionService
+                .findByAgenciaAnioAndSemana(this.objectsContainer.getDashboard().getAgencia(),
                         this.objectsContainer.getDashboard().getAnio(), this.objectsContainer.getDashboard()
                                 .getSemana()));
 
@@ -205,17 +197,15 @@ public class DashboardThread implements Runnable {
         this.setLiquidaciones();
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setPagosOfLiquidaciones() {
-        this.objectsContainer.setPagosOfLiquidaciones(DashboardThread.pagServ
+        this.objectsContainer.setPagosOfLiquidaciones(DashboardThread.pagoService
                 .darrpagModFindByAgenciaAnioAndSemanaToDashboard(this.objectsContainer.getDashboard().getAgencia(),
                         this.objectsContainer.getDashboard().getAnio(), this.objectsContainer.getDashboard()
                                 .getSemana()));
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setAsignaciones() {
-        this.objectsContainer.setAsignaciones(DashboardThread.asignServ
+        this.objectsContainer.setAsignaciones(DashboardThread.asignacionService
                 .findByAgenciaAnioAndSemana(this.objectsContainer.getDashboard().getAgencia(),
                         this.objectsContainer.getDashboard().getAnio(), this.objectsContainer.getDashboard()
                                 .getSemana()));
@@ -230,7 +220,6 @@ public class DashboardThread implements Runnable {
         this.setEfectivoEnCampo();
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setGerencia() {
         AgenciaModel agenciaEntity = DashboardThread.agenciaService.findById(this
                 .objectsContainer.getDashboard().getAgencia());
@@ -242,28 +231,23 @@ public class DashboardThread implements Runnable {
         }
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setClientes() {
         this.objectsContainer.getDashboard().setClientes(this.objectsContainer.getPrestamosToCobranza().size());
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setClientesCobrados() {
         this.objectsContainer.getDashboard().setClientesCobrados(this.objectsContainer.getPagosVistaToDashboard()
                 .size());
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setNumeroDeLiquidaciones() {
         this.objectsContainer.getDashboard().setNumeroLiquidaciones(this.objectsContainer.getLiquidaciones().size());
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setMultas() {
         this.objectsContainer.getDashboard().setMultas(0.0);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setNoPagos() {
         int noPagos = 0;
 
@@ -277,7 +261,6 @@ public class DashboardThread implements Runnable {
         this.objectsContainer.getDashboard().setNoPagos(noPagos);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setPagosReducidos() {
         int pagosReducidos = 0;
 
@@ -309,7 +292,6 @@ public class DashboardThread implements Runnable {
         this.objectsContainer.getDashboard().setPagosReducidos(pagosReducidos);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setDebitoMiercoles() {
         double debitoMiercoles = 0;
 
@@ -330,7 +312,6 @@ public class DashboardThread implements Runnable {
         this.objectsContainer.getDashboard().setDebitoMiercoles(MyUtil.getDouble(debitoMiercoles));
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setDebitoJueves() {
         double debitoJueves = 0;
 
@@ -350,7 +331,6 @@ public class DashboardThread implements Runnable {
         this.objectsContainer.getDashboard().setDebitoJueves(MyUtil.getDouble(debitoJueves));
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setDebitoViernes() {
         double debitoViernes = 0;
 
@@ -370,7 +350,6 @@ public class DashboardThread implements Runnable {
         this.objectsContainer.getDashboard().setDebitoViernes(MyUtil.getDouble(debitoViernes));
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setDebitoTotal() {
         double debitoTotal = 0;
 
@@ -388,7 +367,6 @@ public class DashboardThread implements Runnable {
         this.objectsContainer.getDashboard().setDebitoTotal(MyUtil.getDouble(debitoTotal));
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setTotalDeDescuento() {
         double totalDeDescuento = 0;
 
@@ -403,7 +381,6 @@ public class DashboardThread implements Runnable {
         this.objectsContainer.getDashboard().setTotalDeDescuento(MyUtil.getDouble(totalDeDescuento));
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setMontoExcedente() {
         double montoExcedente = 0;
 
@@ -426,7 +403,6 @@ public class DashboardThread implements Runnable {
         this.objectsContainer.getDashboard().setMontoExcedente(MyUtil.getDouble(montoExcedente));
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setLiquidaciones() {
         double liquidaciones = 0;
 
@@ -444,7 +420,6 @@ public class DashboardThread implements Runnable {
         this.objectsContainer.getDashboard().setLiquidaciones(MyUtil.getDouble(liquidaciones));
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setCobranzaTotal() {
         double cobranzaTotal = 0;
 
@@ -455,7 +430,6 @@ public class DashboardThread implements Runnable {
         this.objectsContainer.getDashboard().setCobranzaTotal(MyUtil.getDouble(cobranzaTotal));
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setTotalCobranzaPura() {
         double totalCobranzaPura = this.objectsContainer.getDashboard().getCobranzaTotal() - this.objectsContainer
                 .getDashboard().getMontoExcedente();
@@ -471,7 +445,6 @@ public class DashboardThread implements Runnable {
         this.objectsContainer.getDashboard().setTotalCobranzaPura(MyUtil.getDouble(totalCobranzaPura));
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setMontoDeDebitoFaltante() {
         Double montoDebitoFaltante = this.objectsContainer.getDashboard()
                 .getDebitoTotal() - this.objectsContainer.getDashboard().getTotalCobranzaPura();
@@ -479,7 +452,6 @@ public class DashboardThread implements Runnable {
         this.objectsContainer.getDashboard().setMontoDeDebitoFaltante(MyUtil.getDouble(montoDebitoFaltante));
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setEfectivoEnCampo() {
         double asignaciones = 0;
 
@@ -500,7 +472,6 @@ public class DashboardThread implements Runnable {
         this.objectsContainer.getDashboard().setEfectivoEnCampo((double) Math.round(efectivoEnCampo * 100.0) / 100.0);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void setRendmiento() {
         double rendimiento = this.objectsContainer.getDashboard().getTotalCobranzaPura() / this.objectsContainer
                 .getDashboard().getDebitoTotal() * 100;

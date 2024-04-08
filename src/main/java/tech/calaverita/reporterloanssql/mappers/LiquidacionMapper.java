@@ -3,7 +3,7 @@ package tech.calaverita.reporterloanssql.mappers;
 import org.springframework.stereotype.Component;
 import tech.calaverita.reporterloanssql.dto.LiquidacionDTO;
 import tech.calaverita.reporterloanssql.models.mariaDB.LiquidacionModel;
-import tech.calaverita.reporterloanssql.models.view.PrestamoModel;
+import tech.calaverita.reporterloanssql.models.mariaDB.views.PrestamoModel;
 
 @Component
 public class LiquidacionMapper implements IMapper<LiquidacionModel, LiquidacionDTO> {

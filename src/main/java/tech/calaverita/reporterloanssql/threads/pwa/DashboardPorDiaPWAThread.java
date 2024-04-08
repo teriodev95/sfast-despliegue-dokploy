@@ -8,14 +8,13 @@ import tech.calaverita.reporterloanssql.services.AsignacionService;
 import tech.calaverita.reporterloanssql.services.CalendarioService;
 import tech.calaverita.reporterloanssql.services.LiquidacionService;
 import tech.calaverita.reporterloanssql.services.PagoService;
-import tech.calaverita.reporterloanssql.services.view.PrestamoService;
+import tech.calaverita.reporterloanssql.services.views.PagoUtilService;
+import tech.calaverita.reporterloanssql.services.views.PrestamoService;
+import tech.calaverita.reporterloanssql.services.views.PrestamoUtilService;
 import tech.calaverita.reporterloanssql.utils.CobranzaUtil;
 
 @Component
 public class DashboardPorDiaPWAThread implements Runnable {
-    //------------------------------------------------------------------------------------------------------------------
-    /*INSTANCE VARIABLES*/
-    //------------------------------------------------------------------------------------------------------------------
     private ObjectsContainer objectsContainer;
     private int opc;
     private Thread[] threads;
@@ -24,23 +23,26 @@ public class DashboardPorDiaPWAThread implements Runnable {
     private static LiquidacionService liquidacionService;
     private static PagoService pagoService;
     private static PrestamoService prestamoService;
+    private static PrestamoUtilService prestamoUtilService;
+    private static PagoUtilService pagoUtilService;
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*CONSTRUCTORS*/
-    //------------------------------------------------------------------------------------------------------------------
     @Autowired
     private DashboardPorDiaPWAThread(
-            AsignacionService asignServ_S,
-            CalendarioService calServ_S,
-            LiquidacionService liqServ_S,
-            PagoService pagServ_S,
-            PrestamoService prestServ_S
+            AsignacionService asignacionService,
+            CalendarioService calendarioService,
+            LiquidacionService liquidacionService,
+            PagoService pagoService,
+            PrestamoService prestamoService,
+            PrestamoUtilService prestamoUtilService,
+            PagoUtilService pagoUtilService
     ) {
-        DashboardPorDiaPWAThread.asignacionService = asignServ_S;
-        DashboardPorDiaPWAThread.calendarioService = calServ_S;
-        DashboardPorDiaPWAThread.liquidacionService = liqServ_S;
-        DashboardPorDiaPWAThread.pagoService = pagServ_S;
-        DashboardPorDiaPWAThread.prestamoService = prestServ_S;
+        DashboardPorDiaPWAThread.asignacionService = asignacionService;
+        DashboardPorDiaPWAThread.calendarioService = calendarioService;
+        DashboardPorDiaPWAThread.liquidacionService = liquidacionService;
+        DashboardPorDiaPWAThread.pagoService = pagoService;
+        DashboardPorDiaPWAThread.prestamoService = prestamoService;
+        DashboardPorDiaPWAThread.prestamoUtilService = prestamoUtilService;
+        DashboardPorDiaPWAThread.pagoUtilService = pagoUtilService;
     }
 
     public DashboardPorDiaPWAThread(
@@ -53,9 +55,6 @@ public class DashboardPorDiaPWAThread implements Runnable {
         this.threads = threads;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
     @Override
     public void run() {
         switch (opc) {
@@ -101,7 +100,7 @@ public class DashboardPorDiaPWAThread implements Runnable {
     }
 
     public void setPrestamosToDashboard() {
-        objectsContainer.setPrestamosToDashboard(DashboardPorDiaPWAThread.prestamoService
+        objectsContainer.setPrestamosToDashboard(DashboardPorDiaPWAThread.prestamoUtilService
                 .darrprestUtilModByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
     }
 
@@ -121,9 +120,10 @@ public class DashboardPorDiaPWAThread implements Runnable {
         calendarioModel.setSemana(semana);
         CobranzaUtil.funSemanaAnterior(calendarioModel);
 
-        objectsContainer.setPagosVistaToCobranza(DashboardPorDiaPWAThread.pagoService
-                .darrpagUtilModFindByAgenciaAnioAndSemanaToCobranza(agencia, calendarioModel.getAnio(),
-                        calendarioModel.getSemana()));
+        double cierraConGreaterThan = 0;
+        objectsContainer.setPagosVistaToCobranza(DashboardPorDiaPWAThread.pagoUtilService
+                .findByAgenciaAnioSemanaAndCierraConGreaterThan(agencia, calendarioModel.getAnio(),
+                        calendarioModel.getSemana(), cierraConGreaterThan));
     }
 
     public void setPagosToDashboard() {
@@ -176,7 +176,7 @@ public class DashboardPorDiaPWAThread implements Runnable {
     }
 
     public void setLiquidacionesBd() {
-        objectsContainer.setLiquidaciones(DashboardPorDiaPWAThread.liquidacionService.darrliqModFindByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
+        objectsContainer.setLiquidaciones(DashboardPorDiaPWAThread.liquidacionService.findByAgenciaAndFechaPago(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
         objectsContainer.setPagosOfLiquidaciones(DashboardPorDiaPWAThread.pagoService.darrpagModFindByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
 
         setNumeroDeLiquidaciones();

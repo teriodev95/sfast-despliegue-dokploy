@@ -1,4 +1,4 @@
-package tech.calaverita.reporterloanssql.models.view;
+package tech.calaverita.reporterloanssql.models.mariaDB.views;
 
 import jakarta.persistence.*;
 import lombok.Data;
