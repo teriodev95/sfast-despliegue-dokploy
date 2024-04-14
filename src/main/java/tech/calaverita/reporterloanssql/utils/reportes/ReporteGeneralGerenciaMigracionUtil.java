@@ -11,10 +11,10 @@ import tech.calaverita.reporterloanssql.models.mariaDB.SucursalModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
 import tech.calaverita.reporterloanssql.models.mongoDB.ReporteGeneralGerenciaDocument;
 import tech.calaverita.reporterloanssql.services.CalendarioService;
-import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.SucursalService;
 import tech.calaverita.reporterloanssql.services.UsuarioService;
 import tech.calaverita.reporterloanssql.services.reportes.ReporteGeneralGerenciaService;
+import tech.calaverita.reporterloanssql.services.views.PagoAgrupadoService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -29,29 +29,23 @@ import java.util.concurrent.ExecutionException;
 public class ReporteGeneralGerenciaMigracionUtil {
     private static UsuarioService usuarioService;
     private static CalendarioService calendarioService;
-    private static PagoService pagoService;
+    private static PagoAgrupadoService pagoAgrupadoService;
     private static SucursalService sucursalService;
     private static ReporteGeneralGerenciaService reporteGeneralGerenciaService;
 
-    public ReporteGeneralGerenciaMigracionUtil(
-            UsuarioService usuarioService,
-            CalendarioService calendarioService,
-            PagoService pagoService,
-            SucursalService sucursalService,
-            ReporteGeneralGerenciaService reporteGeneralGerenciaService
-    ) {
+    public ReporteGeneralGerenciaMigracionUtil(UsuarioService usuarioService, CalendarioService calendarioService,
+                                               PagoAgrupadoService pagoAgrupadoService, SucursalService sucursalService,
+                                               ReporteGeneralGerenciaService reporteGeneralGerenciaService) {
         ReporteGeneralGerenciaMigracionUtil.usuarioService = usuarioService;
         ReporteGeneralGerenciaMigracionUtil.calendarioService = calendarioService;
-        ReporteGeneralGerenciaMigracionUtil.pagoService = pagoService;
+        ReporteGeneralGerenciaMigracionUtil.pagoAgrupadoService = pagoAgrupadoService;
         ReporteGeneralGerenciaMigracionUtil.sucursalService = sucursalService;
         ReporteGeneralGerenciaMigracionUtil.reporteGeneralGerenciaService = reporteGeneralGerenciaService;
     }
 
-    public static ReporteGeneralGerenciaDocument getReporte(
-            GerenciaModel gerenciaModel,
-            CalendarioModel calendarioModel,
-            String fechaDiaSemana
-    ) throws ExecutionException, InterruptedException {
+    public static ReporteGeneralGerenciaDocument getReporte(GerenciaModel gerenciaModel,
+                                                            CalendarioModel calendarioModel, String fechaDiaSemana)
+            throws ExecutionException, InterruptedException {
         ReporteGeneralGerenciaDocument reporte = new ReporteGeneralGerenciaDocument();
         {
             reporte.setId(ReporteGeneralGerenciaMigracionUtil.getId(gerenciaModel, calendarioModel, fechaDiaSemana));
@@ -92,11 +86,7 @@ public class ReporteGeneralGerenciaMigracionUtil {
         return reporte;
     }
 
-    private static String getId(
-            GerenciaModel gerenciaModel,
-            CalendarioModel calendarioModel,
-            String fecha
-    ) {
+    private static String getId(GerenciaModel gerenciaModel, CalendarioModel calendarioModel, String fecha) {
         LocalDate date = LocalDate.parse(fecha);
 
         String diaSemana = date.format(DateTimeFormatter.ofPattern("EEEE", new Locale("es",
@@ -108,11 +98,9 @@ public class ReporteGeneralGerenciaMigracionUtil {
         return String.format("%s-%d-%d-%s", gerenciaModel.getGerenciaId(), anioActual, semanaActual, diaSemana);
     }
 
-    private static EncabezadoReporteGeneralGerenciaDTO getEncabezado(
-            GerenciaModel gerenciaModel,
-            String fecha,
-            int semana
-    ) throws ExecutionException, InterruptedException {
+    private static EncabezadoReporteGeneralGerenciaDTO getEncabezado(GerenciaModel gerenciaModel, String fecha,
+                                                                     int semana)
+            throws ExecutionException, InterruptedException {
         EncabezadoReporteGeneralGerenciaDTO encabezado = new EncabezadoReporteGeneralGerenciaDTO();
         {
             CompletableFuture<UsuarioModel> usuarioEntityGerente = ReporteGeneralGerenciaMigracionUtil
@@ -157,9 +145,7 @@ public class ReporteGeneralGerenciaMigracionUtil {
         return encabezado;
     }
 
-    private static String getFecha(
-            String fecha
-    ) {
+    private static String getFecha(String fecha) {
         LocalDate date = LocalDate.parse(fecha);
         String diaSemana = date.format(DateTimeFormatter.ofPattern("EEEE", new Locale("es",
                 "ES")));
@@ -172,10 +158,7 @@ public class ReporteGeneralGerenciaMigracionUtil {
     }
 
     private static DashboardReporteGeneralGerenciaDTO getDashboardSemanaActual(
-            EncabezadoReporteGeneralGerenciaDTO encabezado,
-            CalendarioModel calendarioModel,
-            String fecha
-    )
+            EncabezadoReporteGeneralGerenciaDTO encabezado, CalendarioModel calendarioModel, String fecha)
             throws ExecutionException, InterruptedException {
         // To easy code
         int anio = calendarioModel.getAnio();
@@ -195,12 +178,10 @@ public class ReporteGeneralGerenciaMigracionUtil {
         return dashboard;
     }
 
-    private static void funEstadisticasSemanaActual(
-            DashboardReporteGeneralGerenciaDTO dashboard,
-            EncabezadoReporteGeneralGerenciaDTO encabezado,
-            CalendarioModel calendarioModel,
-            String fecha
-    ) throws ExecutionException, InterruptedException {
+    private static void funEstadisticasSemanaActual(DashboardReporteGeneralGerenciaDTO dashboard,
+                                                    EncabezadoReporteGeneralGerenciaDTO encabezado,
+                                                    CalendarioModel calendarioModel, String fecha)
+            throws ExecutionException, InterruptedException {
         // To easy code
         int anio;
         int semana;
@@ -215,25 +196,23 @@ public class ReporteGeneralGerenciaMigracionUtil {
         ReporteGeneralGerenciaMigracionUtil.funSemanaAnterior(calendarioModel);
         anio = calendarioModel.getAnio();
         semana = calendarioModel.getSemana();
-        if (
-                diaSemana.equals("jueves")
-        ) {
-            debitoTotal = ReporteGeneralGerenciaMigracionUtil.pagoService
-                    .getDebitoTotalParcialByGerenciaAnioSemanaAndFechaAsync(gerencia, sucursal, anio, semana);
+        if (diaSemana.equals("jueves")) {
+            debitoTotal = ReporteGeneralGerenciaMigracionUtil.pagoAgrupadoService
+                    .findDebitoTotalParcialByGerenciaSucursalAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
         } else {
-            debitoTotal = ReporteGeneralGerenciaMigracionUtil.pagoService
-                    .getDebitoTotalSemanaByGerenciaAnioSemanaAndFechaAsync(gerencia, sucursal, anio, semana);
+            debitoTotal = ReporteGeneralGerenciaMigracionUtil.pagoAgrupadoService
+                    .findDebitoTotalSemanaByGerenciaSucursalAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
         }
         ReporteGeneralGerenciaMigracionUtil.funSemanaSiguiente(calendarioModel);
         anio = calendarioModel.getAnio();
         semana = calendarioModel.getSemana();
 
-        CompletableFuture<Double> cobranzaTotal = ReporteGeneralGerenciaMigracionUtil.pagoService
-                .getCobranzaTotalByGerenciaAnioSemanaAndFechaAsync(gerencia, sucursal, anio, semana, fecha);
-        CompletableFuture<Double> excedente = ReporteGeneralGerenciaMigracionUtil.pagoService
-                .getExcedenteByGerenciaAnioSemanaAndFechaAsync(gerencia, sucursal, anio, semana, fecha);
-        CompletableFuture<Integer> clientesCobrados = ReporteGeneralGerenciaMigracionUtil.pagoService
-                .getClientesCobradosByGerenciaAnioSemanaAndFechaAsync(gerencia, sucursal, anio, semana, fecha);
+        CompletableFuture<Double> cobranzaTotal = ReporteGeneralGerenciaMigracionUtil.pagoAgrupadoService
+                .findCobranzaTotalByGerenciaSucursalAnioSemanaAndFechaAsync(gerencia, sucursal, anio, semana, fecha);
+        CompletableFuture<Double> excedente = ReporteGeneralGerenciaMigracionUtil.pagoAgrupadoService
+                .findExcedenteByGerenciaSucursalAnioSemanaAndFechaAsync(gerencia, sucursal, anio, semana, fecha);
+        CompletableFuture<Integer> clientesCobrados = ReporteGeneralGerenciaMigracionUtil.pagoAgrupadoService
+                .findClientesCobradosByGerenciaSucursalAnioSemanaAndFechaAsync(gerencia, sucursal, anio, semana, fecha);
 
         CompletableFuture.allOf(debitoTotal, cobranzaTotal, excedente, clientesCobrados);
         dashboard.setDebitoTotal(debitoTotal.get());
@@ -242,11 +221,10 @@ public class ReporteGeneralGerenciaMigracionUtil {
         dashboard.setClientesCobrados(clientesCobrados.get());
     }
 
-    private static AvanceReporteGeneralGerenciaDTO getAvanceSemanaActual(
-            DashboardReporteGeneralGerenciaDTO dashboard,
-            EncabezadoReporteGeneralGerenciaDTO encabezado,
-            CalendarioModel calendarioModel
-    ) throws ExecutionException, InterruptedException {
+    private static AvanceReporteGeneralGerenciaDTO getAvanceSemanaActual(DashboardReporteGeneralGerenciaDTO dashboard,
+                                                                         EncabezadoReporteGeneralGerenciaDTO encabezado,
+                                                                         CalendarioModel calendarioModel)
+            throws ExecutionException, InterruptedException {
         AvanceReporteGeneralGerenciaDTO avance = new AvanceReporteGeneralGerenciaDTO();
         {
             ReporteGeneralGerenciaMigracionUtil.funSemanaAnterior(calendarioModel);
@@ -259,8 +237,8 @@ public class ReporteGeneralGerenciaMigracionUtil {
 
             ReporteGeneralGerenciaMigracionUtil.funSemanaSiguiente(calendarioModel);
 
-            CompletableFuture<Double> debitoTotal = ReporteGeneralGerenciaMigracionUtil.pagoService
-                    .getDebitoTotalSemanaByGerenciaAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
+            CompletableFuture<Double> debitoTotal = ReporteGeneralGerenciaMigracionUtil.pagoAgrupadoService
+                    .findDebitoTotalSemanaByGerenciaSucursalAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
 
             avance.setConcepto(dashboard.getConcepto());
             avance.setCobranzaPura(dashboard.getCobranzaPura());
@@ -274,9 +252,7 @@ public class ReporteGeneralGerenciaMigracionUtil {
     }
 
     private static ArrastreReporteGeneralGerenciaDTO getArrastreSemanaActual(
-            DashboardReporteGeneralGerenciaDTO dashboard,
-            int semana
-    ) {
+            DashboardReporteGeneralGerenciaDTO dashboard, int semana) {
         ArrastreReporteGeneralGerenciaDTO arrastre = new ArrastreReporteGeneralGerenciaDTO();
         {
             arrastre.setDebitoTotal(dashboard.getDebitoTotal());
@@ -289,14 +265,10 @@ public class ReporteGeneralGerenciaMigracionUtil {
         return arrastre;
     }
 
-    private static void funReportesAnterioresUltimos3Meses(
-            ArrayList<DashboardReporteGeneralGerenciaDTO> dashboards,
-            ArrayList<AvanceReporteGeneralGerenciaDTO> avances,
-            ArrayList<ArrastreReporteGeneralGerenciaDTO> arrastres,
-
-            CalendarioModel calendarioModel,
-            String reporteId
-    ) {
+    private static void funReportesAnterioresUltimos3Meses(ArrayList<DashboardReporteGeneralGerenciaDTO> dashboards,
+                                                           ArrayList<AvanceReporteGeneralGerenciaDTO> avances,
+                                                           ArrayList<ArrastreReporteGeneralGerenciaDTO> arrastres,
+                                                           CalendarioModel calendarioModel, String reporteId) {
         String[] reporteIdSplit = reporteId.split("-");
 
         String gerencia = reporteIdSplit[0];
@@ -314,9 +286,7 @@ public class ReporteGeneralGerenciaMigracionUtil {
             Optional<ReporteGeneralGerenciaDocument> reporte = ReporteGeneralGerenciaMigracionUtil
                     .reporteGeneralGerenciaService.findById(id);
 
-            if (
-                    reporte.isPresent()
-            ) {
+            if (reporte.isPresent()) {
                 dashboards.add(reporte.get().getDashboards().get(0));
                 avances.add(reporte.get().getAvances().get(0));
                 arrastres.add(reporte.get().getArrastres().get(0));
@@ -324,13 +294,9 @@ public class ReporteGeneralGerenciaMigracionUtil {
         }
     }
 
-    private static void funDiferenciaVsSemanaAnterior(
-            ArrayList<DashboardReporteGeneralGerenciaDTO> dashboards
-    ) {
+    private static void funDiferenciaVsSemanaAnterior(ArrayList<DashboardReporteGeneralGerenciaDTO> dashboards) {
         for (int i = 0; i < dashboards.size(); i++) {
-            if (
-                    (i + 1) < dashboards.size()
-            ) {
+            if ((i + 1) < dashboards.size()) {
                 // To easy code
                 double diferenciaSemanaAnterior = dashboards.get(i + 1)
                         .getDiferenciaCobranzaPuraVsDebitoTotal();
@@ -338,8 +304,7 @@ public class ReporteGeneralGerenciaMigracionUtil {
 
                 dashboards.get(i).setDiferenciaActualVsDiferenciaAnterior(diferenciaSemanaAnterior
                         - diferenciaSemanaActual);
-            } //
-            else {
+            } else {
                 // To easy code
                 DashboardReporteGeneralGerenciaDTO dashboard = dashboards.get(i);
 
@@ -348,9 +313,7 @@ public class ReporteGeneralGerenciaMigracionUtil {
         }
     }
 
-    private static double getPerdidaAcumulada(
-            ArrayList<DashboardReporteGeneralGerenciaDTO> dashboards
-    ) {
+    private static double getPerdidaAcumulada(ArrayList<DashboardReporteGeneralGerenciaDTO> dashboards) {
         double perdidaAcumulada = 0;
 
         for (DashboardReporteGeneralGerenciaDTO dashboard : dashboards) {
@@ -360,21 +323,16 @@ public class ReporteGeneralGerenciaMigracionUtil {
         return perdidaAcumulada;
     }
 
-    private static void funSemanaAnterior(
-            CalendarioModel calendarioModel
-    ) {
+    private static void funSemanaAnterior(CalendarioModel calendarioModel) {
         // To easy code
         int anio = calendarioModel.getAnio();
         int semana = calendarioModel.getSemana();
 
-        if (
-                semana == 1
-        ) {
+        if (semana == 1) {
             anio = anio - 1;
             semana = ReporteGeneralGerenciaMigracionUtil.calendarioService
                     .existsByAnioAndSemana(anio, 53) ? 53 : 52;
-        } //
-        else {
+        } else {
             semana = semana - 1;
         }
 
@@ -382,9 +340,7 @@ public class ReporteGeneralGerenciaMigracionUtil {
         calendarioModel.setSemana(semana);
     }
 
-    private static void funSemanaSiguiente(
-            CalendarioModel calendarioModel
-    ) {
+    private static void funSemanaSiguiente(CalendarioModel calendarioModel) {
         // To easy code
         int anio = calendarioModel.getAnio();
         int semana = calendarioModel.getSemana();
@@ -392,19 +348,12 @@ public class ReporteGeneralGerenciaMigracionUtil {
         boolean existsSemana53 = ReporteGeneralGerenciaMigracionUtil.calendarioService
                 .existsByAnioAndSemana(anio, 53);
 
-        if (
-                semana == 52 && existsSemana53
-        ) {
+        if (semana == 52 && existsSemana53) {
             semana = 53;
-        } //
-        else if (
-                semana == 52 || semana == 53
-        ) {
+        } else if (semana == 52 || semana == 53) {
             anio = anio + 1;
             semana = 1;
-        }
-        //
-        else {
+        } else {
             semana = semana + 1;
         }
 
@@ -412,9 +361,7 @@ public class ReporteGeneralGerenciaMigracionUtil {
         calendarioModel.setSemana(semana);
     }
 
-    public static ArrayList<String> getFechaDiasSemana(
-            CalendarioModel calendarioModel
-    ) {
+    public static ArrayList<String> getFechaDiasSemana(CalendarioModel calendarioModel) {
         LocalDate fecha = LocalDate.parse(calendarioModel.getDesde());
 
         ArrayList<String> fechaDiasSemana = new ArrayList<>();
@@ -428,19 +375,4 @@ public class ReporteGeneralGerenciaMigracionUtil {
 
         return fechaDiasSemana;
     }
-
-//    private static HashMap<String, Integer> getAnioAndSemana(
-//            int anio,
-//            int semana
-//    ) throws ExecutionException, InterruptedException {
-//        CompletableFuture<CalendarioEntity> calendarioEntity = ReporteGeneralGerenciaMigracionUtil.calendarioService
-//                .findByAnioAndSemanaAsync(anio, semana);
-//
-//        calendarioEntity.join();
-//        HashMap<String, Integer> anioAndSemana = new HashMap<>();
-//        anioAndSemana.put("anio", calendarioEntity.get().getAnio());
-//        anioAndSemana.put("semana", calendarioEntity.get().getSemana());
-//
-//        return anioAndSemana;
-//    }
 }

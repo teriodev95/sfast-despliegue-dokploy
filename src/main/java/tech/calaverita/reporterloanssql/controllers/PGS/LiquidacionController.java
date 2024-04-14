@@ -20,10 +20,7 @@ public final class LiquidacionController {
     private final LiquidacionService liquidacionService;
     private final PagoService pagoService;
 
-    public LiquidacionController(
-            LiquidacionService liquidacionService,
-            PagoService pagoService
-    ) {
+    public LiquidacionController(LiquidacionService liquidacionService, PagoService pagoService) {
         this.liquidacionService = liquidacionService;
         this.pagoService = pagoService;
     }
@@ -35,9 +32,7 @@ public final class LiquidacionController {
     }
 
     @GetMapping(path = "/data/{prestamoId}")
-    public @ResponseBody ResponseEntity<LiquidacionDTO> getDatosLiquidacion(
-            @PathVariable(name = "prestamoId") String prestamoId
-    ) {
+    public @ResponseBody ResponseEntity<LiquidacionDTO> getDatosLiquidacion(@PathVariable String prestamoId) {
         return new ResponseEntity<>(LiquidacionUtil.getLiquidacionDTO(prestamoId), HttpStatus.OK);
     }
 

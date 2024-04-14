@@ -5,10 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.reporterloanssql.Constants;
-import tech.calaverita.reporterloanssql.models.mariaDB.GerenciaModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.SucursalModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
-import tech.calaverita.reporterloanssql.services.GerenciaService;
 import tech.calaverita.reporterloanssql.services.SucursalService;
 import tech.calaverita.reporterloanssql.services.UsuarioService;
 import tech.calaverita.reporterloanssql.services.relation.UsuarioGerenciaService;
@@ -27,12 +25,9 @@ public final class GerenciaController {
     private final UsuarioGerenciaService usuarioGerenciaService;
     private final UsuarioSucursalService usuarioSucursalService;
 
-    public GerenciaController(
-            SucursalService sucursalService,
-            UsuarioService usuarioService,
-            UsuarioGerenciaService usuarioGerenciaService,
-            UsuarioSucursalService usuarioSucursalService
-    ) {
+    public GerenciaController(SucursalService sucursalService, UsuarioService usuarioService,
+                              UsuarioGerenciaService usuarioGerenciaService,
+                              UsuarioSucursalService usuarioSucursalService) {
         this.sucursalService = sucursalService;
         this.usuarioService = usuarioService;
         this.usuarioGerenciaService = usuarioGerenciaService;
@@ -46,7 +41,7 @@ public final class GerenciaController {
     }
 
     @GetMapping(path = "/{usuario}")
-    public ResponseEntity<ArrayList<String>> getGerenciaIdsByUsuario(@PathVariable("usuario") String usuario) {
+    public ResponseEntity<ArrayList<String>> getGerenciaIdsByUsuario(@PathVariable String usuario) {
         UsuarioModel usuarMod;
 
         try {
@@ -64,7 +59,7 @@ public final class GerenciaController {
 
     @GetMapping(path = "/usuarios/{usuario}")
     public ResponseEntity<HashMap<String, ArrayList<String>>> redicdarrstrGerenciaIdFromSucursalGetByStrUsuario(
-            @PathVariable("usuario") String usuario) {
+            @PathVariable String usuario) {
         UsuarioModel usuarioModel;
         HashMap<String, ArrayList<String>> gerenciasYGerentesBySucursalHM = new HashMap<>();
 
@@ -79,7 +74,7 @@ public final class GerenciaController {
         ArrayList<String> gerenciaIds = this.usuarioGerenciaService
                 .darrstrGerenciaIdFindByUsuarioId(usuarioModel.getUsuarioId());
         ArrayList<String> gerentes = this.usuarioService
-                .findGerentesByGerencias(gerenciaIds);
+                .findByGerenciasTipoAndStatus(gerenciaIds);
 
         for (String sucursalId : sucursalIds) {
             ArrayList<String> gerenciasYGerentesHM = new ArrayList<>();
@@ -130,7 +125,7 @@ public final class GerenciaController {
         ArrayList<String> gerenciaIds = this.usuarioGerenciaService
                 .darrstrGerenciaIdFindByUsuarioId(usuarioModel.getUsuarioId());
         ArrayList<String> gerentes = this.usuarioService
-                .findGerentesByGerencias(gerenciaIds);
+                .findByGerenciasTipoAndStatus(gerenciaIds);
 
         for (String sucursalId : sucursalIds) {
             ArrayList<HashMap<String, String>> gerenciasYGerentesHM = new ArrayList<>();

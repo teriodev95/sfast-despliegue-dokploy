@@ -10,15 +10,11 @@ import java.util.Optional;
 public class PorcentajesDescuentoLiquidacionesService {
     private final PorcentajesDescuentoLiquidacionesRepository repo;
 
-    public PorcentajesDescuentoLiquidacionesService(
-            PorcentajesDescuentoLiquidacionesRepository repo
-    ) {
+    public PorcentajesDescuentoLiquidacionesService(PorcentajesDescuentoLiquidacionesRepository repo) {
         this.repo = repo;
     }
 
-    public Optional<PorcentajesDescuentoLiquidacionesModel> findById(
-            String id
-    ) {
+    public Optional<PorcentajesDescuentoLiquidacionesModel> findById(String id) {
         return this.repo.findById(id);
     }
 }

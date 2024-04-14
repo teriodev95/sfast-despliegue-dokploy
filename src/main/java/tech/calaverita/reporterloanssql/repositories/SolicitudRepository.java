@@ -8,8 +8,6 @@ import java.util.ArrayList;
 
 @Repository
 public interface SolicitudRepository extends CrudRepository<SolicitudModel, String> {
-    boolean existsById(String id);
-
     ArrayList<SolicitudModel> findByGerencia(String gerencia);
 
     ArrayList<SolicitudModel> findByAgencia(String agencia);

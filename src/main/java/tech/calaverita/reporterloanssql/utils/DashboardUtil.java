@@ -7,10 +7,8 @@ import tech.calaverita.reporterloanssql.threads.DashboardThread;
 public class DashboardUtil implements Runnable {
     public ObjectsContainer objectsContainer;
 
-    public DashboardUtil(
-            ObjectsContainer objectsContainer_M
-    ) {
-        this.objectsContainer = objectsContainer_M;
+    public DashboardUtil(ObjectsContainer objectsContainer) {
+        this.objectsContainer = objectsContainer;
     }
 
     @Override
@@ -29,23 +27,17 @@ public class DashboardUtil implements Runnable {
         for (int i = 0; i < 7; i++) {
             try {
                 threads[i].join();
-            } catch (
-                    InterruptedException e
-            ) {
+            } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    public static Dashboard dashboard(
-            Dashboard[] dashboards_I
-    ) {
+    public static Dashboard dashboard(Dashboard[] dashboards_I) {
         Dashboard dashboardResponse_O = dashboardWithEmptyValues();
 
         for (Dashboard dashboard : dashboards_I) {
-            if (
-                    dashboardResponse_O.getGerencia() == null
-            ) {
+            if (dashboardResponse_O.getGerencia() == null) {
                 dashboardResponse_O.setGerencia(dashboard.getGerencia());
                 dashboardResponse_O.setAnio(dashboard.getAnio());
                 dashboardResponse_O.setSemana(dashboard.getSemana());

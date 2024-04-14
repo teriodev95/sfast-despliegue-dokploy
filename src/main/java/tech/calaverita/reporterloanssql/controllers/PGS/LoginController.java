@@ -30,13 +30,9 @@ public final class LoginController {
     private final UsuarioService usuarioService;
     private final UsuarioSucursalService usuarioSucursalService;
 
-    public LoginController(
-            AgenciaService agenciaService,
-            GerenciaService gerenciaService,
-            SucursalService sucursalService,
-            UsuarioService usuarioService,
-            UsuarioSucursalService usuarioSucursalService
-    ) {
+    public LoginController(AgenciaService agenciaService, GerenciaService gerenciaService,
+                           SucursalService sucursalService, UsuarioService usuarioService,
+                           UsuarioSucursalService usuarioSucursalService) {
         this.agenciaService = agenciaService;
         this.gerenciaService = gerenciaService;
         this.sucursalService = sucursalService;
@@ -63,10 +59,12 @@ public final class LoginController {
     }
 
     @GetMapping(path = "/agencias/{gerencia}")
-    public ResponseEntity<ArrayList<String>> redarrstrAgenciaIdGetByStrGerencia(
-            @PathVariable("gerencia") String gerencia) throws ExecutionException, InterruptedException {
+    public ResponseEntity<ArrayList<String>> redarrstrAgenciaIdGetByStrGerencia(@PathVariable String gerencia)
+            throws ExecutionException, InterruptedException {
         CompletableFuture<ArrayList<String>> agenciasCF = this.agenciaService.findIdsByGerenciaIdAsync(gerencia);
-        CompletableFuture<ArrayList<String>> agentesCF = this.usuarioService.findAgentesByGerenciaAsync(gerencia);
+
+        CompletableFuture<ArrayList<String>> agentesCF = this.usuarioService
+                .findByGerenciaTipoAndStatusAsync(gerencia, "Agente", true);
 
         CompletableFuture.allOf(agenciasCF, agentesCF);
 
@@ -78,9 +76,7 @@ public final class LoginController {
             agenciasYAgentesHM.add(agenciasCF.get().get(i));
         }
 
-        if (
-                agenciasCF.get() == null
-        ) {
+        if (agenciasCF.get() == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -91,7 +87,8 @@ public final class LoginController {
     public ResponseEntity<ArrayList<HashMap<String, String>>> getAgenciasByGerencia(
             @RequestParam String gerencia) throws ExecutionException, InterruptedException {
         CompletableFuture<ArrayList<String>> agenciasCF = this.agenciaService.findIdsByGerenciaIdAsync(gerencia);
-        CompletableFuture<ArrayList<String>> agentesCF = this.usuarioService.findAgentesByGerenciaAsync(gerencia);
+        CompletableFuture<ArrayList<String>> agentesCF = this.usuarioService.findByGerenciaTipoAndStatusAsync(gerencia,
+                "Agente", true);
 
         CompletableFuture.allOf(agenciasCF, agentesCF);
 
@@ -103,9 +100,7 @@ public final class LoginController {
             agenciasYAgentesHM.add(agenciaYAgenteHM);
         }
 
-        if (
-                agenciasCF.get() == null
-        ) {
+        if (agenciasCF.get() == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -113,7 +108,7 @@ public final class LoginController {
     }
 
     @GetMapping(path = "/sucursales/usuarios/{usuario}")
-    public ResponseEntity<ArrayList<SucursalModel>> getSucursalIdByUsuario(@PathVariable("usuario") String usuario) {
+    public ResponseEntity<ArrayList<SucursalModel>> getSucursalIdByUsuario(@PathVariable String usuario) {
         UsuarioModel usuarioModel;
         ArrayList<SucursalModel> sucEntSucursalEntities = new ArrayList<>();
 
@@ -134,7 +129,7 @@ public final class LoginController {
     }
 
     @GetMapping(path = "gerencias/sucursales/{id}")
-    public ResponseEntity<ArrayList<String>> getGerenciaIdsBySucursalId(@PathVariable("id") int id) {
+    public ResponseEntity<ArrayList<String>> getGerenciaIdsBySucursalId(@PathVariable int id) {
         ArrayList<String> darrstrGerencia = this.gerenciaService.findIdsBySucursalId(id);
 
         if (darrstrGerencia.isEmpty()) {

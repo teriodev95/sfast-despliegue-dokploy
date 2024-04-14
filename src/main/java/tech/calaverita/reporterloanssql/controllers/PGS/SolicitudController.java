@@ -49,8 +49,7 @@ public final class SolicitudController {
     }
 
     @GetMapping("/{filtro}")
-    public ResponseEntity<ArrayList<SolicitudDTO>> getSolicitudByGerenciaOrAgencia(
-            @PathVariable("filtro") String filtro) {
+    public ResponseEntity<ArrayList<SolicitudDTO>> getSolicitudByGerenciaOrAgencia(@PathVariable String filtro) {
         ArrayList<SolicitudDTO> solicitudDTOS = new ArrayList<>();
         HttpStatus httpStatus = HttpStatus.OK;
 
@@ -70,8 +69,7 @@ public final class SolicitudController {
     }
 
     @GetMapping("/one/{id}")
-    public ResponseEntity<SolicitudDTO> getSolicitudById(
-            @PathVariable("id") String id) {
+    public ResponseEntity<SolicitudDTO> getSolicitudById(@PathVariable String id) {
         HttpStatus httpStatus = HttpStatus.OK;
 
         SolicitudDTO solicitudDTO = new SolicitudMapper().mapOut(this.solicitudService.findById(id));

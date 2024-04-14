@@ -1,7 +1,6 @@
 package tech.calaverita.reporterloanssql.controllers.PGS;
 
 import com.itextpdf.text.DocumentException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import org.springframework.core.io.InputStreamResource;
@@ -43,16 +42,11 @@ public final class CierreSemanalController {
     private final EgresosGerenteService egresosGerenteService;
     private final IngresosAgenteService ingresosAgenteService;
 
-    public CierreSemanalController(
-            AsignacionService asignacionService,
-            UsuarioService usuarioService,
-            XpressController xpressController,
-            BalanceAgenciaService balanceAgenciaService,
-            CierreSemanalService cierreSemanalService,
-            EgresosAgenteService egresosAgenteService,
-            EgresosGerenteService egresosGerenteService,
-            IngresosAgenteService ingresosAgenteService
-    ) {
+    public CierreSemanalController(AsignacionService asignacionService, UsuarioService usuarioService,
+                                   XpressController xpressController, BalanceAgenciaService balanceAgenciaService,
+                                   CierreSemanalService cierreSemanalService, EgresosAgenteService egresosAgenteService,
+                                   EgresosGerenteService egresosGerenteService,
+                                   IngresosAgenteService ingresosAgenteService) {
         this.asignacionService = asignacionService;
         this.usuarioService = usuarioService;
         this.xpressController = xpressController;
@@ -70,30 +64,25 @@ public final class CierreSemanalController {
     }
 
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<?> getByAgenciaAnioAndSemana(
-            @RequestHeader(name = "staticToken") String staticToken,
-            @RequestHeader(name = "username") String username,
-            @PathVariable("agencia") String agencia,
-            @PathVariable("anio") int anio,
-            @PathVariable("semana") int semana,
-            HttpServletRequest request
-    ) throws ExecutionException, InterruptedException {
+    public @ResponseBody ResponseEntity<?> getByAgenciaAnioAndSemana(@RequestHeader String staticToken,
+                                                                     @RequestHeader String username,
+                                                                     @PathVariable String agencia,
+                                                                     @PathVariable int anio, @PathVariable int semana)
+            throws ExecutionException, InterruptedException {
         CierreSemanalDTO cierreSemanalDTO = null;
         HttpStatus responseStatus = HttpStatus.OK;
-
-        request.getHeader("X-FORWARDED-FOR");
 
         Dashboard dashboard;
         List<UsuarioModel> usuarioModels;
         double asignaciones;
 
-        Optional<CierreSemanalModel> cierreSemanalEntity = this.cierreSemanalService.findByAgenciaAnioAndSemana(agencia, anio,
-                semana);
+        Optional<CierreSemanalModel> cierreSemanalEntity = this.cierreSemanalService
+                .findByAgenciaAnioAndSemana(agencia, anio, semana);
 
         if (staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")) {
             if (!this.usuarioService.existsByUsuario(username)) {
                 responseStatus = HttpStatus.FORBIDDEN;
-            } else if (!this.usuarioService.existsByUsuarioActivo(username)) {
+            } else if (!this.usuarioService.existsByUsuarioAndStatus(username, true)) {
                 responseStatus = HttpStatus.UNAUTHORIZED;
             } else {
                 if (cierreSemanalEntity.isPresent()) {
@@ -101,9 +90,11 @@ public final class CierreSemanalController {
                 } else if (this.usuarioService.existsByAgencia(agencia)) {
                     dashboard = xpressController.getDashboardByAgenciaAnioAndSemana(agencia, anio, semana).getBody();
                     usuarioModels = new ArrayList<>();
-                    usuarioModels.add(this.usuarioService.findByAgencia(agencia));
-                    usuarioModels.add(this.usuarioService.findGerenteByGerencia(usuarioModels.get(0).getGerencia()));
-                    asignaciones = this.asignacionService.findSumaAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
+                    usuarioModels.add(this.usuarioService.findByAgenciaAndStatus(agencia, true));
+                    usuarioModels.add(this.usuarioService.findByGerenciaAndTipo(usuarioModels.get(0).getGerencia(),
+                            "Gerente"));
+                    asignaciones = this.asignacionService
+                            .findSumaAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
 
                     cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(dashboard, usuarioModels, asignaciones);
                 } else {
@@ -118,11 +109,10 @@ public final class CierreSemanalController {
     }
 
     @PostMapping(path = "/create-one")
-    public @ResponseBody ResponseEntity<String> createOne(
-            @RequestBody CierreSemanalDTO cierreSemanalDTO,
-            @RequestHeader(name = "staticToken") String staticToken,
-            @RequestHeader(name = "username") String username
-    ) throws DocumentException, FileNotFoundException {
+    public @ResponseBody ResponseEntity<String> createOne(@RequestBody CierreSemanalDTO cierreSemanalDTO,
+                                                          @RequestHeader String staticToken,
+                                                          @RequestHeader String username)
+            throws DocumentException, FileNotFoundException {
         String responseText = "";
         HttpStatus responseStatus;
         CierreSemanalModel cierreSemanalModel = this.cierreSemanalService.getCierreSemanalEntity(cierreSemanalDTO);
@@ -136,9 +126,9 @@ public final class CierreSemanalController {
         cierreSemanalModel.setLog(LogUtil.getLogCierreSemanal(cierreSemanalDTO.getBalanceAgencia()));
 
         if (staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")) {
-            if (!this.usuarioService.existsByUsuarioGerente(username)) {
+            if (!this.usuarioService.existsByUsuarioAndTipo(username, "Gerente")) {
                 responseStatus = HttpStatus.FORBIDDEN;
-            } else if (!this.usuarioService.existsByUsuarioGerenteActivo(username)) {
+            } else if (!this.usuarioService.existsByUsuarioTipoAndStatus(username, "Gerente", true)) {
                 responseStatus = HttpStatus.UNAUTHORIZED;
             } else {
                 if (this.cierreSemanalService.findById(cierreSemanalModel.getId()).isEmpty()) {
@@ -182,9 +172,8 @@ public final class CierreSemanalController {
     }
 
     @GetMapping(path = "/pdf/{file}", produces = MediaType.APPLICATION_PDF_VALUE)
-    public @ResponseBody ResponseEntity<InputStreamResource> getPdfByRuta(
-            @PathVariable("file") String file
-    ) throws IOException {
+    public @ResponseBody ResponseEntity<InputStreamResource> getPdfByRuta(@PathVariable String file)
+            throws IOException {
         FileInputStream fileInputStream = new FileInputStream(Constants.RUTA_PDF_PRODUCCION + file);
 
         return new ResponseEntity<>(new InputStreamResource(fileInputStream), HttpStatus.OK);
@@ -192,11 +181,8 @@ public final class CierreSemanalController {
 
     @GetMapping(path = "/{agencia}/{anio}/{semana}/{nivel}")
     public @ResponseBody ResponseEntity<ComisionCobranza> getComisionCobranzaByAgenciaAnioSemanaAndNivel(
-            @PathVariable("agencia") String agencia,
-            @PathVariable("anio") int anio,
-            @PathVariable("semana") int semana,
-            @PathVariable("nivel") String nivel
-    ) throws ExecutionException, InterruptedException {
+            @PathVariable String agencia, @PathVariable int anio, @PathVariable int semana, @PathVariable String nivel)
+            throws ExecutionException, InterruptedException {
         HashMap<String, Integer> porcentajesComision = new HashMap<>();
         porcentajesComision.put("SILVER", 7);
         porcentajesComision.put("GOLD", 8);
@@ -218,10 +204,7 @@ public final class CierreSemanalController {
         private Integer porcentajeComisionCobranza;
         private Double pagoComisionCobranza;
 
-        public ComisionCobranza(
-                Integer porcentajeComisionCobranza,
-                Double pagoComisionCobranza
-        ) {
+        public ComisionCobranza(Integer porcentajeComisionCobranza, Double pagoComisionCobranza) {
             this.porcentajeComisionCobranza = porcentajeComisionCobranza;
             this.pagoComisionCobranza = pagoComisionCobranza;
         }

@@ -6,10 +6,8 @@ import tech.calaverita.reporterloanssql.threads.pwa.DashboardPorDiaPWAThread;
 public class DashboardPorDiaUtil implements Runnable {
     public ObjectsContainer objectsContainer;
 
-    public DashboardPorDiaUtil(
-            ObjectsContainer objectsContainer_S
-    ) {
-        this.objectsContainer = objectsContainer_S;
+    public DashboardPorDiaUtil(ObjectsContainer objectsContainer) {
+        this.objectsContainer = objectsContainer;
     }
 
     @Override
@@ -28,9 +26,7 @@ public class DashboardPorDiaUtil implements Runnable {
         for (int i = 0; i < 7; i++) {
             try {
                 threads[i].join();
-            } catch (
-                    InterruptedException e
-            ) {
+            } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }

@@ -7,11 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class BalanceAgenciaUtil {
-    public static String getNivelAgente(
-            int clientesPagoCompleto,
-            double cobroAlJueves,
-            UsuarioModel agenteUsuarioModel
-    ) {
+    public static String getNivelAgente(int clientesPagoCompleto, double cobroAlJueves,
+                                        UsuarioModel agenteUsuarioModel) {
         String nivel;
         int antiguedadEnSemanas = BalanceAgenciaUtil.getAntiguedadAgenteEnSemanas(agenteUsuarioModel);
 
@@ -28,9 +25,7 @@ public class BalanceAgenciaUtil {
         return nivel;
     }
 
-    public static int getPorcentajeComisionCobranza(
-            String nivel
-    ) {
+    public static int getPorcentajeComisionCobranza(String nivel) {
         return switch (nivel) {
             case "SILVER" -> 7;
             case "GOLD" -> 8;
@@ -40,35 +35,24 @@ public class BalanceAgenciaUtil {
         };
     }
 
-    public static int getPorcentajeBonoMensual(
-            int clientesPagoCompleto,
-            double rendimiento,
-            UsuarioModel agenteUsuarioModel
-    ) {
+    public static int getPorcentajeBonoMensual(int clientesPagoCompleto, double rendimiento,
+                                               UsuarioModel agenteUsuarioModel) {
         int porcentajeBonoMensual = 0;
 
         int antiguedadEnMeses = BalanceAgenciaUtil.getAntiguedadAgenteEnMeses(agenteUsuarioModel);
 
-        if (
-                clientesPagoCompleto >= 90 && rendimiento >= 95 && antiguedadEnMeses >= 12
-        ) {
+        if (clientesPagoCompleto >= 90 && rendimiento >= 95 && antiguedadEnMeses >= 12) {
             porcentajeBonoMensual = 3;
-        } else if (
-                clientesPagoCompleto >= 60 && rendimiento >= 90 && antiguedadEnMeses >= 6
-        ) {
+        } else if (clientesPagoCompleto >= 60 && rendimiento >= 90 && antiguedadEnMeses >= 6) {
             porcentajeBonoMensual = 2;
-        } else if (
-                clientesPagoCompleto >= 30 && rendimiento >= 80 && antiguedadEnMeses >= 3
-        ) {
+        } else if (clientesPagoCompleto >= 30 && rendimiento >= 80 && antiguedadEnMeses >= 3) {
             porcentajeBonoMensual = 1;
         }
 
         return porcentajeBonoMensual;
     }
 
-    private static int getAntiguedadAgenteEnSemanas(
-            UsuarioModel agenteUsuarioModel
-    ) {
+    private static int getAntiguedadAgenteEnSemanas(UsuarioModel agenteUsuarioModel) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date fechaIngresoAgente;
 
@@ -82,9 +66,7 @@ public class BalanceAgenciaUtil {
         return (int) ((new Date().getTime() - fechaIngresoAgente.getTime()) / (1000 * 60 * 60 * 24 * 7));
     }
 
-    private static int getAntiguedadAgenteEnMeses(
-            UsuarioModel agenteUsuarioModel
-    ) {
+    private static int getAntiguedadAgenteEnMeses(UsuarioModel agenteUsuarioModel) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date fechaIngresoAgente;
 

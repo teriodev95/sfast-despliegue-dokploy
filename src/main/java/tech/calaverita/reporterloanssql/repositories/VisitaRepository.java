@@ -9,58 +9,11 @@ import java.util.ArrayList;
 
 @Repository
 public interface VisitaRepository extends CrudRepository<VisitaModel, String> {
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
-    @Query("SELECT vi " +
-            "FROM VisitaModel vi")
-    ArrayList<VisitaModel> darrvisEntFindAll();
+    ArrayList<VisitaModel> findByPrestamoId(String prestamoId);
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @Query("SELECT vi " +
-            "FROM VisitaModel vi " +
-            "WHERE vi.visitaId = :visitaId")
-    VisitaModel visEntFindByVisitaId(
-            String visitaId
-    );
+    ArrayList<VisitaModel> findByPrestamoIdAndAnioAndSemana(String prestamoId, int anio, int semana);
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @Query("SELECT vi " +
-            "FROM VisitaModel vi " +
-            "WHERE vi.prestamoId = :prestamoId")
-    ArrayList<VisitaModel> darrvisEntFindByPrestamoId(
-            String prestamoId
-    );
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @Query("SELECT vis " +
-            "FROM VisitaModel vis " +
-            "WHERE vis.agente = :agencia " +
-            "AND vis.anio = :anio " +
-            "AND vis.semana = :semana")
-    ArrayList<VisitaModel> darrvisEntFindByAgenciaAnioAndSemana(
-            String agencia,
-            int anio,
-            int semana
-    );
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @Query("SELECT vis " +
-            "FROM VisitaModel vis " +
-            "WHERE vis.prestamoId = :prestamoId " +
-            "AND vis.anio = :anio " +
-            "AND vis.semana = :semana")
-    ArrayList<VisitaModel> darrVisEntFindByPrestamoIdAnioAndSemana(
-            String prestamoId,
-            int anio,
-            int semana
-    );
-
-    @Query(value = "select * from visitas vis " +
-            "inner join agencias agenc " +
-            "on agenc.AgenciaID = vis.Agente " +
-            "and vis.anio = :anio " +
-            "and vis.semana = :semana " +
-            "and agenc.GerenciaID in :gerencias", nativeQuery = true)
-    ArrayList<VisitaModel> findByGerenciasAndAnioAndSemana(ArrayList<String> gerencias, int anio, int semana);
+    @Query("SELECT vis FROM VisitaModel vis INNER JOIN AgenciaModel agenc ON agenc.id = vis.agente " +
+            "AND vis.anio = :anio AND vis.semana = :semana AND agenc.gerenciaId IN :gerencias")
+    ArrayList<VisitaModel> findByGerenciasAndAnioAndSemanaInnerJoinAgenciaModel(ArrayList<String> gerencias, int anio, int semana);
 }

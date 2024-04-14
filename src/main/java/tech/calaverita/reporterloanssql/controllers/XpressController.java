@@ -24,10 +24,7 @@ public final class XpressController {
     private final AgenciaService agenciaService;
     private final UsuarioService usuarioService;
 
-    public XpressController(
-            AgenciaService agenciaService,
-            UsuarioService usuarioService
-    ) {
+    public XpressController(AgenciaService agenciaService, UsuarioService usuarioService) {
         this.agenciaService = agenciaService;
         this.usuarioService = usuarioService;
     }
@@ -39,9 +36,7 @@ public final class XpressController {
     }
 
     @PostMapping(path = "/login")
-    public @ResponseBody ResponseEntity<?> login(
-            @RequestBody AuthCredentials login
-    ) {
+    public @ResponseBody ResponseEntity<?> login(@RequestBody AuthCredentials login) {
         UsuarioModel usuarioModel = this.usuarioService.findByUsuarioAndPin(login.getUsername(), login.getPassword());
         LoginResponse loginResponse = new LoginResponse();
 
@@ -56,11 +51,9 @@ public final class XpressController {
     }
 
     @GetMapping(path = "/cobranza/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Cobranza> getCobranzaByAgencia(
-            @PathVariable("agencia") String agencia,
-            @PathVariable("anio") int anio,
-            @PathVariable("semana") int semana
-    ) {
+    public @ResponseBody ResponseEntity<Cobranza> getCobranzaByAgencia(@PathVariable String agencia,
+                                                                       @PathVariable int anio,
+                                                                       @PathVariable int semana) {
         Cobranza cobranza = new Cobranza();
         ObjectsContainer objectsContainer = new ObjectsContainer();
 
@@ -77,10 +70,9 @@ public final class XpressController {
     }
 
     @GetMapping(path = "/cobranza-gerencia/{gerencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Cobranza[]> getCobranzaByGerencia(
-            @PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio,
-            @PathVariable("semana") int semana
-    ) {
+    public @ResponseBody ResponseEntity<Cobranza[]> getCobranzaByGerencia(@PathVariable String gerencia,
+                                                                          @PathVariable int anio,
+                                                                          @PathVariable int semana) {
         ArrayList<String> agencias = this.agenciaService.findIdsByGerenciaId(gerencia);
 
         Thread[] threads = new Thread[agencias.size()];
@@ -117,9 +109,9 @@ public final class XpressController {
 
     @CrossOrigin
     @GetMapping(path = "/dashboard-agencia/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgenciaAnioAndSemana(
-            @PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana
-    ) {
+    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgenciaAnioAndSemana(@PathVariable String agencia,
+                                                                                      @PathVariable int anio,
+                                                                                      @PathVariable int semana) {
         Dashboard dashboard = new tech.calaverita.reporterloanssql.pojos.Dashboard();
         dashboard.setStatusAgencia(this.agenciaService.findStatusById(agencia));
         ObjectsContainer objectsContainer = new ObjectsContainer();
@@ -138,10 +130,9 @@ public final class XpressController {
 
     @CrossOrigin
     @GetMapping(path = "/dashboard-gerencia/{gerencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Dashboard> getDashboardByGerencia(
-            @PathVariable("gerencia") String gerencia, @PathVariable("anio") int anio,
-            @PathVariable("semana") int semana
-    ) {
+    public @ResponseBody ResponseEntity<Dashboard> getDashboardByGerencia(@PathVariable String gerencia,
+                                                                          @PathVariable int anio,
+                                                                          @PathVariable int semana) {
         tech.calaverita.reporterloanssql.pojos.Dashboard dashboardResponse;
 
         ArrayList<String> agencias = this.agenciaService.findIdsByGerenciaId(gerencia);

@@ -55,7 +55,7 @@ public class PagoHistoricoPWAThread implements Runnable {
                         pagoHistoricoPWA.getAnio(), pagoHistoricoPWA.getSemana(), esPrimerPago)));
 
         pagoHistoricoPWA.setVisitas(PagoHistoricoPWAThread.visitaService
-                .darrVisModFindByPrestamoIdAnioAndSemana(pagoHistoricoPWA.getPrestamoId(), pagoHistoricoPWA.getAnio(),
+                .findByPrestamoIdAnioAndSemana(pagoHistoricoPWA.getPrestamoId(), pagoHistoricoPWA.getAnio(),
                         pagoHistoricoPWA.getSemana()));
     }
 

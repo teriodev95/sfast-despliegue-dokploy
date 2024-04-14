@@ -37,15 +37,10 @@ public final class PagoController {
     private final AgenciaService agenciaService;
     private final PagoAgrupadoService pagoAgrupadoService;
 
-    public PagoController(
-            PagoService pagoService,
-            PrestamoService prestamoService,
-            UsuarioGerenciaService usuarioGerenciaService,
-            UsuarioService usuarioService,
-            VisitaService visitaService,
-            AgenciaService agenciaService,
-            PagoAgrupadoService pagoAgrupadoService
-    ) {
+    public PagoController(PagoService pagoService, PrestamoService prestamoService,
+                          UsuarioGerenciaService usuarioGerenciaService, UsuarioService usuarioService,
+                          VisitaService visitaService, AgenciaService agenciaService,
+                          PagoAgrupadoService pagoAgrupadoService) {
         this.pagoService = pagoService;
         this.prestamoService = prestamoService;
         this.usuarioGerenciaService = usuarioGerenciaService;
@@ -64,10 +59,7 @@ public final class PagoController {
     @CrossOrigin
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<ArrayList<PagoModel>> getPagoModelsByAgenciaAnioAndSemana(
-            @PathVariable("agencia") String agencia,
-            @PathVariable("anio") int anio,
-            @PathVariable("semana") int semana
-    ) {
+            @PathVariable String agencia, @PathVariable int anio, @PathVariable int semana) {
         boolean esPrimerPago = false;
         ArrayList<PagoModel> pagoModels = this.pagoService.findByAgenciaAnioSemanaAndEsPrimerPago(agencia, anio,
                 semana, esPrimerPago);
@@ -87,8 +79,7 @@ public final class PagoController {
             // liquidacion se hará el proceso correspondiente para guardar dicha liquidacion y ajustar la propiedad
             // cierraCon de pago, si se manda solo el pago solo se realizará el proceso para guardar el pago.
 
-            @RequestBody PagoConLiquidacion pagoConLiquidacion
-    ) {
+            @RequestBody PagoConLiquidacion pagoConLiquidacion) {
         ModelValidation modVal;
         PrestamoModel prestMod = this.prestamoService.prestModFindByPrestamoId(pagoConLiquidacion.getPrestamoId());
         modVal = PagoUtil.modValPagoModelValidation(pagoConLiquidacion, prestMod);
@@ -102,8 +93,7 @@ public final class PagoController {
 
     @PostMapping(path = "/create-many")
     public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> redarrdicobjectCreatePagMod(
-            @RequestBody ArrayList<PagoConLiquidacion> darrpagConLiq_I
-    ) {
+            @RequestBody ArrayList<PagoConLiquidacion> darrpagConLiq_I) {
         ArrayList<HashMap<String, Object>> darrdicpagMod_O = new ArrayList<>();
         HttpStatus httpStatus_O = HttpStatus.CREATED;
 
@@ -114,9 +104,7 @@ public final class PagoController {
             PrestamoModel prestMod = this.prestamoService.prestModFindByPrestamoId(pagConLiq.getPrestamoId());
             modVal = PagoUtil.modValPagoModelValidation(pagConLiq, prestMod);
 
-            if (
-                    modVal.isBoolIsOnline()
-            ) {
+            if (modVal.isBoolIsOnline()) {
                 PagoUtil.subProcessPayment(modVal, pagConLiq, prestMod);
             }
 
@@ -132,14 +120,12 @@ public final class PagoController {
     @CrossOrigin
     @GetMapping(path = "/history/{id}")
     public @ResponseBody ResponseEntity<ArrayList<PagoAgrupadoModel>> redarrpagAgrModGetHistory(
-            @PathVariable("id") String strId_I
-    ) {
-        ArrayList<PagoAgrupadoModel> pagAgrMod_O = this.pagoAgrupadoService.findByPrestamoIdOrderByAnioAscSemanaAsc(strId_I);
+            @PathVariable String id) {
+        ArrayList<PagoAgrupadoModel> pagAgrMod_O = this.pagoAgrupadoService
+                .findByPrestamoIdOrderByAnioAscSemanaAsc(id);
         HttpStatus httpStatus_O = HttpStatus.OK;
 
-        if (
-                pagAgrMod_O.isEmpty()
-        ) {
+        if (pagAgrMod_O.isEmpty()) {
             httpStatus_O = HttpStatus.NO_CONTENT;
         }
 
@@ -149,10 +135,8 @@ public final class PagoController {
     @CrossOrigin
     @GetMapping(path = "/noPagosWithVisitas/{usuario}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> getNoPagosConVisitasByUsuarioAnioAndSemana(
-            @PathVariable("usuario") String usuario,
-            @PathVariable("anio") int anio,
-            @PathVariable("semana") int semana
-    ) throws ExecutionException, InterruptedException {
+            @PathVariable String usuario, @PathVariable int anio, @PathVariable int semana)
+            throws ExecutionException, InterruptedException {
         UsuarioModel usuarioModel = this.usuarioService.findByUsuario(usuario);
         ArrayList<String> gerenciaIds = this.usuarioGerenciaService
                 .darrstrGerenciaIdFindByUsuarioId(usuarioModel.getUsuarioId());
@@ -188,9 +172,11 @@ public final class PagoController {
             String agente = noPagoConVisitasHM.get("agente").toString();
             String gerencia = noPagoConVisitasHM.get("gerencia").toString();
 
-            noPagoConVisitasHM.put("numeroCelularAgente", this.usuarioService.findByAgencia(agente).getNumeroCelular());
-            noPagoConVisitasHM.put("numeroCelularGerente", this.usuarioService.findGerenteByGerencia(gerencia)
+            noPagoConVisitasHM.put("numeroCelularAgente", this.usuarioService.findByAgenciaAndStatus(agente, true)
                     .getNumeroCelular());
+
+            noPagoConVisitasHM.put("numeroCelularGerente", this.usuarioService.findByGerenciaAndTipo(gerencia,
+                    "Gerente").getNumeroCelular());
 
             ArrayList<HashMap<String, Object>> visitas = new ArrayList<>();
             visitaEntities.forEach(visita -> {

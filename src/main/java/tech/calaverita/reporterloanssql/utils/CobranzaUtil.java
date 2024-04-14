@@ -13,16 +13,12 @@ public class CobranzaUtil implements Runnable {
     private static CalendarioService calendarioService;
 
     @Autowired
-    public CobranzaUtil(
-            CalendarioService calendarioService
-    ) {
+    public CobranzaUtil(CalendarioService calendarioService) {
         CobranzaUtil.calendarioService = calendarioService;
     }
 
-    public CobranzaUtil(
-            ObjectsContainer objectsContainer_S
-    ) {
-        this.objectsContainer = objectsContainer_S;
+    public CobranzaUtil(ObjectsContainer objectsContainer) {
+        this.objectsContainer = objectsContainer;
     }
 
     @Override
@@ -48,29 +44,22 @@ public class CobranzaUtil implements Runnable {
         for (int i = 2; i < 8; i++) {
             try {
                 threads[i].join();
-            } catch (
-                    InterruptedException e
-            ) {
+            } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    public static void funSemanaAnterior(
-            CalendarioModel calendarioModel
-    ) {
+    public static void funSemanaAnterior(CalendarioModel calendarioModel) {
         // To easy code
         int anio = calendarioModel.getAnio();
         int semana = calendarioModel.getSemana();
 
-        if (
-                semana == 1
-        ) {
+        if (semana == 1) {
             anio = anio - 1;
             semana = CobranzaUtil.calendarioService
                     .existsByAnioAndSemana(anio, 53) ? 53 : 52;
-        } //
-        else {
+        } else {
             semana = semana - 1;
         }
 

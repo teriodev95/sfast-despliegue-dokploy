@@ -24,28 +24,21 @@ public class LiquidacionUtil {
     private static CalendarioService calendarioService;
     private static PorcentajesDescuentoLiquidacionesService porcentajesDescuentoLiquidacionesService;
 
-    public LiquidacionUtil(
-            PrestamoService prestamoService,
-            LiquidacionService liquidacionService,
-            CalendarioService calendarioService,
-            PorcentajesDescuentoLiquidacionesService porcentajesDescuentoLiquidacionesService
-    ) {
+    public LiquidacionUtil(PrestamoService prestamoService, LiquidacionService liquidacionService,
+                           CalendarioService calendarioService,
+                           PorcentajesDescuentoLiquidacionesService porcentajesDescuentoLiquidacionesService) {
         LiquidacionUtil.prestamoService = prestamoService;
         LiquidacionUtil.liquidacionService = liquidacionService;
         LiquidacionUtil.calendarioService = calendarioService;
         LiquidacionUtil.porcentajesDescuentoLiquidacionesService = porcentajesDescuentoLiquidacionesService;
     }
 
-    public static LiquidacionDTO getLiquidacionDTO(
-            String prestamoId
-    ) {
+    public static LiquidacionDTO getLiquidacionDTO(String prestamoId) {
         LiquidacionDTO liquidacionDTO = null;
 
         Optional<PrestamoModel> prestamoEntity = prestamoService.findById(prestamoId);
 
-        if (
-                prestamoEntity.isPresent()
-        ) {
+        if (prestamoEntity.isPresent()) {
             // To easy code
             int anioEntrega = prestamoEntity.get().getAnio();
             int semanaEntrega = prestamoEntity.get().getSemana();
@@ -64,19 +57,14 @@ public class LiquidacionUtil {
         return liquidacionDTO;
     }
 
-    private static int getDescuentoPorcentaje(
-            String identificadorCredito,
-            int semanasTranscurridas
-    ) {
+    private static int getDescuentoPorcentaje(String identificadorCredito, int semanasTranscurridas) {
         int descuentoPorcentaje = 0;
 
         Optional<PorcentajesDescuentoLiquidacionesModel> porcentajeDescuentoLiquidacionesEntity = LiquidacionUtil
                 .porcentajesDescuentoLiquidacionesService.findById(identificadorCredito);
 
-        if (
-                porcentajeDescuentoLiquidacionesEntity.isPresent()
-                        && (semanasTranscurridas >= 1 && semanasTranscurridas <= 25)
-        ) {
+        if (porcentajeDescuentoLiquidacionesEntity.isPresent()
+                && (semanasTranscurridas >= 1 && semanasTranscurridas <= 25)) {
             descuentoPorcentaje = LiquidacionUtil.getDescuentoPorcentajeAux(porcentajeDescuentoLiquidacionesEntity
                     .get(), semanasTranscurridas);
         }
@@ -86,8 +74,7 @@ public class LiquidacionUtil {
 
     private static int getDescuentoPorcentajeAux(
             PorcentajesDescuentoLiquidacionesModel porcentajesDescuentoLiquidacionesModel,
-            int semanasTranscurridas
-    ) {
+            int semanasTranscurridas) {
         int descuentoPorcentaje = 0;
 
         switch (semanasTranscurridas - 1) {
@@ -120,17 +107,11 @@ public class LiquidacionUtil {
         return descuentoPorcentaje;
     }
 
-    private static double getDescuentoDinero(
-            double saldo,
-            int descuentoPorcentaje
-    ) {
+    private static double getDescuentoDinero(double saldo, int descuentoPorcentaje) {
         return saldo / 100 * descuentoPorcentaje;
     }
 
-    private static int getSemanasTranscurridas(
-            int anio,
-            int semana
-    ) {
+    private static int getSemanasTranscurridas(int anio, int semana) {
         CalendarioModel semanaEntregaCalendarioModel = new CalendarioModel();
         {
             semanaEntregaCalendarioModel.setAnio(anio);
@@ -158,27 +139,17 @@ public class LiquidacionUtil {
         return semanasTranscurridas;
     }
 
-    private static void funSemanaSiguiente(
-            CalendarioModel calendarioModel,
-            boolean existsSemana53
-    ) {
+    private static void funSemanaSiguiente(CalendarioModel calendarioModel, boolean existsSemana53) {
         // To easy code
         int anio = calendarioModel.getAnio();
         int semana = calendarioModel.getSemana();
 
-        if (
-                semana == 52 && existsSemana53
-        ) {
+        if (semana == 52 && existsSemana53) {
             semana = 53;
-        } //
-        else if (
-                semana == 52 || semana == 53
-        ) {
+        } else if (semana == 52 || semana == 53) {
             anio = anio + 1;
             semana = 1;
-        }
-        //
-        else {
+        } else {
             semana = semana + 1;
         }
 
@@ -186,17 +157,11 @@ public class LiquidacionUtil {
         calendarioModel.setSemana(semana);
     }
 
-    private static double getLiquidaCon(
-            double saldo,
-            double descuentoDinero
-    ) {
+    private static double getLiquidaCon(double saldo, double descuentoDinero) {
         return saldo - descuentoDinero;
     }
 
-    public static LiquidacionModel getLiquidacionEntity(
-            LiquidacionDTO liquidacionDTO,
-            PagoModel pagoModel
-    ) {
+    public static LiquidacionModel getLiquidacionEntity(LiquidacionDTO liquidacionDTO, PagoModel pagoModel) {
         LiquidacionModel liquidacionModel = LiquidacionUtil.liquidacionService.getLiquidacionEntity(liquidacionDTO);
         {
             liquidacionModel.setAnio(pagoModel.getAnio());

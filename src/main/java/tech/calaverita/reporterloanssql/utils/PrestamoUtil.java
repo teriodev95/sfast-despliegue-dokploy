@@ -12,28 +12,20 @@ public class PrestamoUtil {
     private static PrestamoService prestamoService;
 
     @Autowired
-    private PrestamoUtil(
-            PrestamoService prestamoService_S
-    ) {
-        PrestamoUtil.prestamoService = prestamoService_S;
+    private PrestamoUtil(PrestamoService prestamoService) {
+        PrestamoUtil.prestamoService = prestamoService;
     }
 
-    public static boolean blnIsPrestamo(
-            String prestamoId_I
-    ) {
+    public static boolean blnIsPrestamo(String prestamoId_I) {
         PrestamoModel prestamoModel = prestamoService.prestModFindByPrestamoId(prestamoId_I);
 
         return prestamoModel != null;
     }
 
-    public static ResponseEntity<String> restrCheckPrestamoByPrestamoId(
-            String prestamoId_I
-    ) {
+    public static ResponseEntity<String> restrCheckPrestamoByPrestamoId(String prestamoId_I) {
         ResponseEntity<String> responseEntity;
 
-        if (
-                blnIsPrestamo(prestamoId_I)
-        ) {
+        if (blnIsPrestamo(prestamoId_I)) {
             responseEntity = new ResponseEntity<>("El prestamo ya existe", HttpStatus.CONFLICT);
         } else {
             responseEntity = new ResponseEntity<>("El prestamo no existe", HttpStatus.CONFLICT);
@@ -42,9 +34,7 @@ public class PrestamoUtil {
         return responseEntity;
     }
 
-    public static PrestamoModel prestamoModelAsignarPorcentajeCobrado(
-            PrestamoModel prestamoModel_M
-    ) {
+    public static PrestamoModel prestamoModelAsignarPorcentajeCobrado(PrestamoModel prestamoModel_M) {
         Double dblTotalAPagar = prestamoModel_M.getTotalAPagar();
         Double dblCobrado = prestamoModel_M.getCobrado();
 

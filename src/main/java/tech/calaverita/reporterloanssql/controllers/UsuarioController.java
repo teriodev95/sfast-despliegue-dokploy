@@ -34,9 +34,7 @@ public final class UsuarioController {
     }
 
     @GetMapping(path = "/one/{usuarioId}")
-    public @ResponseBody ResponseEntity<UsuarioModel> getOneUser(
-            @PathVariable("usuarioId") Integer usuarioId
-    ) {
+    public @ResponseBody ResponseEntity<UsuarioModel> getOneUser(@PathVariable Integer usuarioId) {
         UsuarioModel usuario = this.usuarioService.findById(usuarioId);
 
         if (usuario == null)

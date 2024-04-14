@@ -26,10 +26,7 @@ public final class AsignacionController {
     private final AsignacionService asignacionService;
     private final UsuarioService usuarioService;
 
-    public AsignacionController(
-            AsignacionService asignacionService,
-            UsuarioService usuarioService
-    ) {
+    public AsignacionController(AsignacionService asignacionService, UsuarioService usuarioService) {
         this.asignacionService = asignacionService;
         this.usuarioService = usuarioService;
     }
@@ -44,9 +41,7 @@ public final class AsignacionController {
     public @ResponseBody ResponseEntity<Iterable<AsignacionModel>> getAll() {
         Iterable<AsignacionModel> asignacionModelIterable = this.asignacionService.findAll();
 
-        if (
-                !asignacionModelIterable.iterator().hasNext()
-        ) {
+        if (!asignacionModelIterable.iterator().hasNext()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -55,16 +50,11 @@ public final class AsignacionController {
 
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<Iterable<AsignacionModel>> getByAgenciaAnioAndSemana(
-            @PathVariable("agencia") String agencia,
-            @PathVariable("anio") int anio,
-            @PathVariable("semana") int semana
-    ) {
+            @PathVariable String agencia, @PathVariable int anio, @PathVariable int semana) {
         Iterable<AsignacionModel> asignacionModelIterable = this.asignacionService
                 .findByAgenciaAnioAndSemana(agencia, anio, semana);
 
-        if (
-                !asignacionModelIterable.iterator().hasNext()
-        ) {
+        if (!asignacionModelIterable.iterator().hasNext()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -72,14 +62,10 @@ public final class AsignacionController {
     }
 
     @GetMapping(path = "/one/{id}")
-    public @ResponseBody ResponseEntity<AsignacionModel> getOneById(
-            @PathVariable("id") String strId_I
-    ) {
-        AsignacionModel asignacionModel = this.asignacionService.findById(strId_I);
+    public @ResponseBody ResponseEntity<AsignacionModel> getOneById(@PathVariable String id) {
+        AsignacionModel asignacionModel = this.asignacionService.findById(id);
 
-        if (
-                asignacionModel == null
-        ) {
+        if (asignacionModel == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -90,37 +76,27 @@ public final class AsignacionController {
     public @ResponseBody ResponseEntity<String> postCreateOne(@RequestBody AsignacionModel asignacionModel) {
         String strSession = "session_id=76d814874514726176f0615260848da2aab725ea";
 
-        if (
-                this.asignacionService.existById(asignacionModel.getAsignacionId())
-        ) {
+        if (this.asignacionService.existById(asignacionModel.getAsignacionId())) {
             return new ResponseEntity<>("La Asignación Ya Existe", HttpStatus.CONFLICT);
         }
 
         UsuarioModel optusuarMod = this.usuarioService.findById(asignacionModel.getQuienRecibioUsuarioId());
 
-        if (
-                optusuarMod == null
-        ) {
+        if (optusuarMod == null) {
             return new ResponseEntity<>("Debe ingresar un quienRecibioUsuarioId válido", HttpStatus.BAD_REQUEST);
         }
 
         optusuarMod = this.usuarioService.findById(asignacionModel.getQuienEntregoUsuarioId());
 
-        if (
-                optusuarMod == null
-        ) {
+        if (optusuarMod == null) {
             return new ResponseEntity<>("Debe ingresar un quienEntregoUsuarioId válido", HttpStatus.BAD_REQUEST);
         }
 
-        if (
-                !asignacionModel.getLog().contains("{")
-        ) {
+        if (!asignacionModel.getLog().contains("{")) {
             return new ResponseEntity<>("Debe ingresar un log con formato json", HttpStatus.BAD_REQUEST);
         }
 
-        if (
-                !asignacionModel.getLog().contains("}")
-        ) {
+        if (!asignacionModel.getLog().contains("}")) {
             return new ResponseEntity<>("Debe ingresar un log con formato json", HttpStatus.BAD_REQUEST);
         }
 
@@ -135,8 +111,7 @@ public final class AsignacionController {
 
     @PostMapping(path = "/create-many")
     public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> postCreateMany(
-            @RequestBody ArrayList<AsignacionModel> asignacionModels
-    ) {
+            @RequestBody ArrayList<AsignacionModel> asignacionModels) {
         String strSession = "session_id=76d814874514726176f0615260848da2aab725ea";
 
         ArrayList<HashMap<String, Object>> darrdicasignMod_O = new ArrayList<>();
@@ -149,61 +124,47 @@ public final class AsignacionController {
 
             AsignacionModel optasignMod = this.asignacionService.findById(asignMod.getAsignacionId());
 
-            if (
-                    optasignMod != null
-            ) {
+            if (optasignMod != null) {
                 strMsgAux += "La Asignación Ya Existe|";
                 boolIsOnline = false;
             }
 
             UsuarioModel optusuarMod = this.usuarioService.findById(asignMod.getQuienRecibioUsuarioId());
 
-            if (
-                    optusuarMod == null
-            ) {
+            if (optusuarMod == null) {
                 strMsgAux += "Debe ingresar un quienRecibioUsuarioId válido|";
                 boolIsOnline = false;
             }
 
             optusuarMod = this.usuarioService.findById(asignMod.getQuienEntregoUsuarioId());
 
-            if (
-                    optusuarMod == null
-            ) {
+            if (optusuarMod == null) {
                 strMsgAux += "Debe ingresar un quienEntregoUsuarioId válido|";
                 boolIsOnline = false;
             }
 
-            if (
-                    !asignMod.getLog().contains("{")
-            ) {
+            if (!asignMod.getLog().contains("{")) {
                 strMsgAux += "Debe ingresar un log con formato json|";
                 boolIsOnline = false;
             }
 
-            if (
-                    !asignMod.getLog().contains("}")
-            ) {
+            if (!asignMod.getLog().contains("}")) {
                 strMsgAux += "Debe ingresar un log con formato json|";
                 boolIsOnline = false;
             }
 
             try {
-                if (
-                        boolIsOnline
-                ) {
+                if (boolIsOnline) {
                     this.asignacionService.save(asignMod);
 
                     Call<ResponseBodyXms> callrespBodyXms = RetrofitOdoo.getInstance().getApi()
                             .asignacionCreateOne(strSession,
                                     new AsignacionBody(new AsignacionList(asignMod)));
                     RetrofitOdooUtil.sendCall(callrespBodyXms);
-                } //
-                else {
+                } else {
                     strMsg = strMsgAux;
                 }
-            } //
-            catch (
+            } catch (
                     HttpClientErrorException e
             ) {
                 strMsg = e.toString();

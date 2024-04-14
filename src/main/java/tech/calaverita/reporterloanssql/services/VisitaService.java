@@ -10,67 +10,34 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public class VisitaService {
-    //------------------------------------------------------------------------------------------------------------------
-    /*INSTANCE VARIABLES*/
-    //------------------------------------------------------------------------------------------------------------------
     private final VisitaRepository repo;
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*CONSTRUCTORS*/
-    //------------------------------------------------------------------------------------------------------------------
-    public VisitaService(
-            VisitaRepository repo
-    ) {
+    public VisitaService(VisitaRepository repo) {
         this.repo = repo;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
-    public void save(
-            VisitaModel visMod_I
-    ) {
-        this.repo.save(visMod_I);
+    public void save(VisitaModel visitaModel) {
+        this.repo.save(visitaModel);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<VisitaModel> darrvisModFindAll() {
-        return repo.darrvisEntFindAll();
+    public ArrayList<VisitaModel> findAll() {
+        return (ArrayList<VisitaModel>) repo.findAll();
     }
 
-    public VisitaModel visModFindByVisitaId(
-            String strVisitaId_I
-    ) {
-        return this.repo.visEntFindByVisitaId(strVisitaId_I);
+    public VisitaModel findById(String visitaId) {
+        return this.repo.findById(visitaId).orElse(null);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<VisitaModel> darrvisModFindByPrestamoId(
-            String strPrestamoId_I
-    ) {
-        return this.repo.darrvisEntFindByPrestamoId(strPrestamoId_I);
+    public ArrayList<VisitaModel> findByPrestamoId(String prestamoId) {
+        return this.repo.findByPrestamoId(prestamoId);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<VisitaModel> darrvisModFindByAgenciaAnioAndSemana(
-            String strAgencia_I,
-            int intAnio_I,
-            int intSemana_I
-    ) {
-        return this.repo.darrvisEntFindByAgenciaAnioAndSemana(strAgencia_I, intAnio_I, intSemana_I);
-    }
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public ArrayList<VisitaModel> darrVisModFindByPrestamoIdAnioAndSemana(
-            String strPrestamoId_I,
-            int intAnio_I,
-            int intSemana_I
-    ) {
-        return this.repo.darrVisEntFindByPrestamoIdAnioAndSemana(strPrestamoId_I, intAnio_I, intSemana_I);
+    public ArrayList<VisitaModel> findByPrestamoIdAnioAndSemana(String prestamoId, int anio, int semana) {
+        return this.repo.findByPrestamoIdAndAnioAndSemana(prestamoId, anio, semana);
     }
 
     @Async("asyncExecutor")
     public CompletableFuture<ArrayList<VisitaModel>> findByGerenciasAnioAndSemanaAsync(ArrayList<String> gerencias, int anio, int semana) {
-        return CompletableFuture.completedFuture(this.repo.findByGerenciasAndAnioAndSemana(gerencias, anio, semana));
+        return CompletableFuture.completedFuture(this.repo.findByGerenciasAndAnioAndSemanaInnerJoinAgenciaModel(gerencias, anio, semana));
     }
 }

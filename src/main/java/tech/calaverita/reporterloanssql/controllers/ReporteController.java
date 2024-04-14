@@ -17,10 +17,8 @@ import tech.calaverita.reporterloanssql.utils.reportes.ReporteDiarioAgenciasUtil
 import tech.calaverita.reporterloanssql.utils.reportes.ReporteGeneralGerenciaMigracionUtil;
 import tech.calaverita.reporterloanssql.utils.reportes.ReporteGeneralGerenciaUtil;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -32,12 +30,9 @@ public final class ReporteController {
     private final GerenciaService gerenciaService;
     private final CalendarioService calendarioService;
 
-    public ReporteController(
-            ReporteDiarioAgenciasService reporteDiarioAgenciasService,
-            ReporteGeneralGerenciaService reporteGeneralGerenciaService,
-            GerenciaService gerenciaService,
-            CalendarioService calendarioService
-    ) {
+    public ReporteController(ReporteDiarioAgenciasService reporteDiarioAgenciasService,
+                             ReporteGeneralGerenciaService reporteGeneralGerenciaService,
+                             GerenciaService gerenciaService, CalendarioService calendarioService) {
         this.reporteDiarioAgenciasService = reporteDiarioAgenciasService;
         this.reporteGeneralGerenciaService = reporteGeneralGerenciaService;
         this.gerenciaService = gerenciaService;
@@ -53,8 +48,7 @@ public final class ReporteController {
     @CrossOrigin
     @PostMapping(path = "/diario_agencias/create-one/{gerencia}")
     public @ResponseBody ResponseEntity<ReporteDiarioAgenciasDocument> getReporteDiarioAgencias(
-            @PathVariable("gerencia") String gerencia
-    ) throws ExecutionException, InterruptedException {
+            @PathVariable String gerencia) throws ExecutionException, InterruptedException {
         CompletableFuture<GerenciaModel> gerenciaEntity = this.gerenciaService
                 .findByIdAsync(gerencia);
 
@@ -73,8 +67,7 @@ public final class ReporteController {
     @CrossOrigin
     @GetMapping(path = "/general_gerencia/create-one/{gerencia}")
     public @ResponseBody ResponseEntity<ReporteGeneralGerenciaDocument> getReporteGeneralGerencia(
-            @PathVariable("gerencia") String gerencia
-    ) throws ExecutionException, InterruptedException {
+            @PathVariable String gerencia) throws ExecutionException, InterruptedException {
         CompletableFuture<GerenciaModel> gerenciaEntity = this.gerenciaService
                 .findByIdAsync(gerencia);
 
@@ -85,9 +78,7 @@ public final class ReporteController {
         if (gerenciaEntity.get() != null) {
             String id = ReporteGeneralGerenciaUtil.getId(gerenciaEntity.get());
 
-            if (
-                    this.reporteGeneralGerenciaService.existsById(id)
-            ) {
+            if (this.reporteGeneralGerenciaService.existsById(id)) {
                 this.reporteGeneralGerenciaService.deleteById(id);
             }
 
@@ -99,7 +90,8 @@ public final class ReporteController {
     }
 
     @GetMapping
-    public @ResponseBody List<ReporteDiarioAgenciasDocument> createReportesDiariosAgencias() throws ExecutionException, InterruptedException, ParseException {
+    public @ResponseBody List<ReporteDiarioAgenciasDocument> createReportesDiariosAgencias()
+            throws ExecutionException, InterruptedException {
         ArrayList<ReporteDiarioAgenciasDocument> reportes = new ArrayList<>();
         {
             ArrayList<GerenciaModel> gerenciasEntities = this.gerenciaService.findAll();
@@ -113,10 +105,8 @@ public final class ReporteController {
     }
 
     @GetMapping(path = "/rgg/{anio}/{semana}")
-    public void createReportesGeneralesGerencia(
-            @PathVariable("anio") int anio,
-            @PathVariable("semana") int semana
-    ) throws ExecutionException, InterruptedException {
+    public void createReportesGeneralesGerencia(@PathVariable int anio, @PathVariable int semana)
+            throws ExecutionException, InterruptedException {
         CompletableFuture<CalendarioModel> calendarioEntity = this.calendarioService
                 .findByAnioAndSemanaAsync(anio, semana);
 

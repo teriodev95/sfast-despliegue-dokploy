@@ -15,9 +15,9 @@ import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.cierre_semanal.*;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.services.AgenciaService;
-import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.SucursalService;
 import tech.calaverita.reporterloanssql.services.cierre_semanal.*;
+import tech.calaverita.reporterloanssql.services.views.PagoAgrupadoService;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -40,34 +40,26 @@ public class CierreSemanalUtil {
     private static EgresosAgenteService egresosAgenteService;
     private static EgresosGerenteService egresosGerenteService;
     private static IngresosAgenteService ingresosAgenteService;
-    private static PagoService pagoService;
     private static SucursalService sucursalService;
     private static AgenciaService agenciaService;
+    private static PagoAgrupadoService pagoAgrupadoService;
     private static Fonts fuentes = new Fonts();
 
-    public CierreSemanalUtil(
-            BalanceAgenciaService balanceAgenciaService,
-            CierreSemanalService cierreSemanalService,
-            EgresosAgenteService egresosAgenteService,
-            EgresosGerenteService egresosGerenteService,
-            IngresosAgenteService ingresosAgenteService,
-            PagoService pagoService,
-            SucursalService sucursalService,
-            AgenciaService agenciaService
-    ) {
+    public CierreSemanalUtil(BalanceAgenciaService balanceAgenciaService, CierreSemanalService cierreSemanalService,
+                             EgresosAgenteService egresosAgenteService, EgresosGerenteService egresosGerenteService,
+                             IngresosAgenteService ingresosAgenteService, PagoAgrupadoService pagoAgrupadoService,
+                             SucursalService sucursalService, AgenciaService agenciaService) {
         CierreSemanalUtil.balanceAgenciaService = balanceAgenciaService;
         CierreSemanalUtil.cierreSemanalService = cierreSemanalService;
         CierreSemanalUtil.egresosAgenteService = egresosAgenteService;
         CierreSemanalUtil.egresosGerenteService = egresosGerenteService;
         CierreSemanalUtil.ingresosAgenteService = ingresosAgenteService;
-        CierreSemanalUtil.pagoService = pagoService;
         CierreSemanalUtil.sucursalService = sucursalService;
         CierreSemanalUtil.agenciaService = agenciaService;
+        CierreSemanalUtil.pagoAgrupadoService = pagoAgrupadoService;
     }
 
-    public static CierreSemanalDTO getCierreSemanalDTO(
-            CierreSemanalModel cierreSemanalModel
-    ) throws ExecutionException, InterruptedException {
+    public static CierreSemanalDTO getCierreSemanalDTO(CierreSemanalModel cierreSemanalModel) throws ExecutionException, InterruptedException {
         CierreSemanalDTO cierreSemanalDTO = CierreSemanalUtil.cierreSemanalService
                 .getCierreSemanalDTO(cierreSemanalModel);
 
@@ -101,20 +93,17 @@ public class CierreSemanalUtil {
         return cierreSemanalDTO;
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public static CierreSemanalDTO getCierreSemanalDTO(
-            Dashboard dashboard,
-            List<UsuarioModel> darrusuarEnt,
-            double asignaciones
-    ) throws ExecutionException, InterruptedException {
+    public static CierreSemanalDTO getCierreSemanalDTO(Dashboard dashboard, List<UsuarioModel> darrusuarEnt,
+                                                       double asignaciones)
+            throws ExecutionException, InterruptedException {
         CierreSemanalDTO cierreSemanalDTO = new CierreSemanalDTO();
 
         // To easy code
-        CompletableFuture<Integer> clientePagoCompleto = CierreSemanalUtil.pagoService
-                .getClientesPagoCompletoByAgenciaAnioAndSemanaAsync(dashboard.getAgencia(), dashboard.getAnio(),
+        CompletableFuture<Integer> clientePagoCompleto = CierreSemanalUtil.pagoAgrupadoService
+                .findClientesPagoCompletoByAgenciaAnioAndSemanaAsync(dashboard.getAgencia(), dashboard.getAnio(),
                         dashboard.getSemana());
-        CompletableFuture<Double> cobranzaTotal = CierreSemanalUtil.pagoService
-                .getCobranzaTotalByAgenciaAnioAndSemanaAsync(dashboard.getAgencia(), dashboard.getAnio(),
+        CompletableFuture<Double> cobranzaTotal = CierreSemanalUtil.pagoAgrupadoService
+                .findCobranzaTotalByAgenciaAnioAndSemanaAsync(dashboard.getAgencia(), dashboard.getAnio(),
                         dashboard.getSemana());
 
         // To easy code
@@ -189,7 +178,7 @@ public class CierreSemanalUtil {
         cierreSemanalDTO.setPinAgente(agenteUsuarioModel.getPin());
         cierreSemanalDTO.setIsAgenciaCerrada(false);
         cierreSemanalDTO.setDia(LocalDate.now().getDayOfMonth());
-        cierreSemanalDTO.setSucursal(sucursalService.getSucursalByGerenciaId(dashboard.getGerencia()));
+        cierreSemanalDTO.setSucursal(sucursalService.findNombreSucursalByGerenciaId(dashboard.getGerencia()));
         cierreSemanalDTO.setStatusAgencia(agenciaService.findStatusById(dashboard.getAgencia()));
 
         String mes = LocalDate.now().getMonth().getDisplayName(TextStyle.FULL, new Locale("es",
@@ -203,9 +192,7 @@ public class CierreSemanalUtil {
         return cierreSemanalDTO;
     }
 
-    public static void createCierreSemanalPDF(
-            CierreSemanalDTO dto
-    ) throws DocumentException, FileNotFoundException {
+    public static void createCierreSemanalPDF(CierreSemanalDTO dto) throws DocumentException, FileNotFoundException {
         Rectangle hoja = new Rectangle(612f, 380f);
         Document document = new Document(hoja, 0f, 0f, 5f, 5f);
 
@@ -302,9 +289,7 @@ public class CierreSemanalUtil {
         return cellTitulo;
     }
 
-    private static PdfPCell getBalanceAgencia(
-            BalanceAgenciaDTO balanceAgenciaDTO
-    ) {
+    private static PdfPCell getBalanceAgencia(BalanceAgenciaDTO balanceAgenciaDTO) {
         PdfPCell cellBalanceAgencia = new PdfPCell();
         cellBalanceAgencia.setBorder(0);
         cellBalanceAgencia.setPadding(0);
@@ -312,10 +297,8 @@ public class CierreSemanalUtil {
         PdfPTable tablaBalanceAgencia = new PdfPTable(1);
         tablaBalanceAgencia.setWidthPercentage(100);
 
-
         Font fontBold = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8, PdfStyleManager.getPrimaryBasecolor());
         Font fontRegular = FontFactory.getFont(FontFactory.HELVETICA, 8, PdfStyleManager.getPrimaryBasecolor());
-
 
         Paragraph zonaGerenteParagraph = new Paragraph();
         zonaGerenteParagraph.add(new Chunk("ZONA: ", fontBold));
@@ -327,7 +310,6 @@ public class CierreSemanalUtil {
         PdfPCell zonaGerenteCell = new PdfPCell(zonaGerenteParagraph);
         PdfStyleManager.setStyleNormalCell(zonaGerenteCell);
 
-
         Paragraph agenciaYAgenteParagraph = new Paragraph();
         agenciaYAgenteParagraph.add(new Chunk("AGENCIA: ", fontBold));
         agenciaYAgenteParagraph.add(new Chunk(balanceAgenciaDTO.getAgencia(), fontRegular));
@@ -337,7 +319,6 @@ public class CierreSemanalUtil {
         PdfPCell agenciaYAgenteCell = new PdfPCell(agenciaYAgenteParagraph);
         PdfStyleManager.setStyleNormalCell(agenciaYAgenteCell);
 
-
         Paragraph rendimientoYNivelParagraph = new Paragraph();
         rendimientoYNivelParagraph.add(new Chunk("% DE AGENCIA: ", fontBold));
         rendimientoYNivelParagraph.add(new Chunk(balanceAgenciaDTO.getRendimiento() + "", fontRegular));
@@ -345,7 +326,6 @@ public class CierreSemanalUtil {
         rendimientoYNivelParagraph.add(new Chunk(balanceAgenciaDTO.getNivel(), fontRegular));
         PdfPCell rendimientoYNivelCell = new PdfPCell(rendimientoYNivelParagraph);
         PdfStyleManager.setStyleNormalCell(rendimientoYNivelCell);
-
 
         tablaBalanceAgencia.addCell(zonaGerenteCell);
         tablaBalanceAgencia.addCell(agenciaYAgenteCell);
@@ -355,9 +335,7 @@ public class CierreSemanalUtil {
         return cellBalanceAgencia;
     }
 
-    private static PdfPCell getIngresosAgente(
-            IngresosAgenteDTO ingresosAgenteDTO
-    ) throws DocumentException {
+    private static PdfPCell getIngresosAgente(IngresosAgenteDTO ingresosAgenteDTO) throws DocumentException {
         PdfPCell cellIngresosAgente = new PdfPCell();
         cellIngresosAgente.setBorder(0);
         cellIngresosAgente.setPadding(0);
@@ -434,9 +412,7 @@ public class CierreSemanalUtil {
         return cellIngresosAgente;
     }
 
-    private static PdfPCell getPorcentajesEgresosGerente(
-            EgresosGerenteDTO egresosGerenteDTO
-    ) {
+    private static PdfPCell getPorcentajesEgresosGerente(EgresosGerenteDTO egresosGerenteDTO) {
         PdfPCell cellPorcentajesEgresosGerente = new PdfPCell();
         cellPorcentajesEgresosGerente.setBorder(0);
         cellPorcentajesEgresosGerente.setPadding(0);
@@ -454,7 +430,6 @@ public class CierreSemanalUtil {
                 .getPorcentajeBonoMensual() + "%", 9, PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleFillColorCell(cellBonoMensual);
 
-
         PdfPCell cellValidation = new PdfPCell(fuentes.regular("* La generacion de este documento PDF se lleva a cabo de manera automatizada unicamente si el cierre es validado mediante la firma con fotografia y codigo PIN, tanto por parte del agente como del gerente. "
                 , 6, PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.commonCellStyle(cellValidation);
@@ -463,15 +438,12 @@ public class CierreSemanalUtil {
         tablaPorcentajesEgresosGerente.addCell(cellBonoMensual);
         tablaPorcentajesEgresosGerente.addCell(cellValidation);
 
-
         cellPorcentajesEgresosGerente.addElement(tablaPorcentajesEgresosGerente);
 
         return cellPorcentajesEgresosGerente;
     }
 
-    private static PdfPCell getSemana(
-            CierreSemanalDTO dto
-    ) {
+    private static PdfPCell getSemana(CierreSemanalDTO dto) {
         PdfPCell cellSemana = new PdfPCell();
         PdfStyleManager.setStyleForCellTitles(cellSemana);
 
@@ -486,9 +458,7 @@ public class CierreSemanalUtil {
         return cellSemana;
     }
 
-    private static PdfPCell getCobranza(
-            BalanceAgenciaDTO balanceAgenciaDTO
-    ) {
+    private static PdfPCell getCobranza(BalanceAgenciaDTO balanceAgenciaDTO) {
         PdfPCell cellCobranza = new PdfPCell();
         cellCobranza.setBorder(0);
         cellCobranza.setPadding(0);
@@ -496,10 +466,8 @@ public class CierreSemanalUtil {
         PdfPTable tablaBalanceAgencia = new PdfPTable(1);
         tablaBalanceAgencia.setWidthPercentage(100);
 
-
         Font fontBold = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, PdfStyleManager.getPrimaryBasecolor());
         Font fontRegular = FontFactory.getFont(FontFactory.HELVETICA, 8, PdfStyleManager.getPrimaryBasecolor());
-
 
         Paragraph totalClientesParagraph = new Paragraph();
         totalClientesParagraph.add(new Chunk("TOTAL DE CLIENTES DE LA AGENCIA: ", fontRegular));
@@ -508,14 +476,12 @@ public class CierreSemanalUtil {
         PdfPCell totalClientesCell = new PdfPCell(totalClientesParagraph);
         PdfStyleManager.setStyleNormalCell(totalClientesCell);
 
-
         Paragraph pagoReducidoParagraph = new Paragraph();
         pagoReducidoParagraph.add(new Chunk("TOTAL DE CLIENTES CON PAGO REDUCIDO: ", fontRegular));
         pagoReducidoParagraph.add(new Chunk(balanceAgenciaDTO.getPagosReducidos() + "*", fontBold));
 
         PdfPCell pagoReducidoCell = new PdfPCell(pagoReducidoParagraph);
         PdfStyleManager.setStyleFillColorCell(pagoReducidoCell);
-
 
         Paragraph noPagoParagraph = new Paragraph();
         noPagoParagraph.add(new Chunk("TOTAL DE CLIENTES CON NO PAGO: ", fontRegular));
@@ -524,14 +490,12 @@ public class CierreSemanalUtil {
         PdfPCell noPagoCell = new PdfPCell(noPagoParagraph);
         PdfStyleManager.setStyleNormalCell(noPagoCell);
 
-
         Paragraph liquidacionesParagraph = new Paragraph();
         liquidacionesParagraph.add(new Chunk("TOTAL DE CLIENTES LIQUIDADOS: ", fontRegular));
         liquidacionesParagraph.add(new Chunk(balanceAgenciaDTO.getLiquidaciones() + "*", fontBold));
 
         PdfPCell liquidacionesCell = new PdfPCell(liquidacionesParagraph);
         PdfStyleManager.setStyleFillColorCell(liquidacionesCell);
-
 
         tablaBalanceAgencia.addCell(totalClientesCell);
         tablaBalanceAgencia.addCell(pagoReducidoCell);
@@ -542,9 +506,7 @@ public class CierreSemanalUtil {
         return cellCobranza;
     }
 
-    private static PdfPCell getEgresosAgente(
-            EgresosAgenteDTO egresosAgenteDTO
-    ) throws DocumentException {
+    private static PdfPCell getEgresosAgente(EgresosAgenteDTO egresosAgenteDTO) throws DocumentException {
         PdfPCell cellIngresosAgente = new PdfPCell();
         cellIngresosAgente.setBorder(0);
         cellIngresosAgente.setPadding(0);
@@ -603,9 +565,7 @@ public class CierreSemanalUtil {
         return cellIngresosAgente;
     }
 
-    private static PdfPCell getEgresosGerente(
-            EgresosGerenteDTO egresosGerenteDTO
-    ) throws DocumentException {
+    private static PdfPCell getEgresosGerente(EgresosGerenteDTO egresosGerenteDTO) throws DocumentException {
         PdfPCell cellIngresosAgente = new PdfPCell();
         cellIngresosAgente.setBorder(0);
         cellIngresosAgente.setPadding(0);
@@ -663,7 +623,6 @@ public class CierreSemanalUtil {
         return cellIngresosAgente;
     }
 
-
     //TODO - mover a otra clase helper o util
     public static String mxFormatFullCurrent() {
         LocalDateTime currentDate = LocalDateTime.now();
@@ -681,9 +640,7 @@ public class CierreSemanalUtil {
         return "$" + decimalesformato.format(numero);
     }
 
-    public static void subSendCierreSemanalMessage(
-            CierreSemanalDTO cierreSemanalDTO
-    ) {
+    public static void subSendCierreSemanalMessage(CierreSemanalDTO cierreSemanalDTO) {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
@@ -691,31 +648,21 @@ public class CierreSemanalUtil {
                 .post(CierreSemanalUtil.requestBodyCierreSemanal(cierreSemanalDTO))
                 .build();
 
-        try {
-            Response response = client.newCall(request).execute();
-            // Do something with the response.
-        } catch (
-                IOException e
-        ) {
-            e.printStackTrace();
+        try (Response response = client.newCall(request).execute()) {
+        } catch (IOException ignored) {
         }
     }
 
-    private static RequestBody requestBodyCierreSemanal(
-            CierreSemanalDTO cierreSemanalDTO
-    ) {
+    private static RequestBody requestBodyCierreSemanal(CierreSemanalDTO cierreSemanalDTO) {
         String cierreSemanalJSON = new Gson().toJson(cierreSemanalDTO);
 
         return RequestBody.create(MediaType.parse("application/json"), cierreSemanalJSON);
     }
 
-    public static double getCobranzaTotalByAgenciaAnioAndSemana(
-            String agencia,
-            int anio,
-            int semana
-    ) throws ExecutionException, InterruptedException {
-        CompletableFuture<Double> cobranzaTotal = CierreSemanalUtil.pagoService
-                .getCobranzaTotalByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
+    public static double getCobranzaTotalByAgenciaAnioAndSemana(String agencia, int anio, int semana)
+            throws ExecutionException, InterruptedException {
+        CompletableFuture<Double> cobranzaTotal = CierreSemanalUtil.pagoAgrupadoService
+                .findCobranzaTotalByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
         cobranzaTotal.join();
 
         return cobranzaTotal.get();

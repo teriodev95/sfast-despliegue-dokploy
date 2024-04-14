@@ -31,11 +31,8 @@ public final class PGSController {
     private final CalendarioService calendarioService;
     private final AgenciaService agenciaService;
 
-    public PGSController(
-            AsignacionService asignacionService,
-            CalendarioService calendarioService,
-            AgenciaService agenciaService
-    ) {
+    public PGSController(AsignacionService asignacionService, CalendarioService calendarioService,
+                         AgenciaService agenciaService) {
         this.asignacionService = asignacionService;
         this.calendarioService = calendarioService;
         this.agenciaService = agenciaService;
@@ -48,9 +45,9 @@ public final class PGSController {
     }
 
     @GetMapping(path = "/cobranza/{agencia}/{anio}/{semana}")
-    public ResponseEntity<CobranzaPWA> getCobranzaByAgenciaAnioAndSemana(@PathVariable("agencia") String agencia,
-            @PathVariable("anio") int anio, @PathVariable("semana") int semana
-    ) {
+    public ResponseEntity<CobranzaPWA> getCobranzaByAgenciaAnioAndSemana(@PathVariable String agencia,
+                                                                         @PathVariable int anio,
+                                                                         @PathVariable int semana) {
         CobranzaPWA cobranzaPwa = new CobranzaPWA();
 
         cobranzaPwa.setCobranza(PWAUtil.darrprestamoCobranzaPwaFromPrestamoModelsAndPagoModels(agencia, anio, semana));
@@ -68,9 +65,8 @@ public final class PGSController {
     }
 
     @GetMapping(path = "/dashboard-fecha/{agencia}/{fecha}")
-    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgencia(
-            @PathVariable("agencia") String agencia, @PathVariable("fecha") String fecha
-    ) {
+    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgencia(@PathVariable String agencia,
+                                                                         @PathVariable String fecha) {
         Dashboard dashboard = new Dashboard();
         dashboard.setStatusAgencia(this.agenciaService.findStatusById(agencia));
         ObjectsContainer objectsContainer = new ObjectsContainer();
@@ -108,9 +104,7 @@ public final class PGSController {
     }
 
     @GetMapping(path = "/historico/{prestamoId}")
-    public ResponseEntity<HistoricoPWA> getHistorial(
-            @PathVariable("prestamoId") String prestamoId
-    ) {
+    public ResponseEntity<HistoricoPWA> getHistorial(@PathVariable String prestamoId) {
         HistoricoPWA historicoPWA = new HistoricoPWA();
         historicoPWA.setHistorico(PWAUtil.darrpagoHistoricoPwaFromPagoVistaModelsByPrestamoId(prestamoId));
 
@@ -123,8 +117,7 @@ public final class PGSController {
 
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> getAsignacionesByAgenciaAnioAndSemana(
-            @PathVariable("agencia") String agencia, @PathVariable("anio") int anio, @PathVariable("semana") int semana
-    ) {
+            @PathVariable String agencia, @PathVariable int anio, @PathVariable int semana) {
         ArrayList<AsignacionModel> darrasignEnt = this.asignacionService
                 .findByAgenciaAnioAndSemana(agencia, anio, semana);
 

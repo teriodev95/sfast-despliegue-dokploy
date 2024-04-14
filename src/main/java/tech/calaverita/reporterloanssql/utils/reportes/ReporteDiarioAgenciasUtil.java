@@ -7,8 +7,11 @@ import tech.calaverita.reporterloanssql.dto.reporte_diario_agencias.DashboardSem
 import tech.calaverita.reporterloanssql.dto.reporte_diario_agencias.EncabezadoReporteDiarioAgenciasDTO;
 import tech.calaverita.reporterloanssql.models.mariaDB.*;
 import tech.calaverita.reporterloanssql.models.mongoDB.ReporteDiarioAgenciasDocument;
-import tech.calaverita.reporterloanssql.services.*;
-import tech.calaverita.reporterloanssql.services.reportes.ReporteDiarioAgenciasService;
+import tech.calaverita.reporterloanssql.services.AgenciaService;
+import tech.calaverita.reporterloanssql.services.CalendarioService;
+import tech.calaverita.reporterloanssql.services.SucursalService;
+import tech.calaverita.reporterloanssql.services.UsuarioService;
+import tech.calaverita.reporterloanssql.services.views.PagoAgrupadoService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -24,29 +27,21 @@ public final class ReporteDiarioAgenciasUtil {
     private static AgenciaService agenciaService;
     private static UsuarioService usuarioService;
     private static CalendarioService calendarioService;
-    private static PagoService pagoService;
     private static SucursalService sucursalService;
-    private static ReporteDiarioAgenciasService reporteDiarioAgenciasService;
+    private static PagoAgrupadoService pagoAgrupadoService;
 
-    public ReporteDiarioAgenciasUtil(
-            AgenciaService agenciaService,
-            UsuarioService usuarioService,
-            CalendarioService calendarioService,
-            PagoService pagoService,
-            SucursalService sucursalService,
-            ReporteDiarioAgenciasService reporteDiarioAgenciasService
-    ) {
+    public ReporteDiarioAgenciasUtil(AgenciaService agenciaService, UsuarioService usuarioService,
+                                     CalendarioService calendarioService, SucursalService sucursalService,
+                                     PagoAgrupadoService pagoAgrupadoService) {
         ReporteDiarioAgenciasUtil.agenciaService = agenciaService;
         ReporteDiarioAgenciasUtil.usuarioService = usuarioService;
         ReporteDiarioAgenciasUtil.calendarioService = calendarioService;
-        ReporteDiarioAgenciasUtil.pagoService = pagoService;
         ReporteDiarioAgenciasUtil.sucursalService = sucursalService;
-        ReporteDiarioAgenciasUtil.reporteDiarioAgenciasService = reporteDiarioAgenciasService;
+        ReporteDiarioAgenciasUtil.pagoAgrupadoService = pagoAgrupadoService;
     }
 
-    public static ReporteDiarioAgenciasDocument getReporte(
-            GerenciaModel gerenciaModel
-    ) throws ExecutionException, InterruptedException {
+    public static ReporteDiarioAgenciasDocument getReporte(GerenciaModel gerenciaModel)
+            throws ExecutionException, InterruptedException {
         ReporteDiarioAgenciasDocument reporte = new ReporteDiarioAgenciasDocument();
         {
             HashMap<String, Integer> anioAndSemana = ReporteDiarioAgenciasUtil.getAnioAndSemana();
@@ -73,9 +68,7 @@ public final class ReporteDiarioAgenciasUtil {
         return anioAndSemana;
     }
 
-    private static String getId(
-            GerenciaModel gerenciaModel
-    ) throws ExecutionException, InterruptedException {
+    private static String getId(GerenciaModel gerenciaModel) throws ExecutionException, InterruptedException {
         LocalDate date = LocalDate.now();
 
         CompletableFuture<CalendarioModel> calendarioEntity = ReporteDiarioAgenciasUtil.calendarioService
@@ -92,9 +85,8 @@ public final class ReporteDiarioAgenciasUtil {
         return String.format("%s-%d-%d-%s", gerenciaModel.getGerenciaId(), anioActual, semanaActual, diaSemana);
     }
 
-    private static EncabezadoReporteDiarioAgenciasDTO getEncabezado(
-            GerenciaModel gerenciaModel
-    ) throws ExecutionException, InterruptedException {
+    private static EncabezadoReporteDiarioAgenciasDTO getEncabezado(GerenciaModel gerenciaModel)
+            throws ExecutionException, InterruptedException {
         EncabezadoReporteDiarioAgenciasDTO encabezado = new EncabezadoReporteDiarioAgenciasDTO();
         {
             CompletableFuture<UsuarioModel> usuarioEntityGerente = ReporteDiarioAgenciasUtil.usuarioService
@@ -184,10 +176,9 @@ public final class ReporteDiarioAgenciasUtil {
                 semanaAnterior, anioAnterior);
     }
 
-    private static ArrayList<AgenciaReporteDiarioAgenciasDTO> getAgencias(
-            GerenciaModel gerenciaModel,
-            HashMap<String, Integer> anioAndSemana
-    ) throws ExecutionException, InterruptedException {
+    private static ArrayList<AgenciaReporteDiarioAgenciasDTO> getAgencias(GerenciaModel gerenciaModel,
+                                                                          HashMap<String, Integer> anioAndSemana)
+            throws ExecutionException, InterruptedException {
         CompletableFuture<ArrayList<AgenciaModel>> agenciaEntities = ReporteDiarioAgenciasUtil.agenciaService
                 .findByGerenciaIdAsync(gerenciaModel.getGerenciaId());
 
@@ -230,9 +221,7 @@ public final class ReporteDiarioAgenciasUtil {
                 int semanaAnterior;
                 int anioAnterior;
                 {
-                    if (
-                            semana == 1
-                    ) {
+                    if (semana == 1) {
                         anioAnterior = anio - 1;
                         semanaAnterior = ReporteDiarioAgenciasUtil.calendarioService
                                 .existsByAnioAndSemana(anioAnterior, 53) ? 53 : 52;
@@ -251,20 +240,16 @@ public final class ReporteDiarioAgenciasUtil {
         return agencias;
     }
 
-    private static DashboardSemanaActualReporteDiarioAgenciasDTO getDashboardSemanaActual(
-            String agencia,
-            int anio,
-            int semana
-    ) throws ExecutionException, InterruptedException {
+    private static DashboardSemanaActualReporteDiarioAgenciasDTO getDashboardSemanaActual(String agencia, int anio,
+                                                                                          int semana)
+            throws ExecutionException, InterruptedException {
         DashboardSemanaActualReporteDiarioAgenciasDTO semanaActual =
                 new DashboardSemanaActualReporteDiarioAgenciasDTO();
 
         int semanaAnterior;
         int anioAnterior;
         {
-            if (
-                    semana == 1
-            ) {
+            if (semana == 1) {
                 anioAnterior = anio - 1;
                 semanaAnterior = ReporteDiarioAgenciasUtil.calendarioService
                         .existsByAnioAndSemana(anioAnterior, 53) ? 53 : 52;
@@ -274,16 +259,16 @@ public final class ReporteDiarioAgenciasUtil {
             }
         }
 
-        CompletableFuture<Double> debitoTotal = ReporteDiarioAgenciasUtil.pagoService
-                .getDebitoTotalByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
-        CompletableFuture<Double> excedente = ReporteDiarioAgenciasUtil.pagoService
-                .getExcedenteByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
-        CompletableFuture<Double> cobranzaTotal = ReporteDiarioAgenciasUtil.pagoService
-                .getCobranzaTotalByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
-        CompletableFuture<Integer> clientesTotalesCobrados = ReporteDiarioAgenciasUtil.pagoService
-                .getClientesCobradosByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
-        CompletableFuture<Integer> clientesTotales = ReporteDiarioAgenciasUtil.pagoService
-                .getClientesTotalesByAgenciaAnioAndSemanaAsync(agencia, anioAnterior, semanaAnterior);
+        CompletableFuture<Double> debitoTotal = ReporteDiarioAgenciasUtil.pagoAgrupadoService
+                .findDebitoTotalByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
+        CompletableFuture<Double> excedente = ReporteDiarioAgenciasUtil.pagoAgrupadoService
+                .findExcedenteByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
+        CompletableFuture<Double> cobranzaTotal = ReporteDiarioAgenciasUtil.pagoAgrupadoService
+                .findCobranzaTotalByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
+        CompletableFuture<Integer> clientesTotalesCobrados = ReporteDiarioAgenciasUtil.pagoAgrupadoService
+                .findClientesCobradosByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
+        CompletableFuture<Integer> clientesTotales = ReporteDiarioAgenciasUtil.pagoAgrupadoService
+                .findClientesTotalesByAgenciaAnioAndSemanaAsync(agencia, anioAnterior, semanaAnterior);
 
         semanaActual.setDiferenciaFaltanteActualVsFaltanteAnterior(null);
         semanaActual.setDiferenciaAcumuladaFaltantes(null);
@@ -309,22 +294,20 @@ public final class ReporteDiarioAgenciasUtil {
         return semanaActual;
     }
 
-    private static DashboardSemanaAnteriorReporteDiarioAgenciasDTO getDashboardSemanaAnterior(
-            String agencia,
-            int anio,
-            int semana
-    ) throws ExecutionException, InterruptedException {
+    private static DashboardSemanaAnteriorReporteDiarioAgenciasDTO getDashboardSemanaAnterior(String agencia, int anio,
+                                                                                              int semana)
+            throws ExecutionException, InterruptedException {
         DashboardSemanaAnteriorReporteDiarioAgenciasDTO semanaAnterior =
                 new DashboardSemanaAnteriorReporteDiarioAgenciasDTO();
 
-        CompletableFuture<Double> debitoTotal = ReporteDiarioAgenciasUtil.pagoService
-                .getDebitoTotalByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
-        CompletableFuture<Double> excedente = ReporteDiarioAgenciasUtil.pagoService
-                .getExcedenteByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
-        CompletableFuture<Double> cobranzaTotal = ReporteDiarioAgenciasUtil.pagoService
-                .getCobranzaTotalByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
-        CompletableFuture<Integer> clientesTotalesCobrados = ReporteDiarioAgenciasUtil.pagoService
-                .getClientesCobradosByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
+        CompletableFuture<Double> debitoTotal = ReporteDiarioAgenciasUtil.pagoAgrupadoService
+                .findDebitoTotalByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
+        CompletableFuture<Double> excedente = ReporteDiarioAgenciasUtil.pagoAgrupadoService
+                .findExcedenteByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
+        CompletableFuture<Double> cobranzaTotal = ReporteDiarioAgenciasUtil.pagoAgrupadoService
+                .findCobranzaTotalByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
+        CompletableFuture<Integer> clientesTotalesCobrados = ReporteDiarioAgenciasUtil.pagoAgrupadoService
+                .findClientesCobradosByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
 
         CompletableFuture.allOf(debitoTotal, excedente, cobranzaTotal, clientesTotalesCobrados);
         semanaAnterior.setDebitoTotal(debitoTotal.get());

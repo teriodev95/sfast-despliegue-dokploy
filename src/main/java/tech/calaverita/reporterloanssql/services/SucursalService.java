@@ -9,45 +9,24 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public class SucursalService {
-    //------------------------------------------------------------------------------------------------------------------
-    /*INSTANCE VARIABLES*/
-    //------------------------------------------------------------------------------------------------------------------
     private final SucursalRepository repo;
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*CONSTRUCTORS*/
-    //------------------------------------------------------------------------------------------------------------------
-    public SucursalService(
-            SucursalRepository repo
-    ) {
+    public SucursalService(SucursalRepository repo) {
         this.repo = repo;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    /*METHODS*/
-    //------------------------------------------------------------------------------------------------------------------
-    public SucursalModel findBySucursalId(
-            String sucursalId
-    ) {
-        return this.repo.findBySucursalId(sucursalId);
+    public SucursalModel findBySucursalId(String sucursalId) {
+        return this.repo.findById(sucursalId).orElse(null);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Async("asyncExecutor")
-    public CompletableFuture<SucursalModel> findBySucursalIdAsync(
-            String sucursalId
-    ) {
-        SucursalModel entity = this.repo.findBySucursalId(sucursalId);
-
-        return CompletableFuture.completedFuture(entity);
+    public CompletableFuture<SucursalModel> findBySucursalIdAsync(String sucursalId) {
+        return CompletableFuture.completedFuture(this.repo.findById(sucursalId).orElse(null));
     }
 
-    public String getSucursalByGerenciaId(
-            String gerenciaId
-    ) {
-        String sucursalId = gerenciaId.substring(0, 4);
-        SucursalModel entity = this.repo.findBySucursalId(sucursalId);
+    public String findNombreSucursalByGerenciaId(String gerenciaId) {
+        SucursalModel sucursalModel = this.repo.findById(gerenciaId.substring(0, 4)).orElse(null);
 
-        return entity.getNombre().split(" ")[0];
+        return sucursalModel != null ? sucursalModel.getNombre().split(" ")[0] : null;
     }
 }

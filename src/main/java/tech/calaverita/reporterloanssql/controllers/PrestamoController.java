@@ -14,9 +14,7 @@ import tech.calaverita.reporterloanssql.utils.PrestamoUtil;
 public final class PrestamoController {
     private final PrestamoRepository prestamoRepository;
 
-    public PrestamoController(
-            PrestamoRepository prestamoRepository
-    ) {
+    public PrestamoController(PrestamoRepository prestamoRepository) {
         this.prestamoRepository = prestamoRepository;
     }
 
@@ -28,14 +26,10 @@ public final class PrestamoController {
 
     @CrossOrigin
     @GetMapping(path = "/{id}")
-    public ResponseEntity<PrestamoModel> represtModGetByStrId(
-            @PathVariable("id") String strId_I
-    ) {
-        PrestamoModel prestMod_O = prestamoRepository.prestEntFindByPrestamoId(strId_I);
+    public ResponseEntity<PrestamoModel> represtModGetByStrId(@PathVariable String id) {
+        PrestamoModel prestMod_O = prestamoRepository.prestEntFindByPrestamoId(id);
 
-        if (
-                prestMod_O == null
-        ) {
+        if (prestMod_O == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 

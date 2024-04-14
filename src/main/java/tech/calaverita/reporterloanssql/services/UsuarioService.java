@@ -12,9 +12,7 @@ import java.util.concurrent.CompletableFuture;
 public class UsuarioService {
     private final UsuarioRepository repo;
 
-    public UsuarioService(
-            UsuarioRepository repo
-    ) {
+    public UsuarioService(UsuarioRepository repo) {
         this.repo = repo;
     }
 
@@ -26,19 +24,15 @@ public class UsuarioService {
         return this.repo.existsByAgencia(agencia);
     }
 
-    public boolean existsByUsuarioGerente(String usuario) {
-        String tipo = "Gerente";
+    public boolean existsByUsuarioAndTipo(String usuario, String tipo) {
         return this.repo.existsByUsuarioAndTipo(usuario, tipo);
     }
 
-    public boolean existsByUsuarioActivo(String usuario) {
-        boolean status = true;
+    public boolean existsByUsuarioAndStatus(String usuario, boolean status) {
         return this.repo.existsByUsuarioAndStatus(usuario, status);
     }
 
-    public boolean existsByUsuarioGerenteActivo(String usuario) {
-        String tipo = "Gerente";
-        boolean status = true;
+    public boolean existsByUsuarioTipoAndStatus(String usuario, String tipo, boolean status) {
         return this.repo.existsByUsuarioAndTipoAndStatus(usuario, tipo, status);
     }
 
@@ -50,8 +44,7 @@ public class UsuarioService {
         return this.repo.findByUsuario(usuario);
     }
 
-    public UsuarioModel findByAgencia(String agencia) {
-        boolean status = true;
+    public UsuarioModel findByAgenciaAndStatus(String agencia, boolean status) {
         return this.repo.findByAgenciaAndStatus(agencia, status);
     }
 
@@ -59,23 +52,22 @@ public class UsuarioService {
         return this.repo.findByUsuarioAndPin(usuario, pin);
     }
 
-    public UsuarioModel findGerenteByGerencia(String gerencia) {
-        String tipo = "Gerente";
+    public UsuarioModel findByGerenciaAndTipo(String gerencia, String tipo) {
         return this.repo.findByGerenciaAndTipo(gerencia, tipo).get(0);
     }
 
     public ArrayList<UsuarioModel> findByGerencia(String gerencia) {
-        return this.repo.darrusuarEntFindByGerencia(gerencia);
+        return this.repo.findByGerenciaInnerJoinUsuarioGerenciaModel(gerencia);
     }
 
     public ArrayList<UsuarioModel> findAll() {
         return (ArrayList<UsuarioModel>) this.repo.findAll();
     }
 
-    public ArrayList<String> findGerentesByGerencias(ArrayList<String> gerencias) {
+    public ArrayList<String> findByGerenciasTipoAndStatus(ArrayList<String> gerencias) {
         String tipo = "Gerente";
         boolean status = true;
-        return this.repo.findGerentesByGerenciaAndTipoAndStatus(gerencias, tipo, status);
+        return this.repo.findByGerenciaAndTipoAndStatus(gerencias, tipo, status);
     }
 
     @Async("asyncExecutor")
@@ -89,10 +81,9 @@ public class UsuarioService {
     }
 
     @Async("asyncExecutor")
-    public CompletableFuture<ArrayList<String>> findAgentesByGerenciaAsync(String gerencia) {
-        String tipo = "Agente";
-        boolean status = true;
-        return CompletableFuture.completedFuture(this.repo.findAgentesByGerenciaAndTipoAndStatus(gerencia, tipo,
+    public CompletableFuture<ArrayList<String>> findByGerenciaTipoAndStatusAsync(String gerencia, String tipo,
+                                                                                 boolean status) {
+        return CompletableFuture.completedFuture(this.repo.findByGerenciaAndTipoAndStatus(gerencia, tipo,
                 status));
     }
 }

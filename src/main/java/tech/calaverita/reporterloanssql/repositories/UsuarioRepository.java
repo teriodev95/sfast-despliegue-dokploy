@@ -30,31 +30,14 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
     @Query("SELECT CONCAT(usuar.nombre, ' ' , usuar.apellidoPaterno, ' ', usuar.apellidoMaterno) FROM UsuarioModel " +
             "usuar WHERE usuar.gerencia = :gerencia AND usuar.tipo = :tipo AND usuar.status = :status " +
             "ORDER BY usuar.agencia")
-    ArrayList<String> findAgentesByGerenciaAndTipoAndStatus(String gerencia, String tipo, boolean status);
+    ArrayList<String> findByGerenciaAndTipoAndStatus(String gerencia, String tipo, boolean status);
 
     @Query("SELECT CONCAT(usuar.nombre, ' ' , usuar.apellidoPaterno, ' ', usuar.apellidoMaterno) FROM UsuarioModel " +
             "usuar WHERE usuar.gerencia IN :gerencias AND usuar.tipo = :tipo AND usuar.status = :status " +
             "ORDER BY usuar.gerencia")
-    ArrayList<String> findGerentesByGerenciaAndTipoAndStatus(ArrayList<String> gerencias, String tipo, boolean status);
+    ArrayList<String> findByGerenciaAndTipoAndStatus(ArrayList<String> gerencias, String tipo, boolean status);
 
-    @Query("SELECT us " +
-            "FROM UsuarioModel us " +
-            "WHERE us.tipo = :tipo")
-    ArrayList<UsuarioModel> darrusuarEntFindByTipo(String tipo);
-
-    @Query(value = "SELECT us.* " +
-            "FROM usuarios us " +
-            "WHERE us.usuarioId = (SELECT suc.regionalId " +
-            "FROM sucursales suc " +
-            "WHERE suc.sucursalId = (SELECT ger.sucursalId " +
-            "FROM gerencias ger " +
-            "WHERE ger.gerenciaId = :gerenciaId))", nativeQuery = true)
-    UsuarioModel usuarEntFindByUsuarioIdFromGerenciaIdOfGerenciaModel(String gerenciaId);
-
-    @Query("SELECT usu " +
-            "FROM UsuarioModel usu " +
-            "JOIN UsuarioGerenciaModel ugm " +
-            "ON usu.usuarioId = ugm.usuarioId " +
+    @Query("SELECT usuar FROM UsuarioModel usuar INNER JOIN UsuarioGerenciaModel ugm ON usuar.usuarioId = ugm.usuarioId " +
             "AND ugm.gerenciaId = :gerencia")
-    ArrayList<UsuarioModel> darrusuarEntFindByGerencia(String gerencia);
+    ArrayList<UsuarioModel> findByGerenciaInnerJoinUsuarioGerenciaModel(String gerencia);
 }

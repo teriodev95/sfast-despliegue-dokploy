@@ -28,7 +28,7 @@ public final class VisitaController {
 
     @GetMapping
     public ResponseEntity<ArrayList<VisitaModel>> getVisitaModels() {
-        ArrayList<VisitaModel> visEntVisitaEntities = visitaService.darrvisModFindAll();
+        ArrayList<VisitaModel> visEntVisitaEntities = visitaService.findAll();
 
         if (visEntVisitaEntities.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -37,12 +37,9 @@ public final class VisitaController {
         return new ResponseEntity<>(visEntVisitaEntities, HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/{visitaId}")
-    public ResponseEntity<VisitaModel> getVisitaModelByVisitaId(
-            @PathVariable(name = "visitaId") String visitaId
-    ) {
-        VisitaModel visitaModel = visitaService.visModFindByVisitaId(visitaId);
+    public ResponseEntity<VisitaModel> getVisitaModelByVisitaId(@PathVariable String visitaId) {
+        VisitaModel visitaModel = visitaService.findById(visitaId);
 
         if (visitaModel == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -51,12 +48,9 @@ public final class VisitaController {
         return new ResponseEntity<>(visitaModel, HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @GetMapping(path = "/prestamo-id/{prestamoId}")
-    public ResponseEntity<ArrayList<VisitaModel>> getVisitaModelsByPrestamoId(
-            @PathVariable(name = "prestamoId") String prestamoId
-    ) {
-        ArrayList<VisitaModel> visEntVisitaEntities = visitaService.darrvisModFindByPrestamoId(prestamoId);
+    public ResponseEntity<ArrayList<VisitaModel>> getVisitaModelsByPrestamoId(@PathVariable String prestamoId) {
+        ArrayList<VisitaModel> visEntVisitaEntities = visitaService.findByPrestamoId(prestamoId);
 
         if (visEntVisitaEntities.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -65,11 +59,8 @@ public final class VisitaController {
         return new ResponseEntity<>(visEntVisitaEntities, HttpStatus.OK);
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @PostMapping(path = "/create-one")
-    public ResponseEntity<String> createVisitaModel(
-            @RequestBody VisitaModel visitaModel
-    ) {
+    public ResponseEntity<String> createVisitaModel(@RequestBody VisitaModel visitaModel) {
 
         ResponseEntity<String> responseEntity = VisitaUtil.restrCheckVisit(visitaModel);
 

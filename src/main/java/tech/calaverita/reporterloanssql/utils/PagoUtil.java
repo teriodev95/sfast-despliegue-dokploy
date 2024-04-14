@@ -34,14 +34,9 @@ public final class PagoUtil {
     private static CalendarioService calendarioService;
     private static PrestamoService prestamoService;
 
-    private PagoUtil(
-            AgenciaService agenciaService,
-            GerenciaService gerenciaService,
-            LiquidacionService liquidacionService,
-            PagoService pagoService,
-            CalendarioService calendarioService,
-            PrestamoService prestamoService
-    ) {
+    private PagoUtil(AgenciaService agenciaService, GerenciaService gerenciaService,
+                     LiquidacionService liquidacionService, PagoService pagoService,
+                     CalendarioService calendarioService, PrestamoService prestamoService) {
         PagoUtil.agenciaService = agenciaService;
         PagoUtil.gerenciaService = gerenciaService;
         PagoUtil.liquidacionService = liquidacionService;
@@ -51,49 +46,38 @@ public final class PagoUtil {
     }
 
     public static ModelValidation modValPagoModelValidation(PagoConLiquidacion pagoConLiquidacion,
-                                                            PrestamoModel prestamoModel
-    ) {
+                                                            PrestamoModel prestamoModel) {
         String strResponse_O = "";
         HttpStatus httpStatus_O = HttpStatus.CREATED;
         boolean boolIsOnline_O = true;
 
-        if (
-                pagoConLiquidacion.getPagoId() == null
-        ) {
+        if (pagoConLiquidacion.getPagoId() == null) {
             strResponse_O += "Debe Ingresar El 'pagoId'";
             httpStatus_O = HttpStatus.BAD_REQUEST;
             boolIsOnline_O = false;
         }
 
-        if (
-                ((pagoConLiquidacion.getPrestamoId() == null) || pagoConLiquidacion.getPrestamoId()
-                        .equalsIgnoreCase(""))
-        ) {
+        if (((pagoConLiquidacion.getPrestamoId() == null) || pagoConLiquidacion.getPrestamoId()
+                .equalsIgnoreCase(""))) {
             strResponse_O += "\nDebe Ingresar El 'prestamoId'";
             httpStatus_O = HttpStatus.BAD_REQUEST;
             boolIsOnline_O = false;
         }
 
-        if (
-                PagoUtil.pagoService.existsById(pagoConLiquidacion.getPagoId())
-        ) {
+        if (PagoUtil.pagoService.existsById(pagoConLiquidacion.getPagoId())) {
             strResponse_O += "\nEl Pago Ya Existe";
             httpStatus_O = HttpStatus.CONFLICT;
             boolIsOnline_O = false;
         }
 
-        if (
-                PagoUtil.boolIsPagoMigracion(pagoConLiquidacion.getPrestamoId(), pagoConLiquidacion.getAnio(),
-                        pagoConLiquidacion.getSemana())
-        ) {
+        if (PagoUtil.boolIsPagoMigracion(pagoConLiquidacion.getPrestamoId(), pagoConLiquidacion.getAnio(),
+                pagoConLiquidacion.getSemana())) {
             strResponse_O += "\nEl Pago cuenta con migración";
             httpStatus_O = HttpStatus.CONFLICT;
             boolIsOnline_O = false;
         }
 
-        if (
-                prestamoModel == null
-        ) {
+        if (prestamoModel == null) {
             strResponse_O += "\nNo Se Encontró Ningún Prestamo Con Ese 'prestamoId'";
             httpStatus_O = HttpStatus.NOT_FOUND;
             boolIsOnline_O = false;
@@ -103,8 +87,7 @@ public final class PagoUtil {
     }
 
     public static void subProcessPayment(ModelValidation modelValidation, PagoConLiquidacion pagoConLiquidacion,
-                                         PrestamoModel prestamoModel
-    ) {
+                                         PrestamoModel prestamoModel) {
         String strSession = "session_id=76d814874514726176f0615260848da2aab725ea";
         PagoModel pagMod = PagoUtil.pagoModelFromPagoConLiquidacion(pagoConLiquidacion);
         LiquidacionModel liqMod = pagoConLiquidacion.getInfoLiquidacion();
@@ -114,9 +97,7 @@ public final class PagoUtil {
 
         //                                                  //A continuación se hace una validación para comprobar si el
         //                                                  //      pago recibido trae liquidación
-        if (
-                liqMod != null
-        ) {
+        if (liqMod != null) {
             liqMod.setPagoId(pagMod.getPagoId());
             pagMod.setAbreCon(prestamoModel.getTotalAPagar() - PagoUtil.pagoService
                     .numGetSaldoFromPrestamoByPrestamoId(pagoConLiquidacion.getPrestamoId()));
@@ -126,8 +107,7 @@ public final class PagoUtil {
             retrofit2.Call<ResponseBodyXms> callrespBodyXms = RetrofitOdoo.getInstance().getApi()
                     .liquidacionCreateOne(strSession, new LiquidacionBody(liqMod));
             RetrofitOdooUtil.sendCall(callrespBodyXms);
-        } //
-        else {
+        } else {
             pagMod.setAbreCon(prestamoModel.getTotalAPagar() - PagoUtil.pagoService.numGetSaldoFromPrestamoByPrestamoId(
                     pagoConLiquidacion.getPrestamoId()));
             pagMod.setCierraCon(pagMod.getAbreCon() - pagoConLiquidacion.getMonto());
@@ -145,13 +125,10 @@ public final class PagoUtil {
                     new PagoBody(new PagoList(pagMod)));
             RetrofitOdooUtil.sendCall(callrespBodyXms);
 
-            if (
-                    liqMod != null
-            ) {
+            if (liqMod != null) {
                 PagoUtil.liquidacionService.save(liqMod);
             }
-        } //
-        catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException e) {
             modelValidation.setStrResponse(e.toString());
             modelValidation.setHttpStatus(HttpStatus.CONFLICT);
         }
@@ -255,9 +232,7 @@ public final class PagoUtil {
             infoPagoJsonObject.put("tipoPago", pagoModel.getTipo());
             infoPagoJsonObject.put("pago", pagoJsonObject);
             infoPagoJsonObject.put("gerencia", gerenciaJsonObject);
-        } catch (
-                JSONException e
-        ) {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
@@ -276,15 +251,15 @@ public final class PagoUtil {
         try {
             Response response = okHttpClient.newCall(request).execute();
             // Do something with the response.
-        } catch (
-                IOException e
-        ) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public static boolean boolIsPagoMigracion(String prestamoId, int anio, int semana) {
-        PagoModel pagoModel = PagoUtil.pagoService.pagModFindByAgenteAnioAndSemana(prestamoId, anio, semana);
+        String creadoDesde = "Migracion";
+        PagoModel pagoModel = PagoUtil.pagoService.pagModFindByAgenteAnioAndSemana(prestamoId, anio, semana,
+                creadoDesde);
 
         return pagoModel != null;
     }
@@ -301,9 +276,7 @@ public final class PagoUtil {
             pagoModel.setAnio(calendarioModel.getAnio());
             pagoModel.setEsPrimerPago(false);
 
-            if (
-                    prestamoEntity.isPresent()
-            ) {
+            if (prestamoEntity.isPresent()) {
                 pagoModel.setTarifa(prestamoEntity.get().getTarifa());
                 pagoModel.setAgente(prestamoEntity.get().getAgente());
             }

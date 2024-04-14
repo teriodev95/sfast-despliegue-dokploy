@@ -11,10 +11,10 @@ import tech.calaverita.reporterloanssql.models.mariaDB.SucursalModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
 import tech.calaverita.reporterloanssql.models.mongoDB.ReporteGeneralGerenciaDocument;
 import tech.calaverita.reporterloanssql.services.CalendarioService;
-import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.SucursalService;
 import tech.calaverita.reporterloanssql.services.UsuarioService;
 import tech.calaverita.reporterloanssql.services.reportes.ReporteGeneralGerenciaService;
+import tech.calaverita.reporterloanssql.services.views.PagoAgrupadoService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,27 +30,22 @@ import java.util.concurrent.ExecutionException;
 public class ReporteGeneralGerenciaUtil {
     private static UsuarioService usuarioService;
     private static CalendarioService calendarioService;
-    private static PagoService pagoService;
+    private static PagoAgrupadoService pagoAgrupadoService;
     private static SucursalService sucursalService;
     private static ReporteGeneralGerenciaService reporteGeneralGerenciaService;
 
-    public ReporteGeneralGerenciaUtil(
-            UsuarioService usuarioService,
-            CalendarioService calendarioService,
-            PagoService pagoService,
-            SucursalService sucursalService,
-            ReporteGeneralGerenciaService reporteGeneralGerenciaService
-    ) {
+    public ReporteGeneralGerenciaUtil(UsuarioService usuarioService, CalendarioService calendarioService,
+                                      PagoAgrupadoService pagoAgrupadoService, SucursalService sucursalService,
+                                      ReporteGeneralGerenciaService reporteGeneralGerenciaService) {
         ReporteGeneralGerenciaUtil.usuarioService = usuarioService;
         ReporteGeneralGerenciaUtil.calendarioService = calendarioService;
-        ReporteGeneralGerenciaUtil.pagoService = pagoService;
+        ReporteGeneralGerenciaUtil.pagoAgrupadoService = pagoAgrupadoService;
         ReporteGeneralGerenciaUtil.sucursalService = sucursalService;
         ReporteGeneralGerenciaUtil.reporteGeneralGerenciaService = reporteGeneralGerenciaService;
     }
 
-    public static ReporteGeneralGerenciaDocument getReporte(
-            GerenciaModel gerenciaModel
-    ) throws ExecutionException, InterruptedException {
+    public static ReporteGeneralGerenciaDocument getReporte(GerenciaModel gerenciaModel)
+            throws ExecutionException, InterruptedException {
         ReporteGeneralGerenciaDocument reporte = new ReporteGeneralGerenciaDocument();
         {
             CalendarioModel calendarioModel = ReporteGeneralGerenciaUtil.getCalendarioEntity();
@@ -94,8 +89,7 @@ public class ReporteGeneralGerenciaUtil {
     }
 
     public static String getId(
-            GerenciaModel gerenciaModel
-    ) throws ExecutionException, InterruptedException {
+            GerenciaModel gerenciaModel) throws ExecutionException, InterruptedException {
         LocalDate date = LocalDate.now();
 
         CompletableFuture<CalendarioModel> calendarioEntity = ReporteGeneralGerenciaUtil.calendarioService
@@ -111,10 +105,8 @@ public class ReporteGeneralGerenciaUtil {
         return String.format("%s-%d-%d-%s", gerenciaModel.getGerenciaId(), anioActual, semanaActual, diaSemana);
     }
 
-    private static EncabezadoReporteGeneralGerenciaDTO getEncabezado(
-            GerenciaModel gerenciaModel,
-            int semana
-    ) throws ExecutionException, InterruptedException {
+    private static EncabezadoReporteGeneralGerenciaDTO getEncabezado(GerenciaModel gerenciaModel, int semana)
+            throws ExecutionException, InterruptedException {
         EncabezadoReporteGeneralGerenciaDTO encabezado = new EncabezadoReporteGeneralGerenciaDTO();
         {
             CompletableFuture<UsuarioModel> usuarioEntityGerente = ReporteGeneralGerenciaUtil.usuarioService
@@ -174,9 +166,7 @@ public class ReporteGeneralGerenciaUtil {
     }
 
     private static DashboardReporteGeneralGerenciaDTO getDashboardSemanaActual(
-            EncabezadoReporteGeneralGerenciaDTO encabezado,
-            CalendarioModel calendarioModel
-    )
+            EncabezadoReporteGeneralGerenciaDTO encabezado, CalendarioModel calendarioModel)
             throws ExecutionException, InterruptedException {
         // To easy code
         int anio = calendarioModel.getAnio();
@@ -196,11 +186,10 @@ public class ReporteGeneralGerenciaUtil {
         return dashboard;
     }
 
-    private static void funEstadisticasSemanaActual(
-            DashboardReporteGeneralGerenciaDTO dashboard,
-            EncabezadoReporteGeneralGerenciaDTO encabezado,
-            CalendarioModel calendarioModel
-    ) throws ExecutionException, InterruptedException {
+    private static void funEstadisticasSemanaActual(DashboardReporteGeneralGerenciaDTO dashboard,
+                                                    EncabezadoReporteGeneralGerenciaDTO encabezado,
+                                                    CalendarioModel calendarioModel)
+            throws ExecutionException, InterruptedException {
         // To easy code
         int anio;
         int semana;
@@ -216,14 +205,12 @@ public class ReporteGeneralGerenciaUtil {
         anio = calendarioModel.getAnio();
         semana = calendarioModel.getSemana();
 
-        if (
-                diaSemana.equals("jueves")
-        ) {
-            debitoTotal = ReporteGeneralGerenciaUtil.pagoService
-                    .getDebitoTotalParcialByGerenciaAnioSemanaAndFechaAsync(gerencia, sucursal, anio, semana);
+        if (diaSemana.equals("jueves")) {
+            debitoTotal = ReporteGeneralGerenciaUtil.pagoAgrupadoService
+                    .findDebitoTotalParcialByGerenciaSucursalAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
         } else {
-            debitoTotal = ReporteGeneralGerenciaUtil.pagoService
-                    .getDebitoTotalSemanaByGerenciaAnioSemanaAndFechaAsync(gerencia, sucursal, anio, semana);
+            debitoTotal = ReporteGeneralGerenciaUtil.pagoAgrupadoService
+                    .findDebitoTotalSemanaByGerenciaSucursalAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
         }
 
         boolean existsSemana53 = ReporteGeneralGerenciaUtil.calendarioService
@@ -233,10 +220,10 @@ public class ReporteGeneralGerenciaUtil {
         anio = calendarioModel.getAnio();
         semana = calendarioModel.getSemana();
 
-        CompletableFuture<Double> cobranzaTotal = ReporteGeneralGerenciaUtil.pagoService
-                .getCobranzaTotalByGerenciaAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
-        CompletableFuture<Double> excedente = ReporteGeneralGerenciaUtil.pagoService
-                .getExcedenteByGerenciaAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
+        CompletableFuture<Double> cobranzaTotal = ReporteGeneralGerenciaUtil.pagoAgrupadoService
+                .findCobranzaTotalByGerenciaSucursalAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
+        CompletableFuture<Double> excedente = ReporteGeneralGerenciaUtil.pagoAgrupadoService
+                .findExcedenteByGerenciaSucursalAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
 
         CompletableFuture.allOf(debitoTotal, cobranzaTotal, excedente);
         dashboard.setDebitoTotal(debitoTotal.get());
@@ -244,11 +231,10 @@ public class ReporteGeneralGerenciaUtil {
         dashboard.setExcedente(excedente.get());
     }
 
-    private static AvanceReporteGeneralGerenciaDTO getAvanceSemanaActual(
-            DashboardReporteGeneralGerenciaDTO dashboard,
-            EncabezadoReporteGeneralGerenciaDTO encabezado,
-            CalendarioModel calendarioModel
-    ) throws ExecutionException, InterruptedException {
+    private static AvanceReporteGeneralGerenciaDTO getAvanceSemanaActual(DashboardReporteGeneralGerenciaDTO dashboard,
+                                                                         EncabezadoReporteGeneralGerenciaDTO encabezado,
+                                                                         CalendarioModel calendarioModel)
+            throws ExecutionException, InterruptedException {
         AvanceReporteGeneralGerenciaDTO avance = new AvanceReporteGeneralGerenciaDTO();
         {
             ReporteGeneralGerenciaUtil.funSemanaAnterior(calendarioModel);
@@ -263,8 +249,8 @@ public class ReporteGeneralGerenciaUtil {
                     .existsByAnioAndSemana(anio, 53);
             ReporteGeneralGerenciaUtil.funSemanaSiguiente(calendarioModel, existsSemana53);
 
-            CompletableFuture<Double> debitoTotal = ReporteGeneralGerenciaUtil.pagoService
-                    .getDebitoTotalSemanaByGerenciaAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
+            CompletableFuture<Double> debitoTotal = ReporteGeneralGerenciaUtil.pagoAgrupadoService
+                    .findDebitoTotalSemanaByGerenciaSucursalAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
 
             avance.setConcepto(dashboard.getConcepto());
             avance.setCobranzaPura(dashboard.getCobranzaPura());
@@ -278,9 +264,7 @@ public class ReporteGeneralGerenciaUtil {
     }
 
     private static ArrastreReporteGeneralGerenciaDTO getArrastreSemanaActual(
-            DashboardReporteGeneralGerenciaDTO dashboard,
-            int semana
-    ) {
+            DashboardReporteGeneralGerenciaDTO dashboard, int semana) {
         ArrastreReporteGeneralGerenciaDTO arrastre = new ArrastreReporteGeneralGerenciaDTO();
         {
             arrastre.setDebitoTotal(dashboard.getDebitoTotal());
@@ -293,14 +277,10 @@ public class ReporteGeneralGerenciaUtil {
         return arrastre;
     }
 
-    private static void funReportesAnterioresUltimos3Meses(
-            ArrayList<DashboardReporteGeneralGerenciaDTO> dashboards,
-            ArrayList<AvanceReporteGeneralGerenciaDTO> avances,
-            ArrayList<ArrastreReporteGeneralGerenciaDTO> arrastres,
-
-            CalendarioModel calendarioModel,
-            String reporteId
-    ) {
+    private static void funReportesAnterioresUltimos3Meses(ArrayList<DashboardReporteGeneralGerenciaDTO> dashboards,
+                                                           ArrayList<AvanceReporteGeneralGerenciaDTO> avances,
+                                                           ArrayList<ArrastreReporteGeneralGerenciaDTO> arrastres,
+                                                           CalendarioModel calendarioModel, String reporteId) {
         String[] reporteIdSplit = reporteId.split("-");
 
         String gerencia = reporteIdSplit[0];
@@ -318,12 +298,8 @@ public class ReporteGeneralGerenciaUtil {
             Optional<ReporteGeneralGerenciaDocument> reporte = ReporteGeneralGerenciaUtil
                     .reporteGeneralGerenciaService.findById(id);
 
-            if (
-                    reporte.isPresent()
-            ) {
-                if (
-                        i < 4
-                ) {
+            if (reporte.isPresent()) {
+                if (i < 4) {
                     dashboards.add(reporte.get().getDashboards().get(0));
                     avances.add(reporte.get().getAvances().get(0));
                 }
@@ -332,13 +308,9 @@ public class ReporteGeneralGerenciaUtil {
         }
     }
 
-    private static void funDiferenciaVsSemanaAnterior(
-            ArrayList<DashboardReporteGeneralGerenciaDTO> dashboards
-    ) {
+    private static void funDiferenciaVsSemanaAnterior(ArrayList<DashboardReporteGeneralGerenciaDTO> dashboards) {
         for (int i = 0; i < dashboards.size(); i++) {
-            if (
-                    (i + 1) < dashboards.size()
-            ) {
+            if ((i + 1) < dashboards.size()) {
                 // To easy code
                 double diferenciaSemanaAnterior = dashboards.get(i + 1)
                         .getDiferenciaCobranzaPuraVsDebitoTotal();
@@ -346,8 +318,7 @@ public class ReporteGeneralGerenciaUtil {
 
                 dashboards.get(i).setDiferenciaActualVsDiferenciaAnterior(diferenciaSemanaAnterior
                         - diferenciaSemanaActual);
-            } //
-            else {
+            } else {
                 // To easy code
                 DashboardReporteGeneralGerenciaDTO dashboard = dashboards.get(i);
 
@@ -356,9 +327,7 @@ public class ReporteGeneralGerenciaUtil {
         }
     }
 
-    private static double getPerdidaAcumulada(
-            ArrayList<DashboardReporteGeneralGerenciaDTO> dashboards
-    ) {
+    private static double getPerdidaAcumulada(ArrayList<DashboardReporteGeneralGerenciaDTO> dashboards) {
         double perdidaAcumulada = 0;
 
         for (DashboardReporteGeneralGerenciaDTO dashboard : dashboards) {
@@ -368,21 +337,16 @@ public class ReporteGeneralGerenciaUtil {
         return perdidaAcumulada;
     }
 
-    private static void funSemanaAnterior(
-            CalendarioModel calendarioModel
-    ) {
+    private static void funSemanaAnterior(CalendarioModel calendarioModel) {
         // To easy code
         int anio = calendarioModel.getAnio();
         int semana = calendarioModel.getSemana();
 
-        if (
-                semana == 1
-        ) {
+        if (semana == 1) {
             anio = anio - 1;
             semana = ReporteGeneralGerenciaUtil.calendarioService
                     .existsByAnioAndSemana(anio, 53) ? 53 : 52;
-        } //
-        else {
+        } else {
             semana = semana - 1;
         }
 
@@ -390,27 +354,17 @@ public class ReporteGeneralGerenciaUtil {
         calendarioModel.setSemana(semana);
     }
 
-    private static void funSemanaSiguiente(
-            CalendarioModel calendarioModel,
-            boolean existsSemana53
-    ) {
+    private static void funSemanaSiguiente(CalendarioModel calendarioModel, boolean existsSemana53) {
         // To easy code
         int anio = calendarioModel.getAnio();
         int semana = calendarioModel.getSemana();
 
-        if (
-                semana == 52 && existsSemana53
-        ) {
+        if (semana == 52 && existsSemana53) {
             semana = 53;
-        } //
-        else if (
-                semana == 52 || semana == 53
-        ) {
+        } else if (semana == 52 || semana == 53) {
             anio = anio + 1;
             semana = 1;
-        }
-        //
-        else {
+        } else {
             semana = semana + 1;
         }
 
