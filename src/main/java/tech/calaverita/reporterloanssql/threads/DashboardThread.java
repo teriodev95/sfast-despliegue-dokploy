@@ -199,7 +199,7 @@ public class DashboardThread implements Runnable {
 
     public void setPagosOfLiquidaciones() {
         this.objectsContainer.setPagosOfLiquidaciones(DashboardThread.pagoService
-                .darrpagModFindByAgenciaAnioAndSemanaToDashboard(this.objectsContainer.getDashboard().getAgencia(),
+                .findByAgenteAnioAndSemanaInnerJoinLiquidacionModel(this.objectsContainer.getDashboard().getAgencia(),
                         this.objectsContainer.getDashboard().getAnio(), this.objectsContainer.getDashboard()
                                 .getSemana()));
     }

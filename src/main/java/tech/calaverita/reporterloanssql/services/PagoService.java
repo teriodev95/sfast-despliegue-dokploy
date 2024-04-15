@@ -32,11 +32,11 @@ public class PagoService {
         return this.repo.findById(id).orElse(null);
     }
 
-    public PagoModel pagModFindByAgenteAnioAndSemana(String prestamoId, int anio, int semana, String creadoDesde) {
+    public PagoModel findByPrestamoIdAnioSemanaAndCreadoDesde(String prestamoId, int anio, int semana, String creadoDesde) {
         return this.repo.findByPrestamoIdAndAnioAndSemanaAndCreadoDesde(prestamoId, anio, semana, creadoDesde);
     }
 
-    public ArrayList<PagoModel> darrpagModFindByPrestamoIdAnioAndSemana(String prestamoId, int anio, int semana) {
+    public ArrayList<PagoModel> findByPagoIAnioAndSemanaOrderByFechaPagoDesc(String prestamoId, int anio, int semana) {
         return this.repo.findByPagoIdAndAnioAndSemanaOrderByFechaPagoDesc(prestamoId, anio, semana);
     }
 
@@ -45,26 +45,26 @@ public class PagoService {
         return this.repo.findByAgenteAndAnioAndSemanaAndEsPrimerPago(agencia, anio, semana, esPrimerPago);
     }
 
-    public ArrayList<PagoModel> darrpagModFindByPrestamoIdAnioSemanaAndNoPrimerPago(String prestamoId, int anio,
-                                                                                    int semana, boolean esPrimerPago) {
+    public ArrayList<PagoModel> findByPrestamoIdAnioSemanaAndEsPrimerPago(String prestamoId, int anio,
+                                                                          int semana, boolean esPrimerPago) {
         return this.repo.findByPrestamoIdAndAnioAndSemanaAndEsPrimerPago(prestamoId, anio, semana, esPrimerPago);
     }
 
-    public ArrayList<PagoModel> darrpagModFindByAgenciaFechaPagoAndNoPrimerPagoToDashboard(String agencia,
-                                                                                           String fechaPago) {
-        boolean esPrimerPago = false;
+    public ArrayList<PagoModel> findByAgenteFechaPagoAndEsPrimerPagoInnerJoinPagoModel(String agencia, String fechaPago,
+                                                                                       boolean esPrimerPago) {
         return this.repo.findByAgenteAndFechaPagoAndEsPrimerPagoInnerJoinPagoModel(agencia, fechaPago, esPrimerPago);
     }
 
-    public ArrayList<PagoModel> darrpagModFindByAgenciaAnioAndSemanaToDashboard(String agencia, int anio, int semana) {
+    public ArrayList<PagoModel> findByAgenteAnioAndSemanaInnerJoinLiquidacionModel(String agencia, int anio,
+                                                                                   int semana) {
         return this.repo.findByAgenteAndAnioAndSemanaInnerJoinLiquidacionModel(agencia, anio, semana);
     }
 
-    public ArrayList<PagoModel> darrpagModFindByAgenciaAndFechaPagoToDashboard(String agencia, String fechaPago) {
+    public ArrayList<PagoModel> findByAgenteAndFechaPagoInnerJoinLiquidacionModel(String agencia, String fechaPago) {
         return this.repo.findByAgenteAndFechaPagoInnerJoinLiquidacionModel(agencia, fechaPago);
     }
 
-    public double numGetSaldoFromPrestamoByPrestamoId(String prestamoId) {
+    public double findCobradoByPrestamoId(String prestamoId) {
         return this.repo.findCobradoByPrestamoId(prestamoId);
     }
 
@@ -72,7 +72,8 @@ public class PagoService {
     public CompletableFuture<ArrayList<PagoModel>> findByGerenciasAnioSemanaAndTipoAsync(ArrayList<String> gerencias,
                                                                                          int anio, int semana) {
         String tipo = "No_pago";
-        return CompletableFuture.completedFuture(this.repo.findByGerenciasAndAnioAndSemanaAndTipo(gerencias, anio, semana, tipo));
+        return CompletableFuture.completedFuture(this.repo.findByGerenciasAndAnioAndSemanaAndTipo(gerencias, anio,
+                semana, tipo));
     }
 
     public PagoModel getPagoEntity(LiquidacionDTO liquidacionDTO) {

@@ -51,7 +51,7 @@ public class PagoHistoricoPWAThread implements Runnable {
 
         boolean esPrimerPago = false;
         pagoHistoricoPWA.setPagos(PWAUtil.darrpagoPwaFromPagoModels(PagoHistoricoPWAThread
-                .pagoService.darrpagModFindByPrestamoIdAnioSemanaAndNoPrimerPago(pagoHistoricoPWA.getPrestamoId(),
+                .pagoService.findByPrestamoIdAnioSemanaAndEsPrimerPago(pagoHistoricoPWA.getPrestamoId(),
                         pagoHistoricoPWA.getAnio(), pagoHistoricoPWA.getSemana(), esPrimerPago)));
 
         pagoHistoricoPWA.setVisitas(PagoHistoricoPWAThread.visitaService

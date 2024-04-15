@@ -128,7 +128,8 @@ public class DashboardPorDiaPWAThread implements Runnable {
 
     public void setPagosToDashboard() {
         objectsContainer.setPagEntPagoModelsToDashboard(DashboardPorDiaPWAThread.pagoService
-                .darrpagModFindByAgenciaFechaPagoAndNoPrimerPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
+                .findByAgenteFechaPagoAndEsPrimerPagoInnerJoinPagoModel(objectsContainer.getDashboard().getAgencia(),
+                        objectsContainer.getFechaPago(), false));
 
         try {
             threads[0].join();
@@ -177,7 +178,7 @@ public class DashboardPorDiaPWAThread implements Runnable {
 
     public void setLiquidacionesBd() {
         objectsContainer.setLiquidaciones(DashboardPorDiaPWAThread.liquidacionService.findByAgenciaAndFechaPago(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
-        objectsContainer.setPagosOfLiquidaciones(DashboardPorDiaPWAThread.pagoService.darrpagModFindByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
+        objectsContainer.setPagosOfLiquidaciones(DashboardPorDiaPWAThread.pagoService.findByAgenteAndFechaPagoInnerJoinLiquidacionModel(objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
 
         setNumeroDeLiquidaciones();
         setTotalDeDescuento();

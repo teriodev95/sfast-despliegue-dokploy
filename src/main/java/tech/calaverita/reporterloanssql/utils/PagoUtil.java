@@ -100,7 +100,7 @@ public final class PagoUtil {
         if (liqMod != null) {
             liqMod.setPagoId(pagMod.getPagoId());
             pagMod.setAbreCon(prestamoModel.getTotalAPagar() - PagoUtil.pagoService
-                    .numGetSaldoFromPrestamoByPrestamoId(pagoConLiquidacion.getPrestamoId()));
+                    .findCobradoByPrestamoId(pagoConLiquidacion.getPrestamoId()));
             pagMod.setCierraCon(0.0);
             pagMod.setEsPrimerPago(false);
 
@@ -108,7 +108,7 @@ public final class PagoUtil {
                     .liquidacionCreateOne(strSession, new LiquidacionBody(liqMod));
             RetrofitOdooUtil.sendCall(callrespBodyXms);
         } else {
-            pagMod.setAbreCon(prestamoModel.getTotalAPagar() - PagoUtil.pagoService.numGetSaldoFromPrestamoByPrestamoId(
+            pagMod.setAbreCon(prestamoModel.getTotalAPagar() - PagoUtil.pagoService.findCobradoByPrestamoId(
                     pagoConLiquidacion.getPrestamoId()));
             pagMod.setCierraCon(pagMod.getAbreCon() - pagoConLiquidacion.getMonto());
             pagMod.setEsPrimerPago(false);
@@ -258,7 +258,7 @@ public final class PagoUtil {
 
     public static boolean boolIsPagoMigracion(String prestamoId, int anio, int semana) {
         String creadoDesde = "Migracion";
-        PagoModel pagoModel = PagoUtil.pagoService.pagModFindByAgenteAnioAndSemana(prestamoId, anio, semana,
+        PagoModel pagoModel = PagoUtil.pagoService.findByPrestamoIdAnioSemanaAndCreadoDesde(prestamoId, anio, semana,
                 creadoDesde);
 
         return pagoModel != null;

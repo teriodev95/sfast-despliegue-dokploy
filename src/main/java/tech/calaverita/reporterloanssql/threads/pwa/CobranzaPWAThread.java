@@ -69,7 +69,7 @@ public class CobranzaPWAThread implements Runnable {
         LocalDateTime cierreMiercoles = fechaInicioSemana.plusHours(21);
         LocalDateTime cierreJueves = fechaInicioSemana.plusDays(1).plusHours(21);
 
-        ArrayList<PagoModel> pagEntPagoEntities = CobranzaPWAThread.pagServ.darrpagModFindByPrestamoIdAnioAndSemana(prestamoModel.getPrestamoId(), anio, semana);
+        ArrayList<PagoModel> pagEntPagoEntities = CobranzaPWAThread.pagServ.findByPagoIAnioAndSemanaOrderByFechaPagoDesc(prestamoModel.getPrestamoId(), anio, semana);
 
         prestamoCobranzaPwa.setNombre(prestamoModel.getNombres() + " " + prestamoModel.getApellidoPaterno() + " " + prestamoModel.getApellidoMaterno());
         prestamoCobranzaPwa.setPrestamoId(prestamoModel.getPrestamoId());
