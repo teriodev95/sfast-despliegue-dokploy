@@ -5,6 +5,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import tech.calaverita.reporterloanssql.models.mariaDB.CalendarioModel;
 
+import java.util.ArrayList;
+
 @Repository
 public interface CalendarioRepository extends CrudRepository<CalendarioModel, Integer> {
     boolean existsByAnioAndSemana(int anio, int semana);
@@ -13,4 +15,6 @@ public interface CalendarioRepository extends CrudRepository<CalendarioModel, In
 
     @Query("SELECT cal FROM CalendarioModel cal WHERE cal.desde <= :fechaActual AND cal.hasta >= :fechaActual")
     CalendarioModel findByFechaActual(String fechaActual);
+
+    ArrayList<CalendarioModel> findByAnioAndMes(int anio, String mes);
 }

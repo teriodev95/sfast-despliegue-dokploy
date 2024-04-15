@@ -36,8 +36,8 @@ public class PagoService {
         return this.repo.findByPrestamoIdAndAnioAndSemanaAndCreadoDesde(prestamoId, anio, semana, creadoDesde);
     }
 
-    public ArrayList<PagoModel> findByPagoIAnioAndSemanaOrderByFechaPagoDesc(String prestamoId, int anio, int semana) {
-        return this.repo.findByPagoIdAndAnioAndSemanaOrderByFechaPagoDesc(prestamoId, anio, semana);
+    public ArrayList<PagoModel> findByPrestamoIdAnioAndSemanaOrderByFechaPagoDesc(String prestamoId, int anio, int semana) {
+        return this.repo.findByPrestamoIdAndAnioAndSemanaOrderByFechaPagoDesc(prestamoId, anio, semana);
     }
 
     public ArrayList<PagoModel> findByAgenciaAnioSemanaAndEsPrimerPago(String agencia, int anio, int semana,

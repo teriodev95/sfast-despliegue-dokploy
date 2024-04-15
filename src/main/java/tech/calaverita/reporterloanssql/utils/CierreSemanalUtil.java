@@ -11,10 +11,12 @@ import tech.calaverita.reporterloanssql.Constants;
 import tech.calaverita.reporterloanssql.dto.cierre_semanal.*;
 import tech.calaverita.reporterloanssql.itext.PdfStyleManager;
 import tech.calaverita.reporterloanssql.itext.fonts.Fonts;
+import tech.calaverita.reporterloanssql.models.mariaDB.CalendarioModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
 import tech.calaverita.reporterloanssql.models.mariaDB.cierre_semanal.*;
 import tech.calaverita.reporterloanssql.pojos.Dashboard;
 import tech.calaverita.reporterloanssql.services.AgenciaService;
+import tech.calaverita.reporterloanssql.services.CalendarioService;
 import tech.calaverita.reporterloanssql.services.SucursalService;
 import tech.calaverita.reporterloanssql.services.cierre_semanal.*;
 import tech.calaverita.reporterloanssql.services.views.PagoAgrupadoService;
@@ -27,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -43,12 +46,14 @@ public class CierreSemanalUtil {
     private static SucursalService sucursalService;
     private static AgenciaService agenciaService;
     private static PagoAgrupadoService pagoAgrupadoService;
+    private static CalendarioService calendarioService;
     private static Fonts fuentes = new Fonts();
 
     public CierreSemanalUtil(BalanceAgenciaService balanceAgenciaService, CierreSemanalService cierreSemanalService,
                              EgresosAgenteService egresosAgenteService, EgresosGerenteService egresosGerenteService,
                              IngresosAgenteService ingresosAgenteService, PagoAgrupadoService pagoAgrupadoService,
-                             SucursalService sucursalService, AgenciaService agenciaService) {
+                             SucursalService sucursalService, AgenciaService agenciaService,
+                             CalendarioService calendarioService) {
         CierreSemanalUtil.balanceAgenciaService = balanceAgenciaService;
         CierreSemanalUtil.cierreSemanalService = cierreSemanalService;
         CierreSemanalUtil.egresosAgenteService = egresosAgenteService;
@@ -57,9 +62,11 @@ public class CierreSemanalUtil {
         CierreSemanalUtil.sucursalService = sucursalService;
         CierreSemanalUtil.agenciaService = agenciaService;
         CierreSemanalUtil.pagoAgrupadoService = pagoAgrupadoService;
+        CierreSemanalUtil.calendarioService = calendarioService;
     }
 
-    public static CierreSemanalDTO getCierreSemanalDTO(CierreSemanalModel cierreSemanalModel) throws ExecutionException, InterruptedException {
+    public static CierreSemanalDTO getCierreSemanalDTO(CierreSemanalModel cierreSemanalModel) throws ExecutionException,
+            InterruptedException {
         CierreSemanalDTO cierreSemanalDTO = CierreSemanalUtil.cierreSemanalService
                 .getCierreSemanalDTO(cierreSemanalModel);
 
@@ -157,8 +164,18 @@ public class CierreSemanalUtil {
             Double pagoComisionCobranza = cobranzaTotal.get() / 100 * egresosGerenteDTO.getPorcentajeComisionCobranza();
             egresosGerenteDTO.setPagoComisionCobranza(MyUtil.getDouble(pagoComisionCobranza));
 
-            Double bonos = cobranzaTotal.get() / 100 * egresosGerenteDTO.getPorcentajeBonoMensual();
-            egresosGerenteDTO.setBonos(bonos);
+            egresosGerenteDTO.setBonos(0.0);
+
+            CalendarioModel calendarioModel = CierreSemanalUtil.calendarioService
+                    .findByFechaActual(LocalDate.now().format(DateTimeFormatter
+                            .ofPattern("yyyy-MM-dd")));
+            if (calendarioModel.isPagoBono()) {
+                ArrayList<CalendarioModel> semanasDelMesCF = CierreSemanalUtil.calendarioService
+                        .findByAnioAndMesAsync(calendarioModel.getAnio(), calendarioModel.getMes()).join();
+
+                Double bonos = cobranzaTotal.get() / 100 * egresosGerenteDTO.getPorcentajeBonoMensual();
+                egresosGerenteDTO.setBonos(bonos);
+            }
         }
 
         IngresosAgenteDTO ingresosAgenteDTO = new IngresosAgenteDTO();
@@ -270,7 +287,10 @@ public class CierreSemanalUtil {
     }
 
     private static String terminosTxt() {
-        return "Por política de la empresa, es necesario revisar y garantizar que este comprobante sea completado de manera adecuada antes de proceder con la firma. Le recordamos que dicho comprobante constituye el respaldo del efectivo entregado al gerente, y será requerido en caso de aclaraciones o auditorías. Tenga en cuenta que cualquier comprobante que presente tachaduras o enmendaduras no será aceptado.";
+        return "Por política de la empresa, es necesario revisar y garantizar que este comprobante sea completado de " +
+                "manera adecuada antes de proceder con la firma. Le recordamos que dicho comprobante constituye el " +
+                "respaldo del efectivo entregado al gerente, y será requerido en caso de aclaraciones o auditorías. " +
+                "Tenga en cuenta que cualquier comprobante que presente tachaduras o enmendaduras no será aceptado.";
     }
 
 
@@ -383,7 +403,8 @@ public class CierreSemanalUtil {
                 9, PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleFillColorCell(cellMontoExcedente2);
 
-        PdfPCell cellLiquidaciones2 = new PdfPCell(fuentes.regular(money(ingresosAgenteDTO.getLiquidaciones()), 9, PdfStyleManager.getPrimaryBasecolor()));
+        PdfPCell cellLiquidaciones2 = new PdfPCell(fuentes.regular(money(ingresosAgenteDTO.getLiquidaciones()), 9,
+                PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleNormalCell(cellLiquidaciones2);
 
         PdfPCell cellMultas2 = new PdfPCell(fuentes.regular(money(ingresosAgenteDTO.getMultas()), 9,
@@ -430,7 +451,9 @@ public class CierreSemanalUtil {
                 .getPorcentajeBonoMensual() + "%", 9, PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleFillColorCell(cellBonoMensual);
 
-        PdfPCell cellValidation = new PdfPCell(fuentes.regular("* La generacion de este documento PDF se lleva a cabo de manera automatizada unicamente si el cierre es validado mediante la firma con fotografia y codigo PIN, tanto por parte del agente como del gerente. "
+        PdfPCell cellValidation = new PdfPCell(fuentes.regular("* La generacion de este documento PDF se lleva a " +
+                        "cabo de manera automatizada unicamente si el cierre es validado mediante la firma con " +
+                        "fotografia y codigo PIN, tanto por parte del agente como del gerente. "
                 , 6, PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.commonCellStyle(cellValidation);
 
@@ -601,8 +624,8 @@ public class CierreSemanalUtil {
                 .getPagoComisionCobranza()), 9, PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleNormalCell(cellPagoComisionCobranza2);
 
-        PdfPCell cellPagoComisionVentas2 = new PdfPCell(fuentes.regular(money(egresosGerenteDTO.getPagoComisionVentas()),
-                9, PdfStyleManager.getPrimaryBasecolor()));
+        PdfPCell cellPagoComisionVentas2 = new PdfPCell(fuentes.regular(money(egresosGerenteDTO.
+                getPagoComisionVentas()), 9, PdfStyleManager.getPrimaryBasecolor()));
         PdfStyleManager.setStyleFillColorCell(cellPagoComisionVentas2);
 
         PdfPCell cellBonos2 = new PdfPCell(fuentes.regular(money(egresosGerenteDTO.getBonos()), 9,
@@ -626,7 +649,8 @@ public class CierreSemanalUtil {
     //TODO - mover a otra clase helper o util
     public static String mxFormatFullCurrent() {
         LocalDateTime currentDate = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE d 'de' MMMM 'de' yyyy h:mm a", new Locale("es", "MX"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE d 'de' MMMM 'de' yyyy h:mm a",
+                new Locale("es", "MX"));
         return currentDate.format(formatter);
     }
 

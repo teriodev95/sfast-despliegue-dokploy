@@ -19,7 +19,7 @@ public interface PagoAgrupadoRepository extends CrudRepository<PagoAgrupadoModel
             "WHERE pag.agente = :agencia AND pag.anio = :anio AND pag.semana = :semana")
     double findExcedenteByAgenteAndAnioAndSemana(String agencia, int anio, int semana);
 
-    @Query("SELECT SUM(pag.tarifa) FROM PagoAgrupadoModel pag WHERE pag.agente = :agencia AND pag.anio = :anio " +
+    @Query("SELECT SUM(pag.monto) FROM PagoAgrupadoModel pag WHERE pag.agente = :agencia AND pag.anio = :anio " +
             "AND pag.semana = :semana")
     double findCobranzaTotalByAgenteAndAnioAndSemana(String agencia, int anio, int semana);
 

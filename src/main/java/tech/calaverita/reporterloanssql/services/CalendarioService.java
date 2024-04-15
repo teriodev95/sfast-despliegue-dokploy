@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import tech.calaverita.reporterloanssql.models.mariaDB.CalendarioModel;
 import tech.calaverita.reporterloanssql.repositories.CalendarioRepository;
 
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -31,5 +32,10 @@ public class CalendarioService {
     @Async("asyncExecutor")
     public CompletableFuture<CalendarioModel> findByAnioAndSemanaAsync(int anio, int semana) {
         return CompletableFuture.completedFuture(this.repo.findByAnioAndSemana(anio, semana));
+    }
+
+    @Async("asyncExecutor")
+    public CompletableFuture<ArrayList<CalendarioModel>> findByAnioAndMesAsync(int anio, String mes) {
+        return CompletableFuture.completedFuture(this.repo.findByAnioAndMes(anio, mes));
     }
 }

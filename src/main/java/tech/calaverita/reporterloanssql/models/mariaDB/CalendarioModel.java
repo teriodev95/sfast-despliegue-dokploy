@@ -11,6 +11,8 @@ public class CalendarioModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer semana;
     private Integer anio;
+    private String mes;
     private String desde;
     private String hasta;
+    private boolean pagoBono;
 }
