@@ -105,13 +105,14 @@ public class CierreSemanalUtil {
             throws ExecutionException, InterruptedException {
         CierreSemanalDTO cierreSemanalDTO = new CierreSemanalDTO();
 
-        // To easy code
-        CompletableFuture<Integer> clientePagoCompleto = CierreSemanalUtil.pagoAgrupadoService
+        CompletableFuture<Integer> clientesPagoCompletoCF = CierreSemanalUtil.pagoAgrupadoService
                 .findClientesPagoCompletoByAgenciaAnioAndSemanaAsync(dashboard.getAgencia(), dashboard.getAnio(),
                         dashboard.getSemana());
-        CompletableFuture<Double> cobranzaTotal = CierreSemanalUtil.pagoAgrupadoService
+        CompletableFuture<Double> cobranzaTotalCF = CierreSemanalUtil.pagoAgrupadoService
                 .findCobranzaTotalByAgenciaAnioAndSemanaAsync(dashboard.getAgencia(), dashboard.getAnio(),
                         dashboard.getSemana());
+        CompletableFuture<CalendarioModel> calendarioModelCF = CierreSemanalUtil.calendarioService
+                .findByAnioAndSemanaAsync(dashboard.getAnio(), dashboard.getSemana());
 
         // To easy code
         UsuarioModel agenteUsuarioModel = darrusuarEnt.get(0);
@@ -137,12 +138,18 @@ public class CierreSemanalUtil {
             balanceAgenciaDTO.setLiquidaciones(dashboard.getNumeroLiquidaciones());
         }
 
+        double cobranzaTotal;
+
         EgresosAgenteDTO egresosAgenteDTO = new EgresosAgenteDTO();
         {
             egresosAgenteDTO.setAsignaciones(asignaciones);
 
-            cobranzaTotal.join();
-            Double efectivoEntregadoEnCierre = cobranzaTotal.get() - egresosAgenteDTO.getAsignaciones();
+            cobranzaTotalCF.join();
+
+            // To easy code
+            cobranzaTotal = cobranzaTotalCF.get();
+
+            Double efectivoEntregadoEnCierre = cobranzaTotal - egresosAgenteDTO.getAsignaciones();
             egresosAgenteDTO.setEfectivoEntregadoCierre(MyUtil.getDouble(efectivoEntregadoEnCierre));
         }
 
@@ -151,29 +158,36 @@ public class CierreSemanalUtil {
             egresosGerenteDTO.setPorcentajeComisionCobranza(BalanceAgenciaUtil
                     .getPorcentajeComisionCobranza(balanceAgenciaDTO.getNivel()));
 
-            clientePagoCompleto.join();
+            calendarioModelCF.join();
 
             // To easy code
-            int porcentajeBonoMensual = BalanceAgenciaUtil.getPorcentajeBonoMensual(clientePagoCompleto.get(),
-                    dashboard.getRendimiento(), agenteUsuarioModel);
+            int porcentajeBonoMensual = 0;
+            CalendarioModel calendarioModel = calendarioModelCF.get();
+
+            if (calendarioModel.isPagoBono()) {
+                clientesPagoCompletoCF.join();
+
+                porcentajeBonoMensual = BalanceAgenciaUtil.getPorcentajeBonoMensual(clientesPagoCompletoCF.get(),
+                        dashboard.getRendimiento(), agenteUsuarioModel);
+            }
 
             egresosGerenteDTO.setPorcentajeBonoMensual(porcentajeBonoMensual);
 
-            cobranzaTotal.join();
-
-            Double pagoComisionCobranza = cobranzaTotal.get() / 100 * egresosGerenteDTO.getPorcentajeComisionCobranza();
+            Double pagoComisionCobranza = cobranzaTotal / 100 * egresosGerenteDTO.getPorcentajeComisionCobranza();
             egresosGerenteDTO.setPagoComisionCobranza(MyUtil.getDouble(pagoComisionCobranza));
 
             egresosGerenteDTO.setBonos(0.0);
-
-            CalendarioModel calendarioModel = CierreSemanalUtil.calendarioService
-                    .findByFechaActual(LocalDate.now().format(DateTimeFormatter
-                            .ofPattern("yyyy-MM-dd")));
             if (calendarioModel.isPagoBono()) {
-                ArrayList<CalendarioModel> semanasDelMesCF = CierreSemanalUtil.calendarioService
+                ArrayList<CalendarioModel> semanasDelMes = CierreSemanalUtil.calendarioService
                         .findByAnioAndMesAsync(calendarioModel.getAnio(), calendarioModel.getMes()).join();
 
-                Double bonos = cobranzaTotal.get() / 100 * egresosGerenteDTO.getPorcentajeBonoMensual();
+                for (int i = 0; i < semanasDelMes.size() - 1; i++) {
+                    cobranzaTotal += CierreSemanalUtil.pagoAgrupadoService
+                            .findCobranzaTotalByAgenciaAnioAndSemanaAsync(dashboard.getAgencia(), semanasDelMes.get(i).getAnio(),
+                                    semanasDelMes.get(i).getSemana()).join();
+                }
+
+                Double bonos = cobranzaTotal / 100 * egresosGerenteDTO.getPorcentajeBonoMensual();
                 egresosGerenteDTO.setBonos(bonos);
             }
         }
@@ -202,7 +216,7 @@ public class CierreSemanalUtil {
                 "ES"));
         String primeraLetra = mes.substring(0, 1);
         String mayuscula = primeraLetra.toUpperCase();
-        String demasLetras = mes.substring(1, mes.length());
+        String demasLetras = mes.substring(1);
         mes = mayuscula + demasLetras;
         cierreSemanalDTO.setMes(mes);
 
