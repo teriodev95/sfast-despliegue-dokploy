@@ -22,4 +22,6 @@ public class GerenciaModel {
     private Integer seguridadId;
     @Column(name = "sucursalid")
     private String sucursalId;
+    private String deprecatedName;
+    private String sucursal;
 }
