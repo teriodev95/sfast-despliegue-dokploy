@@ -1,6 +1,8 @@
 package tech.calaverita.reporterloanssql.controllers.PGS;
 
+import jakarta.persistence.Tuple;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +17,6 @@ import tech.calaverita.reporterloanssql.services.UsuarioService;
 import tech.calaverita.reporterloanssql.services.relation.UsuarioSucursalService;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -59,24 +60,12 @@ public final class LoginController {
     }
 
     @GetMapping(path = "/agencias/{gerencia}")
-    public ResponseEntity<ArrayList<String>> redarrstrAgenciaIdGetByStrGerencia(@PathVariable String gerencia)
-            throws ExecutionException, InterruptedException {
+    public ResponseEntity<ArrayList<String>> redarrstrAgenciaIdGetByStrGerencia(@PathVariable String gerencia) {
         CompletableFuture<ArrayList<String>> agenciasCF = this.agenciaService.findIdsByGerenciaIdAsync(gerencia);
 
-        CompletableFuture<ArrayList<String>> agentesCF = this.usuarioService
-                .findByGerenciaTipoAndStatusAsync(gerencia, "Agente", true);
+        ArrayList<String> agenciasYAgentesHM = new ArrayList<>(agenciasCF.join());
 
-        CompletableFuture.allOf(agenciasCF, agentesCF);
-
-        ArrayList<String> agenciasYAgentesHM = new ArrayList<>();
-        for (int i = 0; i < agenciasCF.get().size(); i++) {
-            HashMap<String, String> agenciaYAgenteHM = new HashMap<>();
-//            agenciaYAgenteHM.put("agencia", agenciasCF.get().get(i));
-//            agenciaYAgenteHM.put("agente", agentesCF.get().get(i));
-            agenciasYAgentesHM.add(agenciasCF.get().get(i));
-        }
-
-        if (agenciasCF.get() == null) {
+        if (agenciasCF.join() == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -84,27 +73,34 @@ public final class LoginController {
     }
 
     @GetMapping(path = "/agencias")
-    public ResponseEntity<ArrayList<HashMap<String, String>>> getAgenciasByGerencia(
+    public ResponseEntity<ArrayList<LoginController.Agencia>> getAgenciasByGerencia(
             @RequestParam String gerencia) throws ExecutionException, InterruptedException {
         CompletableFuture<ArrayList<String>> agenciasCF = this.agenciaService.findIdsByGerenciaIdAsync(gerencia);
-        CompletableFuture<ArrayList<String>> agentesCF = this.usuarioService.findByGerenciaTipoAndStatusAsync(gerencia,
+        CompletableFuture<ArrayList<Tuple>> agentesCF = this.usuarioService.findByGerenciaTipoAndStatusAsync(gerencia,
                 "Agente", true);
 
         CompletableFuture.allOf(agenciasCF, agentesCF);
 
-        ArrayList<HashMap<String, String>> agenciasYAgentesHM = new ArrayList<>();
+        ArrayList<LoginController.Agencia> agencias = new ArrayList<>();
         for (int i = 0; i < agenciasCF.get().size(); i++) {
-            HashMap<String, String> agenciaYAgenteHM = new HashMap<>();
-            agenciaYAgenteHM.put("agencia", agenciasCF.get().get(i));
-            agenciaYAgenteHM.put("agente", agentesCF.get().get(i));
-            agenciasYAgentesHM.add(agenciaYAgenteHM);
+            Agencia agencia = new LoginController.Agencia(agenciasCF.get().get(i));
+
+            for (int j = 0; j < agentesCF.get().size(); j++) {
+                if (agenciasCF.get().get(i).equals(agentesCF.get().get(j).get("agencia"))) {
+                    agencia = new LoginController.Agencia(agenciasCF.get().get(i),
+                            agentesCF.get().get(j).get("agente").toString());
+                    break;
+                }
+            }
+
+            agencias.add(agencia);
         }
 
         if (agenciasCF.get() == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return new ResponseEntity<>(agenciasYAgentesHM, HttpStatus.OK);
+        return new ResponseEntity<>(agencias, HttpStatus.OK);
     }
 
     @GetMapping(path = "/sucursales/usuarios/{usuario}")
@@ -137,5 +133,20 @@ public final class LoginController {
         }
 
         return new ResponseEntity<>(darrstrGerencia, HttpStatus.OK);
+    }
+
+    @Data
+    public static class Agencia {
+        private String agencia;
+        private String agente = "SIN AGENTE ASIGNADO";
+
+        public Agencia(String agencia, String agente) {
+            this.agencia = agencia;
+            this.agente = agente;
+        }
+
+        public Agencia(String agencia) {
+            this.agencia = agencia;
+        }
     }
 }

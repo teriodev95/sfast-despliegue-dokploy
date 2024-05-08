@@ -1,5 +1,6 @@
 package tech.calaverita.reporterloanssql.services;
 
+import jakarta.persistence.Tuple;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import tech.calaverita.reporterloanssql.models.mariaDB.UsuarioModel;
@@ -81,8 +82,8 @@ public class UsuarioService {
     }
 
     @Async("asyncExecutor")
-    public CompletableFuture<ArrayList<String>> findByGerenciaTipoAndStatusAsync(String gerencia, String tipo,
-                                                                                 boolean status) {
+    public CompletableFuture<ArrayList<Tuple>> findByGerenciaTipoAndStatusAsync(String gerencia, String tipo,
+                                                                                boolean status) {
         return CompletableFuture.completedFuture(this.repo.findByGerenciaAndTipoAndStatus(gerencia, tipo,
                 status));
     }

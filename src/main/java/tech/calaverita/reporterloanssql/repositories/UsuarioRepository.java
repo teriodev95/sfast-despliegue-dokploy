@@ -1,5 +1,6 @@
 package tech.calaverita.reporterloanssql.repositories;
 
+import jakarta.persistence.Tuple;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -27,10 +28,10 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
 
     ArrayList<UsuarioModel> findByGerenciaAndTipo(String gerencia, String tipo);
 
-    @Query("SELECT CONCAT(usuar.nombre, ' ' , usuar.apellidoPaterno, ' ', usuar.apellidoMaterno) FROM UsuarioModel " +
-            "usuar WHERE usuar.gerencia = :gerencia AND usuar.tipo = :tipo AND usuar.status = :status " +
-            "ORDER BY usuar.agencia")
-    ArrayList<String> findByGerenciaAndTipoAndStatus(String gerencia, String tipo, boolean status);
+    @Query("SELECT CONCAT(usuar.nombre, ' ' , usuar.apellidoPaterno, ' ', usuar.apellidoMaterno) AS agente, " +
+            "usuar.agencia AS agencia FROM UsuarioModel usuar WHERE usuar.gerencia = :gerencia " +
+            "AND usuar.tipo = :tipo AND usuar.status = :status ORDER BY usuar.agencia")
+    ArrayList<Tuple> findByGerenciaAndTipoAndStatus(String gerencia, String tipo, boolean status);
 
     @Query("SELECT CONCAT(usuar.nombre, ' ' , usuar.apellidoPaterno, ' ', usuar.apellidoMaterno) FROM UsuarioModel " +
             "usuar WHERE usuar.gerencia IN :gerencias AND usuar.tipo = :tipo AND usuar.status = :status " +
