@@ -16,8 +16,8 @@ public class VisitaService {
         this.repo = repo;
     }
 
-    public void save(VisitaModel visitaModel) {
-        this.repo.save(visitaModel);
+    public VisitaModel save(VisitaModel visitaModel) {
+        return this.repo.save(visitaModel);
     }
 
     public ArrayList<VisitaModel> findAll() {

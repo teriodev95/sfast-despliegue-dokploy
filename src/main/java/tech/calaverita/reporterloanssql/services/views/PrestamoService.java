@@ -6,7 +6,6 @@ import tech.calaverita.reporterloanssql.models.mariaDB.views.PrestamoModel;
 import tech.calaverita.reporterloanssql.repositories.views.PrestamoRepository;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Service
 public class PrestamoService {
@@ -34,8 +33,7 @@ public class PrestamoService {
         return this.repo.prestEntFindByPrestamoId(strPrestamoId_I);
     }
 
-    public Optional<PrestamoModel> findById(String strPrestamoId_I) {
-        return this.repo.findById(strPrestamoId_I);
+    public PrestamoModel findById(String strPrestamoId_I) {
+        return this.repo.findById(strPrestamoId_I).orElse(null);
     }
-
 }
