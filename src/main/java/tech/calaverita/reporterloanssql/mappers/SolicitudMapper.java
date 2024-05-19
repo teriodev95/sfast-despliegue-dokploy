@@ -30,9 +30,15 @@ public class SolicitudMapper implements IMapper<SolicitudModel, SolicitudDTO> {
         return solicitudModel;
     }
 
+    @Override
     public ArrayList<SolicitudDTO> mapOuts(ArrayList<SolicitudModel> outs) {
         ArrayList<SolicitudDTO> solicitudDTOs = new ArrayList<>();
         outs.forEach(out -> solicitudDTOs.add(this.mapOut(out)));
         return solicitudDTOs;
+    }
+
+    @Override
+    public ArrayList<SolicitudModel> mapIns(ArrayList<SolicitudDTO> ins) {
+        return null;
     }
 }

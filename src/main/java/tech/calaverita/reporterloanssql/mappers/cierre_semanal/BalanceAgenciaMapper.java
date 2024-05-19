@@ -5,6 +5,8 @@ import tech.calaverita.reporterloanssql.dto.cierre_semanal.BalanceAgenciaDTO;
 import tech.calaverita.reporterloanssql.mappers.IMapper;
 import tech.calaverita.reporterloanssql.models.mariaDB.cierre_semanal.BalanceAgenciaModel;
 
+import java.util.ArrayList;
+
 @Component
 public final class BalanceAgenciaMapper implements IMapper<BalanceAgenciaModel, BalanceAgenciaDTO> {
     @Override
@@ -41,5 +43,15 @@ public final class BalanceAgenciaMapper implements IMapper<BalanceAgenciaModel, 
             balanceAgenciaModel.setLiquidaciones(in.getLiquidaciones());
         }
         return balanceAgenciaModel;
+    }
+
+    @Override
+    public ArrayList<BalanceAgenciaDTO> mapOuts(ArrayList<BalanceAgenciaModel> outs) {
+        return null;
+    }
+
+    @Override
+    public ArrayList<BalanceAgenciaModel> mapIns(ArrayList<BalanceAgenciaDTO> ins) {
+        return null;
     }
 }
