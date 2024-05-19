@@ -36,14 +36,14 @@ public class LiquidacionUtil {
     public static LiquidacionDTO getLiquidacionDTO(String prestamoId) {
         LiquidacionDTO liquidacionDTO = null;
 
-        Optional<PrestamoModel> prestamoEntity = prestamoService.findById(prestamoId);
+        PrestamoModel prestamoModel = prestamoService.findById(prestamoId);
 
-        if (prestamoEntity.isPresent()) {
+        if (prestamoModel != null) {
             // To easy code
-            int anioEntrega = prestamoEntity.get().getAnio();
-            int semanaEntrega = prestamoEntity.get().getSemana();
+            int anioEntrega = prestamoModel.getAnio();
+            int semanaEntrega = prestamoModel.getSemana();
 
-            liquidacionDTO = LiquidacionUtil.liquidacionService.getLiquidacionDTO(prestamoEntity.get());
+            liquidacionDTO = LiquidacionUtil.liquidacionService.getLiquidacionDTO(prestamoModel);
             liquidacionDTO.setSemanasTranscurridas(LiquidacionUtil.getSemanasTranscurridas(anioEntrega,
                     semanaEntrega));
             liquidacionDTO.setDescuentoPorcentaje(LiquidacionUtil.getDescuentoPorcentaje(liquidacionDTO

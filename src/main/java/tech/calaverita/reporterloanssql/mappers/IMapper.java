@@ -1,7 +1,13 @@
 package tech.calaverita.reporterloanssql.mappers;
 
-public interface IMapper<I, J> {
-    public J mapOut(I out);
+import java.util.ArrayList;
 
-    public I mapIn(J in);
+public interface IMapper<Model, DTO> {
+    DTO mapOut(Model out);
+
+    Model mapIn(DTO in);
+
+    ArrayList<DTO> mapOuts(ArrayList<Model> outs);
+
+    ArrayList<Model> mapIns(ArrayList<DTO> ins);
 }

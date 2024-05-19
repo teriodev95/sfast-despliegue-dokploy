@@ -269,16 +269,16 @@ public final class PagoUtil {
         {
             String fechaActual = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             CalendarioModel calendarioModel = PagoUtil.calendarioService.findByFechaActual(fechaActual);
-            Optional<PrestamoModel> prestamoEntity = PagoUtil.prestamoService.findById(liquidacionDTO.getPrestamoId());
+            PrestamoModel prestamoModel = PagoUtil.prestamoService.findById(liquidacionDTO.getPrestamoId());
 
             pagoModel.setPagoId(UUID.randomUUID().toString());
             pagoModel.setSemana(calendarioModel.getSemana());
             pagoModel.setAnio(calendarioModel.getAnio());
             pagoModel.setEsPrimerPago(false);
 
-            if (prestamoEntity.isPresent()) {
-                pagoModel.setTarifa(prestamoEntity.get().getTarifa());
-                pagoModel.setAgente(prestamoEntity.get().getAgente());
+            if (prestamoModel != null) {
+                pagoModel.setTarifa(prestamoModel.getTarifa());
+                pagoModel.setAgente(prestamoModel.getAgente());
             }
 
             pagoModel.setTipo("Liquidacion");

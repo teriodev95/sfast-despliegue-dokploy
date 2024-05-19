@@ -5,6 +5,8 @@ import tech.calaverita.reporterloanssql.dto.cierre_semanal.IngresosAgenteDTO;
 import tech.calaverita.reporterloanssql.mappers.IMapper;
 import tech.calaverita.reporterloanssql.models.mariaDB.cierre_semanal.IngresosAgenteModel;
 
+import java.util.ArrayList;
+
 @Component
 public final class IngresosAgenteMapper implements IMapper<IngresosAgenteModel, IngresosAgenteDTO> {
     @Override
@@ -34,5 +36,15 @@ public final class IngresosAgenteMapper implements IMapper<IngresosAgenteModel, 
             entity.setMotivoOtros(in.getMotivoOtros());
         }
         return entity;
+    }
+
+    @Override
+    public ArrayList<IngresosAgenteDTO> mapOuts(ArrayList<IngresosAgenteModel> outs) {
+        return null;
+    }
+
+    @Override
+    public ArrayList<IngresosAgenteModel> mapIns(ArrayList<IngresosAgenteDTO> ins) {
+        return null;
     }
 }

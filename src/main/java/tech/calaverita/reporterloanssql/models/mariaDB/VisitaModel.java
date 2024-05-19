@@ -24,4 +24,6 @@ public class VisitaModel {
     private Double lng;
     private String createdAt;
     private String updatedAt;
+    private String status;
+    private String observaciones;
 }

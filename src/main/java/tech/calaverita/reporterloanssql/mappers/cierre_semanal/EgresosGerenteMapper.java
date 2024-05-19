@@ -5,6 +5,8 @@ import tech.calaverita.reporterloanssql.dto.cierre_semanal.EgresosGerenteDTO;
 import tech.calaverita.reporterloanssql.mappers.IMapper;
 import tech.calaverita.reporterloanssql.models.mariaDB.cierre_semanal.EgresosGerenteModel;
 
+import java.util.ArrayList;
+
 @Component
 public final class EgresosGerenteMapper implements IMapper<EgresosGerenteModel, EgresosGerenteDTO> {
     @Override
@@ -33,5 +35,15 @@ public final class EgresosGerenteMapper implements IMapper<EgresosGerenteModel, 
             egresosGerenteModel.setEfectivoRestanteCierre(in.getEfectivoRestanteCierre());
         }
         return egresosGerenteModel;
+    }
+
+    @Override
+    public ArrayList<EgresosGerenteDTO> mapOuts(ArrayList<EgresosGerenteModel> outs) {
+        return null;
+    }
+
+    @Override
+    public ArrayList<EgresosGerenteModel> mapIns(ArrayList<EgresosGerenteDTO> ins) {
+        return null;
     }
 }

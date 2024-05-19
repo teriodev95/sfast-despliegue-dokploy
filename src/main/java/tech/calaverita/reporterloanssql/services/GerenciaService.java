@@ -6,7 +6,6 @@ import tech.calaverita.reporterloanssql.models.mariaDB.GerenciaModel;
 import tech.calaverita.reporterloanssql.repositories.GerenciaRepository;
 
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -23,6 +22,10 @@ public class GerenciaService {
 
     public ArrayList<GerenciaModel> findAll() {
         return (ArrayList<GerenciaModel>) this.repo.findAll();
+    }
+
+    public ArrayList<GerenciaModel> findByUsuario(String usuario) {
+        return this.repo.findByUsuario(usuario);
     }
 
     public ArrayList<String> findIdsBySucursalId(int sucursalId) {

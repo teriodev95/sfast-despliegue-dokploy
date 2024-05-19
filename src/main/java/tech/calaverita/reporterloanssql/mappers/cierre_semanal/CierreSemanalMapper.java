@@ -5,6 +5,8 @@ import tech.calaverita.reporterloanssql.dto.cierre_semanal.CierreSemanalDTO;
 import tech.calaverita.reporterloanssql.mappers.IMapper;
 import tech.calaverita.reporterloanssql.models.mariaDB.cierre_semanal.CierreSemanalModel;
 
+import java.util.ArrayList;
+
 @Component
 public final class CierreSemanalMapper implements IMapper<CierreSemanalModel, CierreSemanalDTO> {
     @Override
@@ -51,5 +53,15 @@ public final class CierreSemanalMapper implements IMapper<CierreSemanalModel, Ci
             cierreSemanalModel.setStatusAgencia(in.getStatusAgencia());
         }
         return cierreSemanalModel;
+    }
+
+    @Override
+    public ArrayList<CierreSemanalDTO> mapOuts(ArrayList<CierreSemanalModel> outs) {
+        return null;
+    }
+
+    @Override
+    public ArrayList<CierreSemanalModel> mapIns(ArrayList<CierreSemanalDTO> ins) {
+        return null;
     }
 }
