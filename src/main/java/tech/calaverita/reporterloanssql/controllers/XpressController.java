@@ -19,6 +19,7 @@ import tech.calaverita.reporterloanssql.utils.DashboardUtil;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @RestController()
 @RequestMapping(path = "/xpress/v1")
@@ -177,8 +178,14 @@ public final class XpressController {
 
     @CrossOrigin
     @GetMapping("/local_date_time")
-    public ResponseEntity<String> getLocalDateTime() {
+    public ResponseEntity<HashMap<String, String>> getLocalDateTime() {
         String fechaYHora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        return new ResponseEntity<>(fechaYHora, HttpStatus.OK);
+        String[] campos = fechaYHora.split(" ");
+
+        HashMap<String, String> fechaYHoraHM = new HashMap<>();
+        fechaYHoraHM.put("Fecha", campos[0]);
+        fechaYHoraHM.put("Hora", campos[1]);
+
+        return new ResponseEntity<>(fechaYHoraHM, HttpStatus.OK);
     }
 }
