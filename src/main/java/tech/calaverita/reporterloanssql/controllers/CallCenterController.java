@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/xpress/v1/call_center")
 public class CallCenterController {
