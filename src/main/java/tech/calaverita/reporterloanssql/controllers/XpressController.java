@@ -16,6 +16,8 @@ import tech.calaverita.reporterloanssql.services.UsuarioService;
 import tech.calaverita.reporterloanssql.utils.CobranzaUtil;
 import tech.calaverita.reporterloanssql.utils.DashboardUtil;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 @RestController()
@@ -171,5 +173,12 @@ public final class XpressController {
         dashboardResponse = DashboardUtil.dashboard(dashboards);
 
         return new ResponseEntity<>(dashboardResponse, HttpStatus.OK);
+    }
+
+    @CrossOrigin
+    @GetMapping("/servicio/fecha_y_hora")
+    public ResponseEntity<String> getFechaYHoraDelServicio() {
+        String fechaYHora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        return new ResponseEntity<>(fechaYHora, HttpStatus.OK);
     }
 }
