@@ -4,27 +4,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import tech.calaverita.reporterloanssql.models.mariaDB.CalendarioModel;
 import tech.calaverita.reporterloanssql.pojos.ObjectsContainer;
-import tech.calaverita.reporterloanssql.services.PagoService;
 import tech.calaverita.reporterloanssql.services.views.PagoUtilService;
 import tech.calaverita.reporterloanssql.services.views.PrestamoService;
 import tech.calaverita.reporterloanssql.utils.CobranzaUtil;
+import tech.calaverita.reporterloanssql.utils.MyUtil;
 
 @Component
 public class CobranzaThread implements Runnable {
     private ObjectsContainer objectsContainer;
     private int opc;
     private Thread[] threads;
-    private static PagoService pagoService;
     private static PrestamoService prestamoService;
     private static PagoUtilService pagoUtilService;
 
     @Autowired
     private CobranzaThread(
-            PagoService pagoService,
             PrestamoService prestamoService,
             PagoUtilService pagoUtilService
     ) {
-        CobranzaThread.pagoService = pagoService;
         CobranzaThread.prestamoService = prestamoService;
         CobranzaThread.pagoUtilService = pagoUtilService;
     }
@@ -143,18 +140,16 @@ public class CobranzaThread implements Runnable {
         double debitoMiercoles = 0;
 
         for (int i = 0; i < this.objectsContainer.getPrestamosToCobranza().size(); i++) {
-            if (
-                    this.objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("MIERCOLES")
-            ) {
-                if (
-                        this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
-                                .getPrestamosToCobranza().get(i).getTarifa()
-                )
+            if (this.objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("MIERCOLES")) {
+                if (this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
+                        .getPrestamosToCobranza().get(i).getTarifa()) {
                     debitoMiercoles += this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
-                else
+                } else {
                     debitoMiercoles += this.objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
+                }
             }
 
+            debitoMiercoles = MyUtil.getDouble(debitoMiercoles);
             this.objectsContainer.getCobranza().setDebitoMiercoles(debitoMiercoles);
         }
     }
@@ -170,18 +165,16 @@ public class CobranzaThread implements Runnable {
         double debitoJueves = 0;
 
         for (int i = 0; i < this.objectsContainer.getPrestamosToCobranza().size(); i++) {
-            if (
-                    this.objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("JUEVES")
-            ) {
-                if (
-                        this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
-                                .getPrestamosToCobranza().get(i).getTarifa()
-                )
+            if (this.objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("JUEVES")) {
+                if (this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
+                        .getPrestamosToCobranza().get(i).getTarifa()) {
                     debitoJueves += this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
-                else
+                } else {
                     debitoJueves += this.objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
+                }
             }
 
+            debitoJueves = MyUtil.getDouble(debitoJueves);
             this.objectsContainer.getCobranza().setDebitoJueves(debitoJueves);
         }
     }
@@ -197,18 +190,16 @@ public class CobranzaThread implements Runnable {
         double debitoViernes = 0;
 
         for (int i = 0; i < this.objectsContainer.getPrestamosToCobranza().size(); i++) {
-            if (
-                    this.objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("VIERNES")
-            ) {
-                if (
-                        this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
-                                .getPrestamosToCobranza().get(i).getTarifa()
-                )
+            if (this.objectsContainer.getPrestamosToCobranza().get(i).getDiaDePago().equals("VIERNES")) {
+                if (this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
+                        .getPrestamosToCobranza().get(i).getTarifa()) {
                     debitoViernes += this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
-                else
+                } else {
                     debitoViernes += this.objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
+                }
             }
 
+            debitoViernes = MyUtil.getDouble(debitoViernes);
             this.objectsContainer.getCobranza().setDebitoViernes(debitoViernes);
         }
     }
@@ -224,14 +215,14 @@ public class CobranzaThread implements Runnable {
         double debitoTotal = 0;
 
         for (int i = 0; i < this.objectsContainer.getPrestamosToCobranza().size(); i++) {
-            if (
-                    this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
-                            .getPrestamosToCobranza().get(i).getTarifa()
-            )
+            if (this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon() < this.objectsContainer
+                    .getPrestamosToCobranza().get(i).getTarifa()) {
                 debitoTotal += this.objectsContainer.getPagosVistaToCobranza().get(i).getCierraCon();
-            else
+            } else {
                 debitoTotal += this.objectsContainer.getPrestamosToCobranza().get(i).getTarifa();
+            }
 
+            debitoTotal = MyUtil.getDouble(debitoTotal);
             this.objectsContainer.getCobranza().setDebitoTotal(debitoTotal);
         }
     }
