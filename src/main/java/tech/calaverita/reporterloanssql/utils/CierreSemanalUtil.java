@@ -32,7 +32,6 @@ import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -47,7 +46,7 @@ public class CierreSemanalUtil {
     private static AgenciaService agenciaService;
     private static PagoAgrupadoService pagoAgrupadoService;
     private static CalendarioService calendarioService;
-    private static Fonts fuentes = new Fonts();
+    private static final Fonts fuentes = new Fonts();
 
     public CierreSemanalUtil(BalanceAgenciaService balanceAgenciaService, CierreSemanalService cierreSemanalService,
                              EgresosAgenteService egresosAgenteService, EgresosGerenteService egresosGerenteService,
@@ -65,31 +64,30 @@ public class CierreSemanalUtil {
         CierreSemanalUtil.calendarioService = calendarioService;
     }
 
-    public static CierreSemanalDTO getCierreSemanalDTO(CierreSemanalModel cierreSemanalModel) throws ExecutionException,
-            InterruptedException {
+    public static CierreSemanalDTO getCierreSemanalDTO(CierreSemanalModel cierreSemanalModel) {
         CierreSemanalDTO cierreSemanalDTO = CierreSemanalUtil.cierreSemanalService
                 .getCierreSemanalDTO(cierreSemanalModel);
 
-        CompletableFuture<Optional<BalanceAgenciaModel>> balanceAgenciaEntity = CierreSemanalUtil.balanceAgenciaService
+        CompletableFuture<BalanceAgenciaModel> balanceAgenciaEntity = CierreSemanalUtil.balanceAgenciaService
                 .findById(cierreSemanalModel.getId());
-        CompletableFuture<Optional<EgresosAgenteModel>> egresosAgenteEntity = CierreSemanalUtil.egresosAgenteService
+        CompletableFuture<EgresosAgenteModel> egresosAgenteEntity = CierreSemanalUtil.egresosAgenteService
                 .findById(cierreSemanalModel.getId());
-        CompletableFuture<Optional<EgresosGerenteModel>> egresosGerenteEntity = CierreSemanalUtil.egresosGerenteService
+        CompletableFuture<EgresosGerenteModel> egresosGerenteEntity = CierreSemanalUtil.egresosGerenteService
                 .findById(cierreSemanalModel.getId());
-        CompletableFuture<Optional<IngresosAgenteModel>> ingresosAgenteEntity = CierreSemanalUtil.ingresosAgenteService
+        CompletableFuture<IngresosAgenteModel> ingresosAgenteEntity = CierreSemanalUtil.ingresosAgenteService
                 .findById(cierreSemanalModel.getId());
 
         CompletableFuture.allOf(balanceAgenciaEntity, egresosAgenteEntity, egresosGerenteEntity,
                 ingresosAgenteEntity);
 
         BalanceAgenciaDTO balanceAgenciaDTO = CierreSemanalUtil.balanceAgenciaService
-                .getBalanceAgenciaDTO(balanceAgenciaEntity.get().get());
+                .getBalanceAgenciaDTO(balanceAgenciaEntity.join());
         EgresosAgenteDTO egresosAgenteDTO = CierreSemanalUtil.egresosAgenteService
-                .getEgresosGerenteDTO(egresosAgenteEntity.get().get());
+                .getEgresosGerenteDTO(egresosAgenteEntity.join());
         EgresosGerenteDTO egresosGerenteDTO = CierreSemanalUtil.egresosGerenteService
-                .getEgresosGerenteDTO(egresosGerenteEntity.get().get());
+                .getEgresosGerenteDTO(egresosGerenteEntity.join());
         IngresosAgenteDTO ingresosAgenteDTO = CierreSemanalUtil.ingresosAgenteService
-                .getIngresosAgenteDTO(ingresosAgenteEntity.get().get());
+                .getIngresosAgenteDTO(ingresosAgenteEntity.join());
 
         cierreSemanalDTO.setBalanceAgencia(balanceAgenciaDTO);
         cierreSemanalDTO.setEgresosAgente(egresosAgenteDTO);
@@ -107,9 +105,6 @@ public class CierreSemanalUtil {
 
         CompletableFuture<Integer> clientesPagoCompletoCF = CierreSemanalUtil.pagoAgrupadoService
                 .findClientesPagoCompletoByAgenciaAnioAndSemanaAsync(dashboard.getAgencia(), dashboard.getAnio(),
-                        dashboard.getSemana());
-        CompletableFuture<Double> cobranzaTotalCF = CierreSemanalUtil.pagoAgrupadoService
-                .findCobranzaTotalByAgenciaAnioAndSemanaAsync(dashboard.getAgencia(), dashboard.getAnio(),
                         dashboard.getSemana());
         CompletableFuture<CalendarioModel> calendarioModelCF = CierreSemanalUtil.calendarioService
                 .findByAnioAndSemanaAsync(dashboard.getAnio(), dashboard.getSemana());
@@ -138,16 +133,11 @@ public class CierreSemanalUtil {
             balanceAgenciaDTO.setLiquidaciones(dashboard.getNumeroLiquidaciones());
         }
 
-        double cobranzaTotal;
+        double cobranzaTotal = dashboard.getCobranzaTotal();
 
         EgresosAgenteDTO egresosAgenteDTO = new EgresosAgenteDTO();
         {
             egresosAgenteDTO.setAsignaciones(asignaciones);
-
-            cobranzaTotalCF.join();
-
-            // To easy code
-            cobranzaTotal = cobranzaTotalCF.get();
 
             Double efectivoEntregadoEnCierre = cobranzaTotal - egresosAgenteDTO.getAsignaciones();
             egresosAgenteDTO.setEfectivoEntregadoCierre(MyUtil.getDouble(efectivoEntregadoEnCierre));
@@ -668,10 +658,10 @@ public class CierreSemanalUtil {
         return currentDate.format(formatter);
     }
 
-    public static String decimal(double numero) {
-        DecimalFormat decimalesformato = new DecimalFormat("###,###,###.00");
-        return decimalesformato.format(numero);
-    }
+//    public static String decimal(double numero) {
+//        DecimalFormat decimalesformato = new DecimalFormat("###,###,###.00");
+//        return decimalesformato.format(numero);
+//    }
 
     public static String money(double numero) {
         DecimalFormat decimalesformato = new DecimalFormat("###,###,###.00");
