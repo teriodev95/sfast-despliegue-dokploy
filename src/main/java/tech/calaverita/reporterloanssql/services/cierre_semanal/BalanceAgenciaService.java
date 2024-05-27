@@ -7,7 +7,6 @@ import tech.calaverita.reporterloanssql.mappers.cierre_semanal.BalanceAgenciaMap
 import tech.calaverita.reporterloanssql.models.mariaDB.cierre_semanal.BalanceAgenciaModel;
 import tech.calaverita.reporterloanssql.repositories.cierre_semanal.BalanceAgenciaRepository;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -30,11 +29,8 @@ public class BalanceAgenciaService {
     }
 
     @Async("asyncExecutor")
-    public CompletableFuture<Optional<BalanceAgenciaModel>> findById(
-            String id
-    ) {
-        Optional<BalanceAgenciaModel> entity = this.repo.findById(id);
-        return CompletableFuture.completedFuture(entity);
+    public CompletableFuture<BalanceAgenciaModel> findById(String id) {
+        return CompletableFuture.completedFuture(this.repo.findById(id).orElse(null));
     }
 
     public BalanceAgenciaDTO getBalanceAgenciaDTO(

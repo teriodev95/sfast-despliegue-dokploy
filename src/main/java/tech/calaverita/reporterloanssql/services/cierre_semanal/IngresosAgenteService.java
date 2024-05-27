@@ -7,7 +7,6 @@ import tech.calaverita.reporterloanssql.mappers.cierre_semanal.IngresosAgenteMap
 import tech.calaverita.reporterloanssql.models.mariaDB.cierre_semanal.IngresosAgenteModel;
 import tech.calaverita.reporterloanssql.repositories.cierre_semanal.IngresosAgenteRepository;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -31,11 +30,8 @@ public class IngresosAgenteService {
 
     @Async("asyncExecutor")
 
-    public CompletableFuture<Optional<IngresosAgenteModel>> findById(
-            String id
-    ) {
-        Optional<IngresosAgenteModel> entity = this.repo.findById(id);
-        return CompletableFuture.completedFuture(entity);
+    public CompletableFuture<IngresosAgenteModel> findById(String id) {
+        return CompletableFuture.completedFuture(this.repo.findById(id).orElse(null));
     }
 
     public IngresosAgenteDTO getIngresosAgenteDTO(

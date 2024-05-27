@@ -7,7 +7,6 @@ import tech.calaverita.reporterloanssql.mappers.cierre_semanal.EgresosGerenteMap
 import tech.calaverita.reporterloanssql.models.mariaDB.cierre_semanal.EgresosGerenteModel;
 import tech.calaverita.reporterloanssql.repositories.cierre_semanal.EgresosGerenteRepository;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -31,11 +30,8 @@ public class EgresosGerenteService {
 
     @Async("asyncExecutor")
 
-    public CompletableFuture<Optional<EgresosGerenteModel>> findById(
-            String id
-    ) {
-        Optional<EgresosGerenteModel> entity = this.repo.findById(id);
-        return CompletableFuture.completedFuture(entity);
+    public CompletableFuture<EgresosGerenteModel> findById(String id) {
+        return CompletableFuture.completedFuture(this.repo.findById(id).orElse(null));
     }
 
     public EgresosGerenteDTO getEgresosGerenteDTO(
