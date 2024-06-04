@@ -26,6 +26,7 @@ public class ReporteCallCenterMapper implements IMapper<ReporteCallCenterLiteMod
         reporteCallCenterDTO.setPreguntas_cliente(new PreguntaCallCenterMapper()
                 .mapOuts(out.getPreguntasCliente()));
         reporteCallCenterDTO.setPreguntas_aval(new PreguntaCallCenterMapper().mapOuts(out.getPreguntas_aval()));
+        reporteCallCenterDTO.setReportar_seguridad(out.getReportarSeguridad());
         return reporteCallCenterDTO;
     }
 

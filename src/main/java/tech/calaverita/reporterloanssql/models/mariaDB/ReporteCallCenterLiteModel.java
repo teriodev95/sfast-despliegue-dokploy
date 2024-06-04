@@ -44,4 +44,6 @@ public class ReporteCallCenterLiteModel {
     private String urlLlamadaCliente;
     @Column(name = "urlllamadaaval")
     private String urlLlamadaAval;
+    @Column(name = "reportarseguridad")
+    private Boolean reportarSeguridad;
 }

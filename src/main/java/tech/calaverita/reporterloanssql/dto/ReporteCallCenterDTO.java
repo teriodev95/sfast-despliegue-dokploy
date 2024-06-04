@@ -22,4 +22,5 @@ public class ReporteCallCenterDTO {
     private String url_llamada_cliente;
     private ArrayList<PreguntaCallCenter> preguntas_cliente;
     private ArrayList<PreguntaCallCenter> preguntas_aval;
+    private Boolean reportar_seguridad;
 }
