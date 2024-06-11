@@ -1,7 +1,7 @@
 package tech.calaverita.sfast_xpress.mappers;
 
 import com.google.gson.Gson;
-import tech.calaverita.sfast_xpress.dto.solicitud.SolicitudDTO;
+import tech.calaverita.sfast_xpress.DTOs.solicitud.SolicitudDTO;
 import tech.calaverita.sfast_xpress.models.mariaDB.SolicitudModel;
 
 import java.util.ArrayList;

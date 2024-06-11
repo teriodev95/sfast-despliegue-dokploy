@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.sfast_xpress.Constants;
-import tech.calaverita.sfast_xpress.dto.solicitud.SolicitudDTO;
+import tech.calaverita.sfast_xpress.DTOs.solicitud.SolicitudDTO;
 import tech.calaverita.sfast_xpress.mappers.SolicitudMapper;
 import tech.calaverita.sfast_xpress.models.mariaDB.SolicitudModel;
 import tech.calaverita.sfast_xpress.services.SolicitudService;

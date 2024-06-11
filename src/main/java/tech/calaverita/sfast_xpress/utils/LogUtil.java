@@ -1,7 +1,7 @@
 package tech.calaverita.sfast_xpress.utils;
 
 import com.google.gson.Gson;
-import tech.calaverita.sfast_xpress.dto.cierre_semanal.BalanceAgenciaDTO;
+import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.BalanceAgenciaDTO;
 
 import java.util.HashMap;
 

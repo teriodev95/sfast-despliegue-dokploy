@@ -1,6 +1,6 @@
 package tech.calaverita.sfast_xpress.mappers;
 
-import tech.calaverita.sfast_xpress.dto.ReporteCallCenterDTO;
+import tech.calaverita.sfast_xpress.DTOs.ReporteCallCenterDTO;
 import tech.calaverita.sfast_xpress.models.mariaDB.ReporteCallCenterLiteModel;
 
 import java.util.ArrayList;

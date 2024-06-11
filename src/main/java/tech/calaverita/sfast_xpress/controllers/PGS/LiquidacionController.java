@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.sfast_xpress.Constants;
-import tech.calaverita.sfast_xpress.dto.LiquidacionDTO;
+import tech.calaverita.sfast_xpress.DTOs.LiquidacionDTO;
 import tech.calaverita.sfast_xpress.models.mariaDB.LiquidacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.PagoModel;
 import tech.calaverita.sfast_xpress.services.LiquidacionService;

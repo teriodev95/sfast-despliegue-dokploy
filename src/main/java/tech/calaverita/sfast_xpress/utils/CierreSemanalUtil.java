@@ -8,7 +8,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import okhttp3.*;
 import org.springframework.stereotype.Component;
 import tech.calaverita.sfast_xpress.Constants;
-import tech.calaverita.sfast_xpress.dto.cierre_semanal.*;
+import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.*;
 import tech.calaverita.sfast_xpress.itext.PdfStyleManager;
 import tech.calaverita.sfast_xpress.itext.fonts.Fonts;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;

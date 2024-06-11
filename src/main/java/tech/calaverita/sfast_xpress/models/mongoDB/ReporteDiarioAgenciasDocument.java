@@ -3,8 +3,8 @@ package tech.calaverita.sfast_xpress.models.mongoDB;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import tech.calaverita.sfast_xpress.dto.reporte_diario_agencias.AgenciaReporteDiarioAgenciasDTO;
-import tech.calaverita.sfast_xpress.dto.reporte_diario_agencias.EncabezadoReporteDiarioAgenciasDTO;
+import tech.calaverita.sfast_xpress.DTOs.reporte_diario_agencias.AgenciaReporteDiarioAgenciasDTO;
+import tech.calaverita.sfast_xpress.DTOs.reporte_diario_agencias.EncabezadoReporteDiarioAgenciasDTO;
 
 import java.util.ArrayList;
 

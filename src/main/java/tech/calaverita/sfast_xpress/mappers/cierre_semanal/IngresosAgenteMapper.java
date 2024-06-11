@@ -1,7 +1,7 @@
 package tech.calaverita.sfast_xpress.mappers.cierre_semanal;
 
 import org.springframework.stereotype.Component;
-import tech.calaverita.sfast_xpress.dto.cierre_semanal.IngresosAgenteDTO;
+import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.IngresosAgenteDTO;
 import tech.calaverita.sfast_xpress.mappers.IMapper;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.IngresosAgenteModel;
 

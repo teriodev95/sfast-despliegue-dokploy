@@ -3,10 +3,10 @@ package tech.calaverita.sfast_xpress.models.mongoDB;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import tech.calaverita.sfast_xpress.dto.reporte_general_gerencia.ArrastreReporteGeneralGerenciaDTO;
-import tech.calaverita.sfast_xpress.dto.reporte_general_gerencia.AvanceReporteGeneralGerenciaDTO;
-import tech.calaverita.sfast_xpress.dto.reporte_general_gerencia.DashboardReporteGeneralGerenciaDTO;
-import tech.calaverita.sfast_xpress.dto.reporte_general_gerencia.EncabezadoReporteGeneralGerenciaDTO;
+import tech.calaverita.sfast_xpress.DTOs.reporte_general_gerencia.ArrastreReporteGeneralGerenciaDTO;
+import tech.calaverita.sfast_xpress.DTOs.reporte_general_gerencia.AvanceReporteGeneralGerenciaDTO;
+import tech.calaverita.sfast_xpress.DTOs.reporte_general_gerencia.DashboardReporteGeneralGerenciaDTO;
+import tech.calaverita.sfast_xpress.DTOs.reporte_general_gerencia.EncabezadoReporteGeneralGerenciaDTO;
 
 import java.util.ArrayList;
 

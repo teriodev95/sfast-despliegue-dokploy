@@ -1,7 +1,7 @@
 package tech.calaverita.sfast_xpress.itext;
 
 import com.itextpdf.text.DocumentException;
-import tech.calaverita.sfast_xpress.dto.cierre_semanal.*;
+import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.*;
 import tech.calaverita.sfast_xpress.utils.CierreSemanalUtil;
 
 import java.io.FileNotFoundException;

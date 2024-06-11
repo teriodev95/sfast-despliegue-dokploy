@@ -6,7 +6,7 @@ import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
-import tech.calaverita.sfast_xpress.dto.LiquidacionDTO;
+import tech.calaverita.sfast_xpress.DTOs.LiquidacionDTO;
 import tech.calaverita.sfast_xpress.models.mariaDB.*;
 import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
 import tech.calaverita.sfast_xpress.pojos.ModelValidation;

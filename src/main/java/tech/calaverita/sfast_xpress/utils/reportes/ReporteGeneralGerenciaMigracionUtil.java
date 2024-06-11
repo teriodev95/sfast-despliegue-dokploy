@@ -1,10 +1,10 @@
 package tech.calaverita.sfast_xpress.utils.reportes;
 
 import org.springframework.stereotype.Component;
-import tech.calaverita.sfast_xpress.dto.reporte_general_gerencia.ArrastreReporteGeneralGerenciaDTO;
-import tech.calaverita.sfast_xpress.dto.reporte_general_gerencia.AvanceReporteGeneralGerenciaDTO;
-import tech.calaverita.sfast_xpress.dto.reporte_general_gerencia.DashboardReporteGeneralGerenciaDTO;
-import tech.calaverita.sfast_xpress.dto.reporte_general_gerencia.EncabezadoReporteGeneralGerenciaDTO;
+import tech.calaverita.sfast_xpress.DTOs.reporte_general_gerencia.ArrastreReporteGeneralGerenciaDTO;
+import tech.calaverita.sfast_xpress.DTOs.reporte_general_gerencia.AvanceReporteGeneralGerenciaDTO;
+import tech.calaverita.sfast_xpress.DTOs.reporte_general_gerencia.DashboardReporteGeneralGerenciaDTO;
+import tech.calaverita.sfast_xpress.DTOs.reporte_general_gerencia.EncabezadoReporteGeneralGerenciaDTO;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.GerenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.SucursalModel;

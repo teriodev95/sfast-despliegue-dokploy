@@ -2,7 +2,7 @@ package tech.calaverita.sfast_xpress.services.cierre_semanal;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import tech.calaverita.sfast_xpress.dto.cierre_semanal.EgresosGerenteDTO;
+import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.EgresosGerenteDTO;
 import tech.calaverita.sfast_xpress.mappers.cierre_semanal.EgresosGerenteMapper;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.EgresosGerenteModel;
 import tech.calaverita.sfast_xpress.repositories.cierre_semanal.EgresosGerenteRepository;

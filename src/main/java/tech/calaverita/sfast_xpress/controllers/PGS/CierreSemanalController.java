@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.sfast_xpress.Constants;
 import tech.calaverita.sfast_xpress.controllers.XpressController;
-import tech.calaverita.sfast_xpress.dto.cierre_semanal.CierreSemanalDTO;
+import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.CierreSemanalDTO;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.*;
 import tech.calaverita.sfast_xpress.pojos.Dashboard;

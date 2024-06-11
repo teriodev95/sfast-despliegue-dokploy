@@ -1,10 +1,10 @@
 package tech.calaverita.sfast_xpress.utils.reportes;
 
 import org.springframework.stereotype.Component;
-import tech.calaverita.sfast_xpress.dto.reporte_diario_agencias.AgenciaReporteDiarioAgenciasDTO;
-import tech.calaverita.sfast_xpress.dto.reporte_diario_agencias.DashboardSemanaActualReporteDiarioAgenciasDTO;
-import tech.calaverita.sfast_xpress.dto.reporte_diario_agencias.DashboardSemanaAnteriorReporteDiarioAgenciasDTO;
-import tech.calaverita.sfast_xpress.dto.reporte_diario_agencias.EncabezadoReporteDiarioAgenciasDTO;
+import tech.calaverita.sfast_xpress.DTOs.reporte_diario_agencias.AgenciaReporteDiarioAgenciasDTO;
+import tech.calaverita.sfast_xpress.DTOs.reporte_diario_agencias.DashboardSemanaActualReporteDiarioAgenciasDTO;
+import tech.calaverita.sfast_xpress.DTOs.reporte_diario_agencias.DashboardSemanaAnteriorReporteDiarioAgenciasDTO;
+import tech.calaverita.sfast_xpress.DTOs.reporte_diario_agencias.EncabezadoReporteDiarioAgenciasDTO;
 import tech.calaverita.sfast_xpress.models.mariaDB.*;
 import tech.calaverita.sfast_xpress.models.mongoDB.ReporteDiarioAgenciasDocument;
 import tech.calaverita.sfast_xpress.services.AgenciaService;

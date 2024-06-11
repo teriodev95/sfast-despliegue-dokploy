@@ -2,7 +2,7 @@ package tech.calaverita.sfast_xpress.services;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import tech.calaverita.sfast_xpress.dto.LiquidacionDTO;
+import tech.calaverita.sfast_xpress.DTOs.LiquidacionDTO;
 import tech.calaverita.sfast_xpress.mappers.PagoMapper;
 import tech.calaverita.sfast_xpress.models.mariaDB.PagoModel;
 import tech.calaverita.sfast_xpress.repositories.PagoRepository;

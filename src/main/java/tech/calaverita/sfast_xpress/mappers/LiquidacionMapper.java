@@ -1,7 +1,7 @@
 package tech.calaverita.sfast_xpress.mappers;
 
 import org.springframework.stereotype.Component;
-import tech.calaverita.sfast_xpress.dto.LiquidacionDTO;
+import tech.calaverita.sfast_xpress.DTOs.LiquidacionDTO;
 import tech.calaverita.sfast_xpress.models.mariaDB.LiquidacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
 
