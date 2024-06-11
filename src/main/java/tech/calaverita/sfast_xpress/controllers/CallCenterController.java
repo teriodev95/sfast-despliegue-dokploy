@@ -1,9 +1,10 @@
 package tech.calaverita.sfast_xpress.controllers;
 
+import com.google.gson.Gson;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.calaverita.sfast_xpress.dto.ReporteCallCenterDTO;
+import tech.calaverita.sfast_xpress.DTOs.ReporteCallCenterDTO;
 import tech.calaverita.sfast_xpress.mappers.ReporteCallCenterMapper;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.GerenciaModel;
@@ -91,14 +92,13 @@ public class CallCenterController {
 
         if (prestamoModel != null) {
             VisitaModel visitaModel = new VisitaModel();
-            visitaModel.setStatus(visita.get("status").toString());
             visitaModel.setLat(Double.parseDouble(visita.get("lat").toString()));
             visitaModel.setLng(Double.parseDouble(visita.get("lng").toString()));
-            visitaModel.setObservaciones(visita.get("observaciones").toString());
             visitaModel.setPrestamoId(visita.get("prestamoId").toString());
             visitaModel.setAnio(calendarioModel.getAnio());
             visitaModel.setSemana(calendarioModel.getSemana());
             visitaModel.setAgente(prestamoModel.getAgente());
+            visitaModel.setLog(new Gson().toJson(visita.get("log")));
             visitaModel.setCliente(prestamoModel.getNombres() + " " + prestamoModel.getApellidoPaterno() + " "
                     + prestamoModel.getApellidoMaterno());
             visitaModel.setVisitaId(UUID.randomUUID().toString());

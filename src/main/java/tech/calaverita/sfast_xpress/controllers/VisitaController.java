@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.sfast_xpress.Constants;
+import tech.calaverita.sfast_xpress.DTOs.VisitaDTO;
+import tech.calaverita.sfast_xpress.mappers.VisitaMapper;
 import tech.calaverita.sfast_xpress.models.mariaDB.VisitaModel;
 import tech.calaverita.sfast_xpress.services.VisitaService;
 import tech.calaverita.sfast_xpress.utils.VisitaUtil;
@@ -60,11 +62,12 @@ public final class VisitaController {
     }
 
     @PostMapping(path = "/create-one")
-    public ResponseEntity<String> createVisitaModel(@RequestBody VisitaModel visitaModel) {
+    public ResponseEntity<String> createVisitaModel(@RequestBody VisitaDTO visitaDTO) {
 
-        ResponseEntity<String> responseEntity = VisitaUtil.restrCheckVisit(visitaModel);
+        ResponseEntity<String> responseEntity = VisitaUtil.restrCheckVisit(visitaDTO);
 
         if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            VisitaModel visitaModel = new VisitaMapper().mapIn(visitaDTO);
             visitaService.save(visitaModel);
         } else {
             return responseEntity;
