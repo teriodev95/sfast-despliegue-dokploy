@@ -1,0 +1,17 @@
+package tech.calaverita.sfast_xpress.retrofit.pojos;
+
+import lombok.Data;
+
+@Data
+public class AsignacionBody {
+    private String jsonrpc = "2.0";
+    private String method = "call";
+    private String id = "";
+    private AsignacionList params;
+    public AsignacionBody() {
+
+    }
+    public AsignacionBody(AsignacionList params) {
+        this.params = params;
+    }
+}

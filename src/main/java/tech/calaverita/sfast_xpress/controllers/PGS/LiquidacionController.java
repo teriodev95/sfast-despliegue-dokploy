@@ -1,0 +1,52 @@
+package tech.calaverita.sfast_xpress.controllers.PGS;
+
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import tech.calaverita.sfast_xpress.Constants;
+import tech.calaverita.sfast_xpress.dto.LiquidacionDTO;
+import tech.calaverita.sfast_xpress.models.mariaDB.LiquidacionModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.PagoModel;
+import tech.calaverita.sfast_xpress.services.LiquidacionService;
+import tech.calaverita.sfast_xpress.services.PagoService;
+import tech.calaverita.sfast_xpress.utils.LiquidacionUtil;
+import tech.calaverita.sfast_xpress.utils.PagoUtil;
+
+@CrossOrigin
+@RestController
+@RequestMapping("/xpress/v1/pwa/payoffs")
+public final class LiquidacionController {
+    private final LiquidacionService liquidacionService;
+    private final PagoService pagoService;
+
+    public LiquidacionController(LiquidacionService liquidacionService, PagoService pagoService) {
+        this.liquidacionService = liquidacionService;
+        this.pagoService = pagoService;
+    }
+
+    @ModelAttribute
+    public void setResponseHeader(HttpServletResponse response) {
+        response.setHeader("Version", Constants.VERSION);
+        response.setHeader("Last-Modified", Constants.LAST_MODIFIED);
+    }
+
+    @GetMapping(path = "/data/{prestamoId}")
+    public @ResponseBody ResponseEntity<LiquidacionDTO> getDatosLiquidacion(@PathVariable String prestamoId) {
+        return new ResponseEntity<>(LiquidacionUtil.getLiquidacionDTO(prestamoId), HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/create-one")
+    public @ResponseBody ResponseEntity<String> createLiquidacion(@RequestBody LiquidacionDTO liquidacionDTO) {
+        String responseText = "Se creó la liquidación correctamente";
+        HttpStatus responseStatus = HttpStatus.CREATED;
+
+        PagoModel pagoModel = PagoUtil.getPagoEntity(liquidacionDTO);
+        LiquidacionModel liquidacionModel = LiquidacionUtil.getLiquidacionEntity(liquidacionDTO, pagoModel);
+
+        this.pagoService.save(pagoModel);
+        this.liquidacionService.save(liquidacionModel);
+
+        return new ResponseEntity<>(responseText, responseStatus);
+    }
+}
