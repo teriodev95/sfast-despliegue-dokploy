@@ -1,7 +1,6 @@
 package tech.calaverita.sfast_xpress.DTOs;
 
 import lombok.Data;
-import tech.calaverita.sfast_xpress.pojos.PreguntaCallCenter;
 
 import java.util.ArrayList;
 
@@ -20,7 +19,7 @@ public class ReporteCallCenterDTO {
     private String status_llamada_cliente;
     private String url_llamada_aval;
     private String url_llamada_cliente;
-    private ArrayList<PreguntaCallCenter> preguntas_cliente;
-    private ArrayList<PreguntaCallCenter> preguntas_aval;
+    private ArrayList<Object> preguntas_cliente;
+    private ArrayList<Object> preguntas_aval;
     private Boolean reportar_seguridad;
 }
