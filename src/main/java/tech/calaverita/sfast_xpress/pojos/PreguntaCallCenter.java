@@ -9,4 +9,10 @@ public class PreguntaCallCenter {
     private String pregunta;
     private String respuesta;
     private Integer puntuacion;
+
+    public PreguntaCallCenter() {
+        this.pregunta = "";
+        this.respuesta = "";
+        this.puntuacion = 0;
+    }
 }
