@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "reportes_call_center")
+@Table(name = "reportes_call_center_v2")
 public class ReporteCallCenterModel {
     @Id
     private String prestamo;
@@ -80,4 +80,6 @@ public class ReporteCallCenterModel {
     private String urlLlamadaAval;
     @Column(name = "nombreagente")
     private String nombreAgente;
+    private Integer anio;
+    private Integer Semana;
 }

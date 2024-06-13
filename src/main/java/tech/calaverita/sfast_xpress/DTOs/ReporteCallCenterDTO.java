@@ -19,7 +19,9 @@ public class ReporteCallCenterDTO {
     private String status_llamada_cliente;
     private String url_llamada_aval;
     private String url_llamada_cliente;
+    private Boolean reportar_seguridad;
+    private Integer anio;
+    private Integer semana;
     private ArrayList<Object> preguntas_cliente;
     private ArrayList<Object> preguntas_aval;
-    private Boolean reportar_seguridad;
 }
