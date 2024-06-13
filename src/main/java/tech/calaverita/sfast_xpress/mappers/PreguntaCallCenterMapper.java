@@ -12,7 +12,7 @@ public class PreguntaCallCenterMapper {
         };
 
         ArrayList<Object> preguntas = new Gson().fromJson(out, typeToken.getType());
-        if (!preguntas.isEmpty()) {
+        if (preguntas != null) {
             for (int i = 0; i < preguntas.size(); i++) {
                 if (preguntas.get(i) instanceof String) {
                     preguntas.set(i, new PreguntaCallCenter());
