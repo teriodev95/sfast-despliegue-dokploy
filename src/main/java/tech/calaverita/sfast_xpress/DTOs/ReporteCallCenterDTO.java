@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 @Data
 public class ReporteCallCenterDTO {
+    private Integer reporteId;
     private String nombre_atiende_aval;
     private String nombre_atiende_cliente;
     private String nombres_aval;
@@ -22,6 +23,7 @@ public class ReporteCallCenterDTO {
     private Boolean reportar_seguridad;
     private Integer anio;
     private Integer semana;
+    private Boolean tieneVisitas;
     private ArrayList<Object> preguntas_cliente;
     private ArrayList<Object> preguntas_aval;
 }

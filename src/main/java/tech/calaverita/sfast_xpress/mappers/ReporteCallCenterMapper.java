@@ -10,6 +10,7 @@ public class ReporteCallCenterMapper implements IMapper<ReporteCallCenterLiteMod
     @Override
     public ReporteCallCenterDTO mapOut(ReporteCallCenterLiteModel out) {
         ReporteCallCenterDTO reporteCallCenterDTO = new ReporteCallCenterDTO();
+        reporteCallCenterDTO.setReporteId(out.getId());
         reporteCallCenterDTO.setNombre_atiende_aval(out.getNombreAtiendeAval());
         reporteCallCenterDTO.setNombre_atiende_cliente(out.getNombreAtiendeCliente());
         reporteCallCenterDTO.setNombres_aval(out.getNombreAval());
@@ -29,6 +30,7 @@ public class ReporteCallCenterMapper implements IMapper<ReporteCallCenterLiteMod
         reporteCallCenterDTO.setReportar_seguridad(out.getReportarSeguridad());
         reporteCallCenterDTO.setAnio(out.getAnio());
         reporteCallCenterDTO.setSemana(out.getSemana());
+        reporteCallCenterDTO.setTieneVisitas(out.getTieneVisitas());
         return reporteCallCenterDTO;
     }
 

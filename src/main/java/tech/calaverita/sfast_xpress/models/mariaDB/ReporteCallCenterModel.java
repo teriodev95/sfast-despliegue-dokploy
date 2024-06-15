@@ -11,6 +11,7 @@ import lombok.Data;
 @Table(name = "reportes_call_center_v2")
 public class ReporteCallCenterModel {
     @Id
+    private Integer id;
     private String prestamo;
     @Column(name = "nombrecliente")
     private String nombreCliente;
@@ -82,4 +83,6 @@ public class ReporteCallCenterModel {
     private String nombreAgente;
     private Integer anio;
     private Integer Semana;
+    @Column(name = "tienevisitas")
+    private Boolean tieneVisitas;
 }
