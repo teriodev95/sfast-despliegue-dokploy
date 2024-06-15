@@ -13,8 +13,6 @@ public interface ReporteCallCenterRepository extends CrudRepository<ReporteCallC
     @Query("SELECT rcclm FROM ReporteCallCenterLiteModel rcclm WHERE rcclm.prestamoId = :id")
     ReporteCallCenterLiteModel findLiteModelById(String id);
 
-    @Query("SELECT rcclm FROM ReporteCallCenterLiteModel rcclm WHERE rcclm.gerencia = :gerencia " +
-            "AND rcclm.sucursalId = :sucursalId")
-    ArrayList<ReporteCallCenterLiteModel> findLiteModelByGerenciaAndSucursalId(String gerencia,
-                                                                               String sucursalId);
+    @Query("SELECT rcclm FROM ReporteCallCenterLiteModel rcclm WHERE rcclm.gerencia = :gerencia")
+    ArrayList<ReporteCallCenterLiteModel> findLiteModelByGerenciaAndSucursalId(String gerencia);
 }

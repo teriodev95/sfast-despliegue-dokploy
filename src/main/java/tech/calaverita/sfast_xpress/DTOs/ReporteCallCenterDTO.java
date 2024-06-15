@@ -24,6 +24,8 @@ public class ReporteCallCenterDTO {
     private Integer anio;
     private Integer semana;
     private Boolean tieneVisitas;
+    private String agencia;
+    private String gerencia;
     private ArrayList<Object> preguntas_cliente;
     private ArrayList<Object> preguntas_aval;
 }

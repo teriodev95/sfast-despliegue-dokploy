@@ -31,6 +31,8 @@ public class ReporteCallCenterMapper implements IMapper<ReporteCallCenterLiteMod
         reporteCallCenterDTO.setAnio(out.getAnio());
         reporteCallCenterDTO.setSemana(out.getSemana());
         reporteCallCenterDTO.setTieneVisitas(out.getTieneVisitas());
+        reporteCallCenterDTO.setGerencia(out.getGerencia());
+        reporteCallCenterDTO.setAgencia(out.getAgencia());
         return reporteCallCenterDTO;
     }
 

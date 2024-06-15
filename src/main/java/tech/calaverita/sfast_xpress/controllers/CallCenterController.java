@@ -51,14 +51,8 @@ public class CallCenterController {
 
         ArrayList<GerenciaModel> gerenciaModels = this.gerenciaService.findByUsuario(usuario);
         ArrayList<ReporteCallCenterLiteModel> reportesCallCenterLiteModel = new ArrayList<>();
-        gerenciaModels.forEach(gerenciaModel -> {
-            // To easy code
-            String gerencia = gerenciaModel.getDeprecatedName();
-            String sucursalId = gerenciaModel.getSucursal();
-
-            reportesCallCenterLiteModel.addAll(this.reporteCallCenterService
-                    .findLiteModelByGerenciaAndSucursalId(gerencia, sucursalId));
-        });
+        gerenciaModels.forEach(gerenciaModel -> reportesCallCenterLiteModel.addAll(this.reporteCallCenterService
+                .findLiteModelByGerenciaAndSucursalId(gerenciaModel.getGerenciaId())));
 
         if (!reportesCallCenterLiteModel.isEmpty()) {
             reportesCallCenterDTO = new ReporteCallCenterMapper().mapOuts(reportesCallCenterLiteModel);
