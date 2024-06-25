@@ -19,6 +19,7 @@ public class ReporteCallCenterLiteModel {
     @Column(name = "nombreaval")
     private String nombreAval;
     private String agencia;
+    @Column(name = "gerenciasfast")
     private String gerencia;
     @Column(name = "numllamadascliente")
     private Integer numLlamadasCliente;

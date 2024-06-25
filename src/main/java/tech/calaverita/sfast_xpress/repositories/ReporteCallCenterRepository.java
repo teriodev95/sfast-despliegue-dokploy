@@ -14,5 +14,5 @@ public interface ReporteCallCenterRepository extends CrudRepository<ReporteCallC
     ReporteCallCenterLiteModel findLiteModelById(String id);
 
     @Query("SELECT rcclm FROM ReporteCallCenterLiteModel rcclm WHERE rcclm.gerencia = :gerencia")
-    ArrayList<ReporteCallCenterLiteModel> findLiteModelByGerenciaAndSucursalId(String gerencia);
+    ArrayList<ReporteCallCenterLiteModel> findLiteModelByGerencia(String gerencia);
 }

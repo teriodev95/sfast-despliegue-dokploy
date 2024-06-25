@@ -52,7 +52,7 @@ public class CallCenterController {
         ArrayList<GerenciaModel> gerenciaModels = this.gerenciaService.findByUsuario(usuario);
         ArrayList<ReporteCallCenterLiteModel> reportesCallCenterLiteModel = new ArrayList<>();
         gerenciaModels.forEach(gerenciaModel -> reportesCallCenterLiteModel.addAll(this.reporteCallCenterService
-                .findLiteModelByGerenciaAndSucursalId(gerenciaModel.getGerenciaId())));
+                .findLiteModelByGerencia(gerenciaModel.getGerenciaId())));
 
         if (!reportesCallCenterLiteModel.isEmpty()) {
             reportesCallCenterDTO = new ReporteCallCenterMapper().mapOuts(reportesCallCenterLiteModel);

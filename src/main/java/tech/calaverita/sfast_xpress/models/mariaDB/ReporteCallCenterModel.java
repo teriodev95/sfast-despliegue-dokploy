@@ -27,6 +27,8 @@ public class ReporteCallCenterModel {
     private String tipoDeCredito;
     private Integer plazo;
     private Double tarifa;
+    @Column(name = "gerenciasfast")
+    private String gerenciaSFast;
     private String gerencia;
     private String agencia;
     @Column(name = "sucursalid")

@@ -26,7 +26,7 @@ public class ReporteCallCenterService {
         return this.repo.findLiteModelById(id);
     }
 
-    public ArrayList<ReporteCallCenterLiteModel> findLiteModelByGerenciaAndSucursalId(String gerencia) {
-        return this.repo.findLiteModelByGerenciaAndSucursalId(gerencia);
+    public ArrayList<ReporteCallCenterLiteModel> findLiteModelByGerencia(String gerencia) {
+        return this.repo.findLiteModelByGerencia(gerencia);
     }
 }
