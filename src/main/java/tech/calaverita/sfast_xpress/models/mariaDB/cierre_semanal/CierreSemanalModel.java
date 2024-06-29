@@ -24,4 +24,6 @@ public class CierreSemanalModel {
     private String selfieGerente;
     private String statusAgencia;
     private String log;
+    private String uidVerificacionAgente;
+    private String uidVerificacionGerente;
 }

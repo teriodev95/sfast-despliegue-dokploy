@@ -19,4 +19,6 @@ public class CierreSemanalDTO {
     private Integer pinAgente;
     private Boolean isAgenciaCerrada;
     private String statusAgencia;
+    private String uidVerificacionAgente;
+    private String uidVerificacionGerente;
 }

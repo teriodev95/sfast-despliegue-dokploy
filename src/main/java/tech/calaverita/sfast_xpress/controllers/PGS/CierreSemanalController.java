@@ -166,7 +166,7 @@ public final class CierreSemanalController {
         }
 
         CierreSemanalUtil.subSendCierreSemanalMessage(cierreSemanalDTO);
-        CierreSemanalUtil.createCierreSemanalPDF(cierreSemanalDTO);
+//        CierreSemanalUtil.createCierreSemanalPDF(cierreSemanalDTO);
 
         return new ResponseEntity<>(responseText, responseStatus);
     }

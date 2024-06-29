@@ -20,6 +20,8 @@ public final class CierreSemanalMapper implements IMapper<CierreSemanalModel, Ci
             cierreSemanalDTO.setPDF(out.getPDF());
             cierreSemanalDTO.setSelfieAgente(out.getSelfieAgente());
             cierreSemanalDTO.setSelfieGerente(out.getSelfieGerente());
+            cierreSemanalDTO.setUidVerificacionAgente(out.getUidVerificacionAgente());
+            cierreSemanalDTO.setUidVerificacionGerente(out.getUidVerificacionGerente());
         }
         return cierreSemanalDTO;
     }
@@ -51,6 +53,8 @@ public final class CierreSemanalMapper implements IMapper<CierreSemanalModel, Ci
             cierreSemanalModel.setSelfieAgente(in.getSelfieAgente());
             cierreSemanalModel.setSelfieGerente(in.getSelfieGerente());
             cierreSemanalModel.setStatusAgencia(in.getStatusAgencia());
+            cierreSemanalModel.setUidVerificacionAgente(in.getUidVerificacionAgente());
+            cierreSemanalModel.setUidVerificacionGerente(in.getUidVerificacionGerente());
         }
         return cierreSemanalModel;
     }
