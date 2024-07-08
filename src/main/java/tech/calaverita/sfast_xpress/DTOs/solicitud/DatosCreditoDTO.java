@@ -12,5 +12,9 @@ public class DatosCreditoDTO {
     private String cargo;
     private String totalPagar;
     private String tipoCredito;
+    private String diaDeEntrega;
+    private String horaDeEntrega;
+    private String diaDePago;
+    private String horaDePago;
     private String identificadorCredito;
 }
