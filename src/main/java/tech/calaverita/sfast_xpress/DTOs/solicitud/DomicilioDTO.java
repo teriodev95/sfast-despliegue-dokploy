@@ -8,6 +8,7 @@ public class DomicilioDTO {
     private String municipio;
     private String estado;
     private String calle;
+    private String colonia;
     private String numExt;
     private String numInt;
     private String referencia;
