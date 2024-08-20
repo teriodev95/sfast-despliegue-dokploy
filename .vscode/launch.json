@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-SfastXpressApplication<SFast-Xpress>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "tech.calaverita.sfast_xpress.SfastXpressApplication",
+            "projectName": "SFast-Xpress",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
