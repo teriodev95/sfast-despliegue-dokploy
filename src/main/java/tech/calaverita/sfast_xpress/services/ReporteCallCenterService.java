@@ -17,7 +17,7 @@ public class ReporteCallCenterService {
     }
 
     @Cacheable("ReporteCallCenterById")
-    public ReporteCallCenterModel findById(String id) {
+    public ReporteCallCenterModel findById(Integer id) {
         return this.repo.findById(id).orElse(null);
     }
 

@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import tech.calaverita.sfast_xpress.Constants;
 import tech.calaverita.sfast_xpress.controllers.XpressController;
 import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.CierreSemanalDTO;
+import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.*;
-import tech.calaverita.sfast_xpress.pojos.Dashboard;
 import tech.calaverita.sfast_xpress.services.AsignacionService;
 import tech.calaverita.sfast_xpress.services.UsuarioService;
 import tech.calaverita.sfast_xpress.services.cierre_semanal.*;
@@ -72,7 +72,7 @@ public final class CierreSemanalController {
         CierreSemanalDTO cierreSemanalDTO = null;
         HttpStatus responseStatus = HttpStatus.OK;
 
-        Dashboard dashboard;
+        DashboardDTO dashboard;
         List<UsuarioModel> usuarioModels;
         double asignaciones;
 
@@ -94,7 +94,7 @@ public final class CierreSemanalController {
                     usuarioModels.add(this.usuarioService.findByGerenciaAndTipo(usuarioModels.get(0).getGerencia(),
                             "Gerente"));
                     asignaciones = this.asignacionService
-                            .findSumaAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
+                            .findSumaAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana).join();
 
                     cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(dashboard, usuarioModels, asignaciones);
                 } else {
@@ -166,7 +166,7 @@ public final class CierreSemanalController {
         }
 
         CierreSemanalUtil.subSendCierreSemanalMessage(cierreSemanalDTO);
-//        CierreSemanalUtil.createCierreSemanalPDF(cierreSemanalDTO);
+    //    CierreSemanalUtil.createCierreSemanalPDF(cierreSemanalDTO);
 
         return new ResponseEntity<>(responseText, responseStatus);
     }

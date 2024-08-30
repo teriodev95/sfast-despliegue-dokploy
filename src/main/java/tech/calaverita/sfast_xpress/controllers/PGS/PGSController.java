@@ -5,9 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.sfast_xpress.Constants;
+import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
 import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
-import tech.calaverita.sfast_xpress.pojos.Dashboard;
 import tech.calaverita.sfast_xpress.pojos.ObjectsContainer;
 import tech.calaverita.sfast_xpress.pojos.PWA.CobranzaPWA;
 import tech.calaverita.sfast_xpress.pojos.PWA.HistoricoPWA;
@@ -65,10 +65,10 @@ public final class PGSController {
     }
 
     @GetMapping(path = "/dashboard-fecha/{agencia}/{fecha}")
-    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgencia(@PathVariable String agencia,
+    public @ResponseBody ResponseEntity<DashboardDTO> getDashboardByAgencia(@PathVariable String agencia,
                                                                          @PathVariable String fecha) {
-        Dashboard dashboard = new Dashboard();
-        dashboard.setStatusAgencia(this.agenciaService.findStatusById(agencia));
+        DashboardDTO dashboard = new DashboardDTO();
+        dashboard.setStatusAgencia(this.agenciaService.findStatusById(agencia).join());
         ObjectsContainer objectsContainer = new ObjectsContainer();
 
         dashboard.setAgencia(agencia);

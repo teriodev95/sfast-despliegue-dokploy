@@ -11,7 +11,6 @@ import tech.calaverita.sfast_xpress.services.views.PrestamoService;
 public class PrestamoUtil {
     private static PrestamoService prestamoService;
 
-    @Autowired
     private PrestamoUtil(PrestamoService prestamoService) {
         PrestamoUtil.prestamoService = prestamoService;
     }

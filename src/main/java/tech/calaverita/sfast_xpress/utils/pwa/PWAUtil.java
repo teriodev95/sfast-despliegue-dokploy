@@ -1,6 +1,10 @@
 package tech.calaverita.sfast_xpress.utils.pwa;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.springframework.stereotype.Component;
+
 import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.PagoModel;
@@ -16,10 +20,7 @@ import tech.calaverita.sfast_xpress.services.views.PrestamoService;
 import tech.calaverita.sfast_xpress.threads.pwa.CobranzaPWAThread;
 import tech.calaverita.sfast_xpress.threads.pwa.PagoHistoricoPWAThread;
 import tech.calaverita.sfast_xpress.threads.pwa.PagoPWAThread;
-import tech.calaverita.sfast_xpress.utils.CobranzaUtil;
-
-import java.util.ArrayList;
-import java.util.HashMap;
+import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Component
 public final class PWAUtil {
@@ -28,41 +29,42 @@ public final class PWAUtil {
     private static PagoAgrupadoService pagoAgrupadoService;
 
     public PWAUtil(PrestamoService prestamoService, UsuarioService usuarioService,
-                   PagoAgrupadoService pagoAgrupadoService) {
+            PagoAgrupadoService pagoAgrupadoService) {
         PWAUtil.prestamoService = prestamoService;
         PWAUtil.usuarioService = usuarioService;
         PWAUtil.pagoAgrupadoService = pagoAgrupadoService;
     }
 
     public static ArrayList<PrestamoCobranzaPWA> darrprestamoCobranzaPwaFromPrestamoModelsAndPagoModels(String agencia,
-                                                                                                        int anio,
-                                                                                                        int semana) {
+            int anio,
+            int semana) {
         CalendarioModel calendarioModel = new CalendarioModel();
         calendarioModel.setAnio(anio);
         calendarioModel.setSemana(semana);
-        CobranzaUtil.funSemanaAnterior(calendarioModel);
+        MyUtil.funSemanaAnterior(calendarioModel);
 
         ArrayList<PrestamoModel> prestEntPrestamoEntities = PWAUtil.prestamoService
-                .darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(
-                        agencia, calendarioModel.getAnio(), calendarioModel.getSemana());
+        .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(
+        agencia, 0D).join();
         ArrayList<PrestamoCobranzaPWA> prestamoCobranzaPWAs = new ArrayList<>();
 
         Thread[] threads = new Thread[prestEntPrestamoEntities.size()];
         int indice = 0;
 
         for (PrestamoModel prestamoModel : prestEntPrestamoEntities) {
-            PrestamoCobranzaPWA prestamoCobranzaPwa = new PrestamoCobranzaPWA();
+        PrestamoCobranzaPWA prestamoCobranzaPwa = new PrestamoCobranzaPWA();
 
-            prestamoCobranzaPWAs.add(prestamoCobranzaPwa);
+        prestamoCobranzaPWAs.add(prestamoCobranzaPwa);
 
-            threads[indice] = new Thread(new CobranzaPWAThread(prestamoModel, prestamoCobranzaPwa, anio, semana));
-            threads[indice].start();
-            indice++;
+        threads[indice] = new Thread(new CobranzaPWAThread(prestamoModel,
+        prestamoCobranzaPwa, anio, semana));
+        threads[indice].start();
+        indice++;
         }
 
         for (Thread thread : threads) {
-            while (thread.isAlive()) {
-            }
+        while (thread.isAlive()) {
+        }
         }
 
         return prestamoCobranzaPWAs;
@@ -118,7 +120,8 @@ public final class PWAUtil {
         return pagoHistoricoPWAs;
     }
 
-    public static ArrayList<HashMap<String, Object>> darrdicasignacionModelPwa(ArrayList<AsignacionModel> darrasignacionModelAsigModAsignEnt) {
+    public static ArrayList<HashMap<String, Object>> darrdicasignacionModelPwa(
+            ArrayList<AsignacionModel> darrasignacionModelAsigModAsignEnt) {
         ArrayList<HashMap<String, Object>> darrHshMpAsgMdlPwa = new ArrayList<>();
 
         for (AsignacionModel asignacionModel : darrasignacionModelAsigModAsignEnt) {

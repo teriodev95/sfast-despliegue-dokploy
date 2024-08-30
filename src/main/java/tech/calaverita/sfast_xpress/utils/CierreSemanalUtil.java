@@ -9,12 +9,12 @@ import okhttp3.*;
 import org.springframework.stereotype.Component;
 import tech.calaverita.sfast_xpress.Constants;
 import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.*;
+import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
 import tech.calaverita.sfast_xpress.itext.PdfStyleManager;
 import tech.calaverita.sfast_xpress.itext.fonts.Fonts;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.*;
-import tech.calaverita.sfast_xpress.pojos.Dashboard;
 import tech.calaverita.sfast_xpress.services.AgenciaService;
 import tech.calaverita.sfast_xpress.services.CalendarioService;
 import tech.calaverita.sfast_xpress.services.SucursalService;
@@ -98,7 +98,7 @@ public class CierreSemanalUtil {
         return cierreSemanalDTO;
     }
 
-    public static CierreSemanalDTO getCierreSemanalDTO(Dashboard dashboard, List<UsuarioModel> darrusuarEnt,
+    public static CierreSemanalDTO getCierreSemanalDTO(DashboardDTO dashboard, List<UsuarioModel> darrusuarEnt,
                                                        double asignaciones)
             throws ExecutionException, InterruptedException {
         CierreSemanalDTO cierreSemanalDTO = new CierreSemanalDTO();
@@ -200,7 +200,7 @@ public class CierreSemanalUtil {
         cierreSemanalDTO.setIsAgenciaCerrada(false);
         cierreSemanalDTO.setDia(LocalDate.now().getDayOfMonth());
         cierreSemanalDTO.setSucursal(sucursalService.findNombreSucursalByGerenciaId(dashboard.getGerencia()));
-        cierreSemanalDTO.setStatusAgencia(agenciaService.findStatusById(dashboard.getAgencia()));
+        cierreSemanalDTO.setStatusAgencia(agenciaService.findStatusById(dashboard.getAgencia()).join());
 
         String mes = LocalDate.now().getMonth().getDisplayName(TextStyle.FULL, new Locale("es",
                 "ES"));
