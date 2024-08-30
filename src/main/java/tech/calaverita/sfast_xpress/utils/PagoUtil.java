@@ -111,7 +111,7 @@ public final class PagoUtil {
             pagMod.setEsPrimerPago(false);
         } else {
             pagMod.setAbreCon(prestamoModel.getSaldoAlIniciarSemana());
-            pagMod.setCierraCon(prestamoModel.getSaldoAlIniciarSemana() - pagoConLiquidacion.getMonto());
+            pagMod.setCierraCon(prestamoModel.getSaldo() - pagoConLiquidacion.getMonto());
             pagMod.setEsPrimerPago(false);
         }
 
