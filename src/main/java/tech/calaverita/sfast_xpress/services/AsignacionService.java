@@ -1,13 +1,16 @@
 package tech.calaverita.sfast_xpress.services;
 
+import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
 import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 import tech.calaverita.sfast_xpress.repositories.AsignacionRepository;
 
-import java.util.ArrayList;
-
 @Service
-public final class AsignacionService {
+public class AsignacionService {
     private final AsignacionRepository repo;
 
     public AsignacionService(AsignacionRepository repo) {
@@ -34,7 +37,9 @@ public final class AsignacionService {
         return (ArrayList<AsignacionModel>) this.repo.findAll();
     }
 
-    public double findSumaAsigancionesByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
-        return this.repo.findSumaAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
+    @Async("asyncExecutor")
+    public CompletableFuture<Double> findSumaAsigancionesByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
+        return CompletableFuture
+                .completedFuture(this.repo.findSumaAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana));
     }
 }

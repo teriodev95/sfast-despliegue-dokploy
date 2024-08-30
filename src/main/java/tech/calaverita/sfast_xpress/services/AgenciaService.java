@@ -1,12 +1,13 @@
 package tech.calaverita.sfast_xpress.services;
 
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-import tech.calaverita.sfast_xpress.models.mariaDB.AgenciaModel;
-import tech.calaverita.sfast_xpress.repositories.AgenciaRepository;
-
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
+
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
+import tech.calaverita.sfast_xpress.models.mariaDB.AgenciaModel;
+import tech.calaverita.sfast_xpress.repositories.AgenciaRepository;
 
 @Service
 public class AgenciaService {
@@ -25,8 +26,9 @@ public class AgenciaService {
         return this.repo.findIdsByGerenciaIdAndStatus(gerenciaId, status);
     }
 
-    public String findStatusById(String id) {
-        return this.repo.findStatusById(id);
+    @Async("asyncExecutor")
+    public CompletableFuture<String> findStatusById(String id) {
+        return CompletableFuture.completedFuture(this.repo.findStatusById(id));
     }
 
     @Async("asyncExecutor")

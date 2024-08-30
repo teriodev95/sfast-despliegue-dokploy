@@ -1,11 +1,13 @@
 package tech.calaverita.sfast_xpress.services.views;
 
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
 import tech.calaverita.sfast_xpress.repositories.views.PrestamoRepository;
 
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class PrestamoService {
@@ -15,8 +17,11 @@ public class PrestamoService {
         this.repo = repo;
     }
 
-    public ArrayList<PrestamoModel> darrprestModFindByAgenciaAnioAndSemanaToCobranzaPGS(String strAgencia_I, int intAnio_I, int intSemana_I) {
-        return this.repo.darrprestEntFindByAgenciaAnioAndSemanaToCobranzaPGS(strAgencia_I, intAnio_I, intSemana_I);
+    @Async("asyncExecutor")
+    public CompletableFuture<ArrayList<PrestamoModel>> findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(String agencia,
+            Double saldoAlIniciarSemana) {
+        return CompletableFuture.completedFuture(
+                this.repo.findByAgenteAndSaldoAlIniciarSemanaGreaterThan(agencia, saldoAlIniciarSemana));
     }
 
     @Cacheable("PrestamosPorFinalizarByAgenciaAnioAndSemana")
@@ -25,7 +30,8 @@ public class PrestamoService {
     }
 
     @Cacheable("PrestamosPorFinalizarByGerenciaAnioAndSemana")
-    public ArrayList<PrestamoModel> findPorFinalizarByGerenciaAnioAndSemana(String sucursal, String gerencia, int anio, int semana) {
+    public ArrayList<PrestamoModel> findPorFinalizarByGerenciaAnioAndSemana(String sucursal, String gerencia, int anio,
+            int semana) {
         return this.repo.findPorFinalizarByGerenciaAndAnioAndSemana(sucursal, gerencia, anio, semana);
     }
 

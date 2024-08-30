@@ -1,20 +1,23 @@
 package tech.calaverita.sfast_xpress.services;
 
+import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
 import tech.calaverita.sfast_xpress.DTOs.LiquidacionDTO;
 import tech.calaverita.sfast_xpress.mappers.LiquidacionMapper;
 import tech.calaverita.sfast_xpress.models.mariaDB.LiquidacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
 import tech.calaverita.sfast_xpress.repositories.LiquidacionRepository;
 
-import java.util.ArrayList;
-
 @Service
-public final class LiquidacionService {
+public class LiquidacionService {
     private final LiquidacionRepository repo;
     private final LiquidacionMapper mapper;
 
-    private LiquidacionService(LiquidacionRepository repo, LiquidacionMapper mapper) {
+    public LiquidacionService(LiquidacionRepository repo, LiquidacionMapper mapper) {
         this.repo = repo;
         this.mapper = mapper;
     }
@@ -23,8 +26,10 @@ public final class LiquidacionService {
         return this.repo.save(liquidacionModel);
     }
 
-    public ArrayList<LiquidacionModel> findByAgenciaAnioAndSemana(String strAgenciaI, int anio, int semana) {
-        return this.repo.findByAgenciaAndAnioAndSemana(strAgenciaI, anio, semana);
+    @Async("asyncExecutor")
+    public CompletableFuture<ArrayList<LiquidacionModel>> findByAgenciaAnioAndSemana(String strAgenciaI, int anio,
+            int semana) {
+        return CompletableFuture.completedFuture(this.repo.findByAgenciaAndAnioAndSemana(strAgenciaI, anio, semana));
     }
 
     public ArrayList<LiquidacionModel> findByAgenciaAndFechaPago(String agencia, String fechaPago) {
