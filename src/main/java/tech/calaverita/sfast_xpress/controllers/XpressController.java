@@ -1,35 +1,65 @@
 package tech.calaverita.sfast_xpress.controllers;
 
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import tech.calaverita.sfast_xpress.Constants;
-import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
-import tech.calaverita.sfast_xpress.pojos.Cobranza;
-import tech.calaverita.sfast_xpress.pojos.Dashboard;
-import tech.calaverita.sfast_xpress.pojos.LoginResponse;
-import tech.calaverita.sfast_xpress.pojos.ObjectsContainer;
-import tech.calaverita.sfast_xpress.security.AuthCredentials;
-import tech.calaverita.sfast_xpress.services.AgenciaService;
-import tech.calaverita.sfast_xpress.services.UsuarioService;
-import tech.calaverita.sfast_xpress.utils.CobranzaUtil;
-import tech.calaverita.sfast_xpress.utils.DashboardUtil;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletResponse;
+import tech.calaverita.sfast_xpress.Constants;
+import tech.calaverita.sfast_xpress.DTOs.cobranza.CobranzaDTO;
+import tech.calaverita.sfast_xpress.DTOs.cobranza.DebitosCobranzaDTO;
+import tech.calaverita.sfast_xpress.DTOs.cobranza.InfoCobranzaDTO;
+import tech.calaverita.sfast_xpress.DTOs.dashboard.CierreDashboardDTO;
+import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
+import tech.calaverita.sfast_xpress.DTOs.dashboard.LiquidacionesDashboardDTO;
+import tech.calaverita.sfast_xpress.DTOs.dashboard.PagosDashboardDTO;
+import tech.calaverita.sfast_xpress.models.mariaDB.LiquidacionModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.views.PagoAgrupadoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
+import tech.calaverita.sfast_xpress.pojos.LoginResponse;
+import tech.calaverita.sfast_xpress.security.AuthCredentials;
+import tech.calaverita.sfast_xpress.services.AgenciaService;
+import tech.calaverita.sfast_xpress.services.AsignacionService;
+import tech.calaverita.sfast_xpress.services.LiquidacionService;
+import tech.calaverita.sfast_xpress.services.UsuarioService;
+import tech.calaverita.sfast_xpress.services.views.PagoAgrupadoService;
+import tech.calaverita.sfast_xpress.services.views.PrestamoService;
 
 @RestController()
 @RequestMapping(path = "/xpress/v1")
 public final class XpressController {
     private final AgenciaService agenciaService;
     private final UsuarioService usuarioService;
+    private final PrestamoService prestamoService;
+    private final PagoAgrupadoService pagoAgrupadoService;
+    private final LiquidacionService liquidacionService;
+    private final AsignacionService asignacionService;
 
-    public XpressController(AgenciaService agenciaService, UsuarioService usuarioService) {
+    public XpressController(AgenciaService agenciaService, UsuarioService usuarioService,
+            PrestamoService prestamoService, PagoAgrupadoService pagoAgrupadoService,
+            LiquidacionService liquidacionService,
+            AsignacionService asignacionService) {
         this.agenciaService = agenciaService;
         this.usuarioService = usuarioService;
+        this.prestamoService = prestamoService;
+        this.pagoAgrupadoService = pagoAgrupadoService;
+        this.liquidacionService = liquidacionService;
+        this.asignacionService = asignacionService;
     }
 
     @ModelAttribute
@@ -54,126 +84,68 @@ public final class XpressController {
     }
 
     @GetMapping(path = "/cobranza/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Cobranza> getCobranzaByAgencia(@PathVariable String agencia,
-                                                                       @PathVariable int anio,
-                                                                       @PathVariable int semana) {
-        Cobranza cobranza = new Cobranza();
-        ObjectsContainer objectsContainer = new ObjectsContainer();
+    public @ResponseBody ResponseEntity<CobranzaDTO> getCobranzaByAgencia(@PathVariable String agencia,
+            @PathVariable int anio,
+            @PathVariable int semana) {
+        CompletableFuture<ArrayList<PrestamoModel>> prestamoModels = this.prestamoService
+                .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(agencia, 0D);
 
-        objectsContainer.setCobranza(cobranza);
-        objectsContainer.getCobranza().setAgencia(agencia);
-        objectsContainer.getCobranza().setAnio(anio);
-        objectsContainer.getCobranza().setSemana(semana);
+        InfoCobranzaDTO infoSemanaCobranzaDTO = new InfoCobranzaDTO(prestamoModels.join().get(0), anio, semana,
+                prestamoModels.join().size());
+        DebitosCobranzaDTO debitosCobranzaDTO = new DebitosCobranzaDTO(prestamoModels.join());
+        CobranzaDTO cobranzaDTO = new CobranzaDTO(infoSemanaCobranzaDTO, debitosCobranzaDTO, prestamoModels.join());
 
-        CobranzaUtil cobranzaUtil = new CobranzaUtil(objectsContainer);
-
-        cobranzaUtil.run();
-
-        return new ResponseEntity<>(objectsContainer.getCobranza(), HttpStatus.OK);
-    }
-
-    @GetMapping(path = "/cobranza-gerencia/{gerencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Cobranza[]> getCobranzaByGerencia(@PathVariable String gerencia,
-                                                                          @PathVariable int anio,
-                                                                          @PathVariable int semana) {
-        ArrayList<String> agencias = this.agenciaService.findIdsByGerenciaId(gerencia);
-
-        Thread[] threads = new Thread[agencias.size()];
-        Cobranza[] cobranzas = new Cobranza[agencias.size()];
-        ObjectsContainer[] objectsContainers = new ObjectsContainer[agencias.size()];
-
-        for (int i = 0; i < agencias.size(); i++) {
-            cobranzas[i] = new Cobranza();
-            objectsContainers[i] = new ObjectsContainer();
-
-            objectsContainers[i].setCobranza(cobranzas[i]);
-            objectsContainers[i].getCobranza().setAgencia(agencias.get(i));
-            objectsContainers[i].getCobranza().setAnio(anio);
-            objectsContainers[i].getCobranza().setSemana(semana);
-
-            threads[i] = new Thread(new CobranzaUtil(objectsContainers[i]));
-            threads[i].setPriority(3);
-        }
-
-        for (int i = 0; i < agencias.size(); i++) {
-            threads[i].start();
-        }
-
-        for (int i = 0; i < agencias.size(); i++) {
-            try {
-                threads[i].join();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        return new ResponseEntity<>(cobranzas, HttpStatus.OK);
+        return new ResponseEntity<>(cobranzaDTO, HttpStatus.OK);
     }
 
     @CrossOrigin
     @GetMapping(path = "/dashboard-agencia/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgenciaAnioAndSemana(@PathVariable String agencia,
-                                                                                      @PathVariable int anio,
-                                                                                      @PathVariable int semana) {
-        Dashboard dashboard = new tech.calaverita.sfast_xpress.pojos.Dashboard();
-        dashboard.setStatusAgencia(this.agenciaService.findStatusById(agencia));
-        ObjectsContainer objectsContainer = new ObjectsContainer();
+    public @ResponseBody ResponseEntity<DashboardDTO> getDashboardByAgenciaAnioAndSemana(@PathVariable String agencia,
+            @PathVariable int anio,
+            @PathVariable int semana) {
+        CompletableFuture<ArrayList<PrestamoModel>> prestamoModels = this.prestamoService
+                .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(agencia, 0D);
+        CompletableFuture<ArrayList<PagoAgrupadoModel>> pagoAgrupagoModels = this.pagoAgrupadoService
+                .findByAgenciaAnioSemanaAndEsPrimerPago(agencia, anio,
+                        semana, false);
+        CompletableFuture<ArrayList<LiquidacionModel>> liquidacionModels = this.liquidacionService
+                .findByAgenciaAnioAndSemana(agencia,
+                        anio,
+                        semana);
+        CompletableFuture<Double> asignaciones = this.asignacionService
+                .findSumaAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
+        CompletableFuture<String> statusAgencia = this.agenciaService.findStatusById(agencia);
 
-        objectsContainer.setDashboard(dashboard);
-        objectsContainer.getDashboard().setAgencia(agencia);
-        objectsContainer.getDashboard().setAnio(anio);
-        objectsContainer.getDashboard().setSemana(semana);
+        InfoCobranzaDTO infoSemanaCobranzaDTO = new InfoCobranzaDTO(prestamoModels.join().get(0), anio, semana,
+                prestamoModels.join().size());
+        DebitosCobranzaDTO debitosCobranzaDTO = new DebitosCobranzaDTO(prestamoModels.join());
+        PagosDashboardDTO pagosDashboardDTO = new PagosDashboardDTO(pagoAgrupagoModels.join());
+        LiquidacionesDashboardDTO liquidacionesDashboardDTO = new LiquidacionesDashboardDTO(liquidacionModels.join(),
+                pagoAgrupagoModels.join());
+        CierreDashboardDTO cierreDashboardDTO = new CierreDashboardDTO(pagosDashboardDTO, debitosCobranzaDTO,
+                asignaciones.join(), statusAgencia.join());
+        DashboardDTO dashboardDTO = new DashboardDTO(infoSemanaCobranzaDTO, pagosDashboardDTO,
+                liquidacionesDashboardDTO, debitosCobranzaDTO, cierreDashboardDTO);
 
-        DashboardUtil dashboardUtil = new DashboardUtil(objectsContainer);
-
-        dashboardUtil.run();
-
-        return new ResponseEntity<>(objectsContainer.getDashboard(), HttpStatus.OK);
+        return new ResponseEntity<>(dashboardDTO, HttpStatus.OK);
     }
 
     @CrossOrigin
     @GetMapping(path = "/dashboard-gerencia/{gerencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Dashboard> getDashboardByGerencia(@PathVariable String gerencia,
-                                                                          @PathVariable int anio,
-                                                                          @PathVariable int semana) {
-        tech.calaverita.sfast_xpress.pojos.Dashboard dashboardResponse;
-
+    public @ResponseBody ResponseEntity<DashboardDTO> getDashboardByGerencia(@PathVariable String gerencia,
+            @PathVariable int anio,
+            @PathVariable int semana) {
         ArrayList<String> agencias = this.agenciaService.findIdsByGerenciaId(gerencia);
 
-        Thread[] threads = new Thread[agencias.size()];
-        tech.calaverita.sfast_xpress.pojos.Dashboard[] dashboards = new tech.calaverita.sfast_xpress.pojos
-                .Dashboard[agencias.size()];
-        ObjectsContainer[] objectsContainers = new ObjectsContainer[agencias.size()];
+        ArrayList<DashboardDTO> dashboardDTOs = new ArrayList<>();
 
         for (int i = 0; i < agencias.size(); i++) {
-            dashboards[i] = new tech.calaverita.sfast_xpress.pojos.Dashboard();
-            objectsContainers[i] = new ObjectsContainer();
-
-            objectsContainers[i].setDashboard(dashboards[i]);
-            objectsContainers[i].getDashboard().setAgencia(agencias.get(i));
-            objectsContainers[i].getDashboard().setGerencia(gerencia);
-            objectsContainers[i].getDashboard().setAnio(anio);
-            objectsContainers[i].getDashboard().setSemana(semana);
-
-            threads[i] = new Thread(new DashboardUtil(objectsContainers[i]));
-            threads[i].setPriority(3);
+            dashboardDTOs.add(getDashboardByAgenciaAnioAndSemana(agencias.get(i), anio, semana).getBody());
         }
 
-        for (int i = 0; i < agencias.size(); i++) {
-            threads[i].start();
-        }
+        DashboardDTO dashboardDTO = new DashboardDTO(dashboardDTOs);
 
-        for (int i = 0; i < agencias.size(); i++) {
-            try {
-                threads[i].join();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        dashboardResponse = DashboardUtil.dashboard(dashboards);
-
-        return new ResponseEntity<>(dashboardResponse, HttpStatus.OK);
+        return new ResponseEntity<>(dashboardDTO, HttpStatus.OK);
     }
 
     @CrossOrigin
