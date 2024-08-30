@@ -1,7 +1,6 @@
 package tech.calaverita.sfast_xpress.DTOs.cobranza;
 
 import lombok.Data;
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
 
 @Data
 public class InfoCobranzaDTO {
@@ -11,9 +10,10 @@ public class InfoCobranzaDTO {
     private Integer semana;
     private Integer clientes;
 
-    public InfoCobranzaDTO(PrestamoModel prestamoModel, Integer anio, Integer semana, Integer clientes) {
-        this.gerencia = prestamoModel.getGerencia();
-        this.agencia = prestamoModel.getAgente();
+    public InfoCobranzaDTO(String gerencia, String agencia, Integer anio, Integer semana,
+            Integer clientes) {
+        this.gerencia = gerencia;
+        this.agencia = agencia;
         this.anio = anio;
         this.semana = semana;
         this.clientes = clientes;

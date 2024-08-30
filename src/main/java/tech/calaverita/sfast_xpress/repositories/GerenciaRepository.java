@@ -16,4 +16,6 @@ public interface GerenciaRepository extends CrudRepository<GerenciaModel, String
             "FROM UsuarioGerenciaModel usuar_ger INNER JOIN UsuarioModel usuar " +
             "ON usuar_ger.usuarioId = usuar.usuarioId AND usuar.usuario = :usuario)")
     ArrayList<GerenciaModel> findByUsuario(String usuario);
+
+    GerenciaModel findByDeprecatedNameAndSucursal(String deprecatedName, String sucursal);
 }
