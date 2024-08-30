@@ -36,7 +36,7 @@ public class DashboardDTO {
     private String statusAgencia;
 
     public DashboardDTO() {
-
+        dashboardWithEmptyValues();
     }
 
     public DashboardDTO(InfoCobranzaDTO infoCobranzaDTO,
