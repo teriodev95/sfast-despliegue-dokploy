@@ -1,28 +1,36 @@
 package tech.calaverita.sfast_xpress.utils;
 
-import okhttp3.*;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import tech.calaverita.sfast_xpress.DTOs.LiquidacionDTO;
-import tech.calaverita.sfast_xpress.models.mariaDB.*;
+import tech.calaverita.sfast_xpress.models.mariaDB.AgenciaModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.GerenciaModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.LiquidacionModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.PagoModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
 import tech.calaverita.sfast_xpress.pojos.ModelValidation;
 import tech.calaverita.sfast_xpress.pojos.PagoConLiquidacion;
-import tech.calaverita.sfast_xpress.retrofit.RetrofitOdoo;
-import tech.calaverita.sfast_xpress.retrofit.pojos.LiquidacionBody;
-import tech.calaverita.sfast_xpress.retrofit.pojos.PagoBody;
-import tech.calaverita.sfast_xpress.retrofit.pojos.PagoList;
-import tech.calaverita.sfast_xpress.retrofit.pojos.ResponseBodyXms;
-import tech.calaverita.sfast_xpress.services.*;
+import tech.calaverita.sfast_xpress.services.AgenciaService;
+import tech.calaverita.sfast_xpress.services.CalendarioService;
+import tech.calaverita.sfast_xpress.services.GerenciaService;
+import tech.calaverita.sfast_xpress.services.LiquidacionService;
+import tech.calaverita.sfast_xpress.services.PagoService;
 import tech.calaverita.sfast_xpress.services.views.PrestamoService;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 @Component
 public final class PagoUtil {
@@ -34,8 +42,8 @@ public final class PagoUtil {
     private static PrestamoService prestamoService;
 
     private PagoUtil(AgenciaService agenciaService, GerenciaService gerenciaService,
-                     LiquidacionService liquidacionService, PagoService pagoService,
-                     CalendarioService calendarioService, PrestamoService prestamoService) {
+            LiquidacionService liquidacionService, PagoService pagoService,
+            CalendarioService calendarioService, PrestamoService prestamoService) {
         PagoUtil.agenciaService = agenciaService;
         PagoUtil.gerenciaService = gerenciaService;
         PagoUtil.liquidacionService = liquidacionService;
@@ -45,7 +53,7 @@ public final class PagoUtil {
     }
 
     public static ModelValidation modValPagoModelValidation(PagoConLiquidacion pagoConLiquidacion,
-                                                            PrestamoModel prestamoModel) {
+            PrestamoModel prestamoModel) {
         String strResponse_O = "";
         HttpStatus httpStatus_O = HttpStatus.CREATED;
         boolean boolIsOnline_O = true;
@@ -86,7 +94,7 @@ public final class PagoUtil {
     }
 
     public static void subProcessPayment(ModelValidation modelValidation, PagoConLiquidacion pagoConLiquidacion,
-                                         PrestamoModel prestamoModel) {
+            PrestamoModel prestamoModel) {
         String strSession = "session_id=76d814874514726176f0615260848da2aab725ea";
         PagoModel pagMod = PagoUtil.pagoModelFromPagoConLiquidacion(pagoConLiquidacion);
         LiquidacionModel liqMod = pagoConLiquidacion.getInfoLiquidacion();
@@ -94,22 +102,16 @@ public final class PagoUtil {
         modelValidation.setStrResponse("Pago Insertado con Éxito");
         modelValidation.setHttpStatus(HttpStatus.CREATED);
 
-        //                                                  //A continuación se hace una validación para comprobar si el
-        //                                                  //      pago recibido trae liquidación
+        // //A continuación se hace una validación para comprobar si el
+        // // pago recibido trae liquidación
         if (liqMod != null) {
             liqMod.setPagoId(pagMod.getPagoId());
-            pagMod.setAbreCon(prestamoModel.getTotalAPagar() - PagoUtil.pagoService
-                    .findCobradoByPrestamoId(pagoConLiquidacion.getPrestamoId()));
-            pagMod.setCierraCon(0.0);
+            pagMod.setAbreCon(prestamoModel.getSaldoAlIniciarSemana());
+            pagMod.setCierraCon(0D);
             pagMod.setEsPrimerPago(false);
-
-            retrofit2.Call<ResponseBodyXms> callrespBodyXms = RetrofitOdoo.getInstance().getApi()
-                    .liquidacionCreateOne(strSession, new LiquidacionBody(liqMod));
-            RetrofitOdooUtil.sendCall(callrespBodyXms);
         } else {
-            pagMod.setAbreCon(prestamoModel.getTotalAPagar() - PagoUtil.pagoService.findCobradoByPrestamoId(
-                    pagoConLiquidacion.getPrestamoId()));
-            pagMod.setCierraCon(pagMod.getAbreCon() - pagoConLiquidacion.getMonto());
+            pagMod.setAbreCon(prestamoModel.getSaldoAlIniciarSemana());
+            pagMod.setCierraCon(prestamoModel.getSaldoAlIniciarSemana() - pagoConLiquidacion.getMonto());
             pagMod.setEsPrimerPago(false);
         }
 
@@ -119,10 +121,6 @@ public final class PagoUtil {
             AgenciaModel agencMod = PagoUtil.agenciaService.findById(pagoConLiquidacion.getAgente());
             GerenciaModel gerMod = PagoUtil.gerenciaService.findById(agencMod.getGerenciaId());
             PagoUtil.subSendPayMessage(prestamoModel, pagMod, gerMod);
-
-            retrofit2.Call<ResponseBodyXms> callrespBodyXms = RetrofitOdoo.getInstance().getApi().pagoCreateOne(strSession,
-                    new PagoBody(new PagoList(pagMod)));
-            RetrofitOdooUtil.sendCall(callrespBodyXms);
 
             if (liqMod != null) {
                 PagoUtil.liquidacionService.save(liqMod);
@@ -192,9 +190,7 @@ public final class PagoUtil {
             pagoJsonObject.put("updatedAt", pagoModel.getUpdatedAt());
             pagoJsonObject.put("log", pagoModel.getLog());
             pagoJsonObject.put("quienPago", pagoModel.getQuienPago());
-        } catch (
-                JSONException e
-        ) {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
@@ -217,7 +213,7 @@ public final class PagoUtil {
     }
 
     public static RequestBody requestBodyPayMessage(PrestamoModel prestamoModel, PagoModel pagoModel,
-                                                    GerenciaModel gerenciaModel) {
+            GerenciaModel gerenciaModel) {
         JSONObject infoPagoJsonObject = new JSONObject();
         JSONObject pagoJsonObject = jsonObjectOfPago(pagoModel);
         JSONObject gerenciaJsonObject = jsonObjectOfGerencia(gerenciaModel);
@@ -239,7 +235,7 @@ public final class PagoUtil {
     }
 
     public static void subSendPayMessage(PrestamoModel prestamoModel, PagoModel pagoModel,
-                                         GerenciaModel gerenciaModel) {
+            GerenciaModel gerenciaModel) {
         OkHttpClient okHttpClient = new OkHttpClient();
 
         Request request = new Request.Builder()

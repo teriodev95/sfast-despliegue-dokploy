@@ -9,7 +9,7 @@ import tech.calaverita.sfast_xpress.models.mariaDB.ReporteCallCenterModel;
 import java.util.ArrayList;
 
 @Repository
-public interface ReporteCallCenterRepository extends CrudRepository<ReporteCallCenterModel, String> {
+public interface ReporteCallCenterRepository extends CrudRepository<ReporteCallCenterModel, Integer> {
     @Query("SELECT rcclm FROM ReporteCallCenterLiteModel rcclm WHERE rcclm.prestamoId = :id")
     ReporteCallCenterLiteModel findLiteModelById(String id);
 

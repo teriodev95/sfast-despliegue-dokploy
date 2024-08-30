@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import tech.calaverita.sfast_xpress.models.mongoDB.ReporteDiarioAgenciasDocument;
 
 @Repository
-public interface ReporteDiarioAgenciasRepository extends MongoRepository<ReporteDiarioAgenciasDocument, Integer> {
+public interface ReporteDiarioAgenciasRepository extends MongoRepository<ReporteDiarioAgenciasDocument, String> {
 }

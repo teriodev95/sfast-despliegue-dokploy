@@ -1,191 +1,177 @@
 package tech.calaverita.sfast_xpress.controllers;
 
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import tech.calaverita.sfast_xpress.Constants;
-import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
-import tech.calaverita.sfast_xpress.pojos.Cobranza;
-import tech.calaverita.sfast_xpress.pojos.Dashboard;
-import tech.calaverita.sfast_xpress.pojos.LoginResponse;
-import tech.calaverita.sfast_xpress.pojos.ObjectsContainer;
-import tech.calaverita.sfast_xpress.security.AuthCredentials;
-import tech.calaverita.sfast_xpress.services.AgenciaService;
-import tech.calaverita.sfast_xpress.services.UsuarioService;
-import tech.calaverita.sfast_xpress.utils.CobranzaUtil;
-import tech.calaverita.sfast_xpress.utils.DashboardUtil;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletResponse;
+import tech.calaverita.sfast_xpress.Constants;
+import tech.calaverita.sfast_xpress.DTOs.cobranza.CobranzaDTO;
+import tech.calaverita.sfast_xpress.DTOs.cobranza.DebitosCobranzaDTO;
+import tech.calaverita.sfast_xpress.DTOs.cobranza.InfoCobranzaDTO;
+import tech.calaverita.sfast_xpress.DTOs.dashboard.CierreDashboardDTO;
+import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
+import tech.calaverita.sfast_xpress.DTOs.dashboard.LiquidacionesDashboardDTO;
+import tech.calaverita.sfast_xpress.DTOs.dashboard.PagosDashboardDTO;
+import tech.calaverita.sfast_xpress.models.mariaDB.GerenciaModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.LiquidacionModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.views.PagoAgrupadoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
+import tech.calaverita.sfast_xpress.pojos.LoginResponse;
+import tech.calaverita.sfast_xpress.security.AuthCredentials;
+import tech.calaverita.sfast_xpress.services.AgenciaService;
+import tech.calaverita.sfast_xpress.services.AsignacionService;
+import tech.calaverita.sfast_xpress.services.GerenciaService;
+import tech.calaverita.sfast_xpress.services.LiquidacionService;
+import tech.calaverita.sfast_xpress.services.UsuarioService;
+import tech.calaverita.sfast_xpress.services.views.PagoAgrupadoService;
+import tech.calaverita.sfast_xpress.services.views.PrestamoService;
 
 @RestController()
 @RequestMapping(path = "/xpress/v1")
 public final class XpressController {
-    private final AgenciaService agenciaService;
-    private final UsuarioService usuarioService;
+        private final AgenciaService agenciaService;
+        private final UsuarioService usuarioService;
+        private final PrestamoService prestamoService;
+        private final PagoAgrupadoService pagoAgrupadoService;
+        private final LiquidacionService liquidacionService;
+        private final AsignacionService asignacionService;
+        private final GerenciaService gerenciaService;
 
-    public XpressController(AgenciaService agenciaService, UsuarioService usuarioService) {
-        this.agenciaService = agenciaService;
-        this.usuarioService = usuarioService;
-    }
-
-    @ModelAttribute
-    public void setResponseHeader(HttpServletResponse response) {
-        response.setHeader("Version", Constants.VERSION);
-        response.setHeader("Last-Modified", Constants.LAST_MODIFIED);
-    }
-
-    @PostMapping(path = "/login")
-    public @ResponseBody ResponseEntity<?> login(@RequestBody AuthCredentials login) {
-        UsuarioModel usuarioModel = this.usuarioService.findByUsuarioAndPin(login.getUsername(), login.getPassword());
-        LoginResponse loginResponse = new LoginResponse();
-
-        if (usuarioModel == null) {
-            return new ResponseEntity<>("Usuario y/o contraseña incorrecto", HttpStatus.BAD_REQUEST);
+        public XpressController(AgenciaService agenciaService, UsuarioService usuarioService,
+                        PrestamoService prestamoService, PagoAgrupadoService pagoAgrupadoService,
+                        LiquidacionService liquidacionService,
+                        AsignacionService asignacionService, GerenciaService gerenciaService) {
+                this.agenciaService = agenciaService;
+                this.usuarioService = usuarioService;
+                this.prestamoService = prestamoService;
+                this.pagoAgrupadoService = pagoAgrupadoService;
+                this.liquidacionService = liquidacionService;
+                this.asignacionService = asignacionService;
+                this.gerenciaService = gerenciaService;
         }
 
-        loginResponse.setSolicitante(usuarioModel);
-        loginResponse.setInvolucrados(this.usuarioService.findByGerencia(usuarioModel.getGerencia()));
-
-        return new ResponseEntity<>(loginResponse, HttpStatus.OK);
-    }
-
-    @GetMapping(path = "/cobranza/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Cobranza> getCobranzaByAgencia(@PathVariable String agencia,
-                                                                       @PathVariable int anio,
-                                                                       @PathVariable int semana) {
-        Cobranza cobranza = new Cobranza();
-        ObjectsContainer objectsContainer = new ObjectsContainer();
-
-        objectsContainer.setCobranza(cobranza);
-        objectsContainer.getCobranza().setAgencia(agencia);
-        objectsContainer.getCobranza().setAnio(anio);
-        objectsContainer.getCobranza().setSemana(semana);
-
-        CobranzaUtil cobranzaUtil = new CobranzaUtil(objectsContainer);
-
-        cobranzaUtil.run();
-
-        return new ResponseEntity<>(objectsContainer.getCobranza(), HttpStatus.OK);
-    }
-
-    @GetMapping(path = "/cobranza-gerencia/{gerencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Cobranza[]> getCobranzaByGerencia(@PathVariable String gerencia,
-                                                                          @PathVariable int anio,
-                                                                          @PathVariable int semana) {
-        ArrayList<String> agencias = this.agenciaService.findIdsByGerenciaId(gerencia);
-
-        Thread[] threads = new Thread[agencias.size()];
-        Cobranza[] cobranzas = new Cobranza[agencias.size()];
-        ObjectsContainer[] objectsContainers = new ObjectsContainer[agencias.size()];
-
-        for (int i = 0; i < agencias.size(); i++) {
-            cobranzas[i] = new Cobranza();
-            objectsContainers[i] = new ObjectsContainer();
-
-            objectsContainers[i].setCobranza(cobranzas[i]);
-            objectsContainers[i].getCobranza().setAgencia(agencias.get(i));
-            objectsContainers[i].getCobranza().setAnio(anio);
-            objectsContainers[i].getCobranza().setSemana(semana);
-
-            threads[i] = new Thread(new CobranzaUtil(objectsContainers[i]));
-            threads[i].setPriority(3);
+        @ModelAttribute
+        public void setResponseHeader(HttpServletResponse response) {
+                response.setHeader("Version", Constants.VERSION);
+                response.setHeader("Last-Modified", Constants.LAST_MODIFIED);
         }
 
-        for (int i = 0; i < agencias.size(); i++) {
-            threads[i].start();
+        @PostMapping(path = "/login")
+        public @ResponseBody ResponseEntity<?> login(@RequestBody AuthCredentials login) {
+                UsuarioModel usuarioModel = this.usuarioService.findByUsuarioAndPin(login.getUsername(),
+                                login.getPassword());
+                LoginResponse loginResponse = new LoginResponse();
+
+                if (usuarioModel == null) {
+                        return new ResponseEntity<>("Usuario y/o contraseña incorrecto", HttpStatus.BAD_REQUEST);
+                }
+
+                loginResponse.setSolicitante(usuarioModel);
+                loginResponse.setInvolucrados(this.usuarioService.findByGerencia(usuarioModel.getGerencia()));
+
+                return new ResponseEntity<>(loginResponse, HttpStatus.OK);
         }
 
-        for (int i = 0; i < agencias.size(); i++) {
-            try {
-                threads[i].join();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+        @GetMapping(path = "/cobranza/{agencia}/{anio}/{semana}")
+        public @ResponseBody ResponseEntity<CobranzaDTO> getCobranzaByAgencia(@PathVariable String agencia,
+                        @PathVariable int anio,
+                        @PathVariable int semana) {
+                CompletableFuture<ArrayList<PrestamoModel>> prestamoModels = this.prestamoService
+                                .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(agencia, 0D);
+                CompletableFuture<GerenciaModel> gerenciaModel = this.gerenciaService.findByDeprecatedNameAndSucursal(
+                                prestamoModels.join().get(0).getGerencia(), prestamoModels.join().get(0).getSucursal());
+
+                InfoCobranzaDTO infoSemanaCobranzaDTO = new InfoCobranzaDTO(gerenciaModel.join().getGerenciaId(),
+                                agencia, anio, semana,
+                                prestamoModels.join().size());
+                DebitosCobranzaDTO debitosCobranzaDTO = new DebitosCobranzaDTO(prestamoModels.join());
+                CobranzaDTO cobranzaDTO = new CobranzaDTO(infoSemanaCobranzaDTO, debitosCobranzaDTO,
+                                prestamoModels.join());
+
+                return new ResponseEntity<>(cobranzaDTO, HttpStatus.OK);
         }
 
-        return new ResponseEntity<>(cobranzas, HttpStatus.OK);
-    }
+        @CrossOrigin
+        @GetMapping(path = "/dashboard-agencia/{agencia}/{anio}/{semana}")
+        public @ResponseBody ResponseEntity<DashboardDTO> getDashboardByAgenciaAnioAndSemana(
+                        @PathVariable String agencia,
+                        @PathVariable int anio,
+                        @PathVariable int semana) {
+                CompletableFuture<ArrayList<PrestamoModel>> prestamoModels = this.prestamoService
+                                .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(agencia, 0D);
+                CompletableFuture<ArrayList<PagoAgrupadoModel>> pagoAgrupagoModels = this.pagoAgrupadoService
+                                .findByAgenciaAnioSemanaAndEsPrimerPago(agencia, anio,
+                                                semana, false);
+                CompletableFuture<ArrayList<LiquidacionModel>> liquidacionModels = this.liquidacionService
+                                .findByAgenciaAnioAndSemana(agencia,
+                                                anio,
+                                                semana);
+                CompletableFuture<Double> asignaciones = this.asignacionService
+                                .findSumaAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
+                CompletableFuture<String> statusAgencia = this.agenciaService.findStatusById(agencia);
+                CompletableFuture<GerenciaModel> gerenciaModel = this.gerenciaService.findByDeprecatedNameAndSucursal(
+                                prestamoModels.join().get(0).getGerencia(), prestamoModels.join().get(0).getSucursal());
 
-    @CrossOrigin
-    @GetMapping(path = "/dashboard-agencia/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Dashboard> getDashboardByAgenciaAnioAndSemana(@PathVariable String agencia,
-                                                                                      @PathVariable int anio,
-                                                                                      @PathVariable int semana) {
-        Dashboard dashboard = new tech.calaverita.sfast_xpress.pojos.Dashboard();
-        dashboard.setStatusAgencia(this.agenciaService.findStatusById(agencia));
-        ObjectsContainer objectsContainer = new ObjectsContainer();
+                InfoCobranzaDTO infoSemanaCobranzaDTO = new InfoCobranzaDTO(gerenciaModel.join().getGerenciaId(),
+                                agencia, anio, semana,
+                                prestamoModels.join().size());
+                DebitosCobranzaDTO debitosCobranzaDTO = new DebitosCobranzaDTO(prestamoModels.join());
+                PagosDashboardDTO pagosDashboardDTO = new PagosDashboardDTO(pagoAgrupagoModels.join());
+                LiquidacionesDashboardDTO liquidacionesDashboardDTO = new LiquidacionesDashboardDTO(
+                                liquidacionModels.join(),
+                                pagoAgrupagoModels.join());
+                CierreDashboardDTO cierreDashboardDTO = new CierreDashboardDTO(pagosDashboardDTO, debitosCobranzaDTO,
+                                asignaciones.join(), statusAgencia.join());
+                DashboardDTO dashboardDTO = new DashboardDTO(infoSemanaCobranzaDTO, pagosDashboardDTO,
+                                liquidacionesDashboardDTO, debitosCobranzaDTO, cierreDashboardDTO);
 
-        objectsContainer.setDashboard(dashboard);
-        objectsContainer.getDashboard().setAgencia(agencia);
-        objectsContainer.getDashboard().setAnio(anio);
-        objectsContainer.getDashboard().setSemana(semana);
-
-        DashboardUtil dashboardUtil = new DashboardUtil(objectsContainer);
-
-        dashboardUtil.run();
-
-        return new ResponseEntity<>(objectsContainer.getDashboard(), HttpStatus.OK);
-    }
-
-    @CrossOrigin
-    @GetMapping(path = "/dashboard-gerencia/{gerencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Dashboard> getDashboardByGerencia(@PathVariable String gerencia,
-                                                                          @PathVariable int anio,
-                                                                          @PathVariable int semana) {
-        tech.calaverita.sfast_xpress.pojos.Dashboard dashboardResponse;
-
-        ArrayList<String> agencias = this.agenciaService.findIdsByGerenciaId(gerencia);
-
-        Thread[] threads = new Thread[agencias.size()];
-        tech.calaverita.sfast_xpress.pojos.Dashboard[] dashboards = new tech.calaverita.sfast_xpress.pojos
-                .Dashboard[agencias.size()];
-        ObjectsContainer[] objectsContainers = new ObjectsContainer[agencias.size()];
-
-        for (int i = 0; i < agencias.size(); i++) {
-            dashboards[i] = new tech.calaverita.sfast_xpress.pojos.Dashboard();
-            objectsContainers[i] = new ObjectsContainer();
-
-            objectsContainers[i].setDashboard(dashboards[i]);
-            objectsContainers[i].getDashboard().setAgencia(agencias.get(i));
-            objectsContainers[i].getDashboard().setGerencia(gerencia);
-            objectsContainers[i].getDashboard().setAnio(anio);
-            objectsContainers[i].getDashboard().setSemana(semana);
-
-            threads[i] = new Thread(new DashboardUtil(objectsContainers[i]));
-            threads[i].setPriority(3);
+                return new ResponseEntity<>(dashboardDTO, HttpStatus.OK);
         }
 
-        for (int i = 0; i < agencias.size(); i++) {
-            threads[i].start();
+        @CrossOrigin
+        @GetMapping(path = "/dashboard-gerencia/{gerencia}/{anio}/{semana}")
+        public @ResponseBody ResponseEntity<DashboardDTO> getDashboardByGerencia(@PathVariable String gerencia,
+                        @PathVariable int anio,
+                        @PathVariable int semana) {
+                ArrayList<String> agencias = this.agenciaService.findIdsByGerenciaId(gerencia);
+
+                ArrayList<DashboardDTO> dashboardDTOs = new ArrayList<>();
+
+                for (int i = 0; i < agencias.size(); i++) {
+                        dashboardDTOs.add(getDashboardByAgenciaAnioAndSemana(agencias.get(i), anio, semana).getBody());
+                }
+
+                DashboardDTO dashboardDTO = new DashboardDTO(dashboardDTOs);
+
+                return new ResponseEntity<>(dashboardDTO, HttpStatus.OK);
         }
 
-        for (int i = 0; i < agencias.size(); i++) {
-            try {
-                threads[i].join();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+        @CrossOrigin
+        @GetMapping("/local_date_time")
+        public ResponseEntity<HashMap<String, String>> getLocalDateTime() {
+                String fechaYHora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                String[] campos = fechaYHora.split(" ");
+
+                HashMap<String, String> fechaYHoraHM = new HashMap<>();
+                fechaYHoraHM.put("Fecha", campos[0]);
+                fechaYHoraHM.put("Hora", campos[1]);
+
+                return new ResponseEntity<>(fechaYHoraHM, HttpStatus.OK);
         }
-
-        dashboardResponse = DashboardUtil.dashboard(dashboards);
-
-        return new ResponseEntity<>(dashboardResponse, HttpStatus.OK);
-    }
-
-    @CrossOrigin
-    @GetMapping("/local_date_time")
-    public ResponseEntity<HashMap<String, String>> getLocalDateTime() {
-        String fechaYHora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String[] campos = fechaYHora.split(" ");
-
-        HashMap<String, String> fechaYHoraHM = new HashMap<>();
-        fechaYHoraHM.put("Fecha", campos[0]);
-        fechaYHoraHM.put("Hora", campos[1]);
-
-        return new ResponseEntity<>(fechaYHoraHM, HttpStatus.OK);
-    }
 }

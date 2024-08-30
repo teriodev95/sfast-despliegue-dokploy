@@ -11,6 +11,9 @@ import java.util.ArrayList;
 public interface PagoAgrupadoRepository extends CrudRepository<PagoAgrupadoModel, String> {
     ArrayList<PagoAgrupadoModel> findByPrestamoIdOrderByAnioAscSemanaAsc(String prestamoId);
 
+
+    ArrayList<PagoAgrupadoModel> findByAgenteAndAnioAndSemanaAndEsPrimerPago(String agente, int anio, int semana, boolean esPrimerPago);
+
     @Query("SELECT SUM(pag.tarifa) FROM PagoAgrupadoModel pag WHERE pag.agente = :agencia AND pag.anio = :anio " +
             "AND pag.semana = :semana")
     double findDebitoTotalByAgenteAndAnioAndSemana(String agencia, int anio, int semana);

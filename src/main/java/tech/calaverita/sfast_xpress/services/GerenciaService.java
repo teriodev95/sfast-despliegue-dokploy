@@ -1,12 +1,13 @@
 package tech.calaverita.sfast_xpress.services;
 
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-import tech.calaverita.sfast_xpress.models.mariaDB.GerenciaModel;
-import tech.calaverita.sfast_xpress.repositories.GerenciaRepository;
-
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
+
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
+import tech.calaverita.sfast_xpress.models.mariaDB.GerenciaModel;
+import tech.calaverita.sfast_xpress.repositories.GerenciaRepository;
 
 @Service
 public class GerenciaService {
@@ -35,5 +36,10 @@ public class GerenciaService {
     @Async("asyncExecutor")
     public CompletableFuture<GerenciaModel> findByIdAsync(String id) {
         return CompletableFuture.completedFuture(this.repo.findById(id).orElse(null));
+    }
+
+    @Async("asyncExecutor")
+    public CompletableFuture<GerenciaModel> findByDeprecatedNameAndSucursal(String deprecatedName, String sucursal) {
+        return CompletableFuture.completedFuture(this.repo.findByDeprecatedNameAndSucursal(deprecatedName, sucursal));
     }
 }

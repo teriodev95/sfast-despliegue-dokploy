@@ -16,19 +16,7 @@ public interface PrestamoRepository extends CrudRepository<PrestamoModel, String
             String prestamoId
     );
 
-    @Query("SELECT pr " +
-            "FROM PrestamoModel pr " +
-            "INNER JOIN PagoAgrupadoModel pa " +
-            "ON pr.prestamoId = pa.prestamoId " +
-            "WHERE pa.agente = :agencia " +
-            "AND pa.anio = :anio " +
-            "AND pa.semana = :semana " +
-            "AND pa.cierraCon > 0")
-    ArrayList<PrestamoModel> darrprestEntFindByAgenciaAnioAndSemanaToCobranzaPGS(
-            String agencia,
-            int anio,
-            int semana
-    );
+    ArrayList<PrestamoModel> findByAgenteAndSaldoAlIniciarSemanaGreaterThan(String agente, Double saldoAlIniciarSemana);
 
     @Query("SELECT prest FROM PrestamoModel prest INNER JOIN PagoModel pag ON prest.prestamoId = pag.prestamoId " +
             "AND pag.agente = :agencia AND pag.anio = :anio AND pag.semana = :semana " +
