@@ -113,6 +113,8 @@ public final class XpressController {
                         @PathVariable String agencia,
                         @PathVariable int anio,
                         @PathVariable int semana) {
+                DashboardDTO dashboardDTO = new DashboardDTO();
+
                 CompletableFuture<ArrayList<PrestamoModel>> prestamoModels = this.prestamoService
                                 .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(agencia, 0D);
                 CompletableFuture<ArrayList<PagoAgrupadoModel>> pagoAgrupagoModels = this.pagoAgrupadoService
@@ -125,21 +127,28 @@ public final class XpressController {
                 CompletableFuture<Double> asignaciones = this.asignacionService
                                 .findSumaAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
                 CompletableFuture<String> statusAgencia = this.agenciaService.findStatusById(agencia);
-                CompletableFuture<GerenciaModel> gerenciaModel = this.gerenciaService.findByDeprecatedNameAndSucursal(
-                                prestamoModels.join().get(0).getGerencia(), prestamoModels.join().get(0).getSucursal());
 
-                InfoCobranzaDTO infoSemanaCobranzaDTO = new InfoCobranzaDTO(gerenciaModel.join().getGerenciaId(),
-                                agencia, anio, semana,
-                                prestamoModels.join().size());
-                DebitosCobranzaDTO debitosCobranzaDTO = new DebitosCobranzaDTO(prestamoModels.join());
-                PagosDashboardDTO pagosDashboardDTO = new PagosDashboardDTO(pagoAgrupagoModels.join());
-                LiquidacionesDashboardDTO liquidacionesDashboardDTO = new LiquidacionesDashboardDTO(
-                                liquidacionModels.join(),
-                                pagoAgrupagoModels.join());
-                CierreDashboardDTO cierreDashboardDTO = new CierreDashboardDTO(pagosDashboardDTO, debitosCobranzaDTO,
-                                asignaciones.join(), statusAgencia.join());
-                DashboardDTO dashboardDTO = new DashboardDTO(infoSemanaCobranzaDTO, pagosDashboardDTO,
-                                liquidacionesDashboardDTO, debitosCobranzaDTO, cierreDashboardDTO);
+                if (!prestamoModels.join().isEmpty()) {
+                        CompletableFuture<GerenciaModel> gerenciaModel = this.gerenciaService
+                                        .findByDeprecatedNameAndSucursal(
+                                                        prestamoModels.join().get(0).getGerencia(),
+                                                        prestamoModels.join().get(0).getSucursal());
+
+                        InfoCobranzaDTO infoSemanaCobranzaDTO = new InfoCobranzaDTO(
+                                        gerenciaModel.join().getGerenciaId(),
+                                        agencia, anio, semana,
+                                        prestamoModels.join().size());
+                        DebitosCobranzaDTO debitosCobranzaDTO = new DebitosCobranzaDTO(prestamoModels.join());
+                        PagosDashboardDTO pagosDashboardDTO = new PagosDashboardDTO(pagoAgrupagoModels.join());
+                        LiquidacionesDashboardDTO liquidacionesDashboardDTO = new LiquidacionesDashboardDTO(
+                                        liquidacionModels.join(),
+                                        pagoAgrupagoModels.join());
+                        CierreDashboardDTO cierreDashboardDTO = new CierreDashboardDTO(pagosDashboardDTO,
+                                        debitosCobranzaDTO,
+                                        asignaciones.join(), statusAgencia.join());
+                        dashboardDTO = new DashboardDTO(infoSemanaCobranzaDTO, pagosDashboardDTO,
+                                        liquidacionesDashboardDTO, debitosCobranzaDTO, cierreDashboardDTO);
+                }
 
                 return new ResponseEntity<>(dashboardDTO, HttpStatus.OK);
         }
