@@ -31,8 +31,8 @@ public interface PagoDynamicRepository extends CrudRepository<PagoDynamicModel, 
                         "AND pag.semana = :semana")
         int findClientesCobradosByAgenciaAndAnioAndSemana(String agencia, int anio, int semana);
 
-        @Query(value = "SELECT COUNT(*) FROM pagos_agrupados pag WHERE pag.agencia = :agencia AND pag.anio = :anio " +
-                        "AND pag.semana = :semana AND pag.monto >= IF((pag.abreCon > pag.tarifa), pag.tarifa, pag.abreCon)", nativeQuery = true)
+        @Query(value = "SELECT COUNT(*) FROM pagos_dynamic pag WHERE pag.agencia = :agencia AND pag.anio = :anio " +
+                        "AND pag.semana = :semana AND pag.monto >= IF((pag.abre_con > pag.tarifa), pag.tarifa, pag.abre_con)", nativeQuery = true)
         int findClientesPagoCompletoByAgenciaAndAnioAndSemana(String agencia, int anio, int semana);
 
         @Query("SELECT COUNT(pag) FROM PagoDynamicModel pag WHERE pag.agencia = :agencia AND pag.anio = :anio " +
