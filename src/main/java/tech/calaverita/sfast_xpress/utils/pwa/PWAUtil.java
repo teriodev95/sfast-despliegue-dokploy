@@ -115,7 +115,9 @@ public final class PWAUtil {
         PagoDynamicModel pagoDynamicModel = pagoDynamicService.findByPrestamoIdAnioAndSemana(prestamoId,
                 calendarioModel.getAnio(), calendarioModel.getSemana());
 
-        pagAgrEntPagoAgrupadoEntities.add(new PagoModel(pagoDynamicModel));
+        if (pagoDynamicModel != null) {
+            pagAgrEntPagoAgrupadoEntities.add(new PagoModel(pagoDynamicModel));
+        }
 
         ArrayList<PagoHistoricoPWA> pagoHistoricoPWAs = new ArrayList<>();
 
