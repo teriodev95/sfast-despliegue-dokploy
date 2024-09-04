@@ -30,8 +30,8 @@ import tech.calaverita.sfast_xpress.DTOs.dashboard.PagosDashboardDTO;
 import tech.calaverita.sfast_xpress.models.mariaDB.GerenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.LiquidacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PagoAgrupadoModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.dynamic.PagoDynamicModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 import tech.calaverita.sfast_xpress.pojos.LoginResponse;
 import tech.calaverita.sfast_xpress.security.AuthCredentials;
 import tech.calaverita.sfast_xpress.services.AgenciaService;
@@ -39,27 +39,27 @@ import tech.calaverita.sfast_xpress.services.AsignacionService;
 import tech.calaverita.sfast_xpress.services.GerenciaService;
 import tech.calaverita.sfast_xpress.services.LiquidacionService;
 import tech.calaverita.sfast_xpress.services.UsuarioService;
-import tech.calaverita.sfast_xpress.services.views.PagoAgrupadoService;
-import tech.calaverita.sfast_xpress.services.views.PrestamoService;
+import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
+import tech.calaverita.sfast_xpress.services.views.PrestamoViewService;
 
 @RestController()
 @RequestMapping(path = "/xpress/v1")
 public final class XpressController {
         private final AgenciaService agenciaService;
         private final UsuarioService usuarioService;
-        private final PrestamoService prestamoService;
-        private final PagoAgrupadoService pagoAgrupadoService;
+        private final PrestamoViewService prestamoViewService;
+        private final PagoDynamicService pagoAgrupadoService;
         private final LiquidacionService liquidacionService;
         private final AsignacionService asignacionService;
         private final GerenciaService gerenciaService;
 
         public XpressController(AgenciaService agenciaService, UsuarioService usuarioService,
-                        PrestamoService prestamoService, PagoAgrupadoService pagoAgrupadoService,
+                        PrestamoViewService prestamoViewService, PagoDynamicService pagoAgrupadoService,
                         LiquidacionService liquidacionService,
                         AsignacionService asignacionService, GerenciaService gerenciaService) {
                 this.agenciaService = agenciaService;
                 this.usuarioService = usuarioService;
-                this.prestamoService = prestamoService;
+                this.prestamoViewService = prestamoViewService;
                 this.pagoAgrupadoService = pagoAgrupadoService;
                 this.liquidacionService = liquidacionService;
                 this.asignacionService = asignacionService;
@@ -92,17 +92,17 @@ public final class XpressController {
         public @ResponseBody ResponseEntity<CobranzaDTO> getCobranzaByAgencia(@PathVariable String agencia,
                         @PathVariable int anio,
                         @PathVariable int semana) {
-                CompletableFuture<ArrayList<PrestamoModel>> prestamoModels = this.prestamoService
+                CompletableFuture<ArrayList<PrestamoViewModel>> prestamoViewModels = this.prestamoViewService
                                 .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(agencia, 0D);
                 CompletableFuture<GerenciaModel> gerenciaModel = this.gerenciaService.findByDeprecatedNameAndSucursal(
-                                prestamoModels.join().get(0).getGerencia(), prestamoModels.join().get(0).getSucursal());
+                                prestamoViewModels.join().get(0).getGerencia(), prestamoViewModels.join().get(0).getSucursal());
 
                 InfoCobranzaDTO infoSemanaCobranzaDTO = new InfoCobranzaDTO(gerenciaModel.join().getGerenciaId(),
                                 agencia, anio, semana,
-                                prestamoModels.join().size());
-                DebitosCobranzaDTO debitosCobranzaDTO = new DebitosCobranzaDTO(prestamoModels.join());
+                                prestamoViewModels.join().size());
+                DebitosCobranzaDTO debitosCobranzaDTO = new DebitosCobranzaDTO(prestamoViewModels.join());
                 CobranzaDTO cobranzaDTO = new CobranzaDTO(infoSemanaCobranzaDTO, debitosCobranzaDTO,
-                                prestamoModels.join());
+                                prestamoViewModels.join());
 
                 return new ResponseEntity<>(cobranzaDTO, HttpStatus.OK);
         }
@@ -115,9 +115,9 @@ public final class XpressController {
                         @PathVariable int semana) {
                 DashboardDTO dashboardDTO = new DashboardDTO();
 
-                CompletableFuture<ArrayList<PrestamoModel>> prestamoModels = this.prestamoService
+                CompletableFuture<ArrayList<PrestamoViewModel>> prestamoViewModels = this.prestamoViewService
                                 .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(agencia, 0D);
-                CompletableFuture<ArrayList<PagoAgrupadoModel>> pagoAgrupagoModels = this.pagoAgrupadoService
+                CompletableFuture<ArrayList<PagoDynamicModel>> pagoAgrupagoModels = this.pagoAgrupadoService
                                 .findByAgenciaAnioSemanaAndEsPrimerPago(agencia, anio,
                                                 semana, false);
                 CompletableFuture<ArrayList<LiquidacionModel>> liquidacionModels = this.liquidacionService
@@ -128,17 +128,17 @@ public final class XpressController {
                                 .findSumaAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana);
                 CompletableFuture<String> statusAgencia = this.agenciaService.findStatusById(agencia);
 
-                if (!prestamoModels.join().isEmpty()) {
+                if (!prestamoViewModels.join().isEmpty()) {
                         CompletableFuture<GerenciaModel> gerenciaModel = this.gerenciaService
                                         .findByDeprecatedNameAndSucursal(
-                                                        prestamoModels.join().get(0).getGerencia(),
-                                                        prestamoModels.join().get(0).getSucursal());
+                                                        prestamoViewModels.join().get(0).getGerencia(),
+                                                        prestamoViewModels.join().get(0).getSucursal());
 
                         InfoCobranzaDTO infoSemanaCobranzaDTO = new InfoCobranzaDTO(
                                         gerenciaModel.join().getGerenciaId(),
                                         agencia, anio, semana,
-                                        prestamoModels.join().size());
-                        DebitosCobranzaDTO debitosCobranzaDTO = new DebitosCobranzaDTO(prestamoModels.join());
+                                        prestamoViewModels.join().size());
+                        DebitosCobranzaDTO debitosCobranzaDTO = new DebitosCobranzaDTO(prestamoViewModels.join());
                         PagosDashboardDTO pagosDashboardDTO = new PagosDashboardDTO(pagoAgrupagoModels.join());
                         LiquidacionesDashboardDTO liquidacionesDashboardDTO = new LiquidacionesDashboardDTO(
                                         liquidacionModels.join(),

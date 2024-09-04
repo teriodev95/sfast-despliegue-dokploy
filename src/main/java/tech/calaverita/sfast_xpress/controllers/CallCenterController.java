@@ -10,12 +10,12 @@ import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.GerenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.ReporteCallCenterLiteModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.VisitaModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 import tech.calaverita.sfast_xpress.services.CalendarioService;
 import tech.calaverita.sfast_xpress.services.GerenciaService;
 import tech.calaverita.sfast_xpress.services.ReporteCallCenterService;
 import tech.calaverita.sfast_xpress.services.VisitaService;
-import tech.calaverita.sfast_xpress.services.views.PrestamoService;
+import tech.calaverita.sfast_xpress.services.views.PrestamoViewService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,16 +31,16 @@ public class CallCenterController {
     private final ReporteCallCenterService reporteCallCenterService;
     private final GerenciaService gerenciaService;
     private final VisitaService visitaService;
-    private final PrestamoService prestamoService;
+    private final PrestamoViewService prestamoViewService;
     private final CalendarioService calendarioService;
 
     public CallCenterController(ReporteCallCenterService reporteCallCenterService, GerenciaService gerenciaService,
-                                VisitaService visitaService, PrestamoService prestamoService,
+                                VisitaService visitaService, PrestamoViewService prestamoViewService,
                                 CalendarioService calendarioService) {
         this.reporteCallCenterService = reporteCallCenterService;
         this.gerenciaService = gerenciaService;
         this.visitaService = visitaService;
-        this.prestamoService = prestamoService;
+        this.prestamoViewService = prestamoViewService;
         this.calendarioService = calendarioService;
     }
 
@@ -80,7 +80,7 @@ public class CallCenterController {
     @PostMapping("/visitas/create-one")
     public ResponseEntity<String> postVisitaCreateOne(@RequestBody HashMap<String, Object> visita) {
         CalendarioModel calendarioModel = this.calendarioService.findByFechaActual(LocalDate.now().toString());
-        PrestamoModel prestamoModel = this.prestamoService.findById(visita.get("prestamoId").toString());
+        PrestamoViewModel prestamoModel = this.prestamoViewService.findById(visita.get("prestamoId").toString());
 
         VisitaModel save = null;
 

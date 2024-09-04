@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import lombok.Data;
 import tech.calaverita.sfast_xpress.models.mariaDB.LiquidacionModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PagoAgrupadoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.dynamic.PagoDynamicModel;
 import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Data
@@ -13,20 +13,20 @@ public class LiquidacionesDashboardDTO {
     private Double liquidaciones;
 
     public LiquidacionesDashboardDTO(ArrayList<LiquidacionModel> liquidacionModels,
-            ArrayList<tech.calaverita.sfast_xpress.models.mariaDB.views.PagoAgrupadoModel> pagoAgrupadoModel) {
+            ArrayList<PagoDynamicModel> pagoDynamicModels) {
         this.totalDeDescuento = MyUtil
                 .getDouble(liquidacionModels.stream().mapToDouble(LiquidacionModel::getDescuentoEnDinero).sum());
-        this.liquidaciones = MyUtil.getDouble(getLiquidaciones(liquidacionModels, pagoAgrupadoModel));
+        this.liquidaciones = MyUtil.getDouble(getLiquidaciones(liquidacionModels, pagoDynamicModels));
     }
 
     private Double getLiquidaciones(ArrayList<LiquidacionModel> liquidacionModels,
-            ArrayList<PagoAgrupadoModel> pagoAgrupadoModel) {
+            ArrayList<PagoDynamicModel> pagoDynamicModels) {
         Double liquidaciones = 0D;
 
         for (LiquidacionModel liquidacionModel : liquidacionModels) {
-            for (PagoAgrupadoModel pagoModel : pagoAgrupadoModel) {
-                if (liquidacionModel.getPrestamoId().equals(pagoModel.getPrestamoId())) {
-                    liquidaciones += liquidacionModel.getLiquidoCon() - pagoModel.getTarifa();
+            for (PagoDynamicModel pagoDynamicModel : pagoDynamicModels) {
+                if (liquidacionModel.getPrestamoId().equals(pagoDynamicModel.getPrestamoId())) {
+                    liquidaciones += liquidacionModel.getLiquidoCon() - pagoDynamicModel.getTarifa();
                     break;
                 }
             }

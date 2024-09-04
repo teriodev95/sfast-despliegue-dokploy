@@ -1,4 +1,4 @@
-package tech.calaverita.sfast_xpress.models.mariaDB.views;
+package tech.calaverita.sfast_xpress.models.mariaDB.dynamic;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -7,10 +7,12 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "pagos_util")
-public class PagoUtilModel {
+@Table(name = "pagos_dynamic")
+public class PagoDynamicModel {
     @Id
     private String prestamoId;
+    private String prestamo;
+    private String cliente;
     private Double monto;
     private Integer semana;
     private Integer anio;
@@ -18,8 +20,8 @@ public class PagoUtilModel {
     private Double abreCon;
     private Double cierraCon;
     private Double tarifa;
-    private String agente;
+    private String agencia;
     private String tipo;
     private String fechaPago;
+    private String identificador;
 }
-

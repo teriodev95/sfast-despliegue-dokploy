@@ -1,24 +1,24 @@
 package tech.calaverita.sfast_xpress.utils;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
-import tech.calaverita.sfast_xpress.services.views.PrestamoService;
+
+import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
+import tech.calaverita.sfast_xpress.services.views.PrestamoViewService;
 
 @Component
 public class PrestamoUtil {
-    private static PrestamoService prestamoService;
+    private static PrestamoViewService prestamoViewService;
 
-    private PrestamoUtil(PrestamoService prestamoService) {
-        PrestamoUtil.prestamoService = prestamoService;
+    private PrestamoUtil(PrestamoViewService prestamoViewService) {
+        PrestamoUtil.prestamoViewService = prestamoViewService;
     }
 
     public static boolean blnIsPrestamo(String prestamoId_I) {
-        PrestamoModel prestamoModel = prestamoService.prestModFindByPrestamoId(prestamoId_I);
+        PrestamoViewModel prestamoViewModel = prestamoViewService.prestModFindByPrestamoId(prestamoId_I);
 
-        return prestamoModel != null;
+        return prestamoViewModel != null;
     }
 
     public static ResponseEntity<String> restrCheckPrestamoByPrestamoId(String prestamoId_I) {
@@ -33,7 +33,7 @@ public class PrestamoUtil {
         return responseEntity;
     }
 
-    public static PrestamoModel prestamoModelAsignarPorcentajeCobrado(PrestamoModel prestamoModel_M) {
+    public static PrestamoViewModel prestamoModelAsignarPorcentajeCobrado(PrestamoViewModel prestamoModel_M) {
         Double dblTotalAPagar = prestamoModel_M.getTotalAPagar();
         Double dblCobrado = prestamoModel_M.getCobrado();
 

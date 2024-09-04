@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import tech.calaverita.sfast_xpress.DTOs.LiquidacionDTO;
 import tech.calaverita.sfast_xpress.mappers.LiquidacionMapper;
 import tech.calaverita.sfast_xpress.models.mariaDB.LiquidacionModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 import tech.calaverita.sfast_xpress.repositories.LiquidacionRepository;
 
 @Service
@@ -40,7 +40,7 @@ public class LiquidacionService {
         return this.mapper.mapIn(DTO);
     }
 
-    public LiquidacionDTO getLiquidacionDTO(PrestamoModel prestamoModel) {
-        return this.mapper.mapOut(prestamoModel);
+    public LiquidacionDTO getLiquidacionDTO(PrestamoViewModel prestamoViewModel) {
+        return this.mapper.mapOut(prestamoViewModel);
     }
 }

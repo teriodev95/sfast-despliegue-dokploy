@@ -7,9 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.calaverita.sfast_xpress.Constants;
 import tech.calaverita.sfast_xpress.models.mariaDB.GerenciaModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 import tech.calaverita.sfast_xpress.services.GerenciaService;
-import tech.calaverita.sfast_xpress.services.views.PrestamoService;
+import tech.calaverita.sfast_xpress.services.views.PrestamoViewService;
 import tech.calaverita.sfast_xpress.utils.PrestamoUtil;
 
 import java.util.ArrayList;
@@ -17,11 +17,11 @@ import java.util.ArrayList;
 @RestController
 @RequestMapping(path = "/xpress/v1/loans")
 public final class PrestamoController {
-    private final PrestamoService prestamoService;
+    private final PrestamoViewService prestamoViewService;
     private final GerenciaService gerenciaService;
 
-    public PrestamoController(PrestamoService prestamoService, GerenciaService gerenciaService) {
-        this.prestamoService = prestamoService;
+    public PrestamoController(PrestamoViewService prestamoViewService, GerenciaService gerenciaService) {
+        this.prestamoViewService = prestamoViewService;
         this.gerenciaService = gerenciaService;
     }
 
@@ -33,8 +33,8 @@ public final class PrestamoController {
 
     @CrossOrigin
     @GetMapping(path = "/{id}")
-    public ResponseEntity<PrestamoModel> represtModGetByStrId(@PathVariable String id) {
-        PrestamoModel prestMod_O = prestamoService.prestModFindByPrestamoId(id);
+    public ResponseEntity<PrestamoViewModel> represtModGetByStrId(@PathVariable String id) {
+        PrestamoViewModel prestMod_O = prestamoViewService.prestModFindByPrestamoId(id);
 
         if (prestMod_O == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -51,7 +51,7 @@ public final class PrestamoController {
                                                                                 @PathVariable int anio,
                                                                                 @PathVariable int semana) {
         // To easy code
-        ArrayList<PrestamoModel> prestamoModels = this.prestamoService
+        ArrayList<PrestamoViewModel> prestamoModels = this.prestamoViewService
                 .findPorFinalizarByAgenciaAnioAndSemana(agencia, anio, semana);
         PrestamosPorFinalizar prestamosPorFinalizar = new PrestamosPorFinalizar(prestamoModels);
 
@@ -65,7 +65,7 @@ public final class PrestamoController {
                                                                                  @PathVariable int semana) {
         // To easy code
         GerenciaModel gerenciaModel = this.gerenciaService.findById(gerencia);
-        ArrayList<PrestamoModel> prestamoModels = this.prestamoService
+        ArrayList<PrestamoViewModel> prestamoModels = this.prestamoViewService
                 .findPorFinalizarByGerenciaAnioAndSemana(gerenciaModel.getSucursal(), gerenciaModel.getDeprecatedName(),
                         anio, semana);
         PrestamosPorFinalizar prestamosPorFinalizar = new PrestamosPorFinalizar(prestamoModels);
@@ -76,13 +76,13 @@ public final class PrestamoController {
     @Data
     public static class PrestamosPorFinalizar {
         private int porFinalizar;
-        private ArrayList<PrestamoModel> prestamos;
+        private ArrayList<PrestamoViewModel> prestamos;
 
         public PrestamosPorFinalizar() {
 
         }
 
-        public PrestamosPorFinalizar(ArrayList<PrestamoModel> prestamoModels) {
+        public PrestamosPorFinalizar(ArrayList<PrestamoViewModel> prestamoModels) {
             this.porFinalizar = prestamoModels.size();
             this.prestamos = prestamoModels;
         }

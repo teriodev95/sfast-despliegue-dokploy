@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import tech.calaverita.sfast_xpress.enums.CobranzaStatusPWAEnum;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.PagoModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 import tech.calaverita.sfast_xpress.pojos.PWA.PrestamoCobranzaPWA;
 import tech.calaverita.sfast_xpress.services.CalendarioService;
 import tech.calaverita.sfast_xpress.services.PagoService;
@@ -21,7 +21,7 @@ public class CobranzaPWAThread implements Runnable {
     //------------------------------------------------------------------------------------------------------------------
     /*INSTANCE VARIABLES*/
     //------------------------------------------------------------------------------------------------------------------
-    private PrestamoModel prestamoModel;
+    private PrestamoViewModel prestamoViewModel;
     private PrestamoCobranzaPWA prestamoCobranzaPwa;
     private int anio;
     private int semana;
@@ -42,12 +42,12 @@ public class CobranzaPWAThread implements Runnable {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public CobranzaPWAThread(
-            PrestamoModel prestamoModel,
+            PrestamoViewModel prestamoViewModel,
             PrestamoCobranzaPWA prestamoCobranzaPwa,
             int anio,
             int semana
     ) {
-        this.prestamoModel = prestamoModel;
+        this.prestamoViewModel = prestamoViewModel;
         this.prestamoCobranzaPwa = prestamoCobranzaPwa;
         this.anio = anio;
         this.semana = semana;
@@ -58,10 +58,10 @@ public class CobranzaPWAThread implements Runnable {
     //------------------------------------------------------------------------------------------------------------------
     @Override
     public void run() {
-        getMontoStatusAndPorcentaje(prestamoModel, prestamoCobranzaPwa, anio, semana);
+        getMontoStatusAndPorcentaje(prestamoViewModel, prestamoCobranzaPwa, anio, semana);
     }
 
-    public void getMontoStatusAndPorcentaje(PrestamoModel prestamoModel, PrestamoCobranzaPWA prestamoCobranzaPwa, int anio, int semana) {
+    public void getMontoStatusAndPorcentaje(PrestamoViewModel prestamoViewModel, PrestamoCobranzaPWA prestamoCobranzaPwa, int anio, int semana) {
         String fechaActual = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         CalendarioModel calendarioModel = CobranzaPWAThread.calServ.findByFechaActual(fechaActual);
 
@@ -69,15 +69,15 @@ public class CobranzaPWAThread implements Runnable {
         LocalDateTime cierreMiercoles = fechaInicioSemana.plusHours(21);
         LocalDateTime cierreJueves = fechaInicioSemana.plusDays(1).plusHours(21);
 
-        ArrayList<PagoModel> pagEntPagoEntities = CobranzaPWAThread.pagServ.findByPrestamoIdAnioAndSemanaOrderByFechaPagoDesc(prestamoModel.getPrestamoId(), anio, semana);
+        ArrayList<PagoModel> pagEntPagoEntities = CobranzaPWAThread.pagServ.findByPrestamoIdAnioAndSemanaOrderByFechaPagoDesc(prestamoViewModel.getPrestamoId(), anio, semana);
 
-        prestamoCobranzaPwa.setNombre(prestamoModel.getNombres() + " " + prestamoModel.getApellidoPaterno() + " " + prestamoModel.getApellidoMaterno());
-        prestamoCobranzaPwa.setPrestamoId(prestamoModel.getPrestamoId());
-        prestamoCobranzaPwa.setTarifa(prestamoModel.getSaldoAlIniciarSemana() < prestamoModel.getTarifa() ? prestamoModel.getSaldoAlIniciarSemana() : prestamoModel.getTarifa());
-        prestamoCobranzaPwa.setTotalAPagar(prestamoModel.getTotalAPagar());
-        prestamoCobranzaPwa.setPagado(prestamoModel.getCobrado());
-        prestamoCobranzaPwa.setRestante(prestamoModel.getSaldo());
-        prestamoCobranzaPwa.setDiaDePago(prestamoModel.getDiaDePago());
+        prestamoCobranzaPwa.setNombre(prestamoViewModel.getNombres() + " " + prestamoViewModel.getApellidoPaterno() + " " + prestamoViewModel.getApellidoMaterno());
+        prestamoCobranzaPwa.setPrestamoId(prestamoViewModel.getPrestamoId());
+        prestamoCobranzaPwa.setTarifa(prestamoViewModel.getSaldoAlIniciarSemana() < prestamoViewModel.getTarifa() ? prestamoViewModel.getSaldoAlIniciarSemana() : prestamoViewModel.getTarifa());
+        prestamoCobranzaPwa.setTotalAPagar(prestamoViewModel.getTotalAPagar());
+        prestamoCobranzaPwa.setPagado(prestamoViewModel.getCobrado());
+        prestamoCobranzaPwa.setRestante(prestamoViewModel.getSaldo());
+        prestamoCobranzaPwa.setDiaDePago(prestamoViewModel.getDiaDePago());
 
         if (!pagEntPagoEntities.isEmpty()) {
             if (pagEntPagoEntities.size() == 1) {

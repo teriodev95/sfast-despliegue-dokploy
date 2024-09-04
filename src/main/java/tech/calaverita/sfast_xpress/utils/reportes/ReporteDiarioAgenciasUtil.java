@@ -11,7 +11,7 @@ import tech.calaverita.sfast_xpress.services.AgenciaService;
 import tech.calaverita.sfast_xpress.services.CalendarioService;
 import tech.calaverita.sfast_xpress.services.SucursalService;
 import tech.calaverita.sfast_xpress.services.UsuarioService;
-import tech.calaverita.sfast_xpress.services.views.PagoAgrupadoService;
+import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -28,16 +28,16 @@ public final class ReporteDiarioAgenciasUtil {
     private static UsuarioService usuarioService;
     private static CalendarioService calendarioService;
     private static SucursalService sucursalService;
-    private static PagoAgrupadoService pagoAgrupadoService;
+    private static PagoDynamicService pagoDynamicService;
 
     public ReporteDiarioAgenciasUtil(AgenciaService agenciaService, UsuarioService usuarioService,
                                      CalendarioService calendarioService, SucursalService sucursalService,
-                                     PagoAgrupadoService pagoAgrupadoService) {
+                                     PagoDynamicService pagoDynamicService) {
         ReporteDiarioAgenciasUtil.agenciaService = agenciaService;
         ReporteDiarioAgenciasUtil.usuarioService = usuarioService;
         ReporteDiarioAgenciasUtil.calendarioService = calendarioService;
         ReporteDiarioAgenciasUtil.sucursalService = sucursalService;
-        ReporteDiarioAgenciasUtil.pagoAgrupadoService = pagoAgrupadoService;
+        ReporteDiarioAgenciasUtil.pagoDynamicService = pagoDynamicService;
     }
 
     public static ReporteDiarioAgenciasDocument getReporte(GerenciaModel gerenciaModel)
@@ -259,15 +259,15 @@ public final class ReporteDiarioAgenciasUtil {
             }
         }
 
-        CompletableFuture<Double> debitoTotal = ReporteDiarioAgenciasUtil.pagoAgrupadoService
+        CompletableFuture<Double> debitoTotal = ReporteDiarioAgenciasUtil.pagoDynamicService
                 .findDebitoTotalByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
-        CompletableFuture<Double> excedente = ReporteDiarioAgenciasUtil.pagoAgrupadoService
+        CompletableFuture<Double> excedente = ReporteDiarioAgenciasUtil.pagoDynamicService
                 .findExcedenteByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
-        CompletableFuture<Double> cobranzaTotal = ReporteDiarioAgenciasUtil.pagoAgrupadoService
+        CompletableFuture<Double> cobranzaTotal = ReporteDiarioAgenciasUtil.pagoDynamicService
                 .findCobranzaTotalByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
-        CompletableFuture<Integer> clientesTotalesCobrados = ReporteDiarioAgenciasUtil.pagoAgrupadoService
+        CompletableFuture<Integer> clientesTotalesCobrados = ReporteDiarioAgenciasUtil.pagoDynamicService
                 .findClientesCobradosByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
-        CompletableFuture<Integer> clientesTotales = ReporteDiarioAgenciasUtil.pagoAgrupadoService
+        CompletableFuture<Integer> clientesTotales = ReporteDiarioAgenciasUtil.pagoDynamicService
                 .findClientesTotalesByAgenciaAnioAndSemanaAsync(agencia, anioAnterior, semanaAnterior);
 
         semanaActual.setDiferenciaFaltanteActualVsFaltanteAnterior(null);
@@ -300,13 +300,13 @@ public final class ReporteDiarioAgenciasUtil {
         DashboardSemanaAnteriorReporteDiarioAgenciasDTO semanaAnterior =
                 new DashboardSemanaAnteriorReporteDiarioAgenciasDTO();
 
-        CompletableFuture<Double> debitoTotal = ReporteDiarioAgenciasUtil.pagoAgrupadoService
+        CompletableFuture<Double> debitoTotal = ReporteDiarioAgenciasUtil.pagoDynamicService
                 .findDebitoTotalByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
-        CompletableFuture<Double> excedente = ReporteDiarioAgenciasUtil.pagoAgrupadoService
+        CompletableFuture<Double> excedente = ReporteDiarioAgenciasUtil.pagoDynamicService
                 .findExcedenteByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
-        CompletableFuture<Double> cobranzaTotal = ReporteDiarioAgenciasUtil.pagoAgrupadoService
+        CompletableFuture<Double> cobranzaTotal = ReporteDiarioAgenciasUtil.pagoDynamicService
                 .findCobranzaTotalByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
-        CompletableFuture<Integer> clientesTotalesCobrados = ReporteDiarioAgenciasUtil.pagoAgrupadoService
+        CompletableFuture<Integer> clientesTotalesCobrados = ReporteDiarioAgenciasUtil.pagoDynamicService
                 .findClientesCobradosByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
 
         CompletableFuture.allOf(debitoTotal, excedente, cobranzaTotal, clientesTotalesCobrados);

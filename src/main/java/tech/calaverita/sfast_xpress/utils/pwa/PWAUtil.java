@@ -9,14 +9,14 @@ import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.PagoModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PagoAgrupadoModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.dynamic.PagoDynamicModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 import tech.calaverita.sfast_xpress.pojos.PWA.PagoHistoricoPWA;
 import tech.calaverita.sfast_xpress.pojos.PWA.PagoPWA;
 import tech.calaverita.sfast_xpress.pojos.PWA.PrestamoCobranzaPWA;
 import tech.calaverita.sfast_xpress.services.UsuarioService;
-import tech.calaverita.sfast_xpress.services.views.PagoAgrupadoService;
-import tech.calaverita.sfast_xpress.services.views.PrestamoService;
+import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
+import tech.calaverita.sfast_xpress.services.views.PrestamoViewService;
 import tech.calaverita.sfast_xpress.threads.pwa.CobranzaPWAThread;
 import tech.calaverita.sfast_xpress.threads.pwa.PagoHistoricoPWAThread;
 import tech.calaverita.sfast_xpress.threads.pwa.PagoPWAThread;
@@ -24,13 +24,13 @@ import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Component
 public final class PWAUtil {
-    private static PrestamoService prestamoService;
+    private static PrestamoViewService prestamoViewService;
     private static UsuarioService usuarioService;
-    private static PagoAgrupadoService pagoAgrupadoService;
+    private static PagoDynamicService pagoAgrupadoService;
 
-    public PWAUtil(PrestamoService prestamoService, UsuarioService usuarioService,
-            PagoAgrupadoService pagoAgrupadoService) {
-        PWAUtil.prestamoService = prestamoService;
+    public PWAUtil(PrestamoViewService prestamoViewService, UsuarioService usuarioService,
+            PagoDynamicService pagoAgrupadoService) {
+        PWAUtil.prestamoViewService = prestamoViewService;
         PWAUtil.usuarioService = usuarioService;
         PWAUtil.pagoAgrupadoService = pagoAgrupadoService;
     }
@@ -43,15 +43,15 @@ public final class PWAUtil {
         calendarioModel.setSemana(semana);
         MyUtil.funSemanaAnterior(calendarioModel);
 
-        ArrayList<PrestamoModel> prestEntPrestamoEntities = PWAUtil.prestamoService
+        ArrayList<PrestamoViewModel> prestamoViewModels = PWAUtil.prestamoViewService
         .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(
         agencia, 0D).join();
         ArrayList<PrestamoCobranzaPWA> prestamoCobranzaPWAs = new ArrayList<>();
 
-        Thread[] threads = new Thread[prestEntPrestamoEntities.size()];
+        Thread[] threads = new Thread[prestamoViewModels.size()];
         int indice = 0;
 
-        for (PrestamoModel prestamoModel : prestEntPrestamoEntities) {
+        for (PrestamoViewModel prestamoModel : prestamoViewModels) {
         PrestamoCobranzaPWA prestamoCobranzaPwa = new PrestamoCobranzaPWA();
 
         prestamoCobranzaPWAs.add(prestamoCobranzaPwa);
@@ -95,14 +95,14 @@ public final class PWAUtil {
     }
 
     public static ArrayList<PagoHistoricoPWA> darrpagoHistoricoPwaFromPagoVistaModelsByPrestamoId(String prestamoId) {
-        ArrayList<PagoAgrupadoModel> pagAgrEntPagoAgrupadoEntities = PWAUtil.pagoAgrupadoService
+        ArrayList<PagoDynamicModel> pagAgrEntPagoAgrupadoEntities = PWAUtil.pagoAgrupadoService
                 .findByPrestamoIdOrderByAnioAscSemanaAsc(prestamoId);
         ArrayList<PagoHistoricoPWA> pagoHistoricoPWAs = new ArrayList<>();
 
         Thread[] threads = new Thread[pagAgrEntPagoAgrupadoEntities.size()];
         int indice = 0;
 
-        for (PagoAgrupadoModel pagoAgrupadoModel : pagAgrEntPagoAgrupadoEntities) {
+        for (PagoDynamicModel pagoAgrupadoModel : pagAgrEntPagoAgrupadoEntities) {
             PagoHistoricoPWA pagoHistoricoPWA = new PagoHistoricoPWA();
 
             pagoHistoricoPWAs.add(pagoHistoricoPWA);

@@ -1,30 +1,31 @@
 package tech.calaverita.sfast_xpress.models.mariaDB.views;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "prestamos_saldo_y_cobrado_calculados")
-public class PrestamoModel {
+@Table(name = "prestamos_view")
+public class PrestamoViewModel {
     @Id
-    @Column(name = "prestamoid")
     private String prestamoId;
     private String clienteId;
     private String nombres;
     private String apellidoPaterno;
     private String apellidoMaterno;
     private String direccion;
-    @Column(name = "noexterior")
     private String noExterior;
-    @Column(name = "nointerior")
     private String noInterior;
     private String colonia;
     private String codigoPostal;
     private String municipio;
     private String estado;
     private String noDeContrato;
-    private String agente;
+    private String agencia;
     private String gerencia;
     private String sucursal;
     private Integer semana;
@@ -62,10 +63,9 @@ public class PrestamoModel {
     private String telefonoCliente;
     private String diaDePago;
     private String gerenteEnTurno;
-    private String agente2;
+    private String agente;
     private String status;
     private String capturista;
-    @Column(name = "noservicio")
     private String noServicio;
     private String tipoDeCliente;
     private String identificadorCredito;

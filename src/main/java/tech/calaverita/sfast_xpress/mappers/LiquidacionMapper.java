@@ -3,7 +3,7 @@ package tech.calaverita.sfast_xpress.mappers;
 import org.springframework.stereotype.Component;
 import tech.calaverita.sfast_xpress.DTOs.LiquidacionDTO;
 import tech.calaverita.sfast_xpress.models.mariaDB.LiquidacionModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 
 import java.util.ArrayList;
 
@@ -17,13 +17,13 @@ public class LiquidacionMapper implements IMapper<LiquidacionModel, LiquidacionD
 
     @Override
     public LiquidacionModel mapIn(LiquidacionDTO in) {
-        LiquidacionModel entity = new LiquidacionModel();
-        entity.setPrestamoId(in.getPrestamoId());
-        entity.setDescuentoEnDinero(in.getDescuentoDinero());
-        entity.setDescuentoEnPorcentaje(in.getDescuentoPorcentaje());
-        entity.setLiquidoCon(in.getLiquidaCon());
-        entity.setSemTranscurridas(in.getSemanasTranscurridas());
-        return entity;
+        LiquidacionModel liquidacionModel = new LiquidacionModel();
+        liquidacionModel.setPrestamoId(in.getPrestamoId());
+        liquidacionModel.setDescuentoEnDinero(in.getDescuentoDinero());
+        liquidacionModel.setDescuentoEnPorcentaje(in.getDescuentoPorcentaje());
+        liquidacionModel.setLiquidoCon(in.getLiquidaCon());
+        liquidacionModel.setSemTranscurridas(in.getSemanasTranscurridas());
+        return liquidacionModel;
     }
 
     @Override
@@ -36,22 +36,22 @@ public class LiquidacionMapper implements IMapper<LiquidacionModel, LiquidacionD
         return null;
     }
 
-    public LiquidacionDTO mapOut(PrestamoModel entity) {
+    public LiquidacionDTO mapOut(PrestamoViewModel prestamoViewModel) {
         LiquidacionDTO DTO = new LiquidacionDTO();
         // To easy code
-        String cliente = entity.getNombres() + " " + entity.getApellidoPaterno() + " "
-                + entity.getApellidoMaterno();
-        String semanaEntrega = "#" + entity.getSemana() + "-" + entity.getAnio();
+        String cliente = prestamoViewModel.getNombres() + " " + prestamoViewModel.getApellidoPaterno() + " "
+                + prestamoViewModel.getApellidoMaterno();
+        String semanaEntrega = "#" + prestamoViewModel.getSemana() + "-" + prestamoViewModel.getAnio();
 
         DTO.setCliente(cliente);
-        DTO.setIdentificador(entity.getIdentificadorCredito());
+        DTO.setIdentificador(prestamoViewModel.getIdentificadorCredito());
         DTO.setSemEntrega(semanaEntrega);
-        DTO.setEntregado(entity.getMontoOtorgado());
-        DTO.setCargo(entity.getCargo());
-        DTO.setMontoTotal(entity.getTotalAPagar());
-        DTO.setCobrado(entity.getCobrado());
-        DTO.setSaldo(entity.getSaldo());
-        DTO.setPrestamoId(entity.getPrestamoId());
+        DTO.setEntregado(prestamoViewModel.getMontoOtorgado());
+        DTO.setCargo(prestamoViewModel.getCargo());
+        DTO.setMontoTotal(prestamoViewModel.getTotalAPagar());
+        DTO.setCobrado(prestamoViewModel.getCobrado());
+        DTO.setSaldo(prestamoViewModel.getSaldo());
+        DTO.setPrestamoId(prestamoViewModel.getPrestamoId());
 
         return DTO;
     }

@@ -3,7 +3,7 @@ package tech.calaverita.sfast_xpress.DTOs.cobranza;
 import java.util.ArrayList;
 
 import lombok.Data;
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Data
@@ -13,24 +13,24 @@ public class DebitosCobranzaDTO {
     private Double debitoViernes;
     private Double debitoTotal;
 
-    public DebitosCobranzaDTO(ArrayList<PrestamoModel> prestamoModels) {
-        this.debitoMiercoles = MyUtil.getDouble(getDebitoPorDia(prestamoModels, "MIERCOLES"));
-        this.debitoJueves = MyUtil.getDouble(getDebitoPorDia(prestamoModels, "JUEVES"));
-        this.debitoViernes = MyUtil.getDouble(getDebitoPorDia(prestamoModels, "VIERNES"));
+    public DebitosCobranzaDTO(ArrayList<PrestamoViewModel> prestamoViewModels) {
+        this.debitoMiercoles = MyUtil.getDouble(getDebitoPorDia(prestamoViewModels, "MIERCOLES"));
+        this.debitoJueves = MyUtil.getDouble(getDebitoPorDia(prestamoViewModels, "JUEVES"));
+        this.debitoViernes = MyUtil.getDouble(getDebitoPorDia(prestamoViewModels, "VIERNES"));
         this.debitoTotal = MyUtil.getDouble(this.debitoMiercoles + this.debitoJueves + this.debitoViernes);
     }
 
-    private Double getDebitoPorDia(ArrayList<PrestamoModel> prestamoModels, String diaDePago) {
+    private Double getDebitoPorDia(ArrayList<PrestamoViewModel> prestamoViewModels, String diaDePago) {
         Double debitoPorDia = 0D;
 
-        for (PrestamoModel prestamoModel : prestamoModels) {
-            if (prestamoModel.getDiaDePago().equals(diaDePago)) {
+        for (PrestamoViewModel prestamoViewModel : prestamoViewModels) {
+            if (prestamoViewModel.getDiaDePago().equals(diaDePago)) {
                 Double tarifa;
 
-                if (prestamoModel.getTarifa() <= prestamoModel.getSaldoAlIniciarSemana()) {
-                    tarifa = prestamoModel.getTarifa();
+                if (prestamoViewModel.getTarifa() <= prestamoViewModel.getSaldoAlIniciarSemana()) {
+                    tarifa = prestamoViewModel.getTarifa();
                 } else {
-                    tarifa = prestamoModel.getSaldoAlIniciarSemana();
+                    tarifa = prestamoViewModel.getSaldoAlIniciarSemana();
                 }
 
                 debitoPorDia += tarifa;

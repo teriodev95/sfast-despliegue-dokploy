@@ -6,11 +6,11 @@ import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.LiquidacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.PagoModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.PorcentajesDescuentoLiquidacionesModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 import tech.calaverita.sfast_xpress.services.CalendarioService;
 import tech.calaverita.sfast_xpress.services.LiquidacionService;
 import tech.calaverita.sfast_xpress.services.PorcentajesDescuentoLiquidacionesService;
-import tech.calaverita.sfast_xpress.services.views.PrestamoService;
+import tech.calaverita.sfast_xpress.services.views.PrestamoViewService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -19,15 +19,15 @@ import java.util.Optional;
 
 @Component
 public class LiquidacionUtil {
-    private static PrestamoService prestamoService;
+    private static PrestamoViewService prestamoViewService;
     private static LiquidacionService liquidacionService;
     private static CalendarioService calendarioService;
     private static PorcentajesDescuentoLiquidacionesService porcentajesDescuentoLiquidacionesService;
 
-    public LiquidacionUtil(PrestamoService prestamoService, LiquidacionService liquidacionService,
+    public LiquidacionUtil(PrestamoViewService prestamoViewService, LiquidacionService liquidacionService,
                            CalendarioService calendarioService,
                            PorcentajesDescuentoLiquidacionesService porcentajesDescuentoLiquidacionesService) {
-        LiquidacionUtil.prestamoService = prestamoService;
+        LiquidacionUtil.prestamoViewService = prestamoViewService;
         LiquidacionUtil.liquidacionService = liquidacionService;
         LiquidacionUtil.calendarioService = calendarioService;
         LiquidacionUtil.porcentajesDescuentoLiquidacionesService = porcentajesDescuentoLiquidacionesService;
@@ -36,14 +36,14 @@ public class LiquidacionUtil {
     public static LiquidacionDTO getLiquidacionDTO(String prestamoId) {
         LiquidacionDTO liquidacionDTO = null;
 
-        PrestamoModel prestamoModel = prestamoService.findById(prestamoId);
+        PrestamoViewModel prestamoViewModel = prestamoViewService.findById(prestamoId);
 
-        if (prestamoModel != null) {
+        if (prestamoViewModel != null) {
             // To easy code
-            int anioEntrega = prestamoModel.getAnio();
-            int semanaEntrega = prestamoModel.getSemana();
+            int anioEntrega = prestamoViewModel.getAnio();
+            int semanaEntrega = prestamoViewModel.getSemana();
 
-            liquidacionDTO = LiquidacionUtil.liquidacionService.getLiquidacionDTO(prestamoModel);
+            liquidacionDTO = LiquidacionUtil.liquidacionService.getLiquidacionDTO(prestamoViewModel);
             liquidacionDTO.setSemanasTranscurridas(LiquidacionUtil.getSemanasTranscurridas(anioEntrega,
                     semanaEntrega));
             liquidacionDTO.setDescuentoPorcentaje(LiquidacionUtil.getDescuentoPorcentaje(liquidacionDTO

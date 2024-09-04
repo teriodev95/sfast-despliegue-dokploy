@@ -19,7 +19,7 @@ import tech.calaverita.sfast_xpress.services.AgenciaService;
 import tech.calaverita.sfast_xpress.services.CalendarioService;
 import tech.calaverita.sfast_xpress.services.SucursalService;
 import tech.calaverita.sfast_xpress.services.cierre_semanal.*;
-import tech.calaverita.sfast_xpress.services.views.PagoAgrupadoService;
+import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -44,13 +44,13 @@ public class CierreSemanalUtil {
     private static IngresosAgenteService ingresosAgenteService;
     private static SucursalService sucursalService;
     private static AgenciaService agenciaService;
-    private static PagoAgrupadoService pagoAgrupadoService;
+    private static PagoDynamicService pagoDynamicService;
     private static CalendarioService calendarioService;
     private static final Fonts fuentes = new Fonts();
 
     public CierreSemanalUtil(BalanceAgenciaService balanceAgenciaService, CierreSemanalService cierreSemanalService,
                              EgresosAgenteService egresosAgenteService, EgresosGerenteService egresosGerenteService,
-                             IngresosAgenteService ingresosAgenteService, PagoAgrupadoService pagoAgrupadoService,
+                             IngresosAgenteService ingresosAgenteService, PagoDynamicService pagoDynamicService,
                              SucursalService sucursalService, AgenciaService agenciaService,
                              CalendarioService calendarioService) {
         CierreSemanalUtil.balanceAgenciaService = balanceAgenciaService;
@@ -60,7 +60,7 @@ public class CierreSemanalUtil {
         CierreSemanalUtil.ingresosAgenteService = ingresosAgenteService;
         CierreSemanalUtil.sucursalService = sucursalService;
         CierreSemanalUtil.agenciaService = agenciaService;
-        CierreSemanalUtil.pagoAgrupadoService = pagoAgrupadoService;
+        CierreSemanalUtil.pagoDynamicService = pagoDynamicService;
         CierreSemanalUtil.calendarioService = calendarioService;
     }
 
@@ -103,7 +103,7 @@ public class CierreSemanalUtil {
             throws ExecutionException, InterruptedException {
         CierreSemanalDTO cierreSemanalDTO = new CierreSemanalDTO();
 
-        CompletableFuture<Integer> clientesPagoCompletoCF = CierreSemanalUtil.pagoAgrupadoService
+        CompletableFuture<Integer> clientesPagoCompletoCF = CierreSemanalUtil.pagoDynamicService
                 .findClientesPagoCompletoByAgenciaAnioAndSemanaAsync(dashboard.getAgencia(), dashboard.getAnio(),
                         dashboard.getSemana());
         CompletableFuture<CalendarioModel> calendarioModelCF = CierreSemanalUtil.calendarioService
@@ -172,7 +172,7 @@ public class CierreSemanalUtil {
                         .findByAnioAndMesAsync(calendarioModel.getAnio(), calendarioModel.getMes()).join();
 
                 for (int i = 0; i < semanasDelMes.size() - 1; i++) {
-                    cobranzaTotal += CierreSemanalUtil.pagoAgrupadoService
+                    cobranzaTotal += CierreSemanalUtil.pagoDynamicService
                             .findCobranzaTotalByAgenciaAnioAndSemanaAsync(dashboard.getAgencia(), semanasDelMes.get(i).getAnio(),
                                     semanasDelMes.get(i).getSemana()).join();
                 }
@@ -689,7 +689,7 @@ public class CierreSemanalUtil {
 
     public static double getCobranzaTotalByAgenciaAnioAndSemana(String agencia, int anio, int semana)
             throws ExecutionException, InterruptedException {
-        CompletableFuture<Double> cobranzaTotal = CierreSemanalUtil.pagoAgrupadoService
+        CompletableFuture<Double> cobranzaTotal = CierreSemanalUtil.pagoDynamicService
                 .findCobranzaTotalByAgenciaAnioAndSemanaAsync(agencia, anio, semana);
         cobranzaTotal.join();
 

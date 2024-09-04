@@ -8,17 +8,17 @@ import tech.calaverita.sfast_xpress.Constants;
 import tech.calaverita.sfast_xpress.models.mariaDB.PagoModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.VisitaModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PagoAgrupadoModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.dynamic.PagoDynamicModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 import tech.calaverita.sfast_xpress.pojos.ModelValidation;
 import tech.calaverita.sfast_xpress.pojos.PagoConLiquidacion;
 import tech.calaverita.sfast_xpress.services.AgenciaService;
 import tech.calaverita.sfast_xpress.services.PagoService;
 import tech.calaverita.sfast_xpress.services.UsuarioService;
 import tech.calaverita.sfast_xpress.services.VisitaService;
+import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
 import tech.calaverita.sfast_xpress.services.relation.UsuarioGerenciaService;
-import tech.calaverita.sfast_xpress.services.views.PagoAgrupadoService;
-import tech.calaverita.sfast_xpress.services.views.PrestamoService;
+import tech.calaverita.sfast_xpress.services.views.PrestamoViewService;
 import tech.calaverita.sfast_xpress.utils.PagoUtil;
 
 import java.util.ArrayList;
@@ -30,19 +30,19 @@ import java.util.concurrent.ExecutionException;
 @RequestMapping(path = "/xpress/v1/pays")
 public final class PagoController {
     private final PagoService pagoService;
-    private final PrestamoService prestamoService;
+    private final PrestamoViewService prestamoViewService;
     private final UsuarioGerenciaService usuarioGerenciaService;
     private final UsuarioService usuarioService;
     private final VisitaService visitaService;
     private final AgenciaService agenciaService;
-    private final PagoAgrupadoService pagoAgrupadoService;
+    private final PagoDynamicService pagoAgrupadoService;
 
-    public PagoController(PagoService pagoService, PrestamoService prestamoService,
+    public PagoController(PagoService pagoService, PrestamoViewService prestamoViewService,
                           UsuarioGerenciaService usuarioGerenciaService, UsuarioService usuarioService,
                           VisitaService visitaService, AgenciaService agenciaService,
-                          PagoAgrupadoService pagoAgrupadoService) {
+                          PagoDynamicService pagoAgrupadoService) {
         this.pagoService = pagoService;
-        this.prestamoService = prestamoService;
+        this.prestamoViewService = prestamoViewService;
         this.usuarioGerenciaService = usuarioGerenciaService;
         this.usuarioService = usuarioService;
         this.visitaService = visitaService;
@@ -81,7 +81,7 @@ public final class PagoController {
 
             @RequestBody PagoConLiquidacion pagoConLiquidacion) {
         ModelValidation modVal;
-        PrestamoModel prestMod = this.prestamoService.prestModFindByPrestamoId(pagoConLiquidacion.getPrestamoId());
+        PrestamoViewModel prestMod = this.prestamoViewService.prestModFindByPrestamoId(pagoConLiquidacion.getPrestamoId());
         modVal = PagoUtil.modValPagoModelValidation(pagoConLiquidacion, prestMod);
 
         if (modVal.isBoolIsOnline()) {
@@ -101,7 +101,7 @@ public final class PagoController {
             HashMap<String, Object> dirobjeto = new HashMap<>();
 
             ModelValidation modVal;
-            PrestamoModel prestMod = this.prestamoService.prestModFindByPrestamoId(pagConLiq.getPrestamoId());
+            PrestamoViewModel prestMod = this.prestamoViewService.prestModFindByPrestamoId(pagConLiq.getPrestamoId());
             modVal = PagoUtil.modValPagoModelValidation(pagConLiq, prestMod);
 
             if (modVal.isBoolIsOnline()) {
@@ -119,9 +119,9 @@ public final class PagoController {
 
     @CrossOrigin
     @GetMapping(path = "/history/{id}")
-    public @ResponseBody ResponseEntity<ArrayList<PagoAgrupadoModel>> redarrpagAgrModGetHistory(
+    public @ResponseBody ResponseEntity<ArrayList<PagoDynamicModel>> redarrpagAgrModGetHistory(
             @PathVariable String id) {
-        ArrayList<PagoAgrupadoModel> pagAgrMod_O = this.pagoAgrupadoService
+        ArrayList<PagoDynamicModel> pagAgrMod_O = this.pagoAgrupadoService
                 .findByPrestamoIdOrderByAnioAscSemanaAsc(id);
         HttpStatus httpStatus_O = HttpStatus.OK;
 

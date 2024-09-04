@@ -22,7 +22,7 @@ import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.GerenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.LiquidacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.PagoModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 import tech.calaverita.sfast_xpress.pojos.ModelValidation;
 import tech.calaverita.sfast_xpress.pojos.PagoConLiquidacion;
 import tech.calaverita.sfast_xpress.services.AgenciaService;
@@ -30,7 +30,7 @@ import tech.calaverita.sfast_xpress.services.CalendarioService;
 import tech.calaverita.sfast_xpress.services.GerenciaService;
 import tech.calaverita.sfast_xpress.services.LiquidacionService;
 import tech.calaverita.sfast_xpress.services.PagoService;
-import tech.calaverita.sfast_xpress.services.views.PrestamoService;
+import tech.calaverita.sfast_xpress.services.views.PrestamoViewService;
 
 @Component
 public final class PagoUtil {
@@ -39,21 +39,21 @@ public final class PagoUtil {
     private static LiquidacionService liquidacionService;
     private static PagoService pagoService;
     private static CalendarioService calendarioService;
-    private static PrestamoService prestamoService;
+    private static PrestamoViewService prestamoViewService;
 
     private PagoUtil(AgenciaService agenciaService, GerenciaService gerenciaService,
             LiquidacionService liquidacionService, PagoService pagoService,
-            CalendarioService calendarioService, PrestamoService prestamoService) {
+            CalendarioService calendarioService, PrestamoViewService prestamoViewService) {
         PagoUtil.agenciaService = agenciaService;
         PagoUtil.gerenciaService = gerenciaService;
         PagoUtil.liquidacionService = liquidacionService;
         PagoUtil.pagoService = pagoService;
         PagoUtil.calendarioService = calendarioService;
-        PagoUtil.prestamoService = prestamoService;
+        PagoUtil.prestamoViewService = prestamoViewService;
     }
 
     public static ModelValidation modValPagoModelValidation(PagoConLiquidacion pagoConLiquidacion,
-            PrestamoModel prestamoModel) {
+            PrestamoViewModel prestamoModel) {
         String strResponse_O = "";
         HttpStatus httpStatus_O = HttpStatus.CREATED;
         boolean boolIsOnline_O = true;
@@ -94,7 +94,7 @@ public final class PagoUtil {
     }
 
     public static void subProcessPayment(ModelValidation modelValidation, PagoConLiquidacion pagoConLiquidacion,
-            PrestamoModel prestamoModel) {
+            PrestamoViewModel prestamoModel) {
         String strSession = "session_id=76d814874514726176f0615260848da2aab725ea";
         PagoModel pagMod = PagoUtil.pagoModelFromPagoConLiquidacion(pagoConLiquidacion);
         LiquidacionModel liqMod = pagoConLiquidacion.getInfoLiquidacion();
@@ -212,7 +212,7 @@ public final class PagoUtil {
         return GerenciaJsonObject;
     }
 
-    public static RequestBody requestBodyPayMessage(PrestamoModel prestamoModel, PagoModel pagoModel,
+    public static RequestBody requestBodyPayMessage(PrestamoViewModel prestamoModel, PagoModel pagoModel,
             GerenciaModel gerenciaModel) {
         JSONObject infoPagoJsonObject = new JSONObject();
         JSONObject pagoJsonObject = jsonObjectOfPago(pagoModel);
@@ -234,7 +234,7 @@ public final class PagoUtil {
         return RequestBody.create(MediaType.parse("application/json"), infoPagoJsonObject.toString());
     }
 
-    public static void subSendPayMessage(PrestamoModel prestamoModel, PagoModel pagoModel,
+    public static void subSendPayMessage(PrestamoViewModel prestamoModel, PagoModel pagoModel,
             GerenciaModel gerenciaModel) {
         OkHttpClient okHttpClient = new OkHttpClient();
 
@@ -264,7 +264,7 @@ public final class PagoUtil {
         {
             String fechaActual = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             CalendarioModel calendarioModel = PagoUtil.calendarioService.findByFechaActual(fechaActual);
-            PrestamoModel prestamoModel = PagoUtil.prestamoService.findById(liquidacionDTO.getPrestamoId());
+            PrestamoViewModel prestamoModel = PagoUtil.prestamoViewService.findById(liquidacionDTO.getPrestamoId());
 
             pagoModel.setPagoId(UUID.randomUUID().toString());
             pagoModel.setSemana(calendarioModel.getSemana());

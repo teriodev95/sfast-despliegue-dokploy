@@ -2,7 +2,8 @@ package tech.calaverita.sfast_xpress.threads.pwa;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PagoAgrupadoModel;
+
+import tech.calaverita.sfast_xpress.models.mariaDB.dynamic.PagoDynamicModel;
 import tech.calaverita.sfast_xpress.pojos.PWA.PagoHistoricoPWA;
 import tech.calaverita.sfast_xpress.services.PagoService;
 import tech.calaverita.sfast_xpress.services.VisitaService;
@@ -10,7 +11,7 @@ import tech.calaverita.sfast_xpress.utils.pwa.PWAUtil;
 
 @Component
 public class PagoHistoricoPWAThread implements Runnable {
-    private PagoAgrupadoModel pagoAgrupadoModel;
+    private PagoDynamicModel pagoDynamicModel;
     private PagoHistoricoPWA pagoHistoricoPWA;
     private static PagoService pagoService;
     private static VisitaService visitaService;
@@ -25,10 +26,10 @@ public class PagoHistoricoPWAThread implements Runnable {
     }
 
     public PagoHistoricoPWAThread(
-            PagoAgrupadoModel pagoAgrupadoModel,
+            PagoDynamicModel pagoDynamicModel,
             PagoHistoricoPWA pagoHistoricoPWA
     ) {
-        this.pagoAgrupadoModel = pagoAgrupadoModel;
+        this.pagoDynamicModel = pagoDynamicModel;
         this.pagoHistoricoPWA = pagoHistoricoPWA;
     }
 
@@ -38,16 +39,16 @@ public class PagoHistoricoPWAThread implements Runnable {
     }
 
     public void getPagoHistoricoPWAFromPagoVistaModel() {
-        pagoHistoricoPWA.setMonto(pagoAgrupadoModel.getMonto());
-        pagoHistoricoPWA.setTipo(pagoAgrupadoModel.getTipo());
-        pagoHistoricoPWA.setPrestamoId(pagoAgrupadoModel.getPrestamoId());
-        pagoHistoricoPWA.setPrestamo(pagoAgrupadoModel.getPrestamo());
-        pagoHistoricoPWA.setSemana(pagoAgrupadoModel.getSemana());
-        pagoHistoricoPWA.setAnio(pagoAgrupadoModel.getAnio());
-        pagoHistoricoPWA.setTarifa(pagoAgrupadoModel.getTarifa());
-        pagoHistoricoPWA.setCliente(pagoAgrupadoModel.getCliente());
-        pagoHistoricoPWA.setAgente(pagoAgrupadoModel.getAgente());
-        pagoHistoricoPWA.setIdentificador(pagoAgrupadoModel.getIdentificador());
+        pagoHistoricoPWA.setMonto(pagoDynamicModel.getMonto());
+        pagoHistoricoPWA.setTipo(pagoDynamicModel.getTipo());
+        pagoHistoricoPWA.setPrestamoId(pagoDynamicModel.getPrestamoId());
+        pagoHistoricoPWA.setPrestamo(pagoDynamicModel.getPrestamo());
+        pagoHistoricoPWA.setSemana(pagoDynamicModel.getSemana());
+        pagoHistoricoPWA.setAnio(pagoDynamicModel.getAnio());
+        pagoHistoricoPWA.setTarifa(pagoDynamicModel.getTarifa());
+        pagoHistoricoPWA.setCliente(pagoDynamicModel.getCliente());
+        pagoHistoricoPWA.setAgente(pagoDynamicModel.getAgencia());
+        pagoHistoricoPWA.setIdentificador(pagoDynamicModel.getIdentificador());
 
         boolean esPrimerPago = false;
         pagoHistoricoPWA.setPagos(PWAUtil.darrpagoPwaFromPagoModels(PagoHistoricoPWAThread

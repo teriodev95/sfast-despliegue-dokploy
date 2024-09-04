@@ -27,7 +27,7 @@ public interface PagoRepository extends CrudRepository<PagoModel, String> {
             "AND pag.agente = :agencia AND pag.fechaPago like :fechaPago%")
     ArrayList<PagoModel> findByAgenteAndFechaPagoInnerJoinLiquidacionModel(String agencia, String fechaPago);
 
-    @Query("SELECT pag FROM PagoModel pag INNER JOIN PrestamoModel prest ON prest.prestamoId = pag.prestamoId " +
+    @Query("SELECT pag FROM PagoModel pag INNER JOIN PrestamoViewModel prest ON prest.prestamoId = pag.prestamoId " +
             "AND pag.agente = :agencia AND pag.fechaPago like :fechaPago% AND pag.esPrimerPago = :esPrimerPago")
     ArrayList<PagoModel> findByAgenteAndFechaPagoAndEsPrimerPagoInnerJoinPagoModel(String agencia, String fechaPago,
                                                                                    boolean esPrimerPago);

@@ -13,8 +13,8 @@ import tech.calaverita.sfast_xpress.models.mongoDB.ReporteGeneralGerenciaDocumen
 import tech.calaverita.sfast_xpress.services.CalendarioService;
 import tech.calaverita.sfast_xpress.services.SucursalService;
 import tech.calaverita.sfast_xpress.services.UsuarioService;
+import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
 import tech.calaverita.sfast_xpress.services.reportes.ReporteGeneralGerenciaService;
-import tech.calaverita.sfast_xpress.services.views.PagoAgrupadoService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,16 +30,16 @@ import java.util.concurrent.ExecutionException;
 public class ReporteGeneralGerenciaUtil {
     private static UsuarioService usuarioService;
     private static CalendarioService calendarioService;
-    private static PagoAgrupadoService pagoAgrupadoService;
+    private static PagoDynamicService pagoDynamicService;
     private static SucursalService sucursalService;
     private static ReporteGeneralGerenciaService reporteGeneralGerenciaService;
 
     public ReporteGeneralGerenciaUtil(UsuarioService usuarioService, CalendarioService calendarioService,
-                                      PagoAgrupadoService pagoAgrupadoService, SucursalService sucursalService,
+                                      PagoDynamicService pagoDynamicService, SucursalService sucursalService,
                                       ReporteGeneralGerenciaService reporteGeneralGerenciaService) {
         ReporteGeneralGerenciaUtil.usuarioService = usuarioService;
         ReporteGeneralGerenciaUtil.calendarioService = calendarioService;
-        ReporteGeneralGerenciaUtil.pagoAgrupadoService = pagoAgrupadoService;
+        ReporteGeneralGerenciaUtil.pagoDynamicService = pagoDynamicService;
         ReporteGeneralGerenciaUtil.sucursalService = sucursalService;
         ReporteGeneralGerenciaUtil.reporteGeneralGerenciaService = reporteGeneralGerenciaService;
     }
@@ -206,10 +206,10 @@ public class ReporteGeneralGerenciaUtil {
         semana = calendarioModel.getSemana();
 
         if (diaSemana.equals("jueves")) {
-            debitoTotal = ReporteGeneralGerenciaUtil.pagoAgrupadoService
+            debitoTotal = ReporteGeneralGerenciaUtil.pagoDynamicService
                     .findDebitoTotalParcialByGerenciaSucursalAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
         } else {
-            debitoTotal = ReporteGeneralGerenciaUtil.pagoAgrupadoService
+            debitoTotal = ReporteGeneralGerenciaUtil.pagoDynamicService
                     .findDebitoTotalSemanaByGerenciaSucursalAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
         }
 
@@ -220,9 +220,9 @@ public class ReporteGeneralGerenciaUtil {
         anio = calendarioModel.getAnio();
         semana = calendarioModel.getSemana();
 
-        CompletableFuture<Double> cobranzaTotal = ReporteGeneralGerenciaUtil.pagoAgrupadoService
+        CompletableFuture<Double> cobranzaTotal = ReporteGeneralGerenciaUtil.pagoDynamicService
                 .findCobranzaTotalByGerenciaSucursalAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
-        CompletableFuture<Double> excedente = ReporteGeneralGerenciaUtil.pagoAgrupadoService
+        CompletableFuture<Double> excedente = ReporteGeneralGerenciaUtil.pagoDynamicService
                 .findExcedenteByGerenciaSucursalAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
 
         CompletableFuture.allOf(debitoTotal, cobranzaTotal, excedente);
@@ -249,7 +249,7 @@ public class ReporteGeneralGerenciaUtil {
                     .existsByAnioAndSemana(anio, 53);
             ReporteGeneralGerenciaUtil.funSemanaSiguiente(calendarioModel, existsSemana53);
 
-            CompletableFuture<Double> debitoTotal = ReporteGeneralGerenciaUtil.pagoAgrupadoService
+            CompletableFuture<Double> debitoTotal = ReporteGeneralGerenciaUtil.pagoDynamicService
                     .findDebitoTotalSemanaByGerenciaSucursalAnioAndSemanaAsync(gerencia, sucursal, anio, semana);
 
             avance.setConcepto(dashboard.getConcepto());
