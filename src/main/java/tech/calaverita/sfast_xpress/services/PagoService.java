@@ -1,14 +1,15 @@
 package tech.calaverita.sfast_xpress.services;
 
+import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
 import tech.calaverita.sfast_xpress.DTOs.LiquidacionDTO;
 import tech.calaverita.sfast_xpress.mappers.PagoMapper;
 import tech.calaverita.sfast_xpress.models.mariaDB.PagoModel;
 import tech.calaverita.sfast_xpress.repositories.PagoRepository;
-
-import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class PagoService {
@@ -32,31 +33,33 @@ public class PagoService {
         return this.repo.findById(id).orElse(null);
     }
 
-    public PagoModel findByPrestamoIdAnioSemanaAndCreadoDesde(String prestamoId, int anio, int semana, String creadoDesde) {
+    public PagoModel findByPrestamoIdAnioSemanaAndCreadoDesde(String prestamoId, int anio, int semana,
+            String creadoDesde) {
         return this.repo.findByPrestamoIdAndAnioAndSemanaAndCreadoDesde(prestamoId, anio, semana, creadoDesde);
     }
 
-    public ArrayList<PagoModel> findByPrestamoIdAnioAndSemanaOrderByFechaPagoDesc(String prestamoId, int anio, int semana) {
+    public ArrayList<PagoModel> findByPrestamoIdAnioAndSemanaOrderByFechaPagoDesc(String prestamoId, int anio,
+            int semana) {
         return this.repo.findByPrestamoIdAndAnioAndSemanaOrderByFechaPagoDesc(prestamoId, anio, semana);
     }
 
     public ArrayList<PagoModel> findByAgenciaAnioSemanaAndEsPrimerPago(String agencia, int anio, int semana,
-                                                                       boolean esPrimerPago) {
+            boolean esPrimerPago) {
         return this.repo.findByAgenteAndAnioAndSemanaAndEsPrimerPago(agencia, anio, semana, esPrimerPago);
     }
 
     public ArrayList<PagoModel> findByPrestamoIdAnioSemanaAndEsPrimerPago(String prestamoId, int anio,
-                                                                          int semana, boolean esPrimerPago) {
+            int semana, boolean esPrimerPago) {
         return this.repo.findByPrestamoIdAndAnioAndSemanaAndEsPrimerPago(prestamoId, anio, semana, esPrimerPago);
     }
 
     public ArrayList<PagoModel> findByAgenteFechaPagoAndEsPrimerPagoInnerJoinPagoModel(String agencia, String fechaPago,
-                                                                                       boolean esPrimerPago) {
+            boolean esPrimerPago) {
         return this.repo.findByAgenteAndFechaPagoAndEsPrimerPagoInnerJoinPagoModel(agencia, fechaPago, esPrimerPago);
     }
 
     public ArrayList<PagoModel> findByAgenteAnioAndSemanaInnerJoinLiquidacionModel(String agencia, int anio,
-                                                                                   int semana) {
+            int semana) {
         return this.repo.findByAgenteAndAnioAndSemanaInnerJoinLiquidacionModel(agencia, anio, semana);
     }
 
@@ -70,7 +73,7 @@ public class PagoService {
 
     @Async("asyncExecutor")
     public CompletableFuture<ArrayList<PagoModel>> findByGerenciasAnioSemanaAndTipoAsync(ArrayList<String> gerencias,
-                                                                                         int anio, int semana) {
+            int anio, int semana) {
         String tipo = "No_pago";
         return CompletableFuture.completedFuture(this.repo.findByGerenciasAndAnioAndSemanaAndTipo(gerencias, anio,
                 semana, tipo));
@@ -78,5 +81,10 @@ public class PagoService {
 
     public PagoModel getPagoEntity(LiquidacionDTO liquidacionDTO) {
         return this.mapper.mapIn(liquidacionDTO);
+    }
+
+    public ArrayList<PagoModel> findByPrestamoIdAnioNotAndSemanaNotOrderByAnioAscSemanaAsc(String prestamoId, int anio,
+            int semana) {
+        return this.repo.findByPrestamoIdAndAnioNotAndSemanaNotOrderByAnioAscSemanaAsc(prestamoId, anio, semana);
     }
 }

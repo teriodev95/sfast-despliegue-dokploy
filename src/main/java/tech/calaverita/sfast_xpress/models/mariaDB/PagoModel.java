@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
+import tech.calaverita.sfast_xpress.models.mariaDB.dynamic.PagoDynamicModel;
 
 @Data
 @Entity
@@ -40,5 +41,25 @@ public class PagoModel {
     private String updatedAt;
     private String log;
     private String quienPago;
-}
 
+    public PagoModel() {
+
+    }
+
+    public PagoModel(PagoDynamicModel pagoDynamicModel) {
+        this.prestamoId = pagoDynamicModel.getPrestamoId();
+        this.prestamo = pagoDynamicModel.getPrestamo();
+        this.cliente = pagoDynamicModel.getCliente();
+        this.monto = pagoDynamicModel.getMonto();
+        this.semana = pagoDynamicModel.getSemana();
+        this.anio = pagoDynamicModel.getAnio();
+        this.esPrimerPago = pagoDynamicModel.getEsPrimerPago();
+        this.abreCon = pagoDynamicModel.getAbreCon();
+        this.cierraCon = pagoDynamicModel.getCierraCon();
+        this.tarifa = pagoDynamicModel.getTarifa();
+        this.agente = pagoDynamicModel.getAgencia();
+        this.tipo = pagoDynamicModel.getTipo();
+        this.fechaPago = pagoDynamicModel.getFechaPago();
+        this.identificador = pagoDynamicModel.getIdentificador();
+    }
+}
