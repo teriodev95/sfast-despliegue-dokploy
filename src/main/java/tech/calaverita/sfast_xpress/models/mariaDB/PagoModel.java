@@ -64,5 +64,7 @@ public class PagoModel {
         this.quienPago = pagoDynamicModel.getQuienPago();
         this.comentario = pagoDynamicModel.getComentario();
         this.pagoId = pagoDynamicModel.getPagoId();
+        this.lat = pagoDynamicModel.getLat();
+        this.lng = pagoDynamicModel.getLng();
     }
 }

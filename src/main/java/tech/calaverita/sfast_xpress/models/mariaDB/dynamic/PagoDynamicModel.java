@@ -27,4 +27,6 @@ public class PagoDynamicModel {
     private String identificador;
     private String quienPago;
     private String comentario;
+    private Double lat;
+    private Double lng;
 }
