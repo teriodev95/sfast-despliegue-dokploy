@@ -10,8 +10,6 @@ import tech.calaverita.sfast_xpress.models.mariaDB.dynamic.PagoDynamicModel;
 
 @Repository
 public interface PagoDynamicRepository extends CrudRepository<PagoDynamicModel, String> {
-        ArrayList<PagoDynamicModel> findByPrestamoIdOrderByAnioAscSemanaAsc(String prestamoId);
-
         ArrayList<PagoDynamicModel> findByAgenciaAndAnioAndSemanaAndEsPrimerPago(String agencia, int anio, int semana,
                         boolean esPrimerPago);
 
@@ -99,4 +97,6 @@ public interface PagoDynamicRepository extends CrudRepository<PagoDynamicModel, 
         ArrayList<PagoDynamicModel> findByAgenciaAndAnioAndSemanaAndCierraConGreaterThan(String agencia, int anio,
                         int semana,
                         double cierraConGreaterThan);
+
+        PagoDynamicModel findByPrestamoIdAndAnioAndSemana(String prestamoId, int anio, int semana);
 }

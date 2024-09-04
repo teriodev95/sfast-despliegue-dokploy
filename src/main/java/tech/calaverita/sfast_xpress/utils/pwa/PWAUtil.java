@@ -1,6 +1,8 @@
 package tech.calaverita.sfast_xpress.utils.pwa;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.springframework.stereotype.Component;
@@ -14,6 +16,8 @@ import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 import tech.calaverita.sfast_xpress.pojos.PWA.PagoHistoricoPWA;
 import tech.calaverita.sfast_xpress.pojos.PWA.PagoPWA;
 import tech.calaverita.sfast_xpress.pojos.PWA.PrestamoCobranzaPWA;
+import tech.calaverita.sfast_xpress.services.CalendarioService;
+import tech.calaverita.sfast_xpress.services.PagoService;
 import tech.calaverita.sfast_xpress.services.UsuarioService;
 import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
 import tech.calaverita.sfast_xpress.services.views.PrestamoViewService;
@@ -26,13 +30,17 @@ import tech.calaverita.sfast_xpress.utils.MyUtil;
 public final class PWAUtil {
     private static PrestamoViewService prestamoViewService;
     private static UsuarioService usuarioService;
-    private static PagoDynamicService pagoAgrupadoService;
+    private static PagoService pagoService;
+    private static CalendarioService calendarioService;
+    private static PagoDynamicService pagoDynamicService;
 
     public PWAUtil(PrestamoViewService prestamoViewService, UsuarioService usuarioService,
-            PagoDynamicService pagoAgrupadoService) {
+            PagoService pagoService, CalendarioService calendarioService, PagoDynamicService pagoDynamicService) {
         PWAUtil.prestamoViewService = prestamoViewService;
         PWAUtil.usuarioService = usuarioService;
-        PWAUtil.pagoAgrupadoService = pagoAgrupadoService;
+        PWAUtil.pagoService = pagoService;
+        PWAUtil.calendarioService = calendarioService;
+        PWAUtil.pagoDynamicService = pagoDynamicService;
     }
 
     public static ArrayList<PrestamoCobranzaPWA> darrprestamoCobranzaPwaFromPrestamoModelsAndPagoModels(String agencia,
@@ -44,27 +52,28 @@ public final class PWAUtil {
         MyUtil.funSemanaAnterior(calendarioModel);
 
         ArrayList<PrestamoViewModel> prestamoViewModels = PWAUtil.prestamoViewService
-        .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(
-        agencia, 0D).join();
+                .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(
+                        agencia, 0D)
+                .join();
         ArrayList<PrestamoCobranzaPWA> prestamoCobranzaPWAs = new ArrayList<>();
 
         Thread[] threads = new Thread[prestamoViewModels.size()];
         int indice = 0;
 
         for (PrestamoViewModel prestamoModel : prestamoViewModels) {
-        PrestamoCobranzaPWA prestamoCobranzaPwa = new PrestamoCobranzaPWA();
+            PrestamoCobranzaPWA prestamoCobranzaPwa = new PrestamoCobranzaPWA();
 
-        prestamoCobranzaPWAs.add(prestamoCobranzaPwa);
+            prestamoCobranzaPWAs.add(prestamoCobranzaPwa);
 
-        threads[indice] = new Thread(new CobranzaPWAThread(prestamoModel,
-        prestamoCobranzaPwa, anio, semana));
-        threads[indice].start();
-        indice++;
+            threads[indice] = new Thread(new CobranzaPWAThread(prestamoModel,
+                    prestamoCobranzaPwa, anio, semana));
+            threads[indice].start();
+            indice++;
         }
 
         for (Thread thread : threads) {
-        while (thread.isAlive()) {
-        }
+            while (thread.isAlive()) {
+            }
         }
 
         return prestamoCobranzaPWAs;
@@ -95,19 +104,30 @@ public final class PWAUtil {
     }
 
     public static ArrayList<PagoHistoricoPWA> darrpagoHistoricoPwaFromPagoVistaModelsByPrestamoId(String prestamoId) {
-        ArrayList<PagoDynamicModel> pagAgrEntPagoAgrupadoEntities = PWAUtil.pagoAgrupadoService
-                .findByPrestamoIdOrderByAnioAscSemanaAsc(prestamoId);
+        String fechaActual = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        CalendarioModel calendarioModel = PWAUtil.calendarioService.findByFechaActual(fechaActual);
+
+        ArrayList<PagoModel> pagAgrEntPagoAgrupadoEntities = PWAUtil.pagoService
+                .findByPrestamoIdAnioNotAndSemanaNotOrderByAnioAscSemanaAsc(prestamoId, calendarioModel.getAnio(),
+                        calendarioModel.getSemana());
+
+        // To easy code
+        PagoDynamicModel pagoDynamicModel = pagoDynamicService.findByPrestamoIdAnioAndSemana(prestamoId,
+                calendarioModel.getAnio(), calendarioModel.getSemana());
+
+        pagAgrEntPagoAgrupadoEntities.add(new PagoModel(pagoDynamicModel));
+
         ArrayList<PagoHistoricoPWA> pagoHistoricoPWAs = new ArrayList<>();
 
         Thread[] threads = new Thread[pagAgrEntPagoAgrupadoEntities.size()];
         int indice = 0;
 
-        for (PagoDynamicModel pagoAgrupadoModel : pagAgrEntPagoAgrupadoEntities) {
+        for (PagoModel pagoModel : pagAgrEntPagoAgrupadoEntities) {
             PagoHistoricoPWA pagoHistoricoPWA = new PagoHistoricoPWA();
 
             pagoHistoricoPWAs.add(pagoHistoricoPWA);
 
-            threads[indice] = new Thread(new PagoHistoricoPWAThread(pagoAgrupadoModel, pagoHistoricoPWA));
+            threads[indice] = new Thread(new PagoHistoricoPWAThread(pagoModel, pagoHistoricoPWA));
             threads[indice].start();
             indice++;
         }

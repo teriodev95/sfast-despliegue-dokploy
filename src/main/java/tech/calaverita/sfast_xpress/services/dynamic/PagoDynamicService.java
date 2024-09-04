@@ -25,10 +25,6 @@ public class PagoDynamicService {
                                 anio, semana, esPrimerPago));
         }
 
-        public ArrayList<PagoDynamicModel> findByPrestamoIdOrderByAnioAscSemanaAsc(String prestamoId) {
-                return this.repo.findByPrestamoIdOrderByAnioAscSemanaAsc(prestamoId);
-        }
-
         @Async("asyncExecutor")
         public CompletableFuture<Double> findDebitoTotalByAgenciaAnioAndSemanaAsync(String agencia, int anio,
                         int semana) {
@@ -150,5 +146,9 @@ public class PagoDynamicService {
                         double cierraConGreaterThan) {
                 return this.repo.findByAgenciaAndAnioAndSemanaAndCierraConGreaterThan(agencia, anio, semana,
                                 cierraConGreaterThan);
+        }
+
+        public PagoDynamicModel findByPrestamoIdAnioAndSemana(String prestamoId, int anio, int semana) {
+                return this.repo.findByPrestamoIdAndAnioAndSemana(prestamoId, anio, semana);
         }
 }

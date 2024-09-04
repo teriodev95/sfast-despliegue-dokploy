@@ -1,10 +1,27 @@
 package tech.calaverita.sfast_xpress.controllers;
 
-import jakarta.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletResponse;
 import tech.calaverita.sfast_xpress.Constants;
+import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.PagoModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.VisitaModel;
@@ -13,6 +30,7 @@ import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 import tech.calaverita.sfast_xpress.pojos.ModelValidation;
 import tech.calaverita.sfast_xpress.pojos.PagoConLiquidacion;
 import tech.calaverita.sfast_xpress.services.AgenciaService;
+import tech.calaverita.sfast_xpress.services.CalendarioService;
 import tech.calaverita.sfast_xpress.services.PagoService;
 import tech.calaverita.sfast_xpress.services.UsuarioService;
 import tech.calaverita.sfast_xpress.services.VisitaService;
@@ -20,11 +38,6 @@ import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
 import tech.calaverita.sfast_xpress.services.relation.UsuarioGerenciaService;
 import tech.calaverita.sfast_xpress.services.views.PrestamoViewService;
 import tech.calaverita.sfast_xpress.utils.PagoUtil;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping(path = "/xpress/v1/pays")
@@ -35,19 +48,21 @@ public final class PagoController {
     private final UsuarioService usuarioService;
     private final VisitaService visitaService;
     private final AgenciaService agenciaService;
-    private final PagoDynamicService pagoAgrupadoService;
+    private final CalendarioService calendarioService;
+    private final PagoDynamicService pagoDynamicService;
 
     public PagoController(PagoService pagoService, PrestamoViewService prestamoViewService,
-                          UsuarioGerenciaService usuarioGerenciaService, UsuarioService usuarioService,
-                          VisitaService visitaService, AgenciaService agenciaService,
-                          PagoDynamicService pagoAgrupadoService) {
+            UsuarioGerenciaService usuarioGerenciaService, UsuarioService usuarioService,
+            VisitaService visitaService, AgenciaService agenciaService, CalendarioService calendarioService,
+            PagoDynamicService pagoDynamicService) {
         this.pagoService = pagoService;
         this.prestamoViewService = prestamoViewService;
         this.usuarioGerenciaService = usuarioGerenciaService;
         this.usuarioService = usuarioService;
         this.visitaService = visitaService;
         this.agenciaService = agenciaService;
-        this.pagoAgrupadoService = pagoAgrupadoService;
+        this.calendarioService = calendarioService;
+        this.pagoDynamicService = pagoDynamicService;
     }
 
     @ModelAttribute
@@ -75,13 +90,17 @@ public final class PagoController {
 
     @PostMapping(path = "/create-one")
     public @ResponseBody ResponseEntity<String> restrCreatePagMod(
-            // Dentro de este endpoint se puede recibir el pago con la liquidación, si el pago mandado cuenta con
-            // liquidacion se hará el proceso correspondiente para guardar dicha liquidacion y ajustar la propiedad
-            // cierraCon de pago, si se manda solo el pago solo se realizará el proceso para guardar el pago.
+            // Dentro de este endpoint se puede recibir el pago con la liquidación, si el
+            // pago mandado cuenta con
+            // liquidacion se hará el proceso correspondiente para guardar dicha liquidacion
+            // y ajustar la propiedad
+            // cierraCon de pago, si se manda solo el pago solo se realizará el proceso para
+            // guardar el pago.
 
             @RequestBody PagoConLiquidacion pagoConLiquidacion) {
         ModelValidation modVal;
-        PrestamoViewModel prestMod = this.prestamoViewService.prestModFindByPrestamoId(pagoConLiquidacion.getPrestamoId());
+        PrestamoViewModel prestMod = this.prestamoViewService
+                .prestModFindByPrestamoId(pagoConLiquidacion.getPrestamoId());
         modVal = PagoUtil.modValPagoModelValidation(pagoConLiquidacion, prestMod);
 
         if (modVal.isBoolIsOnline()) {
@@ -119,17 +138,30 @@ public final class PagoController {
 
     @CrossOrigin
     @GetMapping(path = "/history/{id}")
-    public @ResponseBody ResponseEntity<ArrayList<PagoDynamicModel>> redarrpagAgrModGetHistory(
+    public @ResponseBody ResponseEntity<ArrayList<PagoModel>> redarrpagAgrModGetHistory(
             @PathVariable String id) {
-        ArrayList<PagoDynamicModel> pagAgrMod_O = this.pagoAgrupadoService
-                .findByPrestamoIdOrderByAnioAscSemanaAsc(id);
+        String fechaActual = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        CalendarioModel calendarioModel = this.calendarioService.findByFechaActual(fechaActual);
+
+        ArrayList<PagoModel> pagoModels = new ArrayList<>();
+
+        // To easy code
+        PagoDynamicModel pagoDynamicModel = this.pagoDynamicService.findByPrestamoIdAnioAndSemana(id,
+                calendarioModel.getAnio(),
+                calendarioModel.getSemana());
+
+        pagoModels.addAll(this.pagoService
+                .findByPrestamoIdAnioNotAndSemanaNotOrderByAnioAscSemanaAsc(id, calendarioModel.getAnio(),
+                        calendarioModel.getSemana()));
+        pagoModels.add(new PagoModel(pagoDynamicModel));
+
         HttpStatus httpStatus_O = HttpStatus.OK;
 
-        if (pagAgrMod_O.isEmpty()) {
+        if (pagoModels.isEmpty()) {
             httpStatus_O = HttpStatus.NO_CONTENT;
         }
 
-        return new ResponseEntity<>(pagAgrMod_O, httpStatus_O);
+        return new ResponseEntity<>(pagoModels, httpStatus_O);
     }
 
     @CrossOrigin
