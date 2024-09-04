@@ -153,7 +153,9 @@ public final class PagoController {
         pagoModels.addAll(this.pagoService
                 .findByPrestamoIdAnioNotAndSemanaNotOrderByAnioAscSemanaAsc(id, calendarioModel.getAnio(),
                         calendarioModel.getSemana()));
-        pagoModels.add(new PagoModel(pagoDynamicModel));
+        if(pagoDynamicModel != null){
+            pagoModels.add(new PagoModel(pagoDynamicModel));
+        }
 
         HttpStatus httpStatus_O = HttpStatus.OK;
 
