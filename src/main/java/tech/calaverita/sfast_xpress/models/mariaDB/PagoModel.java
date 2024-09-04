@@ -61,5 +61,8 @@ public class PagoModel {
         this.tipo = pagoDynamicModel.getTipo();
         this.fechaPago = pagoDynamicModel.getFechaPago();
         this.identificador = pagoDynamicModel.getIdentificador();
+        this.quienPago = pagoDynamicModel.getQuienPago();
+        this.comentario = pagoDynamicModel.getComentario();
+        this.pagoId = pagoDynamicModel.getPagoId();
     }
 }

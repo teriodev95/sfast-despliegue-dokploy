@@ -10,6 +10,7 @@ import lombok.Data;
 @Table(name = "pagos_dynamic")
 public class PagoDynamicModel {
     @Id
+    private String pagoId;
     private String prestamoId;
     private String prestamo;
     private String cliente;
@@ -24,4 +25,6 @@ public class PagoDynamicModel {
     private String tipo;
     private String fechaPago;
     private String identificador;
+    private String quienPago;
+    private String comentario;
 }
