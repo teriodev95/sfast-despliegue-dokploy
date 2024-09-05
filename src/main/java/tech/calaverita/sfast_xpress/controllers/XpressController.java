@@ -139,10 +139,10 @@ public final class XpressController {
                                         agencia, anio, semana,
                                         prestamoViewModels.join().size());
                         DebitosCobranzaDTO debitosCobranzaDTO = new DebitosCobranzaDTO(prestamoViewModels.join());
-                        PagosDashboardDTO pagosDashboardDTO = new PagosDashboardDTO(pagoAgrupagoModels.join());
                         LiquidacionesDashboardDTO liquidacionesDashboardDTO = new LiquidacionesDashboardDTO(
                                         liquidacionModels.join(),
                                         pagoAgrupagoModels.join());
+                        PagosDashboardDTO pagosDashboardDTO = new PagosDashboardDTO(pagoAgrupagoModels.join(), liquidacionesDashboardDTO.getLiquidaciones());
                         CierreDashboardDTO cierreDashboardDTO = new CierreDashboardDTO(pagosDashboardDTO,
                                         debitosCobranzaDTO,
                                         asignaciones.join(), statusAgencia.join());

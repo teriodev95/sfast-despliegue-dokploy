@@ -17,7 +17,7 @@ public class PagosDashboardDTO {
     private Double multas;
     private Double cobranzaTotal;
 
-    public PagosDashboardDTO(ArrayList<PagoDynamicModel> pagoDynamicModels) {
+    public PagosDashboardDTO(ArrayList<PagoDynamicModel> pagoDynamicModels, double liquidaciones) {
         this.clientesCobrados = (int) pagoDynamicModels.stream()
                 .filter(pagoModel -> !pagoModel.getTipo().equals("Multa"))
                 .count();
@@ -32,12 +32,12 @@ public class PagosDashboardDTO {
                 .getDouble(pagoDynamicModels.stream().filter(pagoModel -> !pagoModel.getTipo().equals("Multa"))
                         .mapToDouble(PagoDynamicModel::getMonto).sum());
         this.montoExcedente = MyUtil.getDouble(pagoDynamicModels.stream()
-                .filter(pagoModel -> pagoModel.getMonto() > pagoModel.getTarifa())
+                .filter(pagoModel -> pagoModel.getMonto() > pagoModel.getTarifa() && !pagoModel.getTipo().equals("Liquidacion"))
                 .mapToDouble(pagoModel -> pagoModel.getMonto() - pagoModel.getTarifa()).sum());
         this.multas = MyUtil
                 .getDouble(pagoDynamicModels.stream().filter(pagoModel -> pagoModel.getTipo().equals("Multa"))
                         .mapToDouble(PagoDynamicModel::getMonto)
                         .sum());
-        this.totalCobranzaPura = MyUtil.getDouble(this.cobranzaTotal - this.montoExcedente);
+        this.totalCobranzaPura = MyUtil.getDouble(this.cobranzaTotal - this.montoExcedente - liquidaciones);
     }
 }
