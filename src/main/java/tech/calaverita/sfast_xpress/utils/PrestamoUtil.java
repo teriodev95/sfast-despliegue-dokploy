@@ -16,7 +16,7 @@ public class PrestamoUtil {
     }
 
     public static boolean blnIsPrestamo(String prestamoId_I) {
-        PrestamoViewModel prestamoViewModel = prestamoViewService.prestModFindByPrestamoId(prestamoId_I);
+        PrestamoViewModel prestamoViewModel = prestamoViewService.findById(prestamoId_I);
 
         return prestamoViewModel != null;
     }

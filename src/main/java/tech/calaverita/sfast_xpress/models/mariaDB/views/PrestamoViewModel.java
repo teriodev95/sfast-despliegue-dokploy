@@ -73,6 +73,9 @@ public class PrestamoViewModel {
     private String depuracion;
     private String folioDePagare;
     private Double saldoAlIniciarSemana;
+    private Integer excelIndex;
+    private String clientePersonaId;
+    private String avalPersonaId;
     @Transient
     private Double porcentajeCobrado;
 }

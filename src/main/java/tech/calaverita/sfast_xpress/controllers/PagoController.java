@@ -100,7 +100,7 @@ public final class PagoController {
             @RequestBody PagoConLiquidacion pagoConLiquidacion) {
         ModelValidation modVal;
         PrestamoViewModel prestMod = this.prestamoViewService
-                .prestModFindByPrestamoId(pagoConLiquidacion.getPrestamoId());
+                .findById(pagoConLiquidacion.getPrestamoId());
         modVal = PagoUtil.modValPagoModelValidation(pagoConLiquidacion, prestMod);
 
         if (modVal.isBoolIsOnline()) {
@@ -120,7 +120,7 @@ public final class PagoController {
             HashMap<String, Object> dirobjeto = new HashMap<>();
 
             ModelValidation modVal;
-            PrestamoViewModel prestMod = this.prestamoViewService.prestModFindByPrestamoId(pagConLiq.getPrestamoId());
+            PrestamoViewModel prestMod = this.prestamoViewService.findById(pagConLiq.getPrestamoId());
             modVal = PagoUtil.modValPagoModelValidation(pagConLiq, prestMod);
 
             if (modVal.isBoolIsOnline()) {

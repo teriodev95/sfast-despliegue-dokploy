@@ -18,6 +18,10 @@ public class PrestamoViewService {
         this.repo = repo;
     }
 
+    public PrestamoViewModel findById(String id) {
+        return this.repo.findById(id).orElse(null);
+    }
+
     @Async("asyncExecutor")
     public CompletableFuture<ArrayList<PrestamoViewModel>> findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(
             String agencia,
@@ -39,14 +43,6 @@ public class PrestamoViewService {
         return this.repo.findPorFinalizarByGerenciaAndAnioAndSemana(sucursal, gerencia, anio, semana);
     }
 
-    public PrestamoViewModel prestModFindByPrestamoId(String strPrestamoId_I) {
-        return this.repo.findByPrestamoId(strPrestamoId_I);
-    }
-
-    public PrestamoViewModel findById(String strPrestamoId_I) {
-        return this.repo.findById(strPrestamoId_I).orElse(null);
-    }
-
     public ArrayList<PrestamoViewModel> darrprestUtilModFindByAgenciaAnioAndSemanaToDashboard(String strAgencia_I,
             int intAnio_I, int intSemana_I) {
         return this.repo.darrprestUtilEntFindByAgenciaAnioAndSemanaToDashboard(strAgencia_I, intAnio_I, intSemana_I);
@@ -60,5 +56,12 @@ public class PrestamoViewService {
     public ArrayList<PrestamoViewModel> darrprestUtilModByAgenciaAndFechaPagoToDashboard(String strAgencia_I,
             String strFechaPago_I) {
         return this.repo.darrprestUtilEntByAgenciaAndFechaPagoToDashboard(strAgencia_I, strFechaPago_I);
+    }
+
+    public ArrayList<PrestamoViewModel> findByNombresOrApellidoPaternoOrApellidoMaterno(String inicioNombres,
+            String finalNombres, String inicioApellidoPaterno, String finalApellidoPaterno,
+            String inicioApellidoMaterno, String finalApellidoMaterno) {
+        return this.repo.findByNombresOrApellidoPaternoOrApellidoMaterno(inicioNombres, finalNombres,
+        inicioApellidoPaterno, finalApellidoPaterno, inicioApellidoMaterno, finalApellidoMaterno);
     }
 }
