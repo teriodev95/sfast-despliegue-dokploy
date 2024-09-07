@@ -10,7 +10,9 @@ public class PersonaUtil {
         boolean isApellidoPaternoIgual = areCadenasIguales(prestamoViewModel.getApellidoPaterno(), apellidoPaterno);
         boolean isApellidoMaternoIgual = areCadenasIguales(prestamoViewModel.getApellidoMaterno(), apellidoMaterno);
 
-        return isNombresIgual && isApellidoPaternoIgual && isApellidoMaternoIgual;
+        return (isNombresIgual && isApellidoPaternoIgual) ||
+                (isNombresIgual && isApellidoMaternoIgual) ||
+                (isApellidoPaternoIgual && isApellidoMaternoIgual);
     }
 
     private static boolean areCadenasIguales(String str1, String str2) {
@@ -33,7 +35,7 @@ public class PersonaUtil {
             }
         }
 
-        isNombresIgual = caracteresIguales >= str1.length() / 2;
+        isNombresIgual = caracteresIguales >= str1.length() / 1.5;
 
         return isNombresIgual;
     }
