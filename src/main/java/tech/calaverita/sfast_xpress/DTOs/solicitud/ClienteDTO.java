@@ -10,4 +10,5 @@ public class ClienteDTO {
     private IngresosDTO ingresos;
     private EgresosDTO egresos;
     private ActivosDTO activos;
+    private DocumentosDTO documentos;
 }

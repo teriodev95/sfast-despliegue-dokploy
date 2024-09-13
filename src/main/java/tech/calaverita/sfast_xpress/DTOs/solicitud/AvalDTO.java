@@ -9,4 +9,5 @@ public class AvalDTO {
     private ReferenciaDTO referencia;
     private IngresosDTO ingresos;
     private ActivosDTO activos;
+    private DocumentosDTO documentos;
 }
