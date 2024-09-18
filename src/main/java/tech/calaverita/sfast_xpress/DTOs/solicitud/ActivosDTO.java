@@ -18,5 +18,5 @@ public class ActivosDTO {
     private String yearAutomovil;
     private ArrayList<ActivoDTO> activosLB;
     private ArrayList<ActivoDTO> activosElectr;
-    private String otrosActivosVaror;
+    private Double otrosActivosValor;
 }

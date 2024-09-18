@@ -8,5 +8,5 @@ public class ActivoDTO {
     private String marca;
     private String antiguedad;
     private String noSerie;
-    private String valorAprox;
+    private Double valorAprox;
 }

@@ -4,11 +4,11 @@ import lombok.Data;
 
 @Data
 public class EgresosDTO {
-    private String pagoMensualRenta;
-    private String gastoMensualAlimentos;
-    private String pagoServicios;
-    private String gastoMensualTransporte;
-    private String pagoEstudios;
-    private String otrosGastos;
-    private String totalGastos;
+    private Double pagoMensualRenta;
+    private Double gastoMensualAlimentos;
+    private Double pagoServicios;
+    private Double gastoMensualTransporte;
+    private Double pagoEstudios;
+    private Double otrosGastos;
+    private Double totalGastos;
 }
