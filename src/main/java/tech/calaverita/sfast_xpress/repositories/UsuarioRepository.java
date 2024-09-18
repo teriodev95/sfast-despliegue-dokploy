@@ -33,10 +33,10 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
             "AND usuar.tipo = :tipo AND usuar.status = :status ORDER BY usuar.agencia")
     ArrayList<Tuple> findByGerenciaAndTipoAndStatus(String gerencia, String tipo, boolean status);
 
-    @Query("SELECT CONCAT(usuar.nombre, ' ' , usuar.apellidoPaterno, ' ', usuar.apellidoMaterno) FROM UsuarioModel " +
-            "usuar WHERE usuar.gerencia IN :gerencias AND usuar.tipo = :tipo AND usuar.status = :status " +
+    @Query("SELECT CONCAT(usuar.nombre, ' ' , usuar.apellidoPaterno, ' ', usuar.apellidoMaterno) nombre, usuar.gerencia gerencia " +
+            "FROM UsuarioModel usuar WHERE usuar.gerencia IN :gerencias AND usuar.tipo = :tipo AND usuar.status = :status " +
             "ORDER BY usuar.gerencia")
-    ArrayList<String> findByGerenciaAndTipoAndStatus(ArrayList<String> gerencias, String tipo, boolean status);
+    ArrayList<Tuple> findByGerenciasAndTipoAndStatus(ArrayList<String> gerencias, String tipo, boolean status);
 
     @Query("SELECT usuar FROM UsuarioModel usuar INNER JOIN UsuarioGerenciaModel ugm ON usuar.usuarioId = ugm.usuarioId " +
             "AND ugm.gerenciaId = :gerencia")

@@ -65,10 +65,10 @@ public class UsuarioService {
         return (ArrayList<UsuarioModel>) this.repo.findAll();
     }
 
-    public ArrayList<String> findByGerenciasTipoAndStatus(ArrayList<String> gerencias) {
+    public ArrayList<Tuple> findByGerenciasTipoAndStatus(ArrayList<String> gerencias) {
         String tipo = "Gerente";
         boolean status = true;
-        return this.repo.findByGerenciaAndTipoAndStatus(gerencias, tipo, status);
+        return this.repo.findByGerenciasAndTipoAndStatus(gerencias, tipo, status);
     }
 
     @Async("asyncExecutor")
