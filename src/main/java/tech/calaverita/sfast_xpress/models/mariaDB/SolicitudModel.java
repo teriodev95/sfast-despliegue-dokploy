@@ -1,5 +1,6 @@
 package tech.calaverita.sfast_xpress.models.mariaDB;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -20,4 +21,6 @@ public class SolicitudModel {
     private String solicitud;
     private String createdAt;
     private String updatedAt;
+    @Column(name = "status_historial")
+    private String historial;
 }

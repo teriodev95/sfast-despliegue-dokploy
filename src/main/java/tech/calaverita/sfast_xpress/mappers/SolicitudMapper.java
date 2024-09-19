@@ -1,16 +1,19 @@
 package tech.calaverita.sfast_xpress.mappers;
 
-import com.google.gson.Gson;
-import tech.calaverita.sfast_xpress.DTOs.solicitud.SolicitudDTO;
-import tech.calaverita.sfast_xpress.models.mariaDB.SolicitudModel;
-
 import java.util.ArrayList;
+
+import com.google.gson.Gson;
+
+import tech.calaverita.sfast_xpress.DTOs.solicitud.SolicitudDTO;
+import tech.calaverita.sfast_xpress.DTOs.solicitud.StatusSolicitudDTO;
+import tech.calaverita.sfast_xpress.models.mariaDB.SolicitudModel;
 
 public class SolicitudMapper implements IMapper<SolicitudModel, SolicitudDTO> {
     @Override
     public SolicitudDTO mapOut(SolicitudModel out) {
         SolicitudDTO solicitudDTO = new Gson().fromJson(out.getSolicitud(), SolicitudDTO.class);
         solicitudDTO.setStatus(out.getStatus());
+        solicitudDTO.setHistorial(new Gson().fromJson(out.getHistorial(), StatusSolicitudDTO[].class));
         return solicitudDTO;
     }
 

@@ -14,4 +14,5 @@ public class SolicitudDTO {
     private int semana;
     private int anio;
     private String status;
+    private StatusSolicitudDTO[] historial;
 }
