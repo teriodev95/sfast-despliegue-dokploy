@@ -112,26 +112,25 @@ public final class PrestamoController {
         String finalApellidoMaterno = apellidoMaterno.substring(indiceFinalApellidoMaterno - longitudApellidoMaterno,
                 indiceFinalApellidoMaterno);
 
-        ArrayList<PrestamoViewModel> prestamoViewModels = this.prestamoViewService
+        ArrayList<PersonaModel> personaModels = this.personaService
                 .findByNombresOrApellidoPaternoOrApellidoMaterno(
                         inicioNombres, finalNombres, inicioApellidoPaterno, finalApellidoPaterno, inicioApellidoMaterno,
                         finalApellidoMaterno);
 
         HashMap<String, Object> response = new HashMap<>();
 
-        for (PrestamoViewModel prestamoViewModel : prestamoViewModels) {
-            boolean isPersonaIgual = PersonaUtil.comparadorPersonas(prestamoViewModel, nombres, apellidoPaterno,
+        for (PersonaModel personaModel : personaModels) {
+            boolean isPersonaIgual = PersonaUtil.comparadorPersonas(personaModel, nombres, apellidoPaterno,
                     apellidoMaterno);
-
+                    
             if (isPersonaIgual) {
-                // To easy code
-                PersonaModel clientePersonaModel = this.personaService
-                        .findById(prestamoViewModel.getClientePersonaId());
-                PersonaModel avalPersonaModel = this.personaService.findById(prestamoViewModel.getAvalPersonaId());
+                PrestamoViewModel prestamoViewModel = this.prestamoViewService
+                        .findByClienteId(personaModel.getXpressId());
 
-                response.put("cliente", clientePersonaModel);
-                response.put("aval", avalPersonaModel);
-                response.put("demasDatosPrestamo", new PrestamoDTO(prestamoViewModel));
+                response.put("personaEncontrada", personaModel);
+                if (prestamoViewModel != null) {
+                    response.put("demasDatosPrestamo", new PrestamoDTO(prestamoViewModel));
+                }
                 break;
             }
         }

@@ -64,23 +64,5 @@ public interface PrestamoViewRepository extends CrudRepository<PrestamoViewModel
                         String agencia,
                         String fechaPago);
 
-        @Query(value = "SELECT prest.*, " +
-                        "IF(trim(nombres) like :inicioNombres%, 2, 0) + " +
-                        "IF(trim(nombres) like %:finalNombres%, 1, 0) + " +
-                        "IF(trim(apellido_paterno) like :inicioApellidoPaterno%, 2, 0) + " +
-                        "IF(trim(apellido_paterno) like %:finalApellidoPaterno, 1, 0) + " +
-                        "IF(trim(apellido_materno) like :inicioApellidoMaterno%, 2, 0) +" +
-                        "IF(trim(apellido_materno) like %:finalApellidoMaterno, 1, 0) " +
-                        "coincidencias FROM prestamos_view prest " +
-                        "WHERE (TRIM(prest.nombres) like :inicioNombres% or TRIM(prest.nombres) like %:finalNombres%) "
-                        +
-                        "OR (TRIM(prest.apellido_paterno) like :inicioApellidoPaterno% or TRIM(prest.apellido_paterno) like %:finalApellidoPaterno) "
-                        +
-                        "OR (TRIM(prest.apellido_materno) like :inicioApellidoMaterno% or TRIM(prest.apellido_materno) like %:finalApellidoMaterno) "
-                        +
-                        "HAVING coincidencias >= 4 order by coincidencias desc", nativeQuery = true)
-        ArrayList<PrestamoViewModel> findByNombresOrApellidoPaternoOrApellidoMaterno(String inicioNombres,
-                        String finalNombres,
-                        String inicioApellidoPaterno, String finalApellidoPaterno, String inicioApellidoMaterno,
-                        String finalApellidoMaterno);
+        PrestamoViewModel findByClienteId(String clienteId);
 }

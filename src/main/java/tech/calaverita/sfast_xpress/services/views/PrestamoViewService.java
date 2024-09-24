@@ -58,10 +58,7 @@ public class PrestamoViewService {
         return this.repo.darrprestUtilEntByAgenciaAndFechaPagoToDashboard(strAgencia_I, strFechaPago_I);
     }
 
-    public ArrayList<PrestamoViewModel> findByNombresOrApellidoPaternoOrApellidoMaterno(String inicioNombres,
-            String finalNombres, String inicioApellidoPaterno, String finalApellidoPaterno,
-            String inicioApellidoMaterno, String finalApellidoMaterno) {
-        return this.repo.findByNombresOrApellidoPaternoOrApellidoMaterno(inicioNombres, finalNombres,
-        inicioApellidoPaterno, finalApellidoPaterno, inicioApellidoMaterno, finalApellidoMaterno);
+    public PrestamoViewModel findByClienteId(String clienteId) {
+        return this.repo.findByClienteId(clienteId);
     }
 }

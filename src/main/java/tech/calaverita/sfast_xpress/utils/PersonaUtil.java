@@ -2,15 +2,15 @@ package tech.calaverita.sfast_xpress.utils;
 
 import java.util.HashMap;
 
-import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.PersonaModel;
 
 public class PersonaUtil {
-    public static boolean comparadorPersonas(PrestamoViewModel prestamoViewModel, String nombres,
+    public static boolean comparadorPersonas(PersonaModel personaModel, String nombres,
             String apellidoPaterno,
             String apellidoMaterno) {
-        int diferenciasNombres = buscarDiferencias(nombres, prestamoViewModel.getNombres().split(" ")[0]);
-        int diferenciasApellidoPaterno = buscarDiferencias(apellidoPaterno, prestamoViewModel.getApellidoPaterno());
-        int diferenciasApellidoMaterno = buscarDiferencias(apellidoMaterno, prestamoViewModel.getApellidoMaterno());
+        int diferenciasNombres = buscarDiferencias(nombres, personaModel.getNombres().split(" ")[0]);
+        int diferenciasApellidoPaterno = buscarDiferencias(apellidoPaterno, personaModel.getApellidoPaterno());
+        int diferenciasApellidoMaterno = buscarDiferencias(apellidoMaterno, personaModel.getApellidoMaterno());
 
         return diferenciasNombres <= 2 && diferenciasApellidoPaterno <= 2 && diferenciasApellidoMaterno <= 2;
     }
@@ -25,14 +25,14 @@ public class PersonaUtil {
                 indicesDiferencia.put("indiceI", i);
                 indicesDiferencia.put("indiceJ", j);
 
-                if ((str1.charAt(i) == str2.charAt(j)) && (i + 1 < str1.length() && j + 1 < str2.length())
-                        && (str1.charAt(i + 1) == str2.charAt(j + 1))) {
+                if ((str1.charAt(i) == str2.charAt(j)) && ((i + 1 < str1.length() && j + 1 < str2.length())
+                        && (str1.charAt(i + 1) == str2.charAt(j + 1)))) {
                     cantidadDiferencias += recorrerCoincidencia(str1.substring(i, str1.length()),
                             str2.substring(j, str2.length()), indicesDiferencia);
                     isCoincidencia = true;
                     break;
                 } else if (i == str1.length() - 1 && j == str2.length() - 1 && str1.charAt(i) == str2.charAt(j)) {
-                    cantidadDiferencias += recorrerCoincidencia(str1, str2, indicesDiferencia);
+                    cantidadDiferencias += 1;
                     isCoincidencia = true;
                 }
             }
@@ -40,7 +40,7 @@ public class PersonaUtil {
             if (isCoincidencia) {
                 break;
             } else if (i == str1.length() - 1) {
-                cantidadDiferencias = str1.length();
+                cantidadDiferencias = str1.length() > str2.length() ? str1.length() : str2.length();
             }
         }
 
