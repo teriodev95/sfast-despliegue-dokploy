@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class DatosPersonaDTO {
+    private String personaId;
     private String nombres;
     private String apPaterno;
     private String apMaterno;

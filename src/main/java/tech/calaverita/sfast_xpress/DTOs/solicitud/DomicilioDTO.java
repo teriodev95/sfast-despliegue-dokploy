@@ -14,4 +14,6 @@ public class DomicilioDTO {
     private String referencia;
     private String tipoPropiedad;
     private String tiempoViviendo;
+    private String noServicio;
+    private String tipoComprobante;
 }
