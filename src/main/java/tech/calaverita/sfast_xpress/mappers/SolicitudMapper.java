@@ -28,6 +28,7 @@ public class SolicitudMapper implements IMapper<SolicitudModel, SolicitudDTO> {
             solicitudModel.setAnio(in.getAnio());
             solicitudModel.setStatus(in.getStatus());
             solicitudModel.setFechaSolicitud(in.getFechaSolicitud());
+            solicitudModel.setHistorial(new Gson().toJson(in.getHistorial()));
             solicitudModel.setSolicitud(new Gson().toJson(in));
         }
         return solicitudModel;
