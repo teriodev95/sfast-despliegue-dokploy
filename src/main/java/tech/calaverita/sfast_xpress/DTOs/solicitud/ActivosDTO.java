@@ -1,9 +1,9 @@
 package tech.calaverita.sfast_xpress.DTOs.solicitud;
 
+import java.util.ArrayList;
+
 import lombok.Data;
 import tech.calaverita.sfast_xpress.utils.MyUtil;
-
-import java.util.ArrayList;
 
 @Data
 public class ActivosDTO {
@@ -19,12 +19,12 @@ public class ActivosDTO {
     private String yearAutomovil;
     private ArrayList<ActivoDTO> activosLB;
     private ArrayList<ActivoDTO> activosElectr;
-    private Double otrosActivosValor;
+    private Object otrosActivosValor;
 
     public ActivosDTO(String tipoVivienda, String numeroPisosVivienda, String colorVivienda, String tieneAutomovil,
             String marcaAutomovil, String modeloAutomovil, String colorAutomovil, String placaAutomovil,
             String serieAutomovil, String yearAutomovil, ArrayList<ActivoDTO> activosLB,
-            ArrayList<ActivoDTO> activosElectr, String otrosActivosValor) {
+            ArrayList<ActivoDTO> activosElectr, Object otrosActivosValor) {
         this.tipoVivienda = tipoVivienda;
         this.numeroPisosVivienda = numeroPisosVivienda;
         this.colorVivienda = colorVivienda;
@@ -37,6 +37,12 @@ public class ActivosDTO {
         this.yearAutomovil = yearAutomovil;
         this.activosLB = activosLB;
         this.activosElectr = activosElectr;
-        this.otrosActivosValor = MyUtil.monetaryToDouble(otrosActivosValor);
+        this.otrosActivosValor = otrosActivosValor;
+        
+        monetaryToDouble();
+    }
+
+    public void monetaryToDouble() {
+        this.otrosActivosValor = MyUtil.monetaryToDouble(this.otrosActivosValor);
     }
 }

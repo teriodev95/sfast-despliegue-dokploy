@@ -12,6 +12,7 @@ public class SolicitudMapper implements IMapper<SolicitudModel, SolicitudDTO> {
     @Override
     public SolicitudDTO mapOut(SolicitudModel out) {
         SolicitudDTO solicitudDTO = new Gson().fromJson(out.getSolicitud(), SolicitudDTO.class);
+        solicitudDTO.monetaryToDouble();
         solicitudDTO.setHistorial(new Gson().fromJson(out.getHistorial(), StatusSolicitudDTO[].class));
         return solicitudDTO;
     }

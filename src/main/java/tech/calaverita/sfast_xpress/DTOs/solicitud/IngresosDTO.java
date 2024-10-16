@@ -8,28 +8,36 @@ public class IngresosDTO {
     private String ocupacion;
     private String nombreEmpresa;
     private String domicilioEmpleo;
-    private Double sueldo;
+    private Object sueldo;
     private String periodoPago;
     private String comprueba;
     private String antiguedad;
     private String otrosIngresos;
     private String otrosIngresosConcepto;
-    private Double otrosIngresosMonto;
-    private Double otrosIngresosTotalMes;
+    private Object otrosIngresosMonto;
+    private Object otrosIngresosTotalMes;
 
-    public IngresosDTO(String ocupacion, String nombreEmpresa, String domicilioEmpleo, String sueldo,
+    public IngresosDTO(String ocupacion, String nombreEmpresa, String domicilioEmpleo, Object sueldo,
             String periodoPago, String comprueba, String antiguedad, String otrosIngresos, String otrosIngresosConcepto,
-            String otrosIngresosMonto, String otrosIngresosTotalMes) {
+            Object otrosIngresosMonto, Object otrosIngresosTotalMes) {
         this.ocupacion = ocupacion;
         this.nombreEmpresa = nombreEmpresa;
         this.domicilioEmpleo = domicilioEmpleo;
+        this.sueldo = sueldo;
         this.periodoPago = periodoPago;
         this.comprueba = comprueba;
         this.antiguedad = antiguedad;
         this.otrosIngresos = otrosIngresos;
         this.otrosIngresosConcepto = otrosIngresosConcepto;
-        this.sueldo = MyUtil.monetaryToDouble(sueldo);
-        this.otrosIngresosMonto = MyUtil.monetaryToDouble(otrosIngresosMonto);
-        this.otrosIngresosTotalMes = MyUtil.monetaryToDouble(otrosIngresosTotalMes);
+        this.otrosIngresosMonto = otrosIngresosMonto;
+        this.otrosIngresosTotalMes = otrosIngresosTotalMes;
+
+        monetaryToDouble();
+    }
+
+    public void monetaryToDouble() {
+        this.sueldo = MyUtil.monetaryToDouble(this.sueldo);
+        this.otrosIngresosMonto = MyUtil.monetaryToDouble(this.otrosIngresosMonto);
+        this.otrosIngresosTotalMes = MyUtil.monetaryToDouble(this.otrosIngresosTotalMes);
     }
 }

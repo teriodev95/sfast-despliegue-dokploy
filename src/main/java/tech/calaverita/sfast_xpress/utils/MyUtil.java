@@ -22,12 +22,12 @@ public class MyUtil {
         return Double.parseDouble(valorFormateado);
     }
 
-    public static Double monetaryToDouble(String valor) {
-        if (valor == null || valor.isEmpty()) {
+    public static Double monetaryToDouble(Object valor) {
+        if (valor == null || valor.toString().isEmpty()) {
             valor = "0.00";
         }
 
-        return Double.parseDouble(valor.replace("$", "").replace(",", ""));
+        return Double.parseDouble(valor.toString().replace("$", "").replace(",", ""));
     }
 
     public static void funSemanaAnterior(CalendarioModel calendarioModel) {

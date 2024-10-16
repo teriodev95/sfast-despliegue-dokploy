@@ -9,13 +9,19 @@ public class ActivoDTO {
     private String marca;
     private String antiguedad;
     private String noSerie;
-    private Double valorAprox;
+    private Object valorAprox;
 
-    public ActivoDTO(String activo, String marca, String antiguedad, String noSerie, String valorAprox) {
+    public ActivoDTO(String activo, String marca, String antiguedad, String noSerie, Object valorAprox) {
         this.activo = activo;
         this.marca = marca;
         this.antiguedad = antiguedad;
         this.noSerie = noSerie;
-        this.valorAprox = MyUtil.monetaryToDouble(noSerie);
+        this.valorAprox = valorAprox;
+
+        monetaryToDouble();
+    }
+
+    public void monetaryToDouble() {
+        this.valorAprox = MyUtil.monetaryToDouble(this.valorAprox);
     }
 }

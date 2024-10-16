@@ -5,13 +5,13 @@ import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Data
 public class DatosCreditoDTO {
-    private Double montoSolicitado;
+    private Object montoSolicitado;
     private String nivelCliente;
     private String plazoSemanas;
-    private Double tarifaSemanal;
-    private Double primerPago;
-    private Double cargo;
-    private Double totalPagar;
+    private Object tarifaSemanal;
+    private Object primerPago;
+    private Object cargo;
+    private Object totalPagar;
     private String tipoCredito;
     private String diaDeEntrega;
     private String horaDeEntrega;
@@ -19,21 +19,31 @@ public class DatosCreditoDTO {
     private String horaDePago;
     private String identificadorCredito;
 
-    public DatosCreditoDTO(String montoSolicitado, String nivelCliente, String plazoSemanas, String tarifaSemanal,
-            String primerPago, String cargo, String totalPagar, String tipoCredito, String diaDeEntrega,
+    public DatosCreditoDTO(Object montoSolicitado, String nivelCliente, String plazoSemanas, Object tarifaSemanal,
+            Object primerPago, Object cargo, Object totalPagar, String tipoCredito, String diaDeEntrega,
             String horaDeEntrega, String diaDePago, String horaDePago, String identificadorCredito) {
+        this.montoSolicitado = montoSolicitado;
         this.nivelCliente = nivelCliente;
         this.plazoSemanas = plazoSemanas;
+        this.tarifaSemanal = tarifaSemanal;
+        this.primerPago = primerPago;
+        this.cargo = cargo;
+        this.totalPagar = totalPagar;
         this.tipoCredito = tipoCredito;
         this.diaDeEntrega = diaDeEntrega;
         this.horaDeEntrega = horaDeEntrega;
         this.diaDePago = diaDePago;
         this.horaDePago = horaDePago;
         this.identificadorCredito = identificadorCredito;
-        this.montoSolicitado = MyUtil.monetaryToDouble(montoSolicitado);
-        this.tarifaSemanal = MyUtil.monetaryToDouble(tarifaSemanal);
-        this.primerPago = MyUtil.monetaryToDouble(primerPago);
-        this.cargo = MyUtil.monetaryToDouble(cargo);
-        this.totalPagar = MyUtil.monetaryToDouble(totalPagar);
+
+        monetaryToDouble();
+    }
+
+    public void monetaryToDouble() {
+        this.montoSolicitado = MyUtil.monetaryToDouble(this.montoSolicitado);
+        this.tarifaSemanal = MyUtil.monetaryToDouble(this.tarifaSemanal);
+        this.primerPago = MyUtil.monetaryToDouble(this.primerPago);
+        this.cargo = MyUtil.monetaryToDouble(this.cargo);
+        this.totalPagar = MyUtil.monetaryToDouble(this.totalPagar);
     }
 }

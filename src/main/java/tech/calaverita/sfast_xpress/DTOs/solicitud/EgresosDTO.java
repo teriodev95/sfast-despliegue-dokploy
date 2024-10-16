@@ -5,22 +5,34 @@ import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Data
 public class EgresosDTO {
-    private Double pagoMensualRenta;
-    private Double gastoMensualAlimentos;
-    private Double pagoServicios;
-    private Double gastoMensualTransporte;
-    private Double pagoEstudios;
-    private Double otrosGastos;
-    private Double totalGastos;
+    private Object pagoMensualRenta;
+    private Object gastoMensualAlimentos;
+    private Object pagoServicios;
+    private Object gastoMensualTransporte;
+    private Object pagoEstudios;
+    private Object otrosGastos;
+    private Object totalGastos;
 
-    public EgresosDTO(String pagoMensualRenta, String gastoMensualAlimentos, String pagoServicios,
-            String gastoMensualTransporte, String pagoEstudios, String otrosGastos, String totalGastos) {
-        this.pagoMensualRenta = MyUtil.monetaryToDouble(pagoMensualRenta);
-        this.gastoMensualAlimentos = MyUtil.monetaryToDouble(gastoMensualAlimentos);
-        this.pagoServicios = MyUtil.monetaryToDouble(pagoServicios);
-        this.gastoMensualTransporte = MyUtil.monetaryToDouble(gastoMensualTransporte);
-        this.pagoEstudios = MyUtil.monetaryToDouble(pagoEstudios);
-        this.otrosGastos = MyUtil.monetaryToDouble(otrosGastos);
-        this.totalGastos = MyUtil.monetaryToDouble(totalGastos);
+    public EgresosDTO(Object pagoMensualRenta, Object gastoMensualAlimentos, Object pagoServicios,
+            Object gastoMensualTransporte, Object pagoEstudios, Object otrosGastos, Object totalGastos) {
+        this.pagoMensualRenta = pagoMensualRenta;
+        this.gastoMensualAlimentos = gastoMensualAlimentos;
+        this.pagoServicios = pagoServicios;
+        this.gastoMensualTransporte = gastoMensualTransporte;
+        this.pagoEstudios = pagoEstudios;
+        this.otrosGastos = otrosGastos;
+        this.totalGastos = totalGastos;
+
+        monetaryToDouble();
+    }
+
+    public void monetaryToDouble() {
+        this.pagoMensualRenta = MyUtil.monetaryToDouble(this.pagoMensualRenta);
+        this.gastoMensualAlimentos = MyUtil.monetaryToDouble(this.gastoMensualAlimentos);
+        this.pagoServicios = MyUtil.monetaryToDouble(this.pagoServicios);
+        this.gastoMensualTransporte = MyUtil.monetaryToDouble(this.gastoMensualTransporte);
+        this.pagoEstudios = MyUtil.monetaryToDouble(this.pagoEstudios);
+        this.otrosGastos = MyUtil.monetaryToDouble(this.otrosGastos);
+        this.totalGastos = MyUtil.monetaryToDouble(this.totalGastos);
     }
 }
