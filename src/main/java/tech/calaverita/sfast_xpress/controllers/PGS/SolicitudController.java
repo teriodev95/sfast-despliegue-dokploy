@@ -86,10 +86,14 @@ public final class SolicitudController {
         String response = "Solicitud actualizada con exito";
         HttpStatus httpStatus = HttpStatus.CREATED;
 
-        SolicitudModel solicitudModelResponse = this.solicitudService.save(new SolicitudMapper().mapIn(solicitudDTO));
+        SolicitudModel solicitudModelResponse = null;
+
+        if(solicitudDTO.getSolicitudId() != null){
+            solicitudModelResponse = this.solicitudService.save(new SolicitudMapper().mapIn(solicitudDTO));
+        }
 
         if (solicitudModelResponse == null) {
-            response = "Verifica que todos los campos sean correctos";
+            response = "Verifica que todos los campos sean correctos" + "\n" + solicitudDTO.toString();
             httpStatus = HttpStatus.BAD_REQUEST;
         }
 

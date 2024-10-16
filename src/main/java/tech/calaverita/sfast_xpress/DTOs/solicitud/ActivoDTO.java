@@ -1,6 +1,7 @@
 package tech.calaverita.sfast_xpress.DTOs.solicitud;
 
 import lombok.Data;
+import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Data
 public class ActivoDTO {
@@ -9,4 +10,12 @@ public class ActivoDTO {
     private String antiguedad;
     private String noSerie;
     private Double valorAprox;
+
+    public ActivoDTO(String activo, String marca, String antiguedad, String noSerie, String valorAprox) {
+        this.activo = activo;
+        this.marca = marca;
+        this.antiguedad = antiguedad;
+        this.noSerie = noSerie;
+        this.valorAprox = MyUtil.monetaryToDouble(noSerie);
+    }
 }

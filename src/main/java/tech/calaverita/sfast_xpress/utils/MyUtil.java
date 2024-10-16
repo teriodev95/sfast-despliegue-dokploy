@@ -22,6 +22,14 @@ public class MyUtil {
         return Double.parseDouble(valorFormateado);
     }
 
+    public static Double monetaryToDouble(String valor) {
+        if (valor == null || valor.isEmpty()) {
+            valor = "0.00";
+        }
+
+        return Double.parseDouble(valor.replace("$", "").replace(",", ""));
+    }
+
     public static void funSemanaAnterior(CalendarioModel calendarioModel) {
         // To easy code
         int anio = calendarioModel.getAnio();
