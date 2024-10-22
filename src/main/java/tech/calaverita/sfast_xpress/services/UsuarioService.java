@@ -1,13 +1,14 @@
 package tech.calaverita.sfast_xpress.services;
 
-import jakarta.persistence.Tuple;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
-import tech.calaverita.sfast_xpress.repositories.UsuarioRepository;
-
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
+
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
+import jakarta.persistence.Tuple;
+import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
+import tech.calaverita.sfast_xpress.repositories.UsuarioRepository;
 
 @Service
 public class UsuarioService {
@@ -50,7 +51,7 @@ public class UsuarioService {
     }
 
     public UsuarioModel findByUsuarioAndPin(String usuario, int pin) {
-        return this.repo.findByUsuarioAndPin(usuario, pin);
+        return this.repo.findByUsuarioAndPinAndStatus(usuario, pin, true);
     }
 
     public UsuarioModel findByGerenciaAndTipo(String gerencia, String tipo) {
@@ -83,7 +84,7 @@ public class UsuarioService {
 
     @Async("asyncExecutor")
     public CompletableFuture<ArrayList<Tuple>> findByGerenciaTipoAndStatusAsync(String gerencia, String tipo,
-                                                                                boolean status) {
+            boolean status) {
         return CompletableFuture.completedFuture(this.repo.findByGerenciaAndTipoAndStatus(gerencia, tipo,
                 status));
     }
