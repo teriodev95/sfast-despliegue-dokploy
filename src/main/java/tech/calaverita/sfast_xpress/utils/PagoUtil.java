@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 
+import com.google.gson.Gson;
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -97,7 +99,16 @@ public final class PagoUtil {
             PrestamoViewModel prestamoModel) {
         String strSession = "session_id=76d814874514726176f0615260848da2aab725ea";
         PagoModel pagMod = PagoUtil.pagoModelFromPagoConLiquidacion(pagoConLiquidacion);
-        LiquidacionModel liqMod = pagoConLiquidacion.getInfoLiquidacion();
+
+        // To easy code
+        Object infoLiquidacion = pagoConLiquidacion.getInfoLiquidacion();
+
+        LiquidacionModel liqMod = null;
+        if (infoLiquidacion instanceof String) {
+            liqMod = new Gson().fromJson(infoLiquidacion.toString(), LiquidacionModel.class);
+        } else if (infoLiquidacion instanceof LiquidacionModel) {
+            liqMod = (LiquidacionModel) infoLiquidacion;
+        }
 
         modelValidation.setStrResponse("Pago Insertado con Éxito");
         modelValidation.setHttpStatus(HttpStatus.CREATED);
