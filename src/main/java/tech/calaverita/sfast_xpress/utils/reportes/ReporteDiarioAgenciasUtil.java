@@ -90,7 +90,7 @@ public final class ReporteDiarioAgenciasUtil {
         EncabezadoReporteDiarioAgenciasDTO encabezado = new EncabezadoReporteDiarioAgenciasDTO();
         {
             CompletableFuture<UsuarioModel> usuarioEntityGerente = ReporteDiarioAgenciasUtil.usuarioService
-                    .findByUsuarioAsync(gerenciaModel.getGerenciaId());
+                    .findByGerenciaTipoAndStatusAsync(gerenciaModel.getGerenciaId(), "Gerente", true);
             CompletableFuture<UsuarioModel> usuarioEntitySeguridad = ReporteDiarioAgenciasUtil.usuarioService
                     .findByIdAsync(gerenciaModel.getSeguridadId());
             CompletableFuture<SucursalModel> sucursalEntity = ReporteDiarioAgenciasUtil.sucursalService
@@ -188,7 +188,7 @@ public final class ReporteDiarioAgenciasUtil {
 
         for (AgenciaModel agenciaModel : agenciaEntities.get()) {
             CompletableFuture<UsuarioModel> usuarioEntityAgente = ReporteDiarioAgenciasUtil
-                    .usuarioService.findByUsuarioAsync(agenciaModel.getId());
+                    .usuarioService.findByAgenciaTipoAndStatusAsync(agenciaModel.getId(), "Agente", true);
 
             AgenciaReporteDiarioAgenciasDTO agencia = new AgenciaReporteDiarioAgenciasDTO();
             {

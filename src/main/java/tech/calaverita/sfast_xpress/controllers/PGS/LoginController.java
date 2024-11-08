@@ -76,7 +76,7 @@ public final class LoginController {
     public ResponseEntity<ArrayList<LoginController.Agencia>> getAgenciasByGerencia(
             @RequestParam String gerencia) throws ExecutionException, InterruptedException {
         CompletableFuture<ArrayList<String>> agenciasCF = this.agenciaService.findIdsByGerenciaIdAsync(gerencia);
-        CompletableFuture<ArrayList<Tuple>> agentesCF = this.usuarioService.findByGerenciaTipoAndStatusAsync(gerencia,
+        CompletableFuture<ArrayList<Tuple>> agentesCF = this.usuarioService.findNombreCompletoByGerenciaTipoAndStatusAsync(gerencia,
                 "Agente", true);
 
         CompletableFuture.allOf(agenciasCF, agentesCF);

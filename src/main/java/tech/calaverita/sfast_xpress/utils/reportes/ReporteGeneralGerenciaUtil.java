@@ -110,7 +110,7 @@ public class ReporteGeneralGerenciaUtil {
         EncabezadoReporteGeneralGerenciaDTO encabezado = new EncabezadoReporteGeneralGerenciaDTO();
         {
             CompletableFuture<UsuarioModel> usuarioEntityGerente = ReporteGeneralGerenciaUtil.usuarioService
-                    .findByUsuarioAsync(gerenciaModel.getGerenciaId());
+                    .findByGerenciaTipoAndStatusAsync(gerenciaModel.getGerenciaId(), "Gerente", true);
             CompletableFuture<UsuarioModel> usuarioEntitySeguridad = ReporteGeneralGerenciaUtil.usuarioService
                     .findByIdAsync(gerenciaModel.getSeguridadId());
             CompletableFuture<SucursalModel> sucursalEntity = ReporteGeneralGerenciaUtil.sucursalService

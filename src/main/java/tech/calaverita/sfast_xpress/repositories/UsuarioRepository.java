@@ -1,12 +1,13 @@
 package tech.calaverita.sfast_xpress.repositories;
 
-import jakarta.persistence.Tuple;
+import java.util.ArrayList;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 
-import java.util.ArrayList;
+import jakarta.persistence.Tuple;
+import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 
 @Repository
 public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer> {
@@ -22,6 +23,10 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
 
         UsuarioModel findByUsuarioAndPinAndStatus(String usuario, int pin, boolean status);
 
+        UsuarioModel findByGerenciaAndTipoAndStatus(String gerencia, String tipo, boolean status);
+
+        UsuarioModel findByAgenciaAndTipoAndStatus(String agencia, String tipo, boolean status);
+
         UsuarioModel findByUsuario(String usuario);
 
         UsuarioModel findByAgenciaAndStatus(String agencia, boolean status);
@@ -31,7 +36,7 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
         @Query("SELECT CONCAT(usuar.nombre, ' ' , usuar.apellidoPaterno, ' ', usuar.apellidoMaterno) AS agente, " +
                         "usuar.agencia AS agencia FROM UsuarioModel usuar WHERE usuar.gerencia = :gerencia " +
                         "AND usuar.tipo = :tipo AND usuar.status = :status ORDER BY usuar.agencia")
-        ArrayList<Tuple> findByGerenciaAndTipoAndStatus(String gerencia, String tipo, boolean status);
+        ArrayList<Tuple> findNombreCompletoByGerenciaAndTipoAndStatus(String gerencia, String tipo, boolean status);
 
         @Query("SELECT CONCAT(usuar.nombre, ' ' , usuar.apellidoPaterno, ' ', usuar.apellidoMaterno) nombre, usuar.gerencia gerencia "
                         +

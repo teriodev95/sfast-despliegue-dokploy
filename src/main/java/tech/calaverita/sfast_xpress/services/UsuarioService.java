@@ -73,8 +73,13 @@ public class UsuarioService {
     }
 
     @Async("asyncExecutor")
-    public CompletableFuture<UsuarioModel> findByUsuarioAsync(String usuario) {
-        return CompletableFuture.completedFuture(this.repo.findByUsuario(usuario));
+    public CompletableFuture<UsuarioModel> findByGerenciaTipoAndStatusAsync(String gerencia, String tipo, boolean status) {
+        return CompletableFuture.completedFuture(this.repo.findByGerenciaAndTipoAndStatus(gerencia, tipo, status));
+    }
+
+    @Async("asyncExecutor")
+    public CompletableFuture<UsuarioModel> findByAgenciaTipoAndStatusAsync(String agencia, String tipo, boolean status) {
+        return CompletableFuture.completedFuture(this.repo.findByAgenciaAndTipoAndStatus(agencia, tipo, status));
     }
 
     @Async("asyncExecutor")
@@ -83,9 +88,9 @@ public class UsuarioService {
     }
 
     @Async("asyncExecutor")
-    public CompletableFuture<ArrayList<Tuple>> findByGerenciaTipoAndStatusAsync(String gerencia, String tipo,
+    public CompletableFuture<ArrayList<Tuple>> findNombreCompletoByGerenciaTipoAndStatusAsync(String gerencia, String tipo,
             boolean status) {
-        return CompletableFuture.completedFuture(this.repo.findByGerenciaAndTipoAndStatus(gerencia, tipo,
+        return CompletableFuture.completedFuture(this.repo.findNombreCompletoByGerenciaAndTipoAndStatus(gerencia, tipo,
                 status));
     }
 }
