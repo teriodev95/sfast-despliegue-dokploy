@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import tech.calaverita.sfast_xpress.models.mariaDB.PrestamoHistorialModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 import tech.calaverita.sfast_xpress.repositories.views.PrestamoViewRepository;
 
@@ -60,5 +61,13 @@ public class PrestamoViewService {
 
     public PrestamoViewModel findByClienteId(String clienteId) {
         return this.repo.findByClienteId(clienteId);
+    }
+
+    public ArrayList<PrestamoViewModel> findByAgencia(String agencia) {
+        return this.repo.findByAgencia(agencia);
+    }
+
+    public ArrayList<PrestamoHistorialModel> findHistorialByAgencia(String agencia) {
+        return this.repo.findHistorialByAgencia(agencia);
     }
 }

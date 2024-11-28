@@ -18,6 +18,7 @@ import tech.calaverita.sfast_xpress.Constants;
 import tech.calaverita.sfast_xpress.DTOs.PrestamoDTO;
 import tech.calaverita.sfast_xpress.models.mariaDB.GerenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.PersonaModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.PrestamoHistorialModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 import tech.calaverita.sfast_xpress.services.GerenciaService;
 import tech.calaverita.sfast_xpress.services.PersonaService;
@@ -122,7 +123,7 @@ public final class PrestamoController {
         for (PersonaModel personaModel : personaModels) {
             boolean isPersonaIgual = PersonaUtil.comparadorPersonas(personaModel, nombres, apellidoPaterno,
                     apellidoMaterno);
-                    
+
             if (isPersonaIgual) {
                 PrestamoViewModel prestamoViewModel = this.prestamoViewService
                         .findByClienteId(personaModel.getXpressId());
@@ -136,6 +137,21 @@ public final class PrestamoController {
         }
 
         return new ResponseEntity<>(response, response.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK);
+    }
+
+    @CrossOrigin
+    @GetMapping(path = "/renovacion/{agencia}")
+    public ResponseEntity<HashMap<String, Object>> getPrestamosToRenovar(@PathVariable String agencia) {
+        ArrayList<PrestamoViewModel> prestamoViewModels = this.prestamoViewService.findByAgencia(agencia);
+        ArrayList<PrestamoHistorialModel> prestamoHistorialModels = this.prestamoViewService
+                .findHistorialByAgencia(agencia);
+
+        HashMap<String, Object> prestamosToRenovar = new HashMap<>();
+
+        prestamosToRenovar.put("prestamosActivos", prestamoViewModels);
+        prestamosToRenovar.put("prestamosCerrados", prestamoHistorialModels);
+
+        return new ResponseEntity<>(prestamosToRenovar, HttpStatus.OK);
     }
 
     @Data

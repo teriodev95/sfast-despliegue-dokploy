@@ -15,6 +15,7 @@ public class SolicitudDTO {
     private int anio;
     private String status;
     private StatusSolicitudDTO[] historial;
+    private CoordenadasDTO coordenadas;
 
     public void monetaryToDouble() {
         this.cliente.getIngresos().monetaryToDouble();

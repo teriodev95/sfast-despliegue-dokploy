@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import tech.calaverita.sfast_xpress.models.mariaDB.PrestamoHistorialModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 
 @Repository
@@ -65,4 +66,9 @@ public interface PrestamoViewRepository extends CrudRepository<PrestamoViewModel
                         String fechaPago);
 
         PrestamoViewModel findByClienteId(String clienteId);
+
+        ArrayList<PrestamoViewModel> findByAgencia(String agencia);
+
+        @Query("select prest from PrestamoHistorialModel prest where agencia = :agencia")
+        ArrayList<PrestamoHistorialModel> findHistorialByAgencia(String agencia);
 }
