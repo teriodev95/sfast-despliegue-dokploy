@@ -8,8 +8,8 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "prestamos_v2_historial")
-public class PrestamoHistorialModel {
+@Table(name = "prestamos_v2_historial_migrado")
+public class PrestamoHistorialMigradoModel {
     @Id
     @Column(name = "prestamoid")
     private String prestamoId;

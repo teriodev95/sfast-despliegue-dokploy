@@ -18,7 +18,7 @@ import tech.calaverita.sfast_xpress.Constants;
 import tech.calaverita.sfast_xpress.DTOs.PrestamoDTO;
 import tech.calaverita.sfast_xpress.models.mariaDB.GerenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.PersonaModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.PrestamoHistorialModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.PrestamoHistorialMigradoModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 import tech.calaverita.sfast_xpress.services.GerenciaService;
 import tech.calaverita.sfast_xpress.services.PersonaService;
@@ -143,7 +143,7 @@ public final class PrestamoController {
     @GetMapping(path = "/renovacion/{agencia}")
     public ResponseEntity<HashMap<String, Object>> getPrestamosToRenovar(@PathVariable String agencia) {
         ArrayList<PrestamoViewModel> prestamoViewModels = this.prestamoViewService.findByAgencia(agencia);
-        ArrayList<PrestamoHistorialModel> prestamoHistorialModels = this.prestamoViewService
+        ArrayList<PrestamoHistorialMigradoModel> prestamoHistorialModels = this.prestamoViewService
                 .findHistorialByAgencia(agencia);
 
         HashMap<String, Object> prestamosToRenovar = new HashMap<>();
