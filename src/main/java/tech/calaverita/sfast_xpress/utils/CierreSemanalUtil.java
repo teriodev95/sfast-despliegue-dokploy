@@ -191,8 +191,17 @@ public class CierreSemanalUtil {
 
                         egresosGerenteDTO.setPorcentajeBonoMensual(porcentajeBonoMensual);
 
-                        Double pagoComisionCobranza = cobranzaTotal / 100
-                                        * egresosGerenteDTO.getPorcentajeComisionCobranza();
+                        CalendarioModel semanaAnteriorCalendarioModel = calendarioModel;
+                        CierreSemanalUtil.funSemanaAnterior(calendarioModel);
+
+                        Double pagoComisionCobranza = CierreSemanalUtil.egresosGerenteService
+                                        .findComisionCobranzaAgenciaByAgenciaAnioAndSemana(dashboard.getAgencia(),
+                                                        semanaAnteriorCalendarioModel.getAnio(),
+                                                        semanaAnteriorCalendarioModel.getSemana());
+
+                        // Double pagoComisionCobranza = cobranzaTotal / 100
+                        // * egresosGerenteDTO.getPorcentajeComisionCobranza();
+
                         egresosGerenteDTO.setPagoComisionCobranza(MyUtil.getDouble(pagoComisionCobranza));
 
                         egresosGerenteDTO.setBonos(0.0);
@@ -245,6 +254,23 @@ public class CierreSemanalUtil {
                 cierreSemanalDTO.setMes(mes);
 
                 return cierreSemanalDTO;
+        }
+
+        private static void funSemanaAnterior(CalendarioModel calendarioModel) {
+                // To easy code
+                int anio = calendarioModel.getAnio();
+                int semana = calendarioModel.getSemana();
+
+                if (semana == 1) {
+                        anio = anio - 1;
+                        semana = CierreSemanalUtil.calendarioService
+                                        .existsByAnioAndSemana(anio, 53) ? 53 : 52;
+                } else {
+                        semana = semana - 1;
+                }
+
+                calendarioModel.setAnio(anio);
+                calendarioModel.setSemana(semana);
         }
 
         public static void createCierreSemanalPDF(CierreSemanalDTO dto)

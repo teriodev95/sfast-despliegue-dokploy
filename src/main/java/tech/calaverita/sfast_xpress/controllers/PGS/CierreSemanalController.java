@@ -1,25 +1,5 @@
 package tech.calaverita.sfast_xpress.controllers.PGS;
 
-import com.itextpdf.text.DocumentException;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.Data;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import tech.calaverita.sfast_xpress.Constants;
-import tech.calaverita.sfast_xpress.controllers.XpressController;
-import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.CierreSemanalDTO;
-import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
-import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.*;
-import tech.calaverita.sfast_xpress.services.AsignacionService;
-import tech.calaverita.sfast_xpress.services.UsuarioService;
-import tech.calaverita.sfast_xpress.services.cierre_semanal.*;
-import tech.calaverita.sfast_xpress.utils.CierreSemanalUtil;
-import tech.calaverita.sfast_xpress.utils.LogUtil;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -28,6 +8,47 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.itextpdf.text.DocumentException;
+
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.Data;
+import tech.calaverita.sfast_xpress.Constants;
+import tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO;
+import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.CierreSemanalDTO;
+import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
+import tech.calaverita.sfast_xpress.controllers.XpressController;
+import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.BalanceAgenciaModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.CierreSemanalModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.EgresosAgenteModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.EgresosGerenteModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.IngresosAgenteModel;
+import tech.calaverita.sfast_xpress.services.AsignacionService;
+import tech.calaverita.sfast_xpress.services.UsuarioService;
+import tech.calaverita.sfast_xpress.services.cierre_semanal.BalanceAgenciaService;
+import tech.calaverita.sfast_xpress.services.cierre_semanal.CierreSemanalService;
+import tech.calaverita.sfast_xpress.services.cierre_semanal.EgresosAgenteService;
+import tech.calaverita.sfast_xpress.services.cierre_semanal.EgresosGerenteService;
+import tech.calaverita.sfast_xpress.services.cierre_semanal.IngresosAgenteService;
+import tech.calaverita.sfast_xpress.utils.CierreSemanalUtil;
+import tech.calaverita.sfast_xpress.utils.DesgloceCobranzaYComisionesUtil;
+import tech.calaverita.sfast_xpress.utils.LogUtil;
 
 @CrossOrigin
 @RestController
@@ -43,10 +64,10 @@ public final class CierreSemanalController {
     private final IngresosAgenteService ingresosAgenteService;
 
     public CierreSemanalController(AsignacionService asignacionService, UsuarioService usuarioService,
-                                   XpressController xpressController, BalanceAgenciaService balanceAgenciaService,
-                                   CierreSemanalService cierreSemanalService, EgresosAgenteService egresosAgenteService,
-                                   EgresosGerenteService egresosGerenteService,
-                                   IngresosAgenteService ingresosAgenteService) {
+            XpressController xpressController, BalanceAgenciaService balanceAgenciaService,
+            CierreSemanalService cierreSemanalService, EgresosAgenteService egresosAgenteService,
+            EgresosGerenteService egresosGerenteService,
+            IngresosAgenteService ingresosAgenteService) {
         this.asignacionService = asignacionService;
         this.usuarioService = usuarioService;
         this.xpressController = xpressController;
@@ -65,9 +86,9 @@ public final class CierreSemanalController {
 
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<?> getByAgenciaAnioAndSemana(@RequestHeader String staticToken,
-                                                                     @RequestHeader String username,
-                                                                     @PathVariable String agencia,
-                                                                     @PathVariable int anio, @PathVariable int semana)
+            @RequestHeader String username,
+            @PathVariable String agencia,
+            @PathVariable int anio, @PathVariable int semana)
             throws ExecutionException, InterruptedException {
         CierreSemanalDTO cierreSemanalDTO = null;
         HttpStatus responseStatus = HttpStatus.OK;
@@ -110,8 +131,8 @@ public final class CierreSemanalController {
 
     @PostMapping(path = "/create-one")
     public @ResponseBody ResponseEntity<String> createOne(@RequestBody CierreSemanalDTO cierreSemanalDTO,
-                                                          @RequestHeader String staticToken,
-                                                          @RequestHeader String username)
+            @RequestHeader String staticToken,
+            @RequestHeader String username)
             throws DocumentException, FileNotFoundException {
         String responseText = "";
         HttpStatus responseStatus;
@@ -166,13 +187,36 @@ public final class CierreSemanalController {
         }
 
         CierreSemanalUtil.subSendCierreSemanalMessage(cierreSemanalDTO);
-    //    CierreSemanalUtil.createCierreSemanalPDF(cierreSemanalDTO);
+        // CierreSemanalUtil.createCierreSemanalPDF(cierreSemanalDTO);
 
         return new ResponseEntity<>(responseText, responseStatus);
     }
 
     @GetMapping(path = "/pdf/{file}", produces = MediaType.APPLICATION_PDF_VALUE)
     public @ResponseBody ResponseEntity<InputStreamResource> getPdfByRuta(@PathVariable String file)
+            throws IOException {
+        FileInputStream fileInputStream = new FileInputStream(Constants.RUTA_PDF_PRODUCCION + file);
+
+        return new ResponseEntity<>(new InputStreamResource(fileInputStream), HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/desgloce_cobranza_y_comisiones/pdf/create-one")
+    public @ResponseBody ResponseEntity<String> desgloceCobranzaYComisionesCreateOne(
+            @RequestBody TablaFlujoEfectivoDTO tablaFlujoEfectivoDTO)
+            throws DocumentException, FileNotFoundException {
+        String idPDF = "CIERRE_" + tablaFlujoEfectivoDTO.getZona() + "_SEM" + tablaFlujoEfectivoDTO.getSemana() + "_"
+                + tablaFlujoEfectivoDTO.getAnio();
+        String urlPDF = "https://sfast-api.terio.xyz/xpress/v1/pwa/cierres_semanales/desgloce_cobranza_y_comisiones/pdf/"
+                + idPDF + ".pdf";
+
+        DesgloceCobranzaYComisionesUtil.createCierreSemanalPDF(tablaFlujoEfectivoDTO, idPDF);
+
+        return new ResponseEntity<>(urlPDF, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/desgloce_cobranza_y_comisiones/pdf/{file}", produces = MediaType.APPLICATION_PDF_VALUE)
+    public @ResponseBody ResponseEntity<InputStreamResource> getPdfDesgloceCobranzaYComisionesByRuta(
+            @PathVariable String file)
             throws IOException {
         FileInputStream fileInputStream = new FileInputStream(Constants.RUTA_PDF_PRODUCCION + file);
 

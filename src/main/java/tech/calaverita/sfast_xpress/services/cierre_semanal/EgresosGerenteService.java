@@ -1,13 +1,14 @@
 package tech.calaverita.sfast_xpress.services.cierre_semanal;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
 import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.EgresosGerenteDTO;
 import tech.calaverita.sfast_xpress.mappers.cierre_semanal.EgresosGerenteMapper;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.EgresosGerenteModel;
 import tech.calaverita.sfast_xpress.repositories.cierre_semanal.EgresosGerenteRepository;
-
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class EgresosGerenteService {
@@ -16,15 +17,13 @@ public class EgresosGerenteService {
 
     public EgresosGerenteService(
             EgresosGerenteRepository repo_S,
-            EgresosGerenteMapper mapper_S
-    ) {
+            EgresosGerenteMapper mapper_S) {
         this.repo = repo_S;
         this.mapper = mapper_S;
     }
 
     public void save(
-            EgresosGerenteModel egrGerEnt_I
-    ) {
+            EgresosGerenteModel egrGerEnt_I) {
         this.repo.save(egrGerEnt_I);
     }
 
@@ -35,14 +34,16 @@ public class EgresosGerenteService {
     }
 
     public EgresosGerenteDTO getEgresosGerenteDTO(
-            EgresosGerenteModel entity
-    ) {
+            EgresosGerenteModel entity) {
         return this.mapper.mapOut(entity);
     }
 
     public EgresosGerenteModel getEgresosGerenteEntity(
-            EgresosGerenteDTO DTO
-    ) {
+            EgresosGerenteDTO DTO) {
         return this.mapper.mapIn(DTO);
+    }
+
+    public Double findComisionCobranzaAgenciaByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
+        return this.repo.findComisionCobranzaAgenciaByAgenciaAndAnioAndSemana(agencia, anio, semana);
     }
 }

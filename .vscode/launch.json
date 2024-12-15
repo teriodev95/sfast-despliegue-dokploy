@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "MaquetadoPdf",
+            "request": "launch",
+            "mainClass": "tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.MaquetadoPdf",
+            "projectName": "SFast-Xpress"
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-SfastXpressApplication<SFast-Xpress>",
             "request": "launch",
             "cwd": "${workspaceFolder}",

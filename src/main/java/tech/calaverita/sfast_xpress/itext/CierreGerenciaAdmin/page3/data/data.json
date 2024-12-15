@@ -1,0 +1,92 @@
+{
+    "titulo": "flujoDeEfectivo",
+    "gerente": "FCO. ALEJANDRO VARGAS HDZ",
+    "zona": "PZ04",
+    "semana": 31,
+    "anio": 2024,
+    "cierreSemanalCobranzaAgencias": {
+      "agentes": [
+        {
+          "nombre": "LORENA",
+          "agencia": "AG19",
+          "noClientes": 53,
+          "noPagos": 0,
+          "noClientesConLiquidacion": 0,
+          "cobranzaPura": 14785.87,
+          "liquidaciones": 0,
+          "montoExcedente": 1115.13,
+          "multas": 0
+        },
+        {
+          "nombre": "SARAHY",
+          "agencia": "AG20",
+          "noClientes": 11,
+          "noPagos": 0,
+          "noClientesConLiquidacion": 0,
+          "cobranzaPura": 2848.17,
+          "liquidaciones": 0,
+          "montoExcedente": 3.83,
+          "multas": 0
+        },
+        {
+          "nombre": "LAURA CONSUELO",
+          "agencia": "AG21",
+          "noClientes": 2,
+          "noPagos": 0,
+          "noClientesConLiquidacion": 0,
+          "cobranzaPura": 551.26,
+          "liquidaciones": 0,
+          "montoExcedente": 0.74,
+          "multas": 0
+        }
+      ],
+      "totales": {
+        "noClientes": 66,
+        "noClientesConLiquidacion": 0,
+        "cobranzaPura": 18185.30,
+        "liquidaciones": 0,
+        "montoExcedente": 1119.70,
+        "multas": 0
+      }
+    },
+    "comisionesYAsignaciones": {
+      "agentes": [
+        {
+          "nombre": "LORENA",
+          "agencia": "AG19",
+          "asignaciones": 13389.00,
+          "comisionesPorCobranza": 1237.00,
+          "comisionesPorVentas": 300.00,
+          "bonos": 0,
+          "descPorLiquidacion": 0,
+          "total": 975.00
+        },
+        {
+          "nombre": "SARAHY",
+          "agencia": "AG20",
+          "asignaciones": 2552.00,
+          "comisionesPorCobranza": 200.00,
+          "comisionesPorVentas": 100.00,
+          "bonos": 0,
+          "descPorLiquidacion": 0,
+          "total": 0
+        },
+        {
+          "nombre": "LAURA CONSUELO",
+          "agencia": "AG21",
+          "asignaciones": 313.00,
+          "comisionesPorCobranza": 39.00,
+          "comisionesPorVentas": 200.00,
+          "bonos": 0,
+          "descPorLiquidacion": 0,
+          "total": 0
+        }
+      ],
+      "totales": {
+        "asignaciones": 16254.00,
+        "comisionesPorCobranza": 1476.00,
+        "comisionesPorVentas": 600.00,
+        "total": 975.00
+      }
+    }
+  }
