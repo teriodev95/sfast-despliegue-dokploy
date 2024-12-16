@@ -1,0 +1,58 @@
+{
+    "titulo": "NumerosDelaGerencia",
+    "metricasFinancieras": {
+      "debit": {
+        "semanaAnterior": 17083,
+        "actual": 18185,
+        "diferencia": 1103
+      },
+      "cobPura": {
+        "semanaAnterior": 17083,
+        "actual": 18185,
+        "diferencia": 1103
+      },
+      "faltante": {
+        "semanaAnterior": 0,
+        "actual": 0,
+        "diferencia": 0
+      },
+      "eficiencia": {
+        "semanaAnterior": 100.00,
+        "actual": 100.00,
+        "diferencia": 0.00
+      }
+    },
+    "metricasClientes": {
+      "clientes": {
+        "anterior": 62,
+        "actual": 66,
+        "diferencia": 4
+      },
+      "noPagos": {
+        "anterior": 0,
+        "actual": 0,
+        "diferencia": 0
+      },
+      "pReducidos": {
+        "anterior": 0,
+        "actual": 0,
+        "diferencia": 0
+      },
+      "cltsLiquid": {
+        "anterior": 0,
+        "actual": 0,
+        "diferencia": 0
+      },
+      "descuentosPorLiquidacion": 0
+    },
+    "objetivosVentas": {
+      "objetivo": 45000,
+      "actual": 57.793,
+      "ventasNuevas": 18000,
+      "clientesNuevos":6,
+      "renovaciones": 8000,
+      "cantidadRenovaciones": 2,
+      "total": 26000,
+      "cantidadTotal": 8
+    }
+}

@@ -1,4 +1,4 @@
-package tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.data;
+package tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page4.data;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -8,19 +8,21 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page4.tables.classes.TablaFlujoEfectivoGerente;
 
-public class JsonDataPage3 {
+public class JsonDataPage4 {
 
-    public TablaFlujoEfectivo makeData() {
+    public TablaFlujoEfectivoGerente makeData() {
         Gson gson = new Gson();
 
         try {
             FileReader reader = new FileReader(
-                    "src/main/java/tech/calaverita/sfast_xpress/itext/CierreGerenciaAdmin/page3/data/data.json");
-            TablaFlujoEfectivo reporte = gson.fromJson(reader, TablaFlujoEfectivo.class);
+                    "src/main/java/tech/calaverita/sfast_xpress/itext/CierreGerenciaAdmin/page4/data/data.json");
+            // FileReader reader = new
+            // FileReader("src/main/java/com/clvrt/pdf/page2/data/dataFull.json");
+            TablaFlujoEfectivoGerente reporte = gson.fromJson(reader, TablaFlujoEfectivoGerente.class);
             reader.close();
-            System.out.println("Título Flujo Blob: " + reporte.getTitulo());
+            System.out.println("Título Flujo Gerente: " + reporte.getTitulo());
             return reporte;
         } catch (IOException e) {
             e.printStackTrace();
@@ -29,20 +31,21 @@ public class JsonDataPage3 {
 
     }
 
-    public TablaFlujoEfectivo makeDataFromBlob() { // No Blob real, mas bien array de objetos
+    public TablaFlujoEfectivoGerente makeDataFromArray() { // No Blob real, mas bien array de objetos
         Gson gson = new Gson();
 
         try {
             FileReader reader = new FileReader(
                     "src/main/java/tech/calaverita/sfast_xpress/itext/CierreGerenciaAdmin/page1/data/dataBlob.json");
             JsonArray jsonArray = JsonParser.parseReader(reader).getAsJsonArray();
-            JsonElement jsonReporteBalance = jsonArray.get(4);
-            TablaFlujoEfectivo reporteBalance = gson.fromJson(jsonReporteBalance, TablaFlujoEfectivo.class);
+            JsonElement jsonReporteBalance = jsonArray.get(5);
+            TablaFlujoEfectivoGerente reporteBalance = gson.fromJson(jsonReporteBalance,
+                    TablaFlujoEfectivoGerente.class);
             // System.out.println("ReporteBalance:");
             // System.out.println(reporteBalance);
             reader.close();
             // Usa el objeto reporte
-            System.out.println("Título Flujo: " + reporteBalance.getTitulo());
+            System.out.println("Título Flujo de Gerente (Array): " + reporteBalance.getTitulo());
             // Puedes imprimir más detalles de reporte aquí...
             return reporteBalance;
         } catch (IOException e) {

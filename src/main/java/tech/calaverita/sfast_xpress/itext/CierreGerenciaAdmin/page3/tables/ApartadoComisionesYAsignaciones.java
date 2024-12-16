@@ -11,16 +11,16 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 
-import tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO;
-import tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO.ComisionesYAsignaciones.AgenteComision;
-import tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO.ComisionesYAsignaciones.TotalesComisiones;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo.ComisionesYAsignaciones.AgenteComision;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo.ComisionesYAsignaciones.TotalesComisiones;
 
 public class ApartadoComisionesYAsignaciones {
     DecimalFormat formatoMonto = new DecimalFormat("#,###,##0.00");
     Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8);
     Font regularFont = FontFactory.getFont(FontFactory.HELVETICA, 7.5f);
 
-    public PdfPTable creaTablaComisionesYAsignaciones(TablaFlujoEfectivoDTO data) throws DocumentException {
+    public PdfPTable creaTablaComisionesYAsignaciones(TablaFlujoEfectivo data) throws DocumentException {
         PdfPTable table = new PdfPTable(8);
         table.setWidthPercentage(100);
         table.setWidths(new float[] { 1.25f, 0.7f, 1, 1, 1, 1, 1, 1 });

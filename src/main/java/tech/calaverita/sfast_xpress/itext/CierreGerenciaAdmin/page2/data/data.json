@@ -1,0 +1,112 @@
+{
+    "titulo": "resumenDeVentas",
+    "vendedor": "FCO. ALEJANDRO VARGAS HDZ",
+    "zona": "PZ04",
+    "semana": 31,
+    "anio": 2024,
+    "resumen": {
+      "clientesNuevos": {
+        "cantidad": 6,
+        "monto": 18000
+      },
+      "renovaciones": {
+        "cantidad": 2,
+        "monto": 8000
+      },
+      "totalVentas": {
+        "cantidad": 8,
+        "monto": 26000
+      },
+      "primerosPagos": 2257.52
+    },
+    "detalleVentas": [
+      {
+        "numero": 1,
+        "fecha": "MIE/31/JUL/2024",
+        "agente": "AG21",
+        "nombreCliente": "Aurea Robles Trujillo",
+        "tipo": "RNV",
+        "nivel": "NOBEL",
+        "plazo": "21_SEM.",
+        "monto": 4000,
+        "primerPago": 301.90
+      },
+      {
+        "numero": 2,
+        "fecha": "MIE/31/JUL/2024",
+        "agente": "AG21",
+        "nombreCliente": "Maria Casa Reyes",
+        "tipo": "RNV",
+        "nivel": "NOBEL",
+        "plazo": "21_SEM.",
+        "monto": 4000,
+        "primerPago": 301.90
+      },
+      {
+        "numero": 3,
+        "fecha": "MIE/31/JUL/2024",
+        "agente": "AG21",
+        "nombreCliente": "MariaLuisa Hernandez Ojeda",
+        "tipo": "NUEVO",
+        "nivel": "NUEVO",
+        "plazo": "16_SEM.",
+        "monto": 3000,
+        "primerPago": 275.62
+      },
+      {
+        "numero": 4,
+        "fecha": "MIE/31/JUL/2024",
+        "agente": "AG21",
+        "nombreCliente": "Vianey Lopez Lortia",
+        "tipo": "NUEVO",
+        "nivel": "NUEVO",
+        "plazo": "16_SEM.",
+        "monto": 3000,
+        "primerPago": 275.62
+      },
+      {
+        "numero": 5,
+        "fecha": "MIE/31/JUL/2024",
+        "agente": "AG20",
+        "nombreCliente": "Adriana Lagunes Rodriguez",
+        "tipo": "NUEVO",
+        "nivel": "NUEVO",
+        "plazo": "16_SEM.",
+        "monto": 3000,
+        "primerPago": 275.62
+      },
+      {
+        "numero": 6,
+        "fecha": "JUE/1/AGO/2024",
+        "agente": "AG21",
+        "nombreCliente": "Bertha Delia Sanchez Alejandre",
+        "tipo": "NUEVO",
+        "nivel": "NUEVO",
+        "plazo": "16_SEM.",
+        "monto": 3000,
+        "primerPago": 275.62
+      },
+      {
+        "numero": 7,
+        "fecha": "VIE/2/AGO/2024",
+        "agente": "AG20",
+        "nombreCliente": "Elvia Elvira Hernandez Fernandez",
+        "tipo": "NUEVO",
+        "nivel": "NUEVO",
+        "plazo": "16_SEM.",
+        "monto": 3000,
+        "primerPago": 275.62
+      },
+      {
+        "numero": 8,
+        "fecha": "VIE/2/AGO/2024",
+        "agente": "AG20",
+        "nombreCliente": "Elizabeth Lara trujillo",
+        "tipo": "NUEVO",
+        "nivel": "NUEVO",
+        "plazo": "16_SEM.",
+        "monto": 3000,
+        "primerPago": 275.62
+      }
+    ]
+  }

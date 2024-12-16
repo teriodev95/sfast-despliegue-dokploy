@@ -11,16 +11,16 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 
-import tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO;
-import tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO.CierreSemanalCobranzaAgencias.AgenteCobranza;
-import tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO.CierreSemanalCobranzaAgencias.TotalesCobranza;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo.CierreSemanalCobranzaAgencias.AgenteCobranza;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo.CierreSemanalCobranzaAgencias.TotalesCobranza;
 
 public class ApartadoFlujoDeEfectivoCierreSemanal {
     DecimalFormat formatoMonto = new DecimalFormat("#,###,##0.00");
     Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8);
     Font regularFont = FontFactory.getFont(FontFactory.HELVETICA, 7.5f);
 
-    public PdfPTable creaTablasFlujoDeEfectivo(TablaFlujoEfectivoDTO data) throws DocumentException {
+    public PdfPTable creaTablasFlujoDeEfectivo(TablaFlujoEfectivo data) throws DocumentException {
         PdfPTable table = new PdfPTable(9);
         table.setWidthPercentage(100);
         table.setWidths(new float[] { 1.25f, 1, 1, 1, 1, 1, 1, 1, 1 });

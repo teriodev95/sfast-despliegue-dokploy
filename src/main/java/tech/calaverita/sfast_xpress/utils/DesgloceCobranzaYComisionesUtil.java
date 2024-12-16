@@ -18,23 +18,23 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import tech.calaverita.sfast_xpress.Constants;
-import tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO;
-import tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO.CierreSemanalCobranzaAgencias.AgenteCobranza;
-import tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO.CierreSemanalCobranzaAgencias.TotalesCobranza;
-import tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO.ComisionesYAsignaciones.AgenteComision;
-import tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO.ComisionesYAsignaciones.TotalesComisiones;
 import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.ApartadoComisionesYAsignaciones;
 import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.ApartadoEncabezadoHoja3;
 import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.ApartadoFlujoDeEfectivoCierreSemanal;
 import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.ApartadoResumen;
 import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.ApartadoTabulador;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo.CierreSemanalCobranzaAgencias.AgenteCobranza;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo.CierreSemanalCobranzaAgencias.TotalesCobranza;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo.ComisionesYAsignaciones.AgenteComision;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo.ComisionesYAsignaciones.TotalesComisiones;
 
 public class DesgloceCobranzaYComisionesUtil {
     DecimalFormat formatoMonto = new DecimalFormat("#,###,##0.00");
     Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8);
     Font regularFont = FontFactory.getFont(FontFactory.HELVETICA, 7.5f);
 
-    public static void createCierreSemanalPDF(TablaFlujoEfectivoDTO dto, String idPDF)
+    public static void createCierreSemanalPDF(TablaFlujoEfectivo dto, String idPDF)
             throws DocumentException, FileNotFoundException {
         Rectangle ticket = new Rectangle(PageSize.A4);
         Document doc = new Document(ticket, 15f, 15f, 20f, 20f);
@@ -57,7 +57,7 @@ public class DesgloceCobranzaYComisionesUtil {
         doc.close();
     }
 
-    public PdfPTable creaTablasFlujoDeEfectivo(TablaFlujoEfectivoDTO data) throws DocumentException {
+    public PdfPTable creaTablasFlujoDeEfectivo(TablaFlujoEfectivo data) throws DocumentException {
         PdfPTable table = new PdfPTable(9);
         table.setWidthPercentage(100);
         table.setWidths(new float[] { 1.25f, 1, 1, 1, 1, 1, 1, 1, 1 });
@@ -212,7 +212,7 @@ public class DesgloceCobranzaYComisionesUtil {
         tabla.addCell(celda);
     }
 
-    public PdfPTable creaTablaComisionesYAsignaciones(TablaFlujoEfectivoDTO data) throws DocumentException {
+    public PdfPTable creaTablaComisionesYAsignaciones(TablaFlujoEfectivo data) throws DocumentException {
         PdfPTable table = new PdfPTable(8);
         table.setWidthPercentage(100);
         table.setWidths(new float[] { 1.25f, 0.7f, 1, 1, 1, 1, 1, 1 });

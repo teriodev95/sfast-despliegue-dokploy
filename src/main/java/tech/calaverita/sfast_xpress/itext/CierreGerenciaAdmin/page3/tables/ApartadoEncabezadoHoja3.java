@@ -7,10 +7,10 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 
-import tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo;
 
 public class ApartadoEncabezadoHoja3 {
-        public PdfPTable creaEncabezado(TablaFlujoEfectivoDTO data) throws DocumentException {
+        public PdfPTable creaEncabezado(TablaFlujoEfectivo data) throws DocumentException {
                 PdfPTable table = new PdfPTable(12); // Número de columnas visibles en la tabla.
                 table.setWidthPercentage(100);
                 table.addCell(estilizarCelda(

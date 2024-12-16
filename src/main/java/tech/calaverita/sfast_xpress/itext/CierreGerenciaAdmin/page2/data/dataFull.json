@@ -1,0 +1,354 @@
+{
+    "titulo": "resumenDeVentas",
+    "vendedor": "FCO. ALEJANDRO VARGAS HDZ",
+    "zona": "PZ04",
+    "semana": 31,
+    "anio": 2024,
+    "resumen": {
+        "clientesNuevos": {
+            "cantidad": 6,
+            "monto": 18000
+        },
+        "renovaciones": {
+            "cantidad": 2,
+            "monto": 8000
+        },
+        "totalVentas": {
+            "cantidad": 8,
+            "monto": 26000
+        },
+        "primerosPagos": 2257.52
+    },
+    "detalleVentas": [
+        {
+            "numero": 1,
+            "fecha": "FRI/09/FEB/2024",
+            "agente": "AG23",
+            "nombreCliente": "Carlota Martín Oquendo",
+            "tipo": "RNV",
+            "nivel": "NUEVO",
+            "plazo": "16_SEM.",
+            "monto": 3496,
+            "primerPago": 364.21
+        },
+        {
+            "numero": 2,
+            "fecha": "FRI/17/MAR/2023",
+            "agente": "AG23",
+            "nombreCliente": "Juana Bonilla",
+            "tipo": "RNV",
+            "nivel": "NUEVO",
+            "plazo": "16_SEM.",
+            "monto": 4852,
+            "primerPago": 346.18
+        },
+        {
+            "numero": 3,
+            "fecha": "TUE/21/NOV/2023",
+            "agente": "AG23",
+            "nombreCliente": "Estefanía Omar Borrego",
+            "tipo": "RNV",
+            "nivel": "NOBEL",
+            "plazo": "16_SEM.",
+            "monto": 4284,
+            "primerPago": 265.27
+        },
+        {
+            "numero": 4,
+            "fecha": "WED/21/JUN/2023",
+            "agente": "AG23",
+            "nombreCliente": "Elena Díaz",
+            "tipo": "RNV",
+            "nivel": "NUEVO",
+            "plazo": "16_SEM.",
+            "monto": 3576,
+            "primerPago": 272.43
+        },
+        {
+            "numero": 5,
+            "fecha": "THU/02/MAR/2023",
+            "agente": "AG23",
+            "nombreCliente": "Irma Crespo",
+            "tipo": "NUEVO",
+            "nivel": "NOBEL",
+            "plazo": "16_SEM.",
+            "monto": 4767,
+            "primerPago": 329.07
+        },
+        {
+            "numero": 6,
+            "fecha": "SUN/14/JAN/2024",
+            "agente": "AG29",
+            "nombreCliente": "Rolando Alfonso Abrego Rolón",
+            "tipo": "RNV",
+            "nivel": "NUEVO",
+            "plazo": "16_SEM.",
+            "monto": 4813,
+            "primerPago": 275.97
+        },
+        {
+            "numero": 7,
+            "fecha": "SAT/21/OCT/2023",
+            "agente": "AG20",
+            "nombreCliente": "Micaela Catalina Ávila Carranza",
+            "tipo": "RNV",
+            "nivel": "NOBEL",
+            "plazo": "21_SEM.",
+            "monto": 3755,
+            "primerPago": 378.52
+        },
+        {
+            "numero": 8,
+            "fecha": "SAT/22/OCT/2022",
+            "agente": "AG28",
+            "nombreCliente": "César Quintana",
+            "tipo": "NUEVO",
+            "nivel": "NUEVO",
+            "plazo": "21_SEM.",
+            "monto": 4010,
+            "primerPago": 304.45
+        },
+        {
+            "numero": 9,
+            "fecha": "WED/01/FEB/2023",
+            "agente": "AG26",
+            "nombreCliente": "Ing. Alberto Montalvo",
+            "tipo": "RNV",
+            "nivel": "NOBEL",
+            "plazo": "16_SEM.",
+            "monto": 4338,
+            "primerPago": 355.06
+        },
+        {
+            "numero": 10,
+            "fecha": "FRI/05/MAY/2023",
+            "agente": "AG21",
+            "nombreCliente": "Susana Blanca Orozco",
+            "tipo": "NUEVO",
+            "nivel": "NUEVO",
+            "plazo": "21_SEM.",
+            "monto": 3065,
+            "primerPago": 358.74
+        },
+        {
+            "numero": 11,
+            "fecha": "TUE/25/APR/2023",
+            "agente": "AG29",
+            "nombreCliente": "Leonor Zoé Zayas Niño",
+            "tipo": "RNV",
+            "nivel": "NUEVO",
+            "plazo": "21_SEM.",
+            "monto": 4348,
+            "primerPago": 382.94
+        },
+        {
+            "numero": 12,
+            "fecha": "WED/14/DEC/2022",
+            "agente": "AG25",
+            "nombreCliente": "Norma Leonardo Mojica",
+            "tipo": "RNV",
+            "nivel": "NUEVO",
+            "plazo": "21_SEM.",
+            "monto": 4672,
+            "primerPago": 297.6
+        },
+        {
+            "numero": 13,
+            "fecha": "TUE/22/NOV/2022",
+            "agente": "AG24",
+            "nombreCliente": "Caridad Luna Téllez",
+            "tipo": "NUEVO",
+            "nivel": "NUEVO",
+            "plazo": "21_SEM.",
+            "monto": 3921,
+            "primerPago": 300.95
+        },
+        {
+            "numero": 14,
+            "fecha": "WED/26/APR/2023",
+            "agente": "AG23",
+            "nombreCliente": "Rolando Armas",
+            "tipo": "NUEVO",
+            "nivel": "NOBEL",
+            "plazo": "16_SEM.",
+            "monto": 3623,
+            "primerPago": 352.2
+        },
+        {
+            "numero": 15,
+            "fecha": "SUN/25/JUN/2023",
+            "agente": "AG22",
+            "nombreCliente": "Sr(a). Zacarías Esparza",
+            "tipo": "NUEVO",
+            "nivel": "NOBEL",
+            "plazo": "16_SEM.",
+            "monto": 4869,
+            "primerPago": 272.12
+        },
+        {
+            "numero": 16,
+            "fecha": "FRI/24/MAY/2024",
+            "agente": "AG24",
+            "nombreCliente": "Héctor Gustavo Garza",
+            "tipo": "RNV",
+            "nivel": "NUEVO",
+            "plazo": "16_SEM.",
+            "monto": 4152,
+            "primerPago": 342.5
+        },
+        {
+            "numero": 17,
+            "fecha": "WED/03/MAY/2023",
+            "agente": "AG24",
+            "nombreCliente": "Isabela Gutiérrez Castellanos",
+            "tipo": "NUEVO",
+            "nivel": "NOBEL",
+            "plazo": "16_SEM.",
+            "monto": 3403,
+            "primerPago": 343.83
+        },
+        {
+            "numero": 18,
+            "fecha": "TUE/07/MAY/2024",
+            "agente": "AG24",
+            "nombreCliente": "Rosalia Carmen Limón Moreno",
+            "tipo": "RNV",
+            "nivel": "NUEVO",
+            "plazo": "16_SEM.",
+            "monto": 4919,
+            "primerPago": 258.78
+        },
+        {
+            "numero": 19,
+            "fecha": "FRI/27/JAN/2023",
+            "agente": "AG26",
+            "nombreCliente": "Florencia Elias Montalvo",
+            "tipo": "RNV",
+            "nivel": "NOBEL",
+            "plazo": "21_SEM.",
+            "monto": 4291,
+            "primerPago": 343.93
+        },
+        {
+            "numero": 20,
+            "fecha": "FRI/26/MAY/2023",
+            "agente": "AG21",
+            "nombreCliente": "Manuel Celia García Miranda",
+            "tipo": "NUEVO",
+            "nivel": "NOBEL",
+            "plazo": "16_SEM.",
+            "monto": 3971,
+            "primerPago": 262.94
+        },
+        {
+            "numero": 21,
+            "fecha": "TUE/13/DEC/2022",
+            "agente": "AG26",
+            "nombreCliente": "Ramiro Santiago Arguello",
+            "tipo": "RNV",
+            "nivel": "NOBEL",
+            "plazo": "21_SEM.",
+            "monto": 3641,
+            "primerPago": 303.53
+        },
+        {
+            "numero": 22,
+            "fecha": "FRI/26/APR/2024",
+            "agente": "AG27",
+            "nombreCliente": "Dr. Nayeli de la Torre",
+            "tipo": "NUEVO",
+            "nivel": "NUEVO",
+            "plazo": "16_SEM.",
+            "monto": 3152,
+            "primerPago": 374.82
+        },
+        {
+            "numero": 23,
+            "fecha": "MON/20/FEB/2023",
+            "agente": "AG28",
+            "nombreCliente": "Luz Madrigal Cervantes",
+            "tipo": "NUEVO",
+            "nivel": "NUEVO",
+            "plazo": "16_SEM.",
+            "monto": 4472,
+            "primerPago": 366.51
+        },
+        {
+            "numero": 24,
+            "fecha": "SUN/03/DEC/2023",
+            "agente": "AG25",
+            "nombreCliente": "José Eduardo Dulce Paredes Avilés",
+            "tipo": "NUEVO",
+            "nivel": "NOBEL",
+            "plazo": "16_SEM.",
+            "monto": 4225,
+            "primerPago": 308.66
+        },
+        {
+            "numero": 25,
+            "fecha": "TUE/03/SEP/2024",
+            "agente": "AG22",
+            "nombreCliente": "Diego Indira Briones Razo",
+            "tipo": "RNV",
+            "nivel": "NOBEL",
+            "plazo": "21_SEM.",
+            "monto": 4969,
+            "primerPago": 340.71
+        },
+        {
+            "numero": 26,
+            "fecha": "SAT/27/MAY/2023",
+            "agente": "AG20",
+            "nombreCliente": "Dolores Magaña",
+            "tipo": "RNV",
+            "nivel": "NUEVO",
+            "plazo": "16_SEM.",
+            "monto": 4560,
+            "primerPago": 281.2
+        },
+        {
+            "numero": 27,
+            "fecha": "MON/27/MAR/2023",
+            "agente": "AG23",
+            "nombreCliente": "Mtro. Estefanía del Valle",
+            "tipo": "NUEVO",
+            "nivel": "NUEVO",
+            "plazo": "16_SEM.",
+            "monto": 3860,
+            "primerPago": 319.91
+        },
+        {
+            "numero": 28,
+            "fecha": "WED/28/JUN/2023",
+            "agente": "AG25",
+            "nombreCliente": "Carmen Darío Zamora Loera",
+            "tipo": "RNV",
+            "nivel": "NUEVO",
+            "plazo": "21_SEM.",
+            "monto": 4001,
+            "primerPago": 324.84
+        },
+        {
+            "numero": 29,
+            "fecha": "THU/01/JUN/2023",
+            "agente": "AG24",
+            "nombreCliente": "Cristobal Gamboa",
+            "tipo": "NUEVO",
+            "nivel": "NUEVO",
+            "plazo": "16_SEM.",
+            "monto": 3080,
+            "primerPago": 258.28
+        },
+        {
+            "numero": 30,
+            "fecha": "WED/17/JUL/2024",
+            "agente": "AG28",
+            "nombreCliente": "Marisol Espinoza Haro",
+            "tipo": "RNV",
+            "nivel": "NOBEL",
+            "plazo": "21_SEM.",
+            "monto": 3019,
+            "primerPago": 282.0
+        }
+    ]
+}

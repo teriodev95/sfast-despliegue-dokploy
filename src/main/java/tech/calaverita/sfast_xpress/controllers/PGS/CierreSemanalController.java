@@ -29,10 +29,10 @@ import com.itextpdf.text.DocumentException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import tech.calaverita.sfast_xpress.Constants;
-import tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO;
 import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.CierreSemanalDTO;
 import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
 import tech.calaverita.sfast_xpress.controllers.XpressController;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.BalanceAgenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.CierreSemanalModel;
@@ -202,7 +202,7 @@ public final class CierreSemanalController {
 
     @PostMapping(path = "/desgloce_cobranza_y_comisiones/pdf/create-one")
     public @ResponseBody ResponseEntity<String> desgloceCobranzaYComisionesCreateOne(
-            @RequestBody TablaFlujoEfectivoDTO tablaFlujoEfectivoDTO)
+            @RequestBody TablaFlujoEfectivo tablaFlujoEfectivoDTO)
             throws DocumentException, FileNotFoundException {
         String idPDF = "CIERRE_" + tablaFlujoEfectivoDTO.getZona() + "_SEM" + tablaFlujoEfectivoDTO.getSemana() + "_"
                 + tablaFlujoEfectivoDTO.getAnio();

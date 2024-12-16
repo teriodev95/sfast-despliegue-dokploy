@@ -1,0 +1,100 @@
+{
+    "titulo": "flujoDeEfectivoDelGerente",
+    "gerente": "FCO. ALEJANDRO VARGAS HDZ",
+    "zona": "PZ04",
+    "semana": 31,
+    "ano": 2024,
+    "asignacionesAdministracion": {
+      "ingresos": [
+        {
+          "fecha": "MIE/31/JUL/2024",
+          "recibiDe": "BELEN",
+          "monto": 14000
+        }
+      ],
+      "subTotalIngresos": 14000,
+      "egresos": [],
+      "subTotalEgresos": 0
+    },
+    "asignacionesSeguridad": {
+      "ingresos": [],
+      "subTotalIngresos": 0,
+      "egresos": [
+        {
+          "fecha": "VIE/2/AGO/2024",
+          "asigneA": "ENRIQUE",
+          "monto": 5612
+        }
+      ],
+      "subTotalEgresos": 5612
+    },
+    "asignacionesOperacion": {
+      "ingresos": [],
+      "subTotalIngresos": 0,
+      "egresos": [],
+      "subTotalEgresos": 0
+    },
+    "incidentes": {
+      "ingresos": [],
+      "subTotalIngresos": 0,
+      "egresos": [],
+      "subTotalEgresos": 0
+    },
+    "reposicionesSemanaAnterior": {
+      "ingresos": [],
+      "subTotalIngresos": 0,
+      "egresos": [],
+      "subTotalEgresos": 0
+    },
+    "gasolina": {
+      "egresos": [
+        {
+          "fecha": "MIE/31/JUL/2024",
+          "litros": 12,
+          "monto": 275.00
+        },
+        {
+          "fecha": "MIE/31/JUL/2024",
+          "litros": 8,
+          "monto": 200.00
+        },
+        {
+          "fecha": "JUE/1/AGO/2024",
+          "litros": 8,
+          "monto": 200.00
+        },
+        {
+          "fecha": "VIE/2/AGO/2024",
+          "litros": 2,
+          "monto": 47.58
+        }
+      ],
+      "subTotal": {
+        "litros": 30,
+        "monto": 722.58
+      }
+    },
+    "casetas": {
+      "egresos": [],
+      "subTotal": 0
+    },
+    "mantenimientoAuto": {
+      "egresos": [],
+      "subTotal": 0
+    },
+    "otros": {
+      "egresos": [
+        {
+          "fecha": "MIE/31/JUL/2024",
+          "concepto": "2713165285",
+          "monto": 200
+        }
+      ],
+      "subTotal": 200.00
+    },
+    "resumen": {
+      "ingresos": 14000,
+      "egresos": 6535,
+      "diferencia": 7465
+    }
+}

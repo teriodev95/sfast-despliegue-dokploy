@@ -10,14 +10,14 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 
-import tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo;
 
 public class ApartadoResumen {
         DecimalFormat formatoMonto = new DecimalFormat("#,###,##0.00");
         Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
         Font regularFont = FontFactory.getFont(FontFactory.HELVETICA, 9f);
 
-        public PdfPTable creaTablaResumen(TablaFlujoEfectivoDTO data) throws DocumentException {
+        public PdfPTable creaTablaResumen(TablaFlujoEfectivo data) throws DocumentException {
                 // PARTE RESUMEN
                 PdfPTable tabla = new PdfPTable(6);
                 tabla.setWidthPercentage(100);

@@ -11,9 +11,9 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 
-import tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO;
-import tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO.Tabulador.Billete;
-import tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO.Tabulador.Moneda;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo.Tabulador.Billete;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo.Tabulador.Moneda;
 
 /**
  * Clase para generar las tablas de billetes y monedas, y para formatear
@@ -24,7 +24,7 @@ public class ApartadoTabulador {
         Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
         Font regularFont = FontFactory.getFont(FontFactory.HELVETICA, 9f);
 
-        public PdfPTable creaTablaTabulador(TablaFlujoEfectivoDTO data) throws DocumentException {
+        public PdfPTable creaTablaTabulador(TablaFlujoEfectivo data) throws DocumentException {
                 PdfPTable tabla = new PdfPTable(2);
                 tabla.setWidthPercentage(100);
                 tabla.setKeepTogether(true);
@@ -37,7 +37,7 @@ public class ApartadoTabulador {
                 tabla.addCell(block);
 
                 PdfPTable tabuladorBilletes = encabezadosTabulador("Billetes");
-                List<tech.calaverita.sfast_xpress.DTOs.TablaFlujoEfectivoDTO.Tabulador.Billete> billetes = data
+                List<Billete> billetes = data
                                 .getTabulador().getBilletes();
                 for (Billete billete : billetes) {
                         tabuladorBilletes.addCell(new PdfPCell(estiloCeldaAlineadoCentradoMonto(

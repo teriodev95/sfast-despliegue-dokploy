@@ -1,0 +1,89 @@
+{
+    "tituloReporte": "BALANCE GENERAL DE CIERRE SEMANAL",
+    "empresa": "PLATA XPRESS",
+    "semana": 31,
+    "anio": 2024,
+    "gerente": "FCO. ALEJANDRO VARGAS HDZ",
+    "zona": "PZ04",
+    "idEmpleado": "PXE004",
+    "fechaHora": "06/08/2024 10:01",
+    "agencias": [
+      {
+        "id": "AG19",
+        "agente": "LORENA",
+        "debito": 14786,
+        "cobPuro": 14786,
+        "faltante": 0,
+        "eficiencia": 100.00,
+        "ventas": null,
+        "clientes": {
+          "sant": 52,
+          "sact": 53
+        },
+        "noPagos": {
+          "sant": 0,
+          "sact": 0
+        },
+        "pagosReducidos": {
+          "sant": 0,
+          "sact": 0
+        },
+        "clientesConLiquidacion": {
+          "sant": 0,
+          "sact": 0
+        }
+      },
+      {
+        "id": "AG20",
+        "agente": "SARAHY",
+        "debito": 2848,
+        "cobPuro": 2848,
+        "faltante": 0,
+        "eficiencia": 100.00,
+        "ventas": 9000,
+        "clientes": {
+          "sant": 10,
+          "sact": 11
+        },
+        "noPagos": {
+          "sant": 0,
+          "sact": 0
+        },
+        "pagosReducidos": {
+          "sant": 0,
+          "sact": 0
+        },
+        "clientesConLiquidacion": {
+          "sant": 0,
+          "sact": 0
+        }
+      },
+      {
+        "id": "AG21",
+        "agente": "LAURA CONSU",
+        "debito": 551,
+        "cobPuro": 551,
+        "faltante": 0,
+        "eficiencia": 100.00,
+        "ventas": 17000,
+        "clientes": {
+          "sant": 0,
+          "sact": 2
+        },
+        "noPagos": {
+          "sant": 0,
+          "sact": 0
+        },
+        "pagosReducidos": {
+          "sant": 0,
+          "sact": 0
+        },
+        "clientesConLiquidacion": {
+          "sant": 0,
+          "sact": 0
+        }
+      }
+    ],
+    "totalAgencias": 3,
+    "totalAgentes": 3
+}

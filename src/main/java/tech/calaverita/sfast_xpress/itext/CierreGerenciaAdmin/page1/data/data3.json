@@ -1,0 +1,53 @@
+{
+    "titulo": "detalleDelCierreSemanalDeLaGerencia",
+    "ingresos": {
+      "administrativos": {
+        "asignacionesDeCajaChica": 14000.00,
+        "asignacionesDeSeguridad": 0,
+        "asignacionesDeOperacion": 0,
+        "ingresoPorIncidente": 0,
+        "totalDeAsignaciones": 14000.00
+      },
+      "operativos": {
+        "cobranzaPuraDeLaSemana": 18185.30,
+        "montoExcedente": 1119.70,
+        "liquidaciones": 0,
+        "primerosPagos": 2257.52,
+        "multas": 0,
+        "otros": 0,
+        "totalDeCobranza": 21562.52
+      },
+      "totalDeIngresos": 35562.52
+    },
+    "egresos": {
+      "administrativos": {
+        "asignacionesACajaChica": 0,
+        "asignacionesASeguridad": 5612.00,
+        "asignacionesDeOperacion": 0,
+        "gastoPorIncidente": 0,
+        "totalDeAsignaciones": 5612.00
+      },
+      "operativos": {
+        "ventas": {
+          "clientesNuevos": 18000.00,
+          "renovaciones": 8000.00,
+          "totalDeVentas": 26000.00
+        },
+        "comisionesYBonos": {
+          "comisionesPorCobranza": 1476.00,
+          "comisionesPorVentas": 600.00,
+          "bonosDeAgentes": 0,
+          "totalDeBonosYComisiones": 2076.00
+        },
+        "gastosOperativos": {
+          "gasolina": 722.58,
+          "casetas": 0,
+          "apoyoDeAutomovil": 0,
+          "otros": 200.00,
+          "totalDeGastos": 922.58
+        }
+      },
+      "totalDeEgresos": 34610.58
+    },
+    "efectivoAEntregar": 951.94
+}
