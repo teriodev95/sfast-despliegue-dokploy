@@ -32,6 +32,7 @@ import tech.calaverita.sfast_xpress.Constants;
 import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.CierreSemanalDTO;
 import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
 import tech.calaverita.sfast_xpress.controllers.XpressController;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.MaquetadoPdf;
 import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.BalanceAgenciaModel;
@@ -210,6 +211,17 @@ public final class CierreSemanalController {
                 + idPDF + ".pdf";
 
         DesgloceCobranzaYComisionesUtil.createCierreSemanalPDF(tablaFlujoEfectivoDTO, idPDF);
+
+        return new ResponseEntity<>(urlPDF, HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/desgloce_cobranza_y_comisiones/pdf/create-static")
+    public @ResponseBody ResponseEntity<String> desgloceCobranzaYComisionesCreateStatic()
+            throws DocumentException, FileNotFoundException {
+        String urlPDF = "https://sfast-api.terio.xyz/xpress/v1/pwa/cierres_semanales/desgloce_cobranza_y_comisiones/pdf/"
+                + "cierre_semanal_v5.pdf";
+
+        MaquetadoPdf.createPDF();
 
         return new ResponseEntity<>(urlPDF, HttpStatus.OK);
     }

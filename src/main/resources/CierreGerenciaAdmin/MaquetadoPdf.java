@@ -44,8 +44,8 @@ import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page4.tables.Apart
 import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page4.tables.classes.TablaFlujoEfectivoGerente;
 
 public class MaquetadoPdf {
-
     public static void createPDF() throws FileNotFoundException, DocumentException {
+        ;
         String dest = Constants.RUTA_PDF_PRODUCCION + "cierre_semanal_v5.pdf"; // El destino del archivo PDF.
         Rectangle ticket = new Rectangle(PageSize.A4);
         Document doc = new Document(ticket, 15f, 15f, 20f, 20f);

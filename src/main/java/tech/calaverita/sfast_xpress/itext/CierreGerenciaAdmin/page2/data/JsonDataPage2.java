@@ -20,7 +20,7 @@ public class JsonDataPage2 {
 
         try {
             FileReader reader = new FileReader(
-                    "src/main/java/tech/calaverita/sfast_xpress/itext/CierreGerenciaAdmin/page2/data/data.json");
+                    "src/main/resources/CierreGerenciaAdmin/page2/data/data.json");
             // FileReader reader = new
             // FileReader("src/main/java/com/clvrt/pdf/page2/data/dataFull.json");
             TablaResumenDeVentas reporte = gson.fromJson(reader, TablaResumenDeVentas.class);
@@ -39,7 +39,7 @@ public class JsonDataPage2 {
 
         try {
             FileReader reader = new FileReader(
-                    "src/main/java/tech/calaverita/sfast_xpress/itext/CierreGerenciaAdmin/page1/data/dataBlob.json");
+                    "src/main/resources/CierreGerenciaAdmin/page1/data/dataBlob.json");
             JsonArray jsonArray = JsonParser.parseReader(reader).getAsJsonArray();
             JsonElement jsonReporteBalance = jsonArray.get(3);
             TablaResumenDeVentas reporteBalance = gson.fromJson(jsonReporteBalance, TablaResumenDeVentas.class);

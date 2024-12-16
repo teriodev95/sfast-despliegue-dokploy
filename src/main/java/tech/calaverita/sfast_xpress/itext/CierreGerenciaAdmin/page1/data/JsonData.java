@@ -22,7 +22,7 @@ public class JsonData {
         try {
             // Lee el archivo JSON
             FileReader reader = new FileReader(
-                    "src/main/java/tech/calaverita/sfast_xpress/itext/CierreGerenciaAdmin/page1/data/data.json");
+                    System.getProperty("user.dir") + "/src/main/resources/CierreGerenciaAdmin/page1/data/data.json");
 
             // Convierte el JSON en una instancia de la clase Reporte
             TablaDetallesCierreAgencias reporte = gson.fromJson(reader, TablaDetallesCierreAgencias.class);
@@ -31,7 +31,7 @@ public class JsonData {
             reader.close();
 
             // Usa el objeto reporte
-            System.out.println("Título: " + reporte.getTituloReporte());
+            // System.out.println("Título: " + reporte.getTituloReporte());
             return reporte;
         } catch (IOException e) {
             e.printStackTrace();
@@ -45,7 +45,7 @@ public class JsonData {
 
         try {
             FileReader reader = new FileReader(
-                    "src/main/java/tech/calaverita/sfast_xpress/itext/CierreGerenciaAdmin/page1/data/data2.json");
+                    "src/main/resources/CierreGerenciaAdmin/page1/data/data2.json");
             TablaNumerosGerencia reporte = gson.fromJson(reader, TablaNumerosGerencia.class);
             reader.close();
             System.out.println("Título: " + reporte.getTitulo());
@@ -62,7 +62,7 @@ public class JsonData {
 
         try {
             FileReader reader = new FileReader(
-                    "src/main/java/tech/calaverita/sfast_xpress/itext/CierreGerenciaAdmin/page1/data/dataBlob.json");
+                    "src/main/resources/CierreGerenciaAdmin/page1/data/dataBlob.json");
             JsonArray jsonArray = JsonParser.parseReader(reader).getAsJsonArray();
             JsonElement jsonReporteBalance = jsonArray.get(1);
             TablaNumerosGerencia reporteBalance = gson.fromJson(jsonReporteBalance, TablaNumerosGerencia.class);
@@ -83,7 +83,7 @@ public class JsonData {
 
         try {
             FileReader reader = new FileReader(
-                    "src/main/java/tech/calaverita/sfast_xpress/itext/CierreGerenciaAdmin/page1/data/data3.json");
+                    "src/main/resources/CierreGerenciaAdmin/page1/data/data3.json");
             TablaCierreSemanalGerencia reporte = gson.fromJson(reader, TablaCierreSemanalGerencia.class);
 
             reader.close();
@@ -139,7 +139,7 @@ public class JsonData {
 
         try {
             FileReader reader = new FileReader(
-                    "src/main/java/tech/calaverita/sfast_xpress/itext/CierreGerenciaAdmin/page1/data/dataBlob.json");
+                    "src/main/resources/CierreGerenciaAdmin/page1/data/dataBlob.json");
             JsonArray jsonArray = JsonParser.parseReader(reader).getAsJsonArray();
             JsonElement jsonReporteBalance = jsonArray.get(0);
             TablaDetallesCierreAgencias reporteBalance = gson.fromJson(jsonReporteBalance,
