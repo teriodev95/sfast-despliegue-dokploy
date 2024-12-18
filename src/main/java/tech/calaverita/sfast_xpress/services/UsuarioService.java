@@ -50,6 +50,10 @@ public class UsuarioService {
         return this.repo.findByAgenciaAndStatus(agencia, status);
     }
 
+    public ArrayList<UsuarioModel> findByGerenciaAndStatus(String gerencia, boolean status) {
+        return this.repo.findByGerenciaAndStatus(gerencia, status);
+    }
+
     public UsuarioModel findByUsuarioAndPin(String usuario, int pin) {
         return this.repo.findByUsuarioAndPinAndStatus(usuario, pin, true);
     }

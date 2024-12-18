@@ -31,6 +31,8 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
 
         UsuarioModel findByAgenciaAndStatus(String agencia, boolean status);
 
+        ArrayList<UsuarioModel> findByGerenciaAndStatus(String gerencia, boolean status);
+
         ArrayList<UsuarioModel> findByGerenciaAndTipo(String gerencia, String tipo);
 
         @Query("SELECT CONCAT(usuar.nombre, ' ' , usuar.apellidoPaterno, ' ', usuar.apellidoMaterno) AS agente, " +
