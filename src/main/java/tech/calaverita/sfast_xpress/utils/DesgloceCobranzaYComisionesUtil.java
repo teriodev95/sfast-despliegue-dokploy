@@ -18,6 +18,19 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import tech.calaverita.sfast_xpress.Constants;
+import tech.calaverita.sfast_xpress.DTOs.DataCierreDTO;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.FooterEvent;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page1.tables.ApartadoBloquesDeFirmas;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page1.tables.ApartadoCierreSemanalGerencia;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page1.tables.ApartadoDetallesDeCierreDeAgencias;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page1.tables.ApartadoEncabezadoHoja1;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page1.tables.ApartadoNumerosDeLaGerencia;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page1.tables.classes.TablaCierreSemanalGerencia;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page1.tables.classes.TablaDetallesCierreAgencias;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page1.tables.classes.TablaNumerosGerencia;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page2.tables.ApartadoEncabezadoHoja2;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page2.tables.ApartadoResumenDeVentas;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page2.tables.classes.TablaResumenDeVentas;
 import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.ApartadoComisionesYAsignaciones;
 import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.ApartadoEncabezadoHoja3;
 import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.ApartadoFlujoDeEfectivoCierreSemanal;
@@ -28,19 +41,69 @@ import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.class
 import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo.CierreSemanalCobranzaAgencias.TotalesCobranza;
 import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo.ComisionesYAsignaciones.AgenteComision;
 import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo.ComisionesYAsignaciones.TotalesComisiones;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page4.tables.ApartadoAsignacionesAdministracion;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page4.tables.ApartadoAsignacionesOperacion;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page4.tables.ApartadoAsignacionesSeguridad;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page4.tables.ApartadoCasetas;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page4.tables.ApartadoEncabezadoHoja4;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page4.tables.ApartadoGasolinaYTotales;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page4.tables.ApartadoIncidentes;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page4.tables.ApartadoMantenimientoAuto;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page4.tables.ApartadoOtros;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page4.tables.ApartadoReposicionesSemanales;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page4.tables.classes.TablaFlujoEfectivoGerente;
 
 public class DesgloceCobranzaYComisionesUtil {
     DecimalFormat formatoMonto = new DecimalFormat("#,###,##0.00");
     Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8);
     Font regularFont = FontFactory.getFont(FontFactory.HELVETICA, 7.5f);
 
-    public static void createCierreSemanalPDF(TablaFlujoEfectivo dto, String idPDF)
+    public static void createCierreSemanalPDF(DataCierreDTO dataCierreDTO, String idPDF)
             throws DocumentException, FileNotFoundException {
         Rectangle ticket = new Rectangle(PageSize.A4);
         Document doc = new Document(ticket, 15f, 15f, 20f, 20f);
-        PdfWriter.getInstance(doc, new FileOutputStream(Constants.RUTA_PDF_PRODUCCION + idPDF + ".pdf"));
+        PdfWriter pdfWriter = PdfWriter.getInstance(doc,
+                new FileOutputStream(Constants.RUTA_PDF_PRODUCCION + idPDF + ".pdf"));
+
+        FooterEvent event = new FooterEvent(dataCierreDTO.getCierreRealizadoPor());
+        pdfWriter.setPageEvent(event);
 
         doc.open();
+
+        TablaDetallesCierreAgencias data = dataCierreDTO.getTablaDetallesCierreAgencias();
+
+        TablaNumerosGerencia data2 = dataCierreDTO.getTablaNumerosGerencia();
+
+        TablaCierreSemanalGerencia data3 = dataCierreDTO.getTablaCierreSemanalGerencia();
+
+        ApartadoEncabezadoHoja1 tablaDetalles = new ApartadoEncabezadoHoja1();
+        ApartadoDetallesDeCierreDeAgencias tablaBalance = new ApartadoDetallesDeCierreDeAgencias();
+        ApartadoNumerosDeLaGerencia tablaNumeros = new ApartadoNumerosDeLaGerencia();
+        ApartadoCierreSemanalGerencia tablaDetallesCierre = new ApartadoCierreSemanalGerencia();
+        ApartadoBloquesDeFirmas bloqueFirmas = new ApartadoBloquesDeFirmas();
+
+        doc.add(tablaDetalles.creaEncabezado(data));
+        doc.add(tablaBalance.creaParteInformacionAgencia(data));
+        doc.add(tablaBalance.creaParteClientesSantSact(data));
+        doc.add(tablaNumeros.creaTablaNumerosDeLaGerencia(data2));
+        doc.add(tablaDetallesCierre.creaTablasDetallesCierreSemanalGerencia(data3));
+        doc.add(bloqueFirmas.creaBloquesDeFirmas());
+
+        // HOJA 2
+        doc.newPage();
+
+        TablaResumenDeVentas dataResume = dataCierreDTO.getTablaResumenDeVentas();
+
+        ApartadoEncabezadoHoja2 tablaDetallesResumenVentas = new ApartadoEncabezadoHoja2();
+        ApartadoResumenDeVentas tablaResumen = new ApartadoResumenDeVentas();
+
+        doc.add(tablaDetallesResumenVentas.creaEncabezado(dataResume));
+        doc.add(tablaResumen.creaTablaResumenVentas(dataResume));
+
+        // HOJA 3
+        doc.newPage();
+
+        TablaFlujoEfectivo dataTablaFlujoEfectivo = dataCierreDTO.getTablaFlujoEfectivo();
 
         ApartadoEncabezadoHoja3 tablaFlujoEfectivo = new ApartadoEncabezadoHoja3();
         ApartadoFlujoDeEfectivoCierreSemanal tablaCobranzaAgencias = new ApartadoFlujoDeEfectivoCierreSemanal();
@@ -48,11 +111,38 @@ public class DesgloceCobranzaYComisionesUtil {
         ApartadoResumen tablaResumenFlujo = new ApartadoResumen();
         ApartadoTabulador tablaTabulador = new ApartadoTabulador();
 
-        doc.add(tablaFlujoEfectivo.creaEncabezado(dto));
-        doc.add(tablaCobranzaAgencias.creaTablasFlujoDeEfectivo(dto));
-        doc.add(tablaComisionesYasignaciones.creaTablaComisionesYAsignaciones(dto));
-        // doc.add(tablaTabulador.creaTablaTabulador(dto));
-        // doc.add(tablaResumenFlujo.creaTablaResumen(dto));
+        doc.add(tablaFlujoEfectivo.creaEncabezado(dataTablaFlujoEfectivo));
+        doc.add(tablaCobranzaAgencias.creaTablasFlujoDeEfectivo(dataTablaFlujoEfectivo));
+        doc.add(tablaComisionesYasignaciones.creaTablaComisionesYAsignaciones(dataTablaFlujoEfectivo));
+        doc.add(tablaTabulador.creaTablaTabulador(dataTablaFlujoEfectivo));
+        doc.add(tablaResumenFlujo.creaTablaResumen(dataTablaFlujoEfectivo));
+
+        // HOJA 4
+        doc.newPage();
+
+        ApartadoEncabezadoHoja4 tablaDetallesHoja4 = new ApartadoEncabezadoHoja4();
+        TablaFlujoEfectivoGerente dataFlowManager = dataCierreDTO.getTablaFlujoEfectivoGerente();
+
+        ApartadoAsignacionesAdministracion tablaAsignacionesAdmin = new ApartadoAsignacionesAdministracion();
+        ApartadoAsignacionesSeguridad tablaAsignacionesSeguridad = new ApartadoAsignacionesSeguridad();
+        ApartadoAsignacionesOperacion tablaAsignacionesOperacion = new ApartadoAsignacionesOperacion();
+        ApartadoIncidentes tablaIncidentes = new ApartadoIncidentes();
+        ApartadoReposicionesSemanales tablaReposiciones = new ApartadoReposicionesSemanales();
+        ApartadoGasolinaYTotales tablaGasolinaTotales = new ApartadoGasolinaYTotales();
+        ApartadoCasetas tablaCasetas = new ApartadoCasetas();
+        ApartadoMantenimientoAuto tablaMantAuto = new ApartadoMantenimientoAuto();
+        ApartadoOtros tablaOtros = new ApartadoOtros();
+
+        doc.add(tablaDetallesHoja4.creaEncabezado(dataFlowManager));
+        doc.add(tablaAsignacionesAdmin.creaTablasAsignacionesAdimnistracion(dataFlowManager));
+        doc.add(tablaAsignacionesSeguridad.creaTablasAsignacionesSeguridad(dataFlowManager));
+        doc.add(tablaAsignacionesOperacion.creaTablasAsignacionesOperacion(dataFlowManager));
+        doc.add(tablaIncidentes.creaTablaIncidentes(dataFlowManager));
+        doc.add(tablaReposiciones.creaTablaReposicionesSemanales(dataFlowManager));
+        doc.add(tablaGasolinaTotales.creaTablaGasolinaYTotales(dataFlowManager));
+        doc.add(tablaCasetas.creaTablaCasetas(dataFlowManager));
+        doc.add(tablaMantAuto.creaTablaMantenimientoAuto(dataFlowManager));
+        doc.add(tablaOtros.creaTablaOtros(dataFlowManager));
 
         doc.close();
     }

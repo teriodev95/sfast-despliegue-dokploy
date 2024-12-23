@@ -2,6 +2,9 @@ package tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page1.tables.clas
 
 import java.util.List;
 
+import lombok.Data;
+
+@Data
 public class TablaDetallesCierreAgencias {
     private String tituloReporte;
     private String empresa;

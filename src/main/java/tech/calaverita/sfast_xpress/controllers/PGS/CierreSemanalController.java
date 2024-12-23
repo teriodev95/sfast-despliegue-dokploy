@@ -29,11 +29,11 @@ import com.itextpdf.text.DocumentException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import tech.calaverita.sfast_xpress.Constants;
+import tech.calaverita.sfast_xpress.DTOs.DataCierreDTO;
 import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.CierreSemanalDTO;
 import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
 import tech.calaverita.sfast_xpress.controllers.XpressController;
-import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.MaquetadoPdf;
-import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page3.tables.classes.TablaFlujoEfectivo;
+import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page1.tables.classes.TablaDetallesCierreAgencias;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.BalanceAgenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.CierreSemanalModel;
@@ -203,25 +203,17 @@ public final class CierreSemanalController {
 
     @PostMapping(path = "/desgloce_cobranza_y_comisiones/pdf/create-one")
     public @ResponseBody ResponseEntity<String> desgloceCobranzaYComisionesCreateOne(
-            @RequestBody TablaFlujoEfectivo tablaFlujoEfectivoDTO)
+            @RequestBody DataCierreDTO dataCierreDTO)
             throws DocumentException, FileNotFoundException {
-        String idPDF = "CIERRE_" + tablaFlujoEfectivoDTO.getZona() + "_SEM" + tablaFlujoEfectivoDTO.getSemana() + "_"
-                + tablaFlujoEfectivoDTO.getAnio();
+        TablaDetallesCierreAgencias tablaDetallesCierreAgencias = dataCierreDTO.getTablaDetallesCierreAgencias();
+
+        String idPDF = "CIERRE_" + tablaDetallesCierreAgencias.getZona() + "_SEM"
+                + tablaDetallesCierreAgencias.getSemana() + "_"
+                + tablaDetallesCierreAgencias.getAnio();
         String urlPDF = "https://sfast-api.terio.xyz/xpress/v1/pwa/cierres_semanales/desgloce_cobranza_y_comisiones/pdf/"
                 + idPDF + ".pdf";
 
-        DesgloceCobranzaYComisionesUtil.createCierreSemanalPDF(tablaFlujoEfectivoDTO, idPDF);
-
-        return new ResponseEntity<>(urlPDF, HttpStatus.OK);
-    }
-
-    @PostMapping(path = "/desgloce_cobranza_y_comisiones/pdf/create-static")
-    public @ResponseBody ResponseEntity<String> desgloceCobranzaYComisionesCreateStatic()
-            throws DocumentException, FileNotFoundException {
-        String urlPDF = "https://sfast-api.terio.xyz/xpress/v1/pwa/cierres_semanales/desgloce_cobranza_y_comisiones/pdf/"
-                + "cierre_semanal_v5.pdf";
-
-        MaquetadoPdf.createPDF();
+        DesgloceCobranzaYComisionesUtil.createCierreSemanalPDF(dataCierreDTO, idPDF);
 
         return new ResponseEntity<>(urlPDF, HttpStatus.OK);
     }

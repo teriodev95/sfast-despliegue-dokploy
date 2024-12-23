@@ -1,5 +1,8 @@
 package tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page1.tables.classes;
 
+import lombok.Data;
+
+@Data
 public class TablaCierreSemanalGerencia {
     private String titulo;
     private Ingresos ingresos;

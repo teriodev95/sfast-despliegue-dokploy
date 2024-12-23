@@ -2,8 +2,10 @@ package tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page4.tables.clas
 
 import java.util.List;
 
-public class TablaFlujoEfectivoGerente {
+import lombok.Data;
 
+@Data
+public class TablaFlujoEfectivoGerente {
     private String titulo;
     private String gerente;
     private String zona;
