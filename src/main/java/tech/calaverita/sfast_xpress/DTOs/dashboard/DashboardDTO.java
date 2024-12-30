@@ -62,7 +62,7 @@ public class DashboardDTO {
                 this.multas = pagosDashboardDTO.getMultas();
                 this.liquidaciones = liquidacionesDashboardDTO.getLiquidaciones();
                 this.cobranzaTotal = pagosDashboardDTO.getCobranzaTotal();
-                this.montoDeDebitoFaltante = cierreDashboardDTO.getMontoDeDebitoFaltante();
+                this.montoDeDebitoFaltante = pagosDashboardDTO.getMontoDeDebitoFaltante();
                 this.efectivoEnCampo = cierreDashboardDTO.getEfectivoEnCampo();
                 this.statusAgencia = cierreDashboardDTO.getStatusAgencia();
         }

@@ -8,7 +8,6 @@ import tech.calaverita.sfast_xpress.utils.MyUtil;
 public class CierreDashboardDTO {
     private Double rendimiento;
     private Double efectivoEnCampo;
-    private Double montoDeDebitoFaltante;
     private String statusAgencia;
 
     public CierreDashboardDTO(PagosDashboardDTO pagosDashboardDTO, DebitosCobranzaDTO debitosCobranzaDTO,
@@ -17,7 +16,5 @@ public class CierreDashboardDTO {
                 .getDouble((pagosDashboardDTO.getTotalCobranzaPura() / debitosCobranzaDTO.getDebitoTotal()) * 100);
         this.efectivoEnCampo = MyUtil.getDouble(pagosDashboardDTO.getCobranzaTotal() - asignaciones);
         this.statusAgencia = statusAgencia;
-        this.montoDeDebitoFaltante = MyUtil
-                .getDouble(debitosCobranzaDTO.getDebitoTotal() - pagosDashboardDTO.getTotalCobranzaPura());
     }
 }
