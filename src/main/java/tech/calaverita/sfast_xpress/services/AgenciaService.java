@@ -37,6 +37,11 @@ public class AgenciaService {
     }
 
     @Async("asyncExecutor")
+    public CompletableFuture<ArrayList<AgenciaModel>> findByGerenciaIdAndStatusAsync(String gerenciaId, String status) {
+        return CompletableFuture.completedFuture(this.repo.findByGerenciaIdAndStatusOrderById(gerenciaId, status));
+    }
+
+    @Async("asyncExecutor")
     public CompletableFuture<ArrayList<String>> findIdsByGerenciaIdAsync(String gerenciaId) {
         String status = "ACTIVA";
         return CompletableFuture.completedFuture(this.repo.findIdsByGerenciaIdAndStatus(gerenciaId, status));

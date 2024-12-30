@@ -1,12 +1,27 @@
 package tech.calaverita.sfast_xpress.controllers.PGS;
 
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import jakarta.persistence.Tuple;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import tech.calaverita.sfast_xpress.Constants;
+import tech.calaverita.sfast_xpress.models.mariaDB.AgenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.SucursalModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 import tech.calaverita.sfast_xpress.security.AuthCredentials;
@@ -15,11 +30,6 @@ import tech.calaverita.sfast_xpress.services.GerenciaService;
 import tech.calaverita.sfast_xpress.services.SucursalService;
 import tech.calaverita.sfast_xpress.services.UsuarioService;
 import tech.calaverita.sfast_xpress.services.relation.UsuarioSucursalService;
-
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @CrossOrigin
 @RestController
@@ -32,8 +42,8 @@ public final class LoginController {
     private final UsuarioSucursalService usuarioSucursalService;
 
     public LoginController(AgenciaService agenciaService, GerenciaService gerenciaService,
-                           SucursalService sucursalService, UsuarioService usuarioService,
-                           UsuarioSucursalService usuarioSucursalService) {
+            SucursalService sucursalService, UsuarioService usuarioService,
+            UsuarioSucursalService usuarioSucursalService) {
         this.agenciaService = agenciaService;
         this.gerenciaService = gerenciaService;
         this.sucursalService = sucursalService;
@@ -75,19 +85,24 @@ public final class LoginController {
     @GetMapping(path = "/agencias")
     public ResponseEntity<ArrayList<LoginController.Agencia>> getAgenciasByGerencia(
             @RequestParam String gerencia) throws ExecutionException, InterruptedException {
-        CompletableFuture<ArrayList<String>> agenciasCF = this.agenciaService.findIdsByGerenciaIdAsync(gerencia);
-        CompletableFuture<ArrayList<Tuple>> agentesCF = this.usuarioService.findNombreCompletoByGerenciaTipoAndStatusAsync(gerencia,
-                "Agente", true);
+        CompletableFuture<ArrayList<AgenciaModel>> agenciasCF = this.agenciaService
+                .findByGerenciaIdAndStatusAsync(gerencia, "ACTIVA");
+        CompletableFuture<ArrayList<Tuple>> agentesCF = this.usuarioService
+                .findNombreCompletoByGerenciaTipoAndStatusAsync(gerencia,
+                        "Agente", true);
 
         CompletableFuture.allOf(agenciasCF, agentesCF);
 
         ArrayList<LoginController.Agencia> agencias = new ArrayList<>();
-        for (int i = 0; i < agenciasCF.get().size(); i++) {
-            Agencia agencia = new LoginController.Agencia(agenciasCF.get().get(i));
+        for (int i = 0; i < agenciasCF.join().size(); i++) {
+            // To easy code
+            AgenciaModel agenciaModel = agenciasCF.get().get(i);
+
+            Agencia agencia = new LoginController.Agencia(agenciaModel.getId());
 
             for (int j = 0; j < agentesCF.get().size(); j++) {
-                if (agenciasCF.get().get(i).equals(agentesCF.get().get(j).get("agencia"))) {
-                    agencia = new LoginController.Agencia(agenciasCF.get().get(i),
+                if (agenciaModel.getId().equals(agentesCF.get().get(j).get("agencia"))) {
+                    agencia = new LoginController.Agencia(agenciaModel,
                             agentesCF.get().get(j).get("agente").toString());
                     break;
                 }
@@ -139,10 +154,12 @@ public final class LoginController {
     public static class Agencia {
         private String agencia;
         private String agente = "SIN AGENTE ASIGNADO";
+        private Boolean usaApp = false;
 
-        public Agencia(String agencia, String agente) {
-            this.agencia = agencia;
+        public Agencia(AgenciaModel agenciaModel, String agente) {
+            this.agencia = agenciaModel.getId();
             this.agente = agente;
+            this.usaApp = agenciaModel.getUsaApp();
         }
 
         public Agencia(String agencia) {

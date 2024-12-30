@@ -16,4 +16,5 @@ public class AgenciaModel {
     private String status;
     @Column(name = "gerenciaid")
     private String gerenciaId;
+    private Boolean usaApp;
 }
