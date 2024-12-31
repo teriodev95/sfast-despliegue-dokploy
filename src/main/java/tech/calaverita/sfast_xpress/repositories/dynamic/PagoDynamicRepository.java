@@ -13,6 +13,13 @@ public interface PagoDynamicRepository extends CrudRepository<PagoDynamicModel, 
         ArrayList<PagoDynamicModel> findByAgenciaAndAnioAndSemanaAndEsPrimerPago(String agencia, int anio, int semana,
                         boolean esPrimerPago);
 
+        @Query("SELECT pag FROM PagoDynamicModel pag INNER JOIN PrestamoViewModel prest ON pag.prestamoId = prest.prestamoId "
+                        +
+                        "WHERE prest.gerencia = :gerencia AND prest.sucursal = :sucursal AND pag.anio = :anio AND pag.semana = :semana AND pag.esPrimerPago = :esPrimerPago")
+        ArrayList<PagoDynamicModel> findByGerenciaAndSucursalAndAnioAndSemanaAndEsPrimerPago(String gerencia, String sucursal,
+                        int anio, int semana,
+                        boolean esPrimerPago);
+
         @Query("SELECT SUM(pag.tarifa) FROM PagoDynamicModel pag WHERE pag.agencia = :agencia AND pag.anio = :anio " +
                         "AND pag.semana = :semana")
         double findDebitoTotalByAgenciaAndAnioAndSemana(String agencia, int anio, int semana);

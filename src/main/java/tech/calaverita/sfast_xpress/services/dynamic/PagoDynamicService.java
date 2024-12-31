@@ -26,6 +26,17 @@ public class PagoDynamicService {
         }
 
         @Async("asyncExecutor")
+        public CompletableFuture<ArrayList<PagoDynamicModel>> findByGerenciaSucursalAnioSemanaAndEsPrimerPago(
+                        String gerencia,
+                        String sucursal,
+                        int anio, int semana,
+                        boolean esPrimerPago) {
+                return CompletableFuture.completedFuture(
+                                this.repo.findByGerenciaAndSucursalAndAnioAndSemanaAndEsPrimerPago(gerencia, sucursal,
+                                                anio, semana, esPrimerPago));
+        }
+
+        @Async("asyncExecutor")
         public CompletableFuture<Double> findDebitoTotalByAgenciaAnioAndSemanaAsync(String agencia, int anio,
                         int semana) {
                 return CompletableFuture.completedFuture(this.repo

@@ -1,6 +1,8 @@
 package tech.calaverita.sfast_xpress.utils;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.stereotype.Component;
 
@@ -45,5 +47,10 @@ public class MyUtil {
 
         calendarioModel.setAnio(anio);
         calendarioModel.setSemana(semana);
+    }
+
+    public static CalendarioModel getSemanaActual() {
+        return calendarioService
+                .findByFechaActualAsync(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).join();
     }
 }

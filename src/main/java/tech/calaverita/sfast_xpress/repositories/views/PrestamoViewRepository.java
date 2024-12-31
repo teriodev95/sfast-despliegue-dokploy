@@ -14,6 +14,10 @@ public interface PrestamoViewRepository extends CrudRepository<PrestamoViewModel
         ArrayList<PrestamoViewModel> findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(String agencia,
                         Double saldoAlIniciarSemana);
 
+        ArrayList<PrestamoViewModel> findByGerenciaAndSucursalAndSaldoAlIniciarSemanaGreaterThan(String gerencia,
+                        String sucursal,
+                        Double saldoAlIniciarSemana);
+
         @Query("SELECT prest FROM PrestamoViewModel prest INNER JOIN PagoModel pag ON prest.prestamoId = pag.prestamoId "
                         +
                         "AND pag.agente = :agencia AND pag.anio = :anio AND pag.semana = :semana " +
