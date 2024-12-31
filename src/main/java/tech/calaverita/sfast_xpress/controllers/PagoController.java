@@ -39,6 +39,7 @@ import tech.calaverita.sfast_xpress.services.relation.UsuarioGerenciaService;
 import tech.calaverita.sfast_xpress.services.views.PrestamoViewService;
 import tech.calaverita.sfast_xpress.utils.PagoUtil;
 
+@CrossOrigin
 @RestController
 @RequestMapping(path = "/xpress/v1/pays")
 public final class PagoController {
@@ -153,7 +154,7 @@ public final class PagoController {
         pagoModels.addAll(this.pagoService
                 .findByPrestamoIdAnioNotAndSemanaNotOrderByAnioAscSemanaAsc(id, calendarioModel.getAnio(),
                         calendarioModel.getSemana()));
-        if(pagoDynamicModel != null){
+        if (pagoDynamicModel != null) {
             pagoModels.add(new PagoModel(pagoDynamicModel));
         }
 
