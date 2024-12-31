@@ -119,14 +119,17 @@ public final class XpressController {
                         @PathVariable String campo,
                         @PathVariable String agencia, @RequestParam(required = false) String filtroDebito) {
                 HashMap<String, Object> campos = new HashMap<>();
+
+                CalendarioModel calendarioModel = MyUtil.getSemanaActual();
+                CompletableFuture<ArrayList<PagoDynamicModel>> pagoAgrupagoModels = this.pagoAgrupadoService
+                                .findByAgenciaAnioSemanaAndEsPrimerPago(agencia,
+                                                calendarioModel.getAnio(),
+                                                calendarioModel.getSemana(), false);
+                CompletableFuture<ArrayList<PrestamoViewModel>> prestamoViewModels = this.prestamoViewService
+                                .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(agencia, 0D);
+
                 switch (campo) {
                         case "cobranza_pura":
-                                CalendarioModel calendarioModel = MyUtil.getSemanaActual();
-                                CompletableFuture<ArrayList<PagoDynamicModel>> pagoAgrupagoModels = this.pagoAgrupadoService
-                                                .findByAgenciaAnioSemanaAndEsPrimerPago(agencia,
-                                                                calendarioModel.getAnio(),
-                                                                calendarioModel.getSemana(), false);
-
                                 // To easy code
                                 Double cobranzaPura = MyUtil.getDouble(pagoAgrupagoModels.join().stream()
                                                 .mapToDouble(pagoModel -> pagoModel.getMonto() >= pagoModel.getTarifa()
@@ -135,12 +138,8 @@ public final class XpressController {
                                                 .sum());
 
                                 campos.put("cobranzaPura", cobranzaPura);
-
                                 break;
                         case "debito":
-                                CompletableFuture<ArrayList<PrestamoViewModel>> prestamoViewModels = this.prestamoViewService
-                                                .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(agencia, 0D);
-
                                 if (filtroDebito != null) {
                                         switch (filtroDebito) {
 
@@ -170,7 +169,17 @@ public final class XpressController {
                                                         break;
                                         }
                                 }
+                                break;
+                        case "faltante":
+                                // To easy code
+                                Double faltante = MyUtil.getDouble(pagoAgrupagoModels.join().stream()
+                                                .filter(pagoModel -> pagoModel.getTipo().equals("Reducido"))
+                                                .mapToDouble(pagoModel -> pagoModel.getAbreCon() < pagoModel.getTarifa()
+                                                                ? pagoModel.getAbreCon() - pagoModel.getMonto()
+                                                                : pagoModel.getTarifa() - pagoModel.getMonto())
+                                                .sum());
 
+                                campos.put("faltante", faltante);
                                 break;
                         default:
                                 campos.put("response", "Campo no encontrado");
@@ -189,15 +198,22 @@ public final class XpressController {
                 GerenciaModel gerenciaModel = this.gerenciaService.findById(gerencia);
 
                 HashMap<String, Object> campos = new HashMap<>();
+
+                CalendarioModel calendarioModel = MyUtil.getSemanaActual();
+                CompletableFuture<ArrayList<PagoDynamicModel>> pagoAgrupagoModels = this.pagoAgrupadoService
+                                .findByGerenciaSucursalAnioSemanaAndEsPrimerPago(
+                                                gerenciaModel.getDeprecatedName(),
+                                                gerenciaModel.getSucursal(),
+                                                calendarioModel.getAnio(),
+                                                calendarioModel.getSemana(), false);
+                CompletableFuture<ArrayList<PrestamoViewModel>> prestamoViewModels = this.prestamoViewService
+                                .findByGerenciaSucursalAndSaldoAlIniciarSemanaGreaterThan(
+                                                gerenciaModel.getDeprecatedName(),
+                                                gerenciaModel.getSucursal(), 0D);
+
                 switch (campo) {
                         case "cobranza_pura":
-                                CalendarioModel calendarioModel = MyUtil.getSemanaActual();
-                                CompletableFuture<ArrayList<PagoDynamicModel>> pagoAgrupagoModels = this.pagoAgrupadoService
-                                                .findByGerenciaSucursalAnioSemanaAndEsPrimerPago(
-                                                                gerenciaModel.getDeprecatedName(),
-                                                                gerenciaModel.getSucursal(),
-                                                                calendarioModel.getAnio(),
-                                                                calendarioModel.getSemana(), false);
+
                                 agencias.forEach(agencia -> {
                                         // To easy code
                                         Double cobranzaPura = MyUtil.getDouble(pagoAgrupagoModels.join().stream()
@@ -211,14 +227,8 @@ public final class XpressController {
 
                                         campos.put(agencia, cobranzaPura);
                                 });
-
                                 break;
                         case "debito":
-                                CompletableFuture<ArrayList<PrestamoViewModel>> prestamoViewModels = this.prestamoViewService
-                                                .findByGerenciaSucursalAndSaldoAlIniciarSemanaGreaterThan(
-                                                                gerenciaModel.getDeprecatedName(),
-                                                                gerenciaModel.getSucursal(), 0D);
-
                                 if (filtroDebito != null) {
                                         switch (filtroDebito) {
 
@@ -282,7 +292,25 @@ public final class XpressController {
                                                         break;
                                         }
                                 }
+                                break;
+                        case "faltante":
+                                agencias.forEach(agencia -> {
+                                        // To easy code
+                                        Double faltante = MyUtil.getDouble(pagoAgrupagoModels.join().stream()
+                                                        .filter(pagoModel -> pagoModel.getTipo().equals("Reducido"))
+                                                        .filter(prestamoViewModel -> prestamoViewModel
+                                                                        .getAgencia()
+                                                                        .equals(agencia))
+                                                        .mapToDouble(pagoModel -> pagoModel.getAbreCon() < pagoModel
+                                                                        .getTarifa()
+                                                                                        ? pagoModel.getAbreCon()
+                                                                                                        - pagoModel.getMonto()
+                                                                                        : pagoModel.getTarifa()
+                                                                                                        - pagoModel.getMonto())
+                                                        .sum());
 
+                                        campos.put(agencia, faltante);
+                                });
                                 break;
                         default:
                                 campos.put("response", "Campo no encontrado");
