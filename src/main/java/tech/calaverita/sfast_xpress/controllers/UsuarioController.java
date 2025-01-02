@@ -49,7 +49,7 @@ public final class UsuarioController {
         return new ResponseEntity<>(usuario, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/by_gerencia/{gerencia}")
+    @GetMapping(path = "/seguridad_by_gerencia/{gerencia}")
     public @ResponseBody ResponseEntity<UsuarioModel> getByGerenciaInnerJoinUsuarioGerenciaModel(
             @PathVariable String gerencia) {
         UsuarioModel usuarioModel = this.usuarioService.findByGerenciaInnerJoinUsuarioGerenciaModel(gerencia,
