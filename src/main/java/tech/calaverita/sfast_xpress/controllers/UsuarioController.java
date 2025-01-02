@@ -1,9 +1,15 @@
 package tech.calaverita.sfast_xpress.controllers;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletResponse;
 import tech.calaverita.sfast_xpress.Constants;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 import tech.calaverita.sfast_xpress.services.UsuarioService;
@@ -41,5 +47,17 @@ public final class UsuarioController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         return new ResponseEntity<>(usuario, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/by_gerencia/{gerencia}")
+    public @ResponseBody ResponseEntity<UsuarioModel> getByGerenciaInnerJoinUsuarioGerenciaModel(
+            @PathVariable String gerencia) {
+        UsuarioModel usuarioModel = this.usuarioService.findByGerenciaInnerJoinUsuarioGerenciaModel(gerencia,
+                "Seguridad", true);
+
+        if (usuarioModel == null)
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        return new ResponseEntity<>(usuarioModel, HttpStatus.OK);
     }
 }

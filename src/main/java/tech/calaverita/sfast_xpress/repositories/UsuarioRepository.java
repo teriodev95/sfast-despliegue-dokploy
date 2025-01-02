@@ -51,4 +51,8 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
                         +
                         "AND ugm.gerenciaId = :gerencia")
         ArrayList<UsuarioModel> findByGerenciaInnerJoinUsuarioGerenciaModel(String gerencia);
+
+        @Query("SELECT usuar FROM UsuarioModel usuar INNER JOIN UsuarioGerenciaModel usuarGer ON usuar.usuarioId = usuarGer.usuarioId "
+                        + "WHERE usuarGer.gerenciaId = :gerencia AND usuar.tipo = :tipo AND usuar.status = :status")
+        ArrayList<UsuarioModel> findByGerenciaInnerJoinUsuarioGerenciaModel(String gerencia, String tipo, boolean status);
 }
