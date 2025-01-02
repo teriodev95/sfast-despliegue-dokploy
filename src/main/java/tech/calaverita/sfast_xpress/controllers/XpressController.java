@@ -127,6 +127,9 @@ public final class XpressController {
                                                 calendarioModel.getSemana(), false);
                 CompletableFuture<ArrayList<PrestamoViewModel>> prestamoViewModels = this.prestamoViewService
                                 .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(agencia, 0D);
+                CompletableFuture<Double> asignaciones = this.asignacionService
+                                .findSumaAsigancionesByAgenciaAnioAndSemana(agencia, calendarioModel.getAnio(),
+                                                calendarioModel.getSemana());
 
                 switch (campo) {
                         case "cobranza_pura":
@@ -180,6 +183,17 @@ public final class XpressController {
                                                 .sum());
 
                                 campos.put("faltante", faltante);
+                                break;
+                        case "efectivo_en_campo":
+                                // To easy code
+                                Double cobranzaTotal = MyUtil
+                                                .getDouble(pagoAgrupagoModels.join().stream()
+                                                                .filter(pagoModel -> !pagoModel.getTipo()
+                                                                                .equals("Multa"))
+                                                                .mapToDouble(PagoDynamicModel::getMonto).sum());
+                                Double efectivoEnCampo = MyUtil.getDouble(cobranzaTotal - asignaciones.join());
+
+                                campos.put("efectivoEnCampo", efectivoEnCampo);
                                 break;
                         default:
                                 campos.put("response", "Campo no encontrado");
@@ -310,6 +324,28 @@ public final class XpressController {
                                                         .sum());
 
                                         campos.put(agencia, faltante);
+                                });
+                                break;
+                        case "efectivo_en_campo":
+                                agencias.forEach(agencia -> {
+                                        CompletableFuture<Double> asignaciones = this.asignacionService
+                                                        .findSumaAsigancionesByAgenciaAnioAndSemana(agencia,
+                                                                        calendarioModel.getAnio(),
+                                                                        calendarioModel.getSemana());
+
+                                        // To easy code
+                                        Double cobranzaTotal = MyUtil
+                                                        .getDouble(pagoAgrupagoModels.join().stream()
+                                                                        .filter(pagoModel -> !pagoModel.getTipo()
+                                                                                        .equals("Multa"))
+                                                                        .filter(prestamoViewModel -> prestamoViewModel
+                                                                                        .getAgencia()
+                                                                                        .equals(agencia))
+                                                                        .mapToDouble(PagoDynamicModel::getMonto).sum());
+
+                                        Double efectivoEnCampo = MyUtil.getDouble(cobranzaTotal - asignaciones.join());
+
+                                        campos.put(agencia, efectivoEnCampo);
                                 });
                                 break;
                         default:
