@@ -34,6 +34,7 @@ public class DashboardDTO {
         private Double montoDeDebitoFaltante;
         private Double efectivoEnCampo;
         private String statusAgencia;
+        private Boolean isCerrada;
 
         public DashboardDTO() {
                 dashboardWithEmptyValues();

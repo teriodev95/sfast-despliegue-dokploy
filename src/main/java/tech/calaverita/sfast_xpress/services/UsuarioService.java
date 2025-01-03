@@ -66,6 +66,10 @@ public class UsuarioService {
         return this.repo.findByGerenciaInnerJoinUsuarioGerenciaModel(gerencia);
     }
 
+    public UsuarioModel findByPin(Integer pin) {
+        return this.repo.findByPin(pin);
+    }
+
     public ArrayList<UsuarioModel> findAll() {
         return (ArrayList<UsuarioModel>) this.repo.findAll();
     }

@@ -60,4 +60,14 @@ public final class UsuarioController {
 
         return new ResponseEntity<>(usuarioModel, HttpStatus.OK);
     }
+
+    @GetMapping(path = "/pin/{pin}")
+    public @ResponseBody ResponseEntity<UsuarioModel> getByPin(@PathVariable Integer pin) {
+        UsuarioModel usuarioModel = this.usuarioService.findByPin(pin);
+
+        if (usuarioModel == null)
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        return new ResponseEntity<>(usuarioModel, HttpStatus.OK);
+    }
 }

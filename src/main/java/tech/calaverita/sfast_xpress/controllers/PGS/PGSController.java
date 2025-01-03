@@ -1,11 +1,25 @@
 package tech.calaverita.sfast_xpress.controllers.PGS;
 
-import jakarta.servlet.http.HttpServletResponse;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletResponse;
 import tech.calaverita.sfast_xpress.Constants;
 import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
+import tech.calaverita.sfast_xpress.models.mariaDB.AgenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.pojos.ObjectsContainer;
@@ -15,13 +29,8 @@ import tech.calaverita.sfast_xpress.services.AgenciaService;
 import tech.calaverita.sfast_xpress.services.AsignacionService;
 import tech.calaverita.sfast_xpress.services.CalendarioService;
 import tech.calaverita.sfast_xpress.utils.DashboardPorDiaUtil;
+import tech.calaverita.sfast_xpress.utils.DashboardPorDiaYHoraUtil;
 import tech.calaverita.sfast_xpress.utils.pwa.PWAUtil;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 
 @CrossOrigin
 @RestController
@@ -32,7 +41,7 @@ public final class PGSController {
     private final AgenciaService agenciaService;
 
     public PGSController(AsignacionService asignacionService, CalendarioService calendarioService,
-                         AgenciaService agenciaService) {
+            AgenciaService agenciaService) {
         this.asignacionService = asignacionService;
         this.calendarioService = calendarioService;
         this.agenciaService = agenciaService;
@@ -46,8 +55,8 @@ public final class PGSController {
 
     @GetMapping(path = "/cobranza/{agencia}/{anio}/{semana}")
     public ResponseEntity<CobranzaPWA> getCobranzaByAgenciaAnioAndSemana(@PathVariable String agencia,
-                                                                         @PathVariable int anio,
-                                                                         @PathVariable int semana) {
+            @PathVariable int anio,
+            @PathVariable int semana) {
         CobranzaPWA cobranzaPwa = new CobranzaPWA();
 
         cobranzaPwa.setCobranza(PWAUtil.darrprestamoCobranzaPwaFromPrestamoModelsAndPagoModels(agencia, anio, semana));
@@ -66,7 +75,7 @@ public final class PGSController {
 
     @GetMapping(path = "/dashboard-fecha/{agencia}/{fecha}")
     public @ResponseBody ResponseEntity<DashboardDTO> getDashboardByAgencia(@PathVariable String agencia,
-                                                                         @PathVariable String fecha) {
+            @PathVariable String fecha) {
         DashboardDTO dashboard = new DashboardDTO();
         dashboard.setStatusAgencia(this.agenciaService.findStatusById(agencia).join());
         ObjectsContainer objectsContainer = new ObjectsContainer();
@@ -99,6 +108,33 @@ public final class PGSController {
         DashboardPorDiaUtil dashboardPorDiaUtil = new DashboardPorDiaUtil(objectsContainer);
 
         dashboardPorDiaUtil.run();
+
+        return new ResponseEntity<>(objectsContainer.getDashboard(), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/dashboard_fecha_y_hora/{agencia}/{fecha}")
+    public @ResponseBody ResponseEntity<DashboardDTO> getDashboardFechaYHoraByAgencia(@PathVariable String agencia,
+            @PathVariable String fecha) {
+        DashboardDTO dashboard = new DashboardDTO();
+        dashboard.setStatusAgencia(this.agenciaService.findStatusById(agencia).join());
+        ObjectsContainer objectsContainer = new ObjectsContainer();
+
+        dashboard.setAgencia(agencia);
+
+        objectsContainer.setDashboard(dashboard);
+
+        objectsContainer.setFechaPago(fecha);
+
+        try {
+            objectsContainer.setDia(new SimpleDateFormat("EEEE")
+                    .format(new SimpleDateFormat("yyyy-MM-dd").parse(objectsContainer.getFechaPago())));
+        } catch (ParseException e) {
+
+        }
+
+        DashboardPorDiaYHoraUtil dashboardPorDiaYHoraUtil = new DashboardPorDiaYHoraUtil(objectsContainer);
+
+        dashboardPorDiaYHoraUtil.run();
 
         return new ResponseEntity<>(objectsContainer.getDashboard(), HttpStatus.OK);
     }

@@ -67,6 +67,14 @@ public class PrestamoViewService {
         return this.repo.darrprestUtilEntByAgenciaAndFechaPagoToDashboard(strAgencia_I, strFechaPago_I);
     }
 
+    public ArrayList<PrestamoViewModel> darrprestUtilEntByAgenciaAndFechaPagoLessThanEqualToDashboard(
+            String strAgencia_I,
+            String strFechaPago_I, int intAnio_I, int intSemana_I) {
+        return this.repo.darrprestUtilEntByAgenciaAndFechaPagoLessThanEqualToDashboard(strAgencia_I, strFechaPago_I,
+                intAnio_I,
+                intSemana_I);
+    }
+
     public PrestamoViewModel findByClienteId(String clienteId) {
         return this.repo.findByClienteId(clienteId);
     }

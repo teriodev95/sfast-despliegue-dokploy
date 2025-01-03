@@ -29,6 +29,8 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
 
         UsuarioModel findByUsuario(String usuario);
 
+        UsuarioModel findByPin(Integer pin);
+
         UsuarioModel findByAgenciaAndStatus(String agencia, boolean status);
 
         ArrayList<UsuarioModel> findByGerenciaAndStatus(String gerencia, boolean status);
@@ -54,5 +56,6 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
 
         @Query("SELECT usuar FROM UsuarioModel usuar INNER JOIN UsuarioGerenciaModel usuarGer ON usuar.usuarioId = usuarGer.usuarioId "
                         + "WHERE usuarGer.gerenciaId = :gerencia AND usuar.tipo = :tipo AND usuar.status = :status")
-        ArrayList<UsuarioModel> findByGerenciaInnerJoinUsuarioGerenciaModel(String gerencia, String tipo, boolean status);
+        ArrayList<UsuarioModel> findByGerenciaInnerJoinUsuarioGerenciaModel(String gerencia, String tipo,
+                        boolean status);
 }

@@ -1,12 +1,13 @@
 package tech.calaverita.sfast_xpress.services.cierre_semanal;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
+
 import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.CierreSemanalDTO;
 import tech.calaverita.sfast_xpress.mappers.cierre_semanal.CierreSemanalMapper;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.CierreSemanalModel;
 import tech.calaverita.sfast_xpress.repositories.cierre_semanal.CierreSemanalRepository;
-
-import java.util.Optional;
 
 @Service
 public class CierreSemanalService {
@@ -15,41 +16,39 @@ public class CierreSemanalService {
 
     public CierreSemanalService(
             CierreSemanalRepository repo,
-            CierreSemanalMapper mapper
-    ) {
+            CierreSemanalMapper mapper) {
         this.repo = repo;
         this.mapper = mapper;
     }
 
+    public Boolean existsById(String id) {
+        return this.repo.existsById(id);
+    }
+
     public void save(
-            CierreSemanalModel cierSemEnt_I
-    ) {
+            CierreSemanalModel cierSemEnt_I) {
         this.repo.save(cierSemEnt_I);
     }
 
     public Optional<CierreSemanalModel> findById(
-            String id
-    ) {
+            String id) {
         return this.repo.findById(id);
     }
 
     public Optional<CierreSemanalModel> findByAgenciaAnioAndSemana(
             String agencia,
             int anio,
-            int semana
-    ) {
+            int semana) {
         return this.repo.findByAgenciaAnioAndSemana(agencia + "-" + anio + "-" + semana);
     }
 
     public CierreSemanalDTO getCierreSemanalDTO(
-            CierreSemanalModel entity
-    ) {
+            CierreSemanalModel entity) {
         return this.mapper.mapOut(entity);
     }
 
     public CierreSemanalModel getCierreSemanalEntity(
-            CierreSemanalDTO DTO
-    ) {
+            CierreSemanalDTO DTO) {
         return this.mapper.mapIn(DTO);
     }
 }
