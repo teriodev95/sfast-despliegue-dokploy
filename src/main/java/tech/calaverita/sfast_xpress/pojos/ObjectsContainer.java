@@ -7,6 +7,7 @@ import tech.calaverita.sfast_xpress.DTOs.cobranza.CobranzaDTO;
 import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
 import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.GerenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.LiquidacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.PagoModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.dynamic.PagoDynamicModel;
@@ -32,4 +33,5 @@ public class ObjectsContainer {
     private ArrayList<LiquidacionModel> liquidaciones;
     private ArrayList<PagoModel> pagosOfLiquidaciones;
     private ArrayList<AsignacionModel> asignaciones;
+    private GerenciaModel gerenciaModel;
 }

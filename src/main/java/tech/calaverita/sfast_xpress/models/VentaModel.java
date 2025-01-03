@@ -13,7 +13,7 @@ import lombok.Data;
 public class VentaModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Integer id;
     private String fecha;
     private Integer anio;
     private Integer semana;

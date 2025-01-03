@@ -75,6 +75,15 @@ public class PrestamoViewService {
                 intSemana_I);
     }
 
+    public ArrayList<PrestamoViewModel> darrprestUtilEntByGerenciaSucursalAndFechaPagoLessThanEqualToDashboard(
+            String gerencia, String sucursal,
+            String strFechaPago_I, int intAnio_I, int intSemana_I) {
+        return this.repo.darrprestUtilEntByGerenciaAndSucursalAndFechaPagoLessThanEqualToDashboard(gerencia, sucursal,
+                strFechaPago_I,
+                intAnio_I,
+                intSemana_I);
+    }
+
     public PrestamoViewModel findByClienteId(String clienteId) {
         return this.repo.findByClienteId(clienteId);
     }

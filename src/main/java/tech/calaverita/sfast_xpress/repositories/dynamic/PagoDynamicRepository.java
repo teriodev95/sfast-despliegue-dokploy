@@ -16,7 +16,8 @@ public interface PagoDynamicRepository extends CrudRepository<PagoDynamicModel, 
         @Query("SELECT pag FROM PagoDynamicModel pag INNER JOIN PrestamoViewModel prest ON pag.prestamoId = prest.prestamoId "
                         +
                         "WHERE prest.gerencia = :gerencia AND prest.sucursal = :sucursal AND pag.anio = :anio AND pag.semana = :semana AND pag.esPrimerPago = :esPrimerPago")
-        ArrayList<PagoDynamicModel> findByGerenciaAndSucursalAndAnioAndSemanaAndEsPrimerPago(String gerencia, String sucursal,
+        ArrayList<PagoDynamicModel> findByGerenciaAndSucursalAndAnioAndSemanaAndEsPrimerPago(String gerencia,
+                        String sucursal,
                         int anio, int semana,
                         boolean esPrimerPago);
 
@@ -102,6 +103,10 @@ public interface PagoDynamicRepository extends CrudRepository<PagoDynamicModel, 
                         String fecha);
 
         ArrayList<PagoDynamicModel> findByAgenciaAndAnioAndSemanaAndCierraConGreaterThan(String agencia, int anio,
+                        int semana,
+                        double cierraConGreaterThan);
+
+        ArrayList<PagoDynamicModel> findByAgenciaInAndAnioAndSemanaAndCierraConGreaterThan(String[] agencia, int anio,
                         int semana,
                         double cierraConGreaterThan);
 

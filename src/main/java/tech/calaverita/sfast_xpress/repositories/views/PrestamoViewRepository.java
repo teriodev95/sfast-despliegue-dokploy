@@ -80,6 +80,18 @@ public interface PrestamoViewRepository extends CrudRepository<PrestamoViewModel
                         String agencia,
                         String fechaPago, int anio, int semana);
 
+        @Query("SELECT distinct(pr)" +
+                        "FROM PrestamoViewModel pr " +
+                        "INNER JOIN PagoModel pa " +
+                        "ON pr.prestamoId = pa.prestamoId " +
+                        "WHERE pr.gerencia = :gerencia " +
+                        "AND pr.sucursal = :sucursal " +
+                        "AND pa.fechaPago <= :fechaPago " +
+                        "AND pa.esPrimerPago = false AND pa.anio = :anio AND pa.semana = :semana")
+        ArrayList<PrestamoViewModel> darrprestUtilEntByGerenciaAndSucursalAndFechaPagoLessThanEqualToDashboard(
+                        String gerencia, String sucursal,
+                        String fechaPago, int anio, int semana);
+
         PrestamoViewModel findByClienteId(String clienteId);
 
         ArrayList<PrestamoViewModel> findByAgencia(String agencia);

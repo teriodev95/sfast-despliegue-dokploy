@@ -65,6 +65,15 @@ public class PagoService {
                 esPrimerPago, anio, semana);
     }
 
+    public ArrayList<PagoModel> findByGerenciaAndFechaPagoLessThanEqualAndEsPrimerPagoInnerJoinPagoModel(
+            String gerencia, String sucursal,
+            String fechaPago,
+            boolean esPrimerPago, int anio, int semana) {
+        return this.repo.findByGerenciaAndSucursalAndFechaPagoLessThanEqualAndEsPrimerPagoInnerJoinPagoModel(gerencia,
+                sucursal, fechaPago,
+                esPrimerPago, anio, semana);
+    }
+
     public ArrayList<PagoModel> findByAgenteAnioAndSemanaInnerJoinLiquidacionModel(String agencia, int anio,
             int semana) {
         return this.repo.findByAgenteAndAnioAndSemanaInnerJoinLiquidacionModel(agencia, anio, semana);

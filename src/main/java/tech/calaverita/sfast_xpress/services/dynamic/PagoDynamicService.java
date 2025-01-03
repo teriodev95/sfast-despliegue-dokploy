@@ -159,6 +159,13 @@ public class PagoDynamicService {
                                 cierraConGreaterThan);
         }
 
+        public ArrayList<PagoDynamicModel> findByAgenciaInAnioSemanaAndCierraConGreaterThan(String[] agencia, int anio,
+                        int semana,
+                        double cierraConGreaterThan) {
+                return this.repo.findByAgenciaInAndAnioAndSemanaAndCierraConGreaterThan(agencia, anio, semana,
+                                cierraConGreaterThan);
+        }
+
         public PagoDynamicModel findByPrestamoIdAnioAndSemana(String prestamoId, int anio, int semana) {
                 return this.repo.findByPrestamoIdAndAnioAndSemana(prestamoId, anio, semana);
         }

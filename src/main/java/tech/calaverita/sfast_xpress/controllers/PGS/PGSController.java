@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletResponse;
 import tech.calaverita.sfast_xpress.Constants;
 import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
-import tech.calaverita.sfast_xpress.models.mariaDB.AgenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.pojos.ObjectsContainer;
@@ -28,6 +27,7 @@ import tech.calaverita.sfast_xpress.pojos.PWA.HistoricoPWA;
 import tech.calaverita.sfast_xpress.services.AgenciaService;
 import tech.calaverita.sfast_xpress.services.AsignacionService;
 import tech.calaverita.sfast_xpress.services.CalendarioService;
+import tech.calaverita.sfast_xpress.services.GerenciaService;
 import tech.calaverita.sfast_xpress.utils.DashboardPorDiaUtil;
 import tech.calaverita.sfast_xpress.utils.DashboardPorDiaYHoraUtil;
 import tech.calaverita.sfast_xpress.utils.pwa.PWAUtil;
@@ -39,12 +39,14 @@ public final class PGSController {
     private final AsignacionService asignacionService;
     private final CalendarioService calendarioService;
     private final AgenciaService agenciaService;
+    private final GerenciaService gerenciaService;
 
     public PGSController(AsignacionService asignacionService, CalendarioService calendarioService,
-            AgenciaService agenciaService) {
+            AgenciaService agenciaService, GerenciaService gerenciaService) {
         this.asignacionService = asignacionService;
         this.calendarioService = calendarioService;
         this.agenciaService = agenciaService;
+        this.gerenciaService = gerenciaService;
     }
 
     @ModelAttribute
@@ -112,17 +114,17 @@ public final class PGSController {
         return new ResponseEntity<>(objectsContainer.getDashboard(), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/dashboard_fecha_y_hora/{agencia}/{fecha}")
-    public @ResponseBody ResponseEntity<DashboardDTO> getDashboardFechaYHoraByAgencia(@PathVariable String agencia,
+    @GetMapping(path = "/dashboard_fecha_y_hora/{gerencia}/{fecha}")
+    public @ResponseBody ResponseEntity<DashboardDTO> getDashboardFechaYHoraByAgencia(@PathVariable String gerencia,
             @PathVariable String fecha) {
         DashboardDTO dashboard = new DashboardDTO();
-        dashboard.setStatusAgencia(this.agenciaService.findStatusById(agencia).join());
         ObjectsContainer objectsContainer = new ObjectsContainer();
 
-        dashboard.setAgencia(agencia);
+        dashboard.setGerencia(gerencia);
 
+        objectsContainer.setAgencias(this.agenciaService.findIdsByGerenciaId(gerencia));
+        objectsContainer.setGerenciaModel(this.gerenciaService.findById(gerencia));
         objectsContainer.setDashboard(dashboard);
-
         objectsContainer.setFechaPago(fecha);
 
         try {
