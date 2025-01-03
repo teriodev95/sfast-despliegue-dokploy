@@ -30,12 +30,20 @@ public class UsuarioService {
         return this.repo.existsByUsuarioAndTipo(usuario, tipo);
     }
 
+    public boolean existsByUsuarioAndTipoIn(String usuario, String[] tipo) {
+        return this.repo.existsByUsuarioAndTipoIn(usuario, tipo);
+    }
+
     public boolean existsByUsuarioAndStatus(String usuario, boolean status) {
         return this.repo.existsByUsuarioAndStatus(usuario, status);
     }
 
     public boolean existsByUsuarioTipoAndStatus(String usuario, String tipo, boolean status) {
         return this.repo.existsByUsuarioAndTipoAndStatus(usuario, tipo, status);
+    }
+
+    public boolean existsByUsuarioTipoInAndStatus(String usuario, String[] tipo, boolean status) {
+        return this.repo.existsByUsuarioAndTipoInAndStatus(usuario, tipo, status);
     }
 
     public UsuarioModel findById(int id) {
@@ -58,8 +66,8 @@ public class UsuarioService {
         return this.repo.findByUsuarioAndPinAndStatus(usuario, pin, true);
     }
 
-    public UsuarioModel findByGerenciaAndTipo(String gerencia, String tipo) {
-        return this.repo.findByGerenciaAndTipo(gerencia, tipo).get(0);
+    public UsuarioModel findByGerenciaTipoAndStatus(String gerencia, String tipo, Boolean status) {
+        return this.repo.findByGerenciaAndTipoAndStatus(gerencia, tipo, status).get(0);
     }
 
     public ArrayList<UsuarioModel> findByGerencia(String gerencia) {

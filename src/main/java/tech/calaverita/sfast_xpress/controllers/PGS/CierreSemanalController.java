@@ -86,7 +86,8 @@ public final class CierreSemanalController {
     }
 
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<?> getByAgenciaAnioAndSemana(@RequestHeader String staticToken,
+    public @ResponseBody ResponseEntity<?> getByAgenciaAnioAndSemana(
+            @RequestHeader(required = false) String staticToken,
             @RequestHeader String username,
             @PathVariable String agencia,
             @PathVariable int anio, @PathVariable int semana)
@@ -101,38 +102,38 @@ public final class CierreSemanalController {
         Optional<CierreSemanalModel> cierreSemanalEntity = this.cierreSemanalService
                 .findByAgenciaAnioAndSemana(agencia, anio, semana);
 
-        if (staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")) {
-            if (!this.usuarioService.existsByUsuario(username)) {
-                responseStatus = HttpStatus.FORBIDDEN;
-            } else if (!this.usuarioService.existsByUsuarioAndStatus(username, true)) {
-                responseStatus = HttpStatus.UNAUTHORIZED;
-            } else {
-                if (cierreSemanalEntity.isPresent()) {
-                    cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(cierreSemanalEntity.get());
-                } else if (this.usuarioService.existsByAgencia(agencia)) {
-                    dashboard = xpressController.getDashboardByAgenciaAnioAndSemana(agencia, anio, semana).getBody();
-                    usuarioModels = new ArrayList<>();
-                    usuarioModels.add(this.usuarioService.findByAgenciaAndStatus(agencia, true));
-                    usuarioModels.add(this.usuarioService.findByGerenciaAndTipo(usuarioModels.get(0).getGerencia(),
-                            "Gerente"));
-                    asignaciones = this.asignacionService
-                            .findSumaAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana).join();
-
-                    cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(dashboard, usuarioModels, asignaciones);
-                } else {
-                    return new ResponseEntity<>("La agencia no existe", HttpStatus.BAD_REQUEST);
-                }
-            }
+        // if (staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")) {
+        if (!this.usuarioService.existsByUsuario(username)) {
+            responseStatus = HttpStatus.FORBIDDEN;
+        } else if (!this.usuarioService.existsByUsuarioAndStatus(username, true)) {
+            responseStatus = HttpStatus.UNAUTHORIZED;
         } else {
-            responseStatus = HttpStatus.BAD_REQUEST;
+            if (cierreSemanalEntity.isPresent()) {
+                cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(cierreSemanalEntity.get());
+            } else if (this.usuarioService.existsByAgencia(agencia)) {
+                dashboard = xpressController.getDashboardByAgenciaAnioAndSemana(agencia, anio, semana).getBody();
+                usuarioModels = new ArrayList<>();
+                usuarioModels.add(this.usuarioService.findByAgenciaAndStatus(agencia, true));
+                usuarioModels.add(this.usuarioService.findByGerenciaTipoAndStatus(usuarioModels.get(0).getGerencia(),
+                        "Gerente", true));
+                asignaciones = this.asignacionService
+                        .findSumaAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana).join();
+
+                cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(dashboard, usuarioModels, asignaciones);
+            } else {
+                return new ResponseEntity<>("La agencia no existe", HttpStatus.BAD_REQUEST);
+            }
         }
+        // } else {
+        // responseStatus = HttpStatus.BAD_REQUEST;
+        // }
 
         return new ResponseEntity<>(cierreSemanalDTO, responseStatus);
     }
 
     @PostMapping(path = "/create-one")
     public @ResponseBody ResponseEntity<String> createOne(@RequestBody CierreSemanalDTO cierreSemanalDTO,
-            @RequestHeader String staticToken,
+            @RequestHeader(required = false) String staticToken,
             @RequestHeader String username)
             throws DocumentException, FileNotFoundException {
         String responseText = "";
@@ -147,45 +148,47 @@ public final class CierreSemanalController {
         cierreSemanalModel.setPDF(urlPDF);
         cierreSemanalModel.setLog(LogUtil.getLogCierreSemanal(cierreSemanalDTO.getBalanceAgencia()));
 
-        if (staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")) {
-            if (!this.usuarioService.existsByUsuarioAndTipo(username, "Gerente")) {
-                responseStatus = HttpStatus.FORBIDDEN;
-            } else if (!this.usuarioService.existsByUsuarioTipoAndStatus(username, "Gerente", true)) {
-                responseStatus = HttpStatus.UNAUTHORIZED;
-            } else {
-                if (this.cierreSemanalService.findById(cierreSemanalModel.getId()).isEmpty()) {
-                    BalanceAgenciaModel balanceAgenciaModel = this.balanceAgenciaService
-                            .getBalanceAgenciaEntity(cierreSemanalDTO.getBalanceAgencia());
-                    balanceAgenciaModel.setId(cierreSemanalModel.getBalanceAgenciaId());
-                    this.balanceAgenciaService.save(balanceAgenciaModel);
-
-                    EgresosAgenteModel egresosAgenteModel = this.egresosAgenteService
-                            .getEgresosGerenteEntity(cierreSemanalDTO.getEgresosAgente());
-                    egresosAgenteModel.setId(cierreSemanalModel.getEgresosAgenteId());
-                    this.egresosAgenteService.save(egresosAgenteModel);
-
-                    EgresosGerenteModel egresosGerenteModel = this.egresosGerenteService
-                            .getEgresosGerenteEntity(cierreSemanalDTO.getEgresosGerente());
-                    egresosGerenteModel.setId(cierreSemanalModel.getEgresosGerenteId());
-                    this.egresosGerenteService.save(egresosGerenteModel);
-
-                    IngresosAgenteModel ingresosAgenteModel = this.ingresosAgenteService
-                            .getIngresosAgenteEntity(cierreSemanalDTO.getIngresosAgente());
-                    ingresosAgenteModel.setId(cierreSemanalModel.getIngresosAgenteId());
-                    this.ingresosAgenteService.save(ingresosAgenteModel);
-
-                    this.cierreSemanalService.save(cierreSemanalModel);
-
-                    responseText = urlPDF;
-                    responseStatus = HttpStatus.CREATED;
-                } else {
-                    responseText = "No se pudo registrar el cierre semanal porque ya existe";
-                    responseStatus = HttpStatus.CONFLICT;
-                }
-            }
+        // if (staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")) {
+        if (!this.usuarioService.existsByUsuarioAndTipoIn(username, new String[] { "Gerente", "Seguridad" })) {
+            responseStatus = HttpStatus.FORBIDDEN;
+        } else if (!this.usuarioService.existsByUsuarioTipoInAndStatus(username,
+                new String[] { "Gerente", "Seguridad" }, true)) {
+            responseStatus = HttpStatus.UNAUTHORIZED;
         } else {
-            responseStatus = HttpStatus.BAD_REQUEST;
+            if (this.cierreSemanalService.findById(cierreSemanalModel.getId()).isEmpty()) {
+                BalanceAgenciaModel balanceAgenciaModel = this.balanceAgenciaService
+                        .getBalanceAgenciaEntity(cierreSemanalDTO.getBalanceAgencia());
+                balanceAgenciaModel.setId(cierreSemanalModel.getBalanceAgenciaId());
+                this.balanceAgenciaService.save(balanceAgenciaModel);
+
+                EgresosAgenteModel egresosAgenteModel = this.egresosAgenteService
+                        .getEgresosGerenteEntity(cierreSemanalDTO.getEgresosAgente());
+                egresosAgenteModel.setId(cierreSemanalModel.getEgresosAgenteId());
+                this.egresosAgenteService.save(egresosAgenteModel);
+
+                EgresosGerenteModel egresosGerenteModel = this.egresosGerenteService
+                        .getEgresosGerenteEntity(cierreSemanalDTO.getEgresosGerente());
+                egresosGerenteModel.setId(cierreSemanalModel.getEgresosGerenteId());
+                this.egresosGerenteService.save(egresosGerenteModel);
+
+                IngresosAgenteModel ingresosAgenteModel = this.ingresosAgenteService
+                        .getIngresosAgenteEntity(cierreSemanalDTO.getIngresosAgente());
+                ingresosAgenteModel.setId(cierreSemanalModel.getIngresosAgenteId());
+                this.ingresosAgenteService.save(ingresosAgenteModel);
+
+                this.cierreSemanalService.save(cierreSemanalModel);
+
+                responseText = urlPDF;
+                responseStatus = HttpStatus.CREATED;
+            } else {
+                responseText = "No se pudo registrar el cierre semanal porque ya existe";
+                responseStatus = HttpStatus.CONFLICT;
+            }
         }
+        // } else {
+        // responseText = "Token inválido";
+        // responseStatus = HttpStatus.BAD_REQUEST;
+        // }
 
         CierreSemanalUtil.subSendCierreSemanalMessage(cierreSemanalDTO);
         // CierreSemanalUtil.createCierreSemanalPDF(cierreSemanalDTO);

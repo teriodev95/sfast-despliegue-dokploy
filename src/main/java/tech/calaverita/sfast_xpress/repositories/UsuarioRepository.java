@@ -15,11 +15,15 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
 
         boolean existsByAgencia(String agencia);
 
+        boolean existsByUsuarioAndTipoIn(String usuario, String[] tipo);
+
         boolean existsByUsuarioAndTipo(String usuario, String tipo);
 
         boolean existsByUsuarioAndStatus(String usuario, boolean status);
 
         boolean existsByUsuarioAndTipoAndStatus(String usuario, String tipo, boolean status);
+
+        boolean existsByUsuarioAndTipoInAndStatus(String usuario, String[] tipo, boolean status);
 
         UsuarioModel findByUsuarioAndPinAndStatus(String usuario, int pin, boolean status);
 
@@ -35,7 +39,7 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
 
         ArrayList<UsuarioModel> findByGerenciaAndStatus(String gerencia, boolean status);
 
-        ArrayList<UsuarioModel> findByGerenciaAndTipo(String gerencia, String tipo);
+        ArrayList<UsuarioModel> findByGerenciaAndTipoAndStatus(String gerencia, String tipo, Boolean status);
 
         @Query("SELECT CONCAT(usuar.nombre, ' ' , usuar.apellidoPaterno, ' ', usuar.apellidoMaterno) AS agente, " +
                         "usuar.agencia AS agencia FROM UsuarioModel usuar WHERE usuar.gerencia = :gerencia " +

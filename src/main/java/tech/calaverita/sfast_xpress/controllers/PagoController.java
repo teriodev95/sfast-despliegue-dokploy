@@ -99,6 +99,7 @@ public final class PagoController {
             // guardar el pago.
 
             @RequestBody PagoConLiquidacion pagoConLiquidacion) {
+        pagoConLiquidacion.setTipo(pagoConLiquidacion.getTipo() == null ? "Pago" : pagoConLiquidacion.getTipo());
         ModelValidation modVal;
         PrestamoViewModel prestMod = this.prestamoViewService
                 .findById(pagoConLiquidacion.getPrestamoId());
@@ -210,8 +211,8 @@ public final class PagoController {
             noPagoConVisitasHM.put("numeroCelularAgente", this.usuarioService.findByAgenciaAndStatus(agente, true)
                     .getNumeroCelular());
 
-            noPagoConVisitasHM.put("numeroCelularGerente", this.usuarioService.findByGerenciaAndTipo(gerencia,
-                    "Gerente").getNumeroCelular());
+            noPagoConVisitasHM.put("numeroCelularGerente", this.usuarioService.findByGerenciaTipoAndStatus(gerencia,
+                    "Gerente", true).getNumeroCelular());
 
             ArrayList<HashMap<String, Object>> visitas = new ArrayList<>();
             visitaEntities.forEach(visita -> {
