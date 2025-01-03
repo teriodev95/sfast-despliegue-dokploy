@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import tech.calaverita.sfast_xpress.DTOs.cobranza.DebitosCobranzaDTO;
 import tech.calaverita.sfast_xpress.DTOs.cobranza.InfoCobranzaDTO;
+import tech.calaverita.sfast_xpress.models.VentaModel;
+import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -35,6 +37,8 @@ public class DashboardDTO {
         private Double efectivoEnCampo;
         private String statusAgencia;
         private Boolean isCerrada;
+        private Integer numeroVentas;
+        private Double ventas;
 
         public DashboardDTO() {
                 dashboardWithEmptyValues();
@@ -42,7 +46,8 @@ public class DashboardDTO {
 
         public DashboardDTO(InfoCobranzaDTO infoCobranzaDTO,
                         PagosDashboardDTO pagosDashboardDTO, LiquidacionesDashboardDTO liquidacionesDashboardDTO,
-                        DebitosCobranzaDTO debitosCobranzaDTO, CierreDashboardDTO cierreDashboardDTO) {
+                        DebitosCobranzaDTO debitosCobranzaDTO, CierreDashboardDTO cierreDashboardDTO,
+                        ArrayList<VentaModel> ventaModels) {
                 this.gerencia = infoCobranzaDTO.getGerencia();
                 this.agencia = infoCobranzaDTO.getAgencia();
                 this.anio = infoCobranzaDTO.getAnio();
@@ -66,6 +71,8 @@ public class DashboardDTO {
                 this.montoDeDebitoFaltante = pagosDashboardDTO.getMontoDeDebitoFaltante();
                 this.efectivoEnCampo = cierreDashboardDTO.getEfectivoEnCampo();
                 this.statusAgencia = cierreDashboardDTO.getStatusAgencia();
+                this.numeroVentas = ventaModels.size();
+                this.ventas = ventaModels.stream().mapToDouble(VentaModel::getMonto).sum();
         }
 
         public DashboardDTO(ArrayList<DashboardDTO> dashboardDTOs) {
@@ -102,10 +109,14 @@ public class DashboardDTO {
                         this.setCobranzaTotal(this.getCobranzaTotal() + dashboard.getCobranzaTotal());
                         this.setMontoDeDebitoFaltante(this.getMontoDeDebitoFaltante() + dashboard
                                         .getMontoDeDebitoFaltante());
+                        this.setNumeroVentas(this.numeroVentas + dashboard.getNumeroVentas());
+                        this.setVentas(this.ventas + dashboard.getVentas());
                 }
 
                 this.setRendimiento(Math.round(this.getTotalCobranzaPura() / this
                                 .getDebitoTotal() * 100.0) / 100.0 * 100.0);
+
+                dashboardFormatDoubles();
         }
 
         private void dashboardWithEmptyValues() {
@@ -126,5 +137,23 @@ public class DashboardDTO {
                 this.setLiquidaciones(0.0);
                 this.setCobranzaTotal(0.0);
                 this.setMontoDeDebitoFaltante(0.0);
+                this.setNumeroVentas(0);
+                this.setVentas(0.0);
+        }
+
+        private void dashboardFormatDoubles() {
+                this.setDebitoMiercoles(MyUtil.getDouble(this.debitoMiercoles));
+                this.setDebitoJueves(MyUtil.getDouble(this.debitoJueves));
+                this.setDebitoViernes(MyUtil.getDouble(this.debitoViernes));
+                this.setDebitoTotal(MyUtil.getDouble(this.debitoTotal));
+                this.setRendimiento(MyUtil.getDouble(this.rendimiento));
+                this.setTotalDeDescuento(MyUtil.getDouble(this.totalDeDescuento));
+                this.setTotalCobranzaPura(MyUtil.getDouble(this.totalCobranzaPura));
+                this.setMontoExcedente(MyUtil.getDouble(this.montoExcedente));
+                this.setMultas(MyUtil.getDouble(this.multas));
+                this.setLiquidaciones(MyUtil.getDouble(this.liquidaciones));
+                this.setCobranzaTotal(MyUtil.getDouble(this.cobranzaTotal));
+                this.setMontoDeDebitoFaltante(MyUtil.getDouble(this.montoDeDebitoFaltante));
+                this.setVentas(MyUtil.getDouble(this.ventas));
         }
 }

@@ -19,6 +19,10 @@ public class VentaService {
         return this.repo.save(ventaModel);
     }
 
+    public ArrayList<VentaModel> findByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
+        return this.repo.findByAgenciaAndAnioAndSemana(agencia, anio, semana);
+    }
+
     public ArrayList<VentaModel> findByGerenciaAnioAndSemana(String gerencia, int anio, int semana) {
         return this.repo.findByGerenciaAndAnioAndSemana(gerencia, anio, semana);
     }

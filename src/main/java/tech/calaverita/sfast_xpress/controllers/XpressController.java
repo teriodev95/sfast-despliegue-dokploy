@@ -30,6 +30,7 @@ import tech.calaverita.sfast_xpress.DTOs.dashboard.CierreDashboardDTO;
 import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
 import tech.calaverita.sfast_xpress.DTOs.dashboard.LiquidacionesDashboardDTO;
 import tech.calaverita.sfast_xpress.DTOs.dashboard.PagosDashboardDTO;
+import tech.calaverita.sfast_xpress.models.VentaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.GerenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.LiquidacionModel;
@@ -43,6 +44,7 @@ import tech.calaverita.sfast_xpress.services.AsignacionService;
 import tech.calaverita.sfast_xpress.services.GerenciaService;
 import tech.calaverita.sfast_xpress.services.LiquidacionService;
 import tech.calaverita.sfast_xpress.services.UsuarioService;
+import tech.calaverita.sfast_xpress.services.VentaService;
 import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
 import tech.calaverita.sfast_xpress.services.views.PrestamoViewService;
 import tech.calaverita.sfast_xpress.utils.MyUtil;
@@ -57,11 +59,13 @@ public final class XpressController {
         private final LiquidacionService liquidacionService;
         private final AsignacionService asignacionService;
         private final GerenciaService gerenciaService;
+        private final VentaService ventaService;
 
         public XpressController(AgenciaService agenciaService, UsuarioService usuarioService,
                         PrestamoViewService prestamoViewService, PagoDynamicService pagoAgrupadoService,
                         LiquidacionService liquidacionService,
-                        AsignacionService asignacionService, GerenciaService gerenciaService) {
+                        AsignacionService asignacionService, GerenciaService gerenciaService,
+                        VentaService ventaService) {
                 this.agenciaService = agenciaService;
                 this.usuarioService = usuarioService;
                 this.prestamoViewService = prestamoViewService;
@@ -69,6 +73,7 @@ public final class XpressController {
                 this.liquidacionService = liquidacionService;
                 this.asignacionService = asignacionService;
                 this.gerenciaService = gerenciaService;
+                this.ventaService = ventaService;
         }
 
         @ModelAttribute
@@ -396,8 +401,10 @@ public final class XpressController {
                         CierreDashboardDTO cierreDashboardDTO = new CierreDashboardDTO(pagosDashboardDTO,
                                         debitosCobranzaDTO,
                                         asignaciones.join(), statusAgencia.join());
+                        ArrayList<VentaModel> ventaModels = this.ventaService.findByAgenciaAnioAndSemana(agencia, anio,
+                                        semana);
                         dashboardDTO = new DashboardDTO(infoSemanaCobranzaDTO, pagosDashboardDTO,
-                                        liquidacionesDashboardDTO, debitosCobranzaDTO, cierreDashboardDTO);
+                                        liquidacionesDashboardDTO, debitosCobranzaDTO, cierreDashboardDTO, ventaModels);
                 }
 
                 return new ResponseEntity<>(dashboardDTO, HttpStatus.OK);

@@ -1,10 +1,22 @@
 package tech.calaverita.sfast_xpress.controllers;
 
-import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
+
+import jakarta.servlet.http.HttpServletResponse;
 import retrofit2.Call;
 import tech.calaverita.sfast_xpress.Constants;
 import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
@@ -17,9 +29,7 @@ import tech.calaverita.sfast_xpress.services.AsignacionService;
 import tech.calaverita.sfast_xpress.services.UsuarioService;
 import tech.calaverita.sfast_xpress.utils.RetrofitOdooUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
+@CrossOrigin
 @RestController
 @RequestMapping(path = "/xpress/v1/assignments")
 public final class AsignacionController {
@@ -164,9 +174,7 @@ public final class AsignacionController {
                 } else {
                     strMsg = strMsgAux;
                 }
-            } catch (
-                    HttpClientErrorException e
-            ) {
+            } catch (HttpClientErrorException e) {
                 strMsg = e.toString();
                 boolIsOnline = false;
             }
