@@ -28,6 +28,7 @@ import tech.calaverita.sfast_xpress.retrofit.pojos.ResponseBodyXms;
 import tech.calaverita.sfast_xpress.services.AsignacionService;
 import tech.calaverita.sfast_xpress.services.UsuarioService;
 import tech.calaverita.sfast_xpress.utils.RetrofitOdooUtil;
+import tech.calaverita.sfast_xpress.utils.pwa.PWAUtil;
 
 @CrossOrigin
 @RestController
@@ -69,6 +70,27 @@ public final class AsignacionController {
         }
 
         return new ResponseEntity<>(asignacionModelIterable, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/by_usuario-id_anio_and_semana/{usuarioId}/{anio}/{semana}")
+    public @ResponseBody ResponseEntity<HashMap<String, Object>> getByUsuarioIdAnioAndSemana(
+            @PathVariable Integer usuarioId, @PathVariable int anio, @PathVariable int semana) {
+        HashMap<String, Object> responseHM = new HashMap<>();
+
+        responseHM.put("ingresos",
+                this.asignacionService
+                        .findByQuienRecibioUsuarioIdAnioAndSemana(usuarioId, anio, semana));
+        responseHM.put("egresos",
+                this.asignacionService
+                        .findByQuienEntregoUsuarioIdAnioAndSemana(usuarioId, anio, semana));
+
+        responseHM = PWAUtil.asignacionModelPwa(responseHM);
+
+        if (responseHM.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(responseHM, HttpStatus.OK);
     }
 
     @GetMapping(path = "/one/{id}")

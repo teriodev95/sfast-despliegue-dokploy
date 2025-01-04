@@ -163,4 +163,44 @@ public final class PWAUtil {
 
         return darrHshMpAsgMdlPwa;
     }
+
+    public static HashMap<String, Object> asignacionModelPwa(HashMap<String, Object> responseHM) {
+        HashMap<String, Object> darrHshMpAsgMdlPwa = new HashMap<>();
+
+        ArrayList<Object> ingresosHM = new ArrayList<>();
+        for (AsignacionModel asignacionModel : (ArrayList<AsignacionModel>) responseHM.get("ingresos")) {
+            UsuarioModel usuarioModel = PWAUtil.usuarioService.findById(asignacionModel
+                    .getQuienRecibioUsuarioId());
+
+            HashMap<String, Object> recibioHashMap = new HashMap<>();
+            recibioHashMap.put("usuario", usuarioModel.getUsuario());
+            recibioHashMap.put("tipo", usuarioModel.getTipo());
+
+            HashMap<String, Object> responseHashMap = new HashMap<>();
+            responseHashMap.put("asignacion", asignacionModel);
+            responseHashMap.put("recibio", recibioHashMap);
+
+            ingresosHM.add(responseHashMap);
+        }
+        darrHshMpAsgMdlPwa.put("ingresos", ingresosHM);
+
+        ArrayList<Object> egresosHM = new ArrayList<>();
+        for (AsignacionModel asignacionModel : (ArrayList<AsignacionModel>) responseHM.get("egresos")) {
+            UsuarioModel usuarioModel = PWAUtil.usuarioService.findById(asignacionModel
+                    .getQuienRecibioUsuarioId());
+
+            HashMap<String, Object> recibioHashMap = new HashMap<>();
+            recibioHashMap.put("usuario", usuarioModel.getUsuario());
+            recibioHashMap.put("tipo", usuarioModel.getTipo());
+
+            HashMap<String, Object> responseHashMap = new HashMap<>();
+            responseHashMap.put("asignacion", asignacionModel);
+            responseHashMap.put("recibio", recibioHashMap);
+
+            egresosHM.add(responseHashMap);
+        }
+        darrHshMpAsgMdlPwa.put("egresos", egresosHM);
+
+        return darrHshMpAsgMdlPwa;
+    }
 }

@@ -33,6 +33,16 @@ public class AsignacionService {
         return this.repo.findByAgenciaAndAnioAndSemana(agencia, anio, semana);
     }
 
+    public ArrayList<AsignacionModel> findByQuienRecibioUsuarioIdAnioAndSemana(Integer quienRecibioUsuarioId, int anio,
+            int semana) {
+        return this.repo.findByQuienRecibioUsuarioIdAndAnioAndSemana(quienRecibioUsuarioId, anio, semana);
+    }
+
+    public ArrayList<AsignacionModel> findByQuienEntregoUsuarioIdAnioAndSemana(Integer quienEntregoUsuarioId, int anio,
+            int semana) {
+        return this.repo.findByQuienEntregoUsuarioIdAndAnioAndSemana(quienEntregoUsuarioId, anio, semana);
+    }
+
     public ArrayList<AsignacionModel> findAll() {
         return (ArrayList<AsignacionModel>) this.repo.findAll();
     }
@@ -40,14 +50,16 @@ public class AsignacionService {
     public ArrayList<AsignacionModel> findByQuienRecibioUsuarioIdAnioSemanaAndTipoInnerJoinUsuarioModel(
             Integer quienRecibioUsuarioId, int anio,
             int semana, String tipo) {
-        return this.repo.findByQuienRecibioUsuarioIdAndAnioAndSemanaAndTipoInnerJoinUsuarioModel(quienRecibioUsuarioId, anio,
+        return this.repo.findByQuienRecibioUsuarioIdAndAnioAndSemanaAndTipoInnerJoinUsuarioModel(quienRecibioUsuarioId,
+                anio,
                 semana, tipo);
     }
 
     public ArrayList<AsignacionModel> findByQuienEntregoUsuarioIdAnioSemanaAndTipoInnerJoinUsuarioModel(
             Integer quienEntregoUsuarioId, int anio,
             int semana, String tipo) {
-        return this.repo.findByQuienEntregoUsuarioIdAndAnioAndSemanaAndTipoInnerJoinUsuarioModel(quienEntregoUsuarioId, anio,
+        return this.repo.findByQuienEntregoUsuarioIdAndAnioAndSemanaAndTipoInnerJoinUsuarioModel(quienEntregoUsuarioId,
+                anio,
                 semana, tipo);
     }
 
