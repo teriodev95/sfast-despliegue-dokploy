@@ -12,4 +12,7 @@ public interface GastoRepository extends CrudRepository<GastoModel, Integer> {
     ArrayList<GastoModel> findByCreadoPorId(Integer creadoPorId);
 
     ArrayList<GastoModel> findByCreadoPorIdIn(int[] creadoPorIds);
+
+    ArrayList<GastoModel> findByCreadoPorIdAndAnioAndSemanaAndTipoGasto(Integer creadoPorId, int anio, int semana,
+            String tipoGasto);
 }

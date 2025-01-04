@@ -1,5 +1,6 @@
 package tech.calaverita.sfast_xpress.services.cierre_semanal;
 
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.scheduling.annotation.Async;
@@ -45,5 +46,9 @@ public class EgresosGerenteService {
 
     public Double findComisionCobranzaAgenciaByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
         return this.repo.findComisionCobranzaAgenciaByAgenciaAndAnioAndSemana(agencia, anio, semana);
+    }
+
+    public ArrayList<EgresosGerenteModel> findByIdLike(String gerencia, int anio, int semana) {
+        return this.repo.findByIdLike(gerencia, anio, semana);
     }
 }

@@ -37,6 +37,20 @@ public class AsignacionService {
         return (ArrayList<AsignacionModel>) this.repo.findAll();
     }
 
+    public ArrayList<AsignacionModel> findByQuienRecibioUsuarioIdAnioSemanaAndTipoInnerJoinUsuarioModel(
+            Integer quienRecibioUsuarioId, int anio,
+            int semana, String tipo) {
+        return this.repo.findByQuienRecibioUsuarioIdAndAnioAndSemanaAndTipoInnerJoinUsuarioModel(quienRecibioUsuarioId, anio,
+                semana, tipo);
+    }
+
+    public ArrayList<AsignacionModel> findByQuienEntregoUsuarioIdAnioSemanaAndTipoInnerJoinUsuarioModel(
+            Integer quienEntregoUsuarioId, int anio,
+            int semana, String tipo) {
+        return this.repo.findByQuienEntregoUsuarioIdAndAnioAndSemanaAndTipoInnerJoinUsuarioModel(quienEntregoUsuarioId, anio,
+                semana, tipo);
+    }
+
     @Async("asyncExecutor")
     public CompletableFuture<Double> findSumaAsigancionesByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
         return CompletableFuture

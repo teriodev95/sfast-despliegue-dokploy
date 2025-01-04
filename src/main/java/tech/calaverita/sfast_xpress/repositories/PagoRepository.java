@@ -44,7 +44,8 @@ public interface PagoRepository extends CrudRepository<PagoModel, String> {
         @Query("SELECT pag FROM PagoModel pag INNER JOIN PrestamoViewModel prest ON prest.prestamoId = pag.prestamoId "
                         + "WHERE prest.gerencia = :gerencia AND prest.sucursal = :sucursal AND pag.fechaPago <= :fechaPago AND pag.esPrimerPago = :esPrimerPago "
                         + "AND pag.anio = :anio AND pag.semana = :semana")
-        ArrayList<PagoModel> findByGerenciaAndSucursalAndFechaPagoLessThanEqualAndEsPrimerPagoInnerJoinPagoModel(String gerencia, String sucursal,
+        ArrayList<PagoModel> findByGerenciaAndSucursalAndFechaPagoLessThanEqualAndEsPrimerPagoInnerJoinPagoModel(
+                        String gerencia, String sucursal,
                         String fechaPago, boolean esPrimerPago, int anio, int semana);
 
         @Query("SELECT pag FROM PagoModel pag INNER JOIN LiquidacionModel liq ON liq.pagoId = pag.pagoId " +
@@ -61,4 +62,12 @@ public interface PagoRepository extends CrudRepository<PagoModel, String> {
         @Query(value = "SELECT pag.* FROM pagos_v3 pag WHERE pag.prestamoId = :prestamoId and !(pag.anio = :anio and pag.semana = :semana) order by anio asc, semana asc", nativeQuery = true)
         ArrayList<PagoModel> findByPrestamoIdAndAnioNotAndSemanaNotOrderByAnioAscSemanaAsc(String prestamoId, int anio,
                         int semana);
+
+        @Query("SELECT pag FROM PagoModel pag INNER JOIN PrestamoViewModel prest ON prest.prestamoId = pag.prestamoId "
+                        + "WHERE prest.gerencia = :gerencia AND prest.sucursal = :sucursal AND pag.anio = :anio AND pag.semana = :semana "
+                        + "AND pag.esPrimerPago = :esPrimerPago")
+        ArrayList<PagoModel> findByGerenciaAndSucursalAndAnioAndSemanaAndESPrimerPagoInnerJoinPrestamoViewModel(
+                        String gerencia, String sucursal,
+                        int anio,
+                        int semana, boolean esPrimerPago);
 }

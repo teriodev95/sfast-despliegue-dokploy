@@ -103,4 +103,12 @@ public class PagoService {
             int semana) {
         return this.repo.findByPrestamoIdAndAnioNotAndSemanaNotOrderByAnioAscSemanaAsc(prestamoId, anio, semana);
     }
+
+    public ArrayList<PagoModel> findByGerenciaSucursalAnioSemanaAndEsPrimerPagoInnerJoinPrestamoViewModel(
+            String gerencia, String sucursal, int anio,
+            int semana, boolean esPrimerPago) {
+        return this.repo.findByGerenciaAndSucursalAndAnioAndSemanaAndESPrimerPagoInnerJoinPrestamoViewModel(gerencia,
+                sucursal, anio, semana,
+                esPrimerPago);
+    }
 }

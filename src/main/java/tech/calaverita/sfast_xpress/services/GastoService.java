@@ -36,4 +36,9 @@ public class GastoService {
 
         return responseGastoModels;
     }
+
+    public ArrayList<GastoModel> findByCreadoPorIdAnioSemanaAndTipoGasto(Integer creadoPorId, int anio, int semana,
+            String tipo) {
+        return this.gastoRepository.findByCreadoPorIdAndAnioAndSemanaAndTipoGasto(creadoPorId, anio, semana, tipo);
+    }
 }
