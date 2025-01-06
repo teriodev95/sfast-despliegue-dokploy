@@ -29,4 +29,25 @@ public class UsuarioModel {
     private String numeroCelular;
     private String createdAt;
     private String updatedAt;
+
+    public static UsuarioModel getSinAgenteAsignado() {
+        UsuarioModel usuarioModel = new UsuarioModel();
+        usuarioModel.setUsuarioId(0);
+        usuarioModel.setNombre("Sin");
+        usuarioModel.setApellidoPaterno("Agente");
+        usuarioModel.setApellidoMaterno("Asignado");
+        usuarioModel.setTipo("Agente");
+        usuarioModel.setPin(0000);
+        usuarioModel.setUsuario("SinAgenteAsignado");
+        usuarioModel.setPuedeVerificarAsignaciones(true);
+        usuarioModel.setPuedeCobrar(true);
+        usuarioModel.setStatus(true);
+        usuarioModel.setGerencia("SinGerencia");
+        usuarioModel.setAgencia("SinAgencia");
+        usuarioModel.setFechaIngreso("0000-00-00");
+        usuarioModel.setTelegramId("0");
+        usuarioModel.setNumeroCelular("0000000000");
+
+        return usuarioModel;
+    }
 }

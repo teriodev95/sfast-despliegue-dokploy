@@ -36,6 +36,7 @@ import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
 import tech.calaverita.sfast_xpress.controllers.XpressController;
 import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page1.tables.classes.TablaDetallesCierreAgencias;
 import tech.calaverita.sfast_xpress.models.VentaModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.AgenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.GerenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
@@ -44,6 +45,7 @@ import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.CierreSemanalM
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.EgresosAgenteModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.EgresosGerenteModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.IngresosAgenteModel;
+import tech.calaverita.sfast_xpress.services.AgenciaService;
 import tech.calaverita.sfast_xpress.services.AsignacionService;
 import tech.calaverita.sfast_xpress.services.GastoService;
 import tech.calaverita.sfast_xpress.services.GerenciaService;
@@ -74,6 +76,7 @@ public final class CierreSemanalController {
         private final VentaService ventaService;
         private final GastoService gastoService;
         private final PagoService pagoService;
+        private final AgenciaService agenciaService;
         private final GerenciaService gerenciaService;
 
         public CierreSemanalController(AsignacionService asignacionService, UsuarioService usuarioService,
@@ -82,7 +85,7 @@ public final class CierreSemanalController {
                         EgresosGerenteService egresosGerenteService,
                         IngresosAgenteService ingresosAgenteService, VentaService ventaService,
                         GastoService gastoService,
-                        PagoService pagoService, GerenciaService gerenciaService) {
+                        PagoService pagoService, GerenciaService gerenciaService, AgenciaService agenciaService) {
                 this.asignacionService = asignacionService;
                 this.usuarioService = usuarioService;
                 this.xpressController = xpressController;
@@ -95,6 +98,7 @@ public final class CierreSemanalController {
                 this.gastoService = gastoService;
                 this.pagoService = pagoService;
                 this.gerenciaService = gerenciaService;
+                this.agenciaService = agenciaService;
         }
 
         @ModelAttribute
@@ -128,13 +132,21 @@ public final class CierreSemanalController {
                 } else {
                         if (cierreSemanalEntity.isPresent()) {
                                 cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(cierreSemanalEntity.get());
-                        } else if (this.usuarioService.existsByAgencia(agencia)) {
+                        } else if (this.agenciaService.existsById(agencia)) {
                                 dashboard = xpressController.getDashboardByAgenciaAnioAndSemana(agencia, anio, semana)
                                                 .getBody();
                                 usuarioModels = new ArrayList<>();
-                                usuarioModels.add(this.usuarioService.findByAgenciaAndStatus(agencia, true));
+
+                                // To easy code
+                                UsuarioModel agenteUsuarioModel = this.usuarioService.findByAgenciaAndStatus(agencia,
+                                                true) == null ? UsuarioModel.getSinAgenteAsignado()
+                                                                : this.usuarioService
+                                                                                .findByAgenciaAndStatus(agencia, true);
+                                AgenciaModel agenciaModel = this.agenciaService.findById(agencia);
+
+                                usuarioModels.add(agenteUsuarioModel);
                                 usuarioModels.add(this.usuarioService.findByGerenciaTipoAndStatus(
-                                                usuarioModels.get(0).getGerencia(),
+                                                agenciaModel.getGerenciaId(),
                                                 "Gerente", true));
                                 asignaciones = this.asignacionService
                                                 .findSumaAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana)

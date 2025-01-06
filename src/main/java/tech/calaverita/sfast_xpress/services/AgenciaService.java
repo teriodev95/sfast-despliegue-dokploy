@@ -26,6 +26,10 @@ public class AgenciaService {
         return this.repo.findIdsByGerenciaIdAndStatus(gerenciaId, status);
     }
 
+    public Boolean existsById(String agenciaId) {
+        return this.repo.existsById(agenciaId);
+    }
+
     @Async("asyncExecutor")
     public CompletableFuture<String> findStatusById(String id) {
         return CompletableFuture.completedFuture(this.repo.findStatusById(id));
