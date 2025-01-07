@@ -35,10 +35,7 @@ import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.CierreSemanalDTO;
 import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
 import tech.calaverita.sfast_xpress.controllers.XpressController;
 import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page1.tables.classes.TablaDetallesCierreAgencias;
-import tech.calaverita.sfast_xpress.models.VentaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.AgenciaModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.GerenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.BalanceAgenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.CierreSemanalModel;
@@ -50,6 +47,7 @@ import tech.calaverita.sfast_xpress.services.AsignacionService;
 import tech.calaverita.sfast_xpress.services.GastoService;
 import tech.calaverita.sfast_xpress.services.GerenciaService;
 import tech.calaverita.sfast_xpress.services.PagoService;
+import tech.calaverita.sfast_xpress.services.ProcedimientoService;
 import tech.calaverita.sfast_xpress.services.UsuarioService;
 import tech.calaverita.sfast_xpress.services.VentaService;
 import tech.calaverita.sfast_xpress.services.cierre_semanal.BalanceAgenciaService;
@@ -73,19 +71,16 @@ public final class CierreSemanalController {
         private final EgresosAgenteService egresosAgenteService;
         private final EgresosGerenteService egresosGerenteService;
         private final IngresosAgenteService ingresosAgenteService;
-        private final VentaService ventaService;
-        private final GastoService gastoService;
-        private final PagoService pagoService;
         private final AgenciaService agenciaService;
-        private final GerenciaService gerenciaService;
+        private final ProcedimientoService procedimientoService;
 
         public CierreSemanalController(AsignacionService asignacionService, UsuarioService usuarioService,
                         XpressController xpressController, BalanceAgenciaService balanceAgenciaService,
                         CierreSemanalService cierreSemanalService, EgresosAgenteService egresosAgenteService,
                         EgresosGerenteService egresosGerenteService,
                         IngresosAgenteService ingresosAgenteService, VentaService ventaService,
-                        GastoService gastoService,
-                        PagoService pagoService, GerenciaService gerenciaService, AgenciaService agenciaService) {
+                        GastoService gastoService, PagoService pagoService, GerenciaService gerenciaService,
+                        AgenciaService agenciaService, ProcedimientoService procedimientoService) {
                 this.asignacionService = asignacionService;
                 this.usuarioService = usuarioService;
                 this.xpressController = xpressController;
@@ -94,11 +89,8 @@ public final class CierreSemanalController {
                 this.egresosAgenteService = egresosAgenteService;
                 this.egresosGerenteService = egresosGerenteService;
                 this.ingresosAgenteService = ingresosAgenteService;
-                this.ventaService = ventaService;
-                this.gastoService = gastoService;
-                this.pagoService = pagoService;
-                this.gerenciaService = gerenciaService;
                 this.agenciaService = agenciaService;
+                this.procedimientoService = procedimientoService;
         }
 
         @ModelAttribute
@@ -294,121 +286,12 @@ public final class CierreSemanalController {
                 return new ResponseEntity<>(comisionCobranza, HttpStatus.OK);
         }
 
-        @GetMapping(path = "/asignaciones_y_gastos/by_gerencia_anio_and_semana/{gerencia}/{anio}/{semana}")
+        @GetMapping(path = "/asignaciones_y_gastos/by_usuario-id_gerencia_anio_and_semana/{usuarioId}/{gerencia}/{anio}/{semana}")
         public @ResponseBody ResponseEntity<AsignacionesYGastosDTO> getAsignacionesYGastosByGerenciaAnioAndSemana(
-                        @PathVariable String gerencia, @PathVariable int anio, @PathVariable int semana) {
-                UsuarioModel usuarioModel = this.usuarioService.findByGerenciaTipoAndStatus(gerencia, "Gerente", true);
-                GerenciaModel gerenciaModel = this.gerenciaService.findById(gerencia);
-
-                AsignacionesYGastosDTO asignacionesYGastosDTO = new AsignacionesYGastosDTO();
-
-                // Queries
-                ArrayList<AsignacionModel> ingresosAdministracionAsignacionModels = this.asignacionService
-                                .findByQuienRecibioUsuarioIdAnioSemanaAndTipoInnerJoinUsuarioModel(
-                                                usuarioModel.getUsuarioId(), anio,
-                                                semana,
-                                                "Jefe de Admin");
-                ArrayList<AsignacionModel> ingresosSeguridadAsignacionModels = this.asignacionService
-                                .findByQuienRecibioUsuarioIdAnioSemanaAndTipoInnerJoinUsuarioModel(
-                                                usuarioModel.getUsuarioId(), anio,
-                                                semana,
-                                                "Seguridad");
-                ArrayList<AsignacionModel> ingresosOperacionGerentesAsignacionModels = this.asignacionService
-                                .findByQuienRecibioUsuarioIdAnioSemanaAndTipoInnerJoinUsuarioModel(
-                                                usuarioModel.getUsuarioId(), anio,
-                                                semana,
-                                                "Gerente");
-                ArrayList<AsignacionModel> ingresosOperacionAgentesAsignacionModels = this.asignacionService
-                                .findByQuienRecibioUsuarioIdAnioSemanaAndTipoInnerJoinUsuarioModel(
-                                                usuarioModel.getUsuarioId(), anio,
-                                                semana,
-                                                "Agente");
-
-                asignacionesYGastosDTO.setIngresosAdministracion(ingresosAdministracionAsignacionModels
-                                .stream()
-                                .mapToDouble(asignacion -> asignacion.getMonto()).sum());
-                asignacionesYGastosDTO.setIngresosSeguridad(ingresosSeguridadAsignacionModels
-                                .stream()
-                                .mapToDouble(asignacion -> asignacion.getMonto()).sum());
-                asignacionesYGastosDTO.setIngresosOperacionGerentes(ingresosOperacionGerentesAsignacionModels
-                                .stream()
-                                .mapToDouble(asignacion -> asignacion.getMonto()).sum());
-                asignacionesYGastosDTO.setIngresosOperacionAgentes(ingresosOperacionAgentesAsignacionModels
-                                .stream()
-                                .mapToDouble(asignacion -> asignacion.getMonto()).sum());
-
-                asignacionesYGastosDTO.setEgresosAdministracion(this.asignacionService
-                                .findByQuienEntregoUsuarioIdAnioSemanaAndTipoInnerJoinUsuarioModel(
-                                                usuarioModel.getUsuarioId(), anio,
-                                                semana,
-                                                "Jefe de Admin")
-                                .stream()
-                                .mapToDouble(asignacion -> asignacion.getMonto()).sum());
-                asignacionesYGastosDTO.setEgresosSeguridad(this.asignacionService
-                                .findByQuienEntregoUsuarioIdAnioSemanaAndTipoInnerJoinUsuarioModel(
-                                                usuarioModel.getUsuarioId(), anio,
-                                                semana,
-                                                "Seguridad")
-                                .stream()
-                                .mapToDouble(asignacion -> asignacion.getMonto()).sum());
-                asignacionesYGastosDTO.setEgresosOperacionGerentes(this.asignacionService
-                                .findByQuienEntregoUsuarioIdAnioSemanaAndTipoInnerJoinUsuarioModel(
-                                                usuarioModel.getUsuarioId(), anio,
-                                                semana,
-                                                "Gerente")
-                                .stream()
-                                .mapToDouble(asignacion -> asignacion.getMonto()).sum());
-
-                // Queries
-                ArrayList<VentaModel> ventaModels = this.ventaService.findByGerenciaAnioAndSemana(gerencia, anio,
-                                semana);
-
-                asignacionesYGastosDTO.setEgresosVentas(ventaModels
-                                .stream().mapToDouble(venta -> venta.getMonto()).sum());
-
-                asignacionesYGastosDTO.setEgresosGasolina(this.gastoService
-                                .findByCreadoPorIdAnioSemanaAndTipoGasto(usuarioModel.getUsuarioId(), anio, semana,
-                                                "GASOLINA")
-                                .stream()
-                                .mapToDouble(gasto -> gasto.getMonto()).sum());
-                asignacionesYGastosDTO.setEgresosCasetas(this.gastoService
-                                .findByCreadoPorIdAnioSemanaAndTipoGasto(usuarioModel.getUsuarioId(), anio, semana,
-                                                "CASETAS")
-                                .stream()
-                                .mapToDouble(gasto -> gasto.getMonto()).sum());
-                asignacionesYGastosDTO.setEgresosMantenimientoAuto(this.gastoService
-                                .findByCreadoPorIdAnioSemanaAndTipoGasto(usuarioModel.getUsuarioId(), anio, semana,
-                                                "MANTENIMIENTO_VEHICULAR")
-                                .stream()
-                                .mapToDouble(gasto -> gasto.getMonto()).sum());
-                asignacionesYGastosDTO.setEgresosTelefono(this.gastoService
-                                .findByCreadoPorIdAnioSemanaAndTipoGasto(usuarioModel.getUsuarioId(), anio, semana,
-                                                "CELULAR")
-                                .stream()
-                                .mapToDouble(gasto -> gasto.getMonto()).sum());
-
-                asignacionesYGastosDTO.setIngresosPrimerosPagos(ventaModels
-                                .stream().mapToDouble(pago -> pago.getPrimerPago()).sum());
-
-                // To easy code
-                ArrayList<EgresosGerenteModel> egresosGerenteModels = this.egresosGerenteService.findByIdLike(gerencia,
-                                anio,
-                                semana);
-                double comisiones = egresosGerenteModels.stream()
-                                .mapToDouble(egresosGerente -> egresosGerente.getPagoComisionCobranza()
-                                                + egresosGerente.getPagoComisionVentas())
-                                .sum();
-                double bonos = egresosGerenteModels.stream()
-                                .mapToDouble(egresosGerente -> egresosGerente.getBonos())
-                                .sum();
-
-                asignacionesYGastosDTO.setEgresosPagoComisiones(comisiones);
-                asignacionesYGastosDTO.setEgresosPagoBonos(bonos);
-                asignacionesYGastosDTO.sumaIngresos();
-                asignacionesYGastosDTO.sumaEgresos();
-                asignacionesYGastosDTO.setBalance();
-
-                asignacionesYGastosDTO.formatToDouble();
+                        @PathVariable Integer usuarioId, @PathVariable String gerencia, @PathVariable int anio,
+                        @PathVariable int semana) {
+                AsignacionesYGastosDTO asignacionesYGastosDTO = new AsignacionesYGastosDTO(
+                                this.procedimientoService.findResumenYBalanceModel(usuarioId, gerencia, semana, anio));
 
                 return new ResponseEntity<>(asignacionesYGastosDTO, HttpStatus.OK);
         }
