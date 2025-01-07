@@ -24,11 +24,11 @@ public class PrestamoViewService {
     }
 
     @Async("asyncExecutor")
-    public CompletableFuture<ArrayList<PrestamoViewModel>> findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(
-            String agencia,
-            Double saldoAlIniciarSemana) {
+    public CompletableFuture<ArrayList<PrestamoViewModel>> findByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(
+            String agencia, Double saldoAlIniciarSemana, Integer anio, Integer semana) {
         return CompletableFuture.completedFuture(
-                this.repo.findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(agencia, saldoAlIniciarSemana));
+                this.repo.findByAgenciaAndSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(agencia,
+                        saldoAlIniciarSemana, anio, semana));
     }
 
     @Async("asyncExecutor")

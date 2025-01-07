@@ -103,7 +103,7 @@ public final class XpressController {
                         @PathVariable int anio,
                         @PathVariable int semana) {
                 CompletableFuture<ArrayList<PrestamoViewModel>> prestamoViewModels = this.prestamoViewService
-                                .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(agencia, 0D);
+                                .findByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(agencia, 0D, anio, semana);
                 CompletableFuture<GerenciaModel> gerenciaModel = this.gerenciaService.findByDeprecatedNameAndSucursal(
                                 prestamoViewModels.join().get(0).getGerencia(),
                                 prestamoViewModels.join().get(0).getSucursal());
@@ -131,7 +131,8 @@ public final class XpressController {
                                                 calendarioModel.getAnio(),
                                                 calendarioModel.getSemana(), false);
                 CompletableFuture<ArrayList<PrestamoViewModel>> prestamoViewModels = this.prestamoViewService
-                                .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(agencia, 0D);
+                                .findByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(agencia, 0D, calendarioModel.getAnio(),
+                                                calendarioModel.getSemana());
                 CompletableFuture<Double> asignaciones = this.asignacionService
                                 .findSumaAsigancionesByAgenciaAnioAndSemana(agencia, calendarioModel.getAnio(),
                                                 calendarioModel.getSemana());
@@ -370,7 +371,7 @@ public final class XpressController {
                 DashboardDTO dashboardDTO = new DashboardDTO();
 
                 CompletableFuture<ArrayList<PrestamoViewModel>> prestamoViewModels = this.prestamoViewService
-                                .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(agencia, 0D);
+                                .findByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(agencia, 0D, anio, semana);
                 CompletableFuture<ArrayList<PagoDynamicModel>> pagoAgrupagoModels = this.pagoAgrupadoService
                                 .findByAgenciaAnioSemanaAndEsPrimerPago(agencia, anio,
                                                 semana, false);

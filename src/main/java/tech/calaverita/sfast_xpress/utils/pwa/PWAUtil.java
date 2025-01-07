@@ -52,8 +52,8 @@ public final class PWAUtil {
         MyUtil.funSemanaAnterior(calendarioModel);
 
         ArrayList<PrestamoViewModel> prestamoViewModels = PWAUtil.prestamoViewService
-                .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(
-                        agencia, 0D)
+                .findByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(
+                        agencia, 0D, anio, semana)
                 .join();
         ArrayList<PrestamoCobranzaPWA> prestamoCobranzaPWAs = new ArrayList<>();
 

@@ -11,17 +11,19 @@ import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 
 @Repository
 public interface PrestamoViewRepository extends CrudRepository<PrestamoViewModel, String> {
-        ArrayList<PrestamoViewModel> findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(String agencia,
-                        Double saldoAlIniciarSemana);
+        @Query(value = "SELECT prest.* FROM prestamos_view prest WHERE prest.agencia = :agencia "
+                        + "AND prest.saldo_al_iniciar_semana > :saldoAlIniciarSemana AND !(prest.anio = :anio "
+                        + "AND prest.semana = :semana)", nativeQuery = true)
+        ArrayList<PrestamoViewModel> findByAgenciaAndSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(String agencia,
+                        Double saldoAlIniciarSemana, Integer anio, Integer semana);
 
         ArrayList<PrestamoViewModel> findByGerenciaAndSucursalAndSaldoAlIniciarSemanaGreaterThan(String gerencia,
                         String sucursal,
                         Double saldoAlIniciarSemana);
 
         @Query("SELECT prest FROM PrestamoViewModel prest INNER JOIN PagoModel pag ON prest.prestamoId = pag.prestamoId "
-                        +
-                        "AND pag.agente = :agencia AND pag.anio = :anio AND pag.semana = :semana " +
-                        "AND prest.saldoAlIniciarSemana <= prest.tarifa")
+                        + "AND pag.agente = :agencia AND pag.anio = :anio AND pag.semana = :semana "
+                        + "AND prest.saldoAlIniciarSemana <= prest.tarifa")
         ArrayList<PrestamoViewModel> findPorFinalizarByAgenciaAndAnioAndSemana(String agencia, int anio, int semana);
 
         @Query("SELECT prest FROM PrestamoViewModel prest INNER JOIN PagoModel pag ON prest.prestamoId = pag.prestamoId "

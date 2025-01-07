@@ -87,8 +87,12 @@ public class DashboardPorDiaPWAThread implements Runnable {
 
         String agencia = this.objectsContainer.getDashboard().getAgencia();
 
+        // To easy code
+        int anio = objectsContainer.getDashboard().getAnio();
+        int semana = objectsContainer.getDashboard().getSemana();
+
         objectsContainer.setPrestamoViewModelsCobranza(DashboardPorDiaPWAThread.prestamoViewService
-                .findByAgenciaAndSaldoAlIniciarSemanaGreaterThan(agencia, 0D).join());
+                .findByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(agencia, 0D, anio, semana).join());
 
         setGerencia();
         setClientes();
@@ -204,7 +208,8 @@ public class DashboardPorDiaPWAThread implements Runnable {
     }
 
     public void setGerencia() {
-        objectsContainer.getDashboard().setGerencia(objectsContainer.getPrestamoViewModelsCobranza().get(0).getGerencia());
+        objectsContainer.getDashboard()
+                .setGerencia(objectsContainer.getPrestamoViewModelsCobranza().get(0).getGerencia());
     }
 
     public void setClientes() {
