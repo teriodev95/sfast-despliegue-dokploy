@@ -50,4 +50,25 @@ public class UsuarioModel {
 
         return usuarioModel;
     }
+
+    public static UsuarioModel getSinGerenteAsignado() {
+        UsuarioModel usuarioModel = new UsuarioModel();
+        usuarioModel.setUsuarioId(0);
+        usuarioModel.setNombre("Sin");
+        usuarioModel.setApellidoPaterno("Gerente");
+        usuarioModel.setApellidoMaterno("Asignado");
+        usuarioModel.setTipo("Gerente");
+        usuarioModel.setPin(0000);
+        usuarioModel.setUsuario("SinGerenteAsignado");
+        usuarioModel.setPuedeVerificarAsignaciones(true);
+        usuarioModel.setPuedeCobrar(false);
+        usuarioModel.setStatus(true);
+        usuarioModel.setGerencia("SinGerencia");
+        usuarioModel.setAgencia("SinAgencia");
+        usuarioModel.setFechaIngreso("0000-00-00");
+        usuarioModel.setTelegramId("0");
+        usuarioModel.setNumeroCelular("0000000000");
+
+        return usuarioModel;
+    }
 }

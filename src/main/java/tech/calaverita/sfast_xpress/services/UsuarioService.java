@@ -71,7 +71,12 @@ public class UsuarioService {
     }
 
     public UsuarioModel findByGerenciaTipoAndStatus(String gerencia, String tipo, Boolean status) {
-        return this.repo.findByGerenciaAndTipoAndStatus(gerencia, tipo, status).get(0);
+        ArrayList<UsuarioModel> usuarioModels = this.repo.findByGerenciaAndTipoAndStatus(gerencia, tipo, status);
+
+        if (usuarioModels.isEmpty())
+            return null;
+
+        return usuarioModels.get(0);
     }
 
     public ArrayList<UsuarioModel> findByGerencia(String gerencia) {

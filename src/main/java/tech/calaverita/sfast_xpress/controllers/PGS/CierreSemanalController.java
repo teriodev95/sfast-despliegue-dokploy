@@ -144,10 +144,17 @@ public final class CierreSemanalController {
                                                                                 .findByAgenciaAndStatus(agencia, true);
                                 AgenciaModel agenciaModel = this.agenciaService.findById(agencia);
 
+                                UsuarioModel gerenteUsuarioModel = this.usuarioService.findByGerenciaTipoAndStatus(
+                                                agenciaModel.getGerenciaId(), "Gerente", true) == null
+                                                                ? UsuarioModel.getSinGerenteAsignado()
+                                                                : this.usuarioService
+                                                                                .findByGerenciaTipoAndStatus(
+                                                                                                agenciaModel.getGerenciaId(),
+                                                                                                "Gerente", true);
+
                                 usuarioModels.add(agenteUsuarioModel);
-                                usuarioModels.add(this.usuarioService.findByGerenciaTipoAndStatus(
-                                                agenciaModel.getGerenciaId(),
-                                                "Gerente", true));
+                                usuarioModels.add(gerenteUsuarioModel);
+
                                 asignaciones = this.asignacionService
                                                 .findSumaAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana)
                                                 .join();
