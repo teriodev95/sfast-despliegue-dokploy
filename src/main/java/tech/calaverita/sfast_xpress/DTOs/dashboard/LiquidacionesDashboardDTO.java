@@ -13,20 +13,21 @@ public class LiquidacionesDashboardDTO {
     private Double liquidaciones;
 
     public LiquidacionesDashboardDTO(ArrayList<LiquidacionModel> liquidacionModels,
-            ArrayList<PagoDynamicModel> pagoDynamicModels) {
+            ArrayList<PagoDynamicModel> pagoDynamicModels, ArrayList<PagoDynamicModel> liquidacionPagoModels) {
         this.totalDeDescuento = MyUtil
                 .getDouble(liquidacionModels.stream().mapToDouble(LiquidacionModel::getDescuentoEnDinero).sum());
-        this.liquidaciones = MyUtil.getDouble(getLiquidaciones(liquidacionModels, pagoDynamicModels));
+        this.liquidaciones = MyUtil.getDouble(getLiquidaciones(liquidacionPagoModels, pagoDynamicModels));
     }
 
-    private Double getLiquidaciones(ArrayList<LiquidacionModel> liquidacionModels,
+    private Double getLiquidaciones(ArrayList<PagoDynamicModel> liquidacionPagoModels,
             ArrayList<PagoDynamicModel> pagoDynamicModels) {
+
         Double liquidaciones = 0D;
 
-        for (LiquidacionModel liquidacionModel : liquidacionModels) {
+        for (PagoDynamicModel liquidacionPagoModel : liquidacionPagoModels) {
             for (PagoDynamicModel pagoDynamicModel : pagoDynamicModels) {
-                if (liquidacionModel.getPrestamoId().equals(pagoDynamicModel.getPrestamoId())) {
-                    liquidaciones += liquidacionModel.getLiquidoCon() - pagoDynamicModel.getTarifa();
+                if (liquidacionPagoModel.getPrestamoId().equals(pagoDynamicModel.getPrestamoId())) {
+                    liquidaciones += liquidacionPagoModel.getMonto() - pagoDynamicModel.getTarifa();
                     break;
                 }
             }

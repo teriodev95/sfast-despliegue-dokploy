@@ -103,7 +103,8 @@ public final class XpressController {
                         @PathVariable int anio,
                         @PathVariable int semana) {
                 CompletableFuture<ArrayList<PrestamoViewModel>> prestamoViewModels = this.prestamoViewService
-                                .findByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(agencia, 0D, anio, semana);
+                                .findByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(agencia, 0D, anio,
+                                                semana);
                 CompletableFuture<GerenciaModel> gerenciaModel = this.gerenciaService.findByDeprecatedNameAndSucursal(
                                 prestamoViewModels.join().get(0).getGerencia(),
                                 prestamoViewModels.join().get(0).getSucursal());
@@ -131,7 +132,8 @@ public final class XpressController {
                                                 calendarioModel.getAnio(),
                                                 calendarioModel.getSemana(), false);
                 CompletableFuture<ArrayList<PrestamoViewModel>> prestamoViewModels = this.prestamoViewService
-                                .findByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(agencia, 0D, calendarioModel.getAnio(),
+                                .findByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(agencia, 0D,
+                                                calendarioModel.getAnio(),
                                                 calendarioModel.getSemana());
                 CompletableFuture<Double> asignaciones = this.asignacionService
                                 .findSumaAsigancionesByAgenciaAnioAndSemana(agencia, calendarioModel.getAnio(),
@@ -371,12 +373,17 @@ public final class XpressController {
                 DashboardDTO dashboardDTO = new DashboardDTO();
 
                 CompletableFuture<ArrayList<PrestamoViewModel>> prestamoViewModels = this.prestamoViewService
-                                .findByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(agencia, 0D, anio, semana);
+                                .findByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(agencia, 0D, anio,
+                                                semana);
                 CompletableFuture<ArrayList<PagoDynamicModel>> pagoAgrupagoModels = this.pagoAgrupadoService
                                 .findByAgenciaAnioSemanaAndEsPrimerPago(agencia, anio,
                                                 semana, false);
                 CompletableFuture<ArrayList<LiquidacionModel>> liquidacionModels = this.liquidacionService
                                 .findByAgenciaAnioAndSemana(agencia,
+                                                anio,
+                                                semana);
+                CompletableFuture<ArrayList<PagoDynamicModel>> liquidacionesPagoModels = this.liquidacionService
+                                .findPagoModelsByAgenciaAnioAndSemana(agencia,
                                                 anio,
                                                 semana);
                 CompletableFuture<Double> asignaciones = this.asignacionService
@@ -396,7 +403,7 @@ public final class XpressController {
                         DebitosCobranzaDTO debitosCobranzaDTO = new DebitosCobranzaDTO(prestamoViewModels.join());
                         LiquidacionesDashboardDTO liquidacionesDashboardDTO = new LiquidacionesDashboardDTO(
                                         liquidacionModels.join(),
-                                        pagoAgrupagoModels.join());
+                                        pagoAgrupagoModels.join(), liquidacionesPagoModels.join());
                         PagosDashboardDTO pagosDashboardDTO = new PagosDashboardDTO(pagoAgrupagoModels.join(),
                                         liquidacionesDashboardDTO.getLiquidaciones());
                         CierreDashboardDTO cierreDashboardDTO = new CierreDashboardDTO(pagosDashboardDTO,

@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import tech.calaverita.sfast_xpress.DTOs.LiquidacionDTO;
 import tech.calaverita.sfast_xpress.mappers.LiquidacionMapper;
 import tech.calaverita.sfast_xpress.models.mariaDB.LiquidacionModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.PagoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.dynamic.PagoDynamicModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 import tech.calaverita.sfast_xpress.repositories.LiquidacionRepository;
 
@@ -30,6 +32,13 @@ public class LiquidacionService {
     public CompletableFuture<ArrayList<LiquidacionModel>> findByAgenciaAnioAndSemana(String strAgenciaI, int anio,
             int semana) {
         return CompletableFuture.completedFuture(this.repo.findByAgenciaAndAnioAndSemana(strAgenciaI, anio, semana));
+    }
+
+    @Async("asyncExecutor")
+    public CompletableFuture<ArrayList<PagoDynamicModel>> findPagoModelsByAgenciaAnioAndSemana(String strAgenciaI, int anio,
+            int semana) {
+        return CompletableFuture
+                .completedFuture(this.repo.findPagoModelsByAgenciaAndAnioAndSemana(strAgenciaI, anio, semana));
     }
 
     public ArrayList<LiquidacionModel> findByAgenciaAndFechaPago(String agencia, String fechaPago) {
