@@ -1,6 +1,7 @@
 package tech.calaverita.sfast_xpress.DTOs.cierre_semanal;
 
 import lombok.Data;
+import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.CierreSemanalModel;
 
 @Data
 public class BalanceAgenciaDTO {
@@ -15,4 +16,19 @@ public class BalanceAgenciaDTO {
     private Integer pagosReducidos;
     private Integer noPagos;
     private Integer liquidaciones;
+
+    public BalanceAgenciaDTO() {
+
+    }
+
+    public BalanceAgenciaDTO(CierreSemanalModel cierreSemanalModel) {
+        this.setZona(cierreSemanalModel.getGerencia());
+        this.setAgencia(cierreSemanalModel.getAgencia());
+        this.setRendimiento(cierreSemanalModel.getRendimiento());
+        this.setNivel(cierreSemanalModel.getNivel());
+        this.setClientes(cierreSemanalModel.getClientes());
+        this.setPagosReducidos(cierreSemanalModel.getPagosReducidos());
+        this.setNoPagos(cierreSemanalModel.getNoPagos());
+        this.setLiquidaciones(cierreSemanalModel.getClientesLiquidados());
+    }
 }

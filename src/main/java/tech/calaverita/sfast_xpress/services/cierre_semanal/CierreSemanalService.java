@@ -39,7 +39,14 @@ public class CierreSemanalService {
             String agencia,
             int anio,
             int semana) {
-        return this.repo.findByAgenciaAnioAndSemana(agencia + "-" + anio + "-" + semana);
+        return this.repo.findByAgenciaAndAnioAndSemana(agencia, anio, semana);
+    }
+
+    public Double findComisionCobranzaAgenciaByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
+        Double pagoComisionCobranza = this.repo.findComisionCobranzaAgenciaByAgenciaAndAnioAndSemana(agencia, anio,
+                semana);
+
+        return pagoComisionCobranza == null ? 0D : pagoComisionCobranza;
     }
 
     public CierreSemanalDTO getCierreSemanalDTO(

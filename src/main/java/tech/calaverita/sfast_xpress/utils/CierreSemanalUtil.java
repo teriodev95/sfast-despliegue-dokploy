@@ -45,44 +45,26 @@ import tech.calaverita.sfast_xpress.itext.PdfStyleManager;
 import tech.calaverita.sfast_xpress.itext.fonts.Fonts;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.BalanceAgenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.CierreSemanalModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.EgresosAgenteModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.EgresosGerenteModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.IngresosAgenteModel;
 import tech.calaverita.sfast_xpress.services.AgenciaService;
 import tech.calaverita.sfast_xpress.services.CalendarioService;
 import tech.calaverita.sfast_xpress.services.SucursalService;
-import tech.calaverita.sfast_xpress.services.cierre_semanal.BalanceAgenciaService;
 import tech.calaverita.sfast_xpress.services.cierre_semanal.CierreSemanalService;
-import tech.calaverita.sfast_xpress.services.cierre_semanal.EgresosAgenteService;
-import tech.calaverita.sfast_xpress.services.cierre_semanal.EgresosGerenteService;
-import tech.calaverita.sfast_xpress.services.cierre_semanal.IngresosAgenteService;
 import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
 
 @Component
 public class CierreSemanalUtil {
-        private static BalanceAgenciaService balanceAgenciaService;
         private static CierreSemanalService cierreSemanalService;
-        private static EgresosAgenteService egresosAgenteService;
-        private static EgresosGerenteService egresosGerenteService;
-        private static IngresosAgenteService ingresosAgenteService;
         private static SucursalService sucursalService;
         private static AgenciaService agenciaService;
         private static PagoDynamicService pagoDynamicService;
         private static CalendarioService calendarioService;
         private static final Fonts fuentes = new Fonts();
 
-        public CierreSemanalUtil(BalanceAgenciaService balanceAgenciaService, CierreSemanalService cierreSemanalService,
-                        EgresosAgenteService egresosAgenteService, EgresosGerenteService egresosGerenteService,
-                        IngresosAgenteService ingresosAgenteService, PagoDynamicService pagoDynamicService,
+        public CierreSemanalUtil(CierreSemanalService cierreSemanalService, PagoDynamicService pagoDynamicService,
                         SucursalService sucursalService, AgenciaService agenciaService,
                         CalendarioService calendarioService) {
-                CierreSemanalUtil.balanceAgenciaService = balanceAgenciaService;
                 CierreSemanalUtil.cierreSemanalService = cierreSemanalService;
-                CierreSemanalUtil.egresosAgenteService = egresosAgenteService;
-                CierreSemanalUtil.egresosGerenteService = egresosGerenteService;
-                CierreSemanalUtil.ingresosAgenteService = ingresosAgenteService;
                 CierreSemanalUtil.sucursalService = sucursalService;
                 CierreSemanalUtil.agenciaService = agenciaService;
                 CierreSemanalUtil.pagoDynamicService = pagoDynamicService;
@@ -93,31 +75,6 @@ public class CierreSemanalUtil {
                 CierreSemanalDTO cierreSemanalDTO = CierreSemanalUtil.cierreSemanalService
                                 .getCierreSemanalDTO(cierreSemanalModel);
 
-                CompletableFuture<BalanceAgenciaModel> balanceAgenciaEntity = CierreSemanalUtil.balanceAgenciaService
-                                .findById(cierreSemanalModel.getId());
-                CompletableFuture<EgresosAgenteModel> egresosAgenteEntity = CierreSemanalUtil.egresosAgenteService
-                                .findById(cierreSemanalModel.getId());
-                CompletableFuture<EgresosGerenteModel> egresosGerenteEntity = CierreSemanalUtil.egresosGerenteService
-                                .findById(cierreSemanalModel.getId());
-                CompletableFuture<IngresosAgenteModel> ingresosAgenteEntity = CierreSemanalUtil.ingresosAgenteService
-                                .findById(cierreSemanalModel.getId());
-
-                CompletableFuture.allOf(balanceAgenciaEntity, egresosAgenteEntity, egresosGerenteEntity,
-                                ingresosAgenteEntity);
-
-                BalanceAgenciaDTO balanceAgenciaDTO = CierreSemanalUtil.balanceAgenciaService
-                                .getBalanceAgenciaDTO(balanceAgenciaEntity.join());
-                EgresosAgenteDTO egresosAgenteDTO = CierreSemanalUtil.egresosAgenteService
-                                .getEgresosGerenteDTO(egresosAgenteEntity.join());
-                EgresosGerenteDTO egresosGerenteDTO = CierreSemanalUtil.egresosGerenteService
-                                .getEgresosGerenteDTO(egresosGerenteEntity.join());
-                IngresosAgenteDTO ingresosAgenteDTO = CierreSemanalUtil.ingresosAgenteService
-                                .getIngresosAgenteDTO(ingresosAgenteEntity.join());
-
-                cierreSemanalDTO.setBalanceAgencia(balanceAgenciaDTO);
-                cierreSemanalDTO.setEgresosAgente(egresosAgenteDTO);
-                cierreSemanalDTO.setEgresosGerente(egresosGerenteDTO);
-                cierreSemanalDTO.setIngresosAgente(ingresosAgenteDTO);
                 cierreSemanalDTO.setIsAgenciaCerrada(true);
 
                 return cierreSemanalDTO;
@@ -194,7 +151,7 @@ public class CierreSemanalUtil {
                         CalendarioModel semanaAnteriorCalendarioModel = calendarioModel;
                         CierreSemanalUtil.funSemanaAnterior(calendarioModel);
 
-                        Double pagoComisionCobranza = CierreSemanalUtil.egresosGerenteService
+                        Double pagoComisionCobranza = CierreSemanalUtil.cierreSemanalService
                                         .findComisionCobranzaAgenciaByAgenciaAnioAndSemana(dashboard.getAgencia(),
                                                         semanaAnteriorCalendarioModel.getAnio(),
                                                         semanaAnteriorCalendarioModel.getSemana());

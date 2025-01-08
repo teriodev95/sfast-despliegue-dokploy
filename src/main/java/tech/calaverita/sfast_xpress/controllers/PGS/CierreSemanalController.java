@@ -37,11 +37,7 @@ import tech.calaverita.sfast_xpress.controllers.XpressController;
 import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page1.tables.classes.TablaDetallesCierreAgencias;
 import tech.calaverita.sfast_xpress.models.mariaDB.AgenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.BalanceAgenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.CierreSemanalModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.EgresosAgenteModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.EgresosGerenteModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.IngresosAgenteModel;
 import tech.calaverita.sfast_xpress.services.AgenciaService;
 import tech.calaverita.sfast_xpress.services.AsignacionService;
 import tech.calaverita.sfast_xpress.services.GastoService;
@@ -50,14 +46,9 @@ import tech.calaverita.sfast_xpress.services.PagoService;
 import tech.calaverita.sfast_xpress.services.ProcedimientoService;
 import tech.calaverita.sfast_xpress.services.UsuarioService;
 import tech.calaverita.sfast_xpress.services.VentaService;
-import tech.calaverita.sfast_xpress.services.cierre_semanal.BalanceAgenciaService;
 import tech.calaverita.sfast_xpress.services.cierre_semanal.CierreSemanalService;
-import tech.calaverita.sfast_xpress.services.cierre_semanal.EgresosAgenteService;
-import tech.calaverita.sfast_xpress.services.cierre_semanal.EgresosGerenteService;
-import tech.calaverita.sfast_xpress.services.cierre_semanal.IngresosAgenteService;
 import tech.calaverita.sfast_xpress.utils.CierreSemanalUtil;
 import tech.calaverita.sfast_xpress.utils.DesgloceCobranzaYComisionesUtil;
-import tech.calaverita.sfast_xpress.utils.LogUtil;
 
 @CrossOrigin
 @RestController
@@ -66,29 +57,19 @@ public final class CierreSemanalController {
         private final AsignacionService asignacionService;
         private final UsuarioService usuarioService;
         private final XpressController xpressController;
-        private final BalanceAgenciaService balanceAgenciaService;
         private final CierreSemanalService cierreSemanalService;
-        private final EgresosAgenteService egresosAgenteService;
-        private final EgresosGerenteService egresosGerenteService;
-        private final IngresosAgenteService ingresosAgenteService;
         private final AgenciaService agenciaService;
         private final ProcedimientoService procedimientoService;
 
         public CierreSemanalController(AsignacionService asignacionService, UsuarioService usuarioService,
-                        XpressController xpressController, BalanceAgenciaService balanceAgenciaService,
-                        CierreSemanalService cierreSemanalService, EgresosAgenteService egresosAgenteService,
-                        EgresosGerenteService egresosGerenteService,
-                        IngresosAgenteService ingresosAgenteService, VentaService ventaService,
-                        GastoService gastoService, PagoService pagoService, GerenciaService gerenciaService,
-                        AgenciaService agenciaService, ProcedimientoService procedimientoService) {
+                        XpressController xpressController, CierreSemanalService cierreSemanalService,
+                        VentaService ventaService, GastoService gastoService, PagoService pagoService,
+                        GerenciaService gerenciaService, AgenciaService agenciaService,
+                        ProcedimientoService procedimientoService) {
                 this.asignacionService = asignacionService;
                 this.usuarioService = usuarioService;
                 this.xpressController = xpressController;
-                this.balanceAgenciaService = balanceAgenciaService;
                 this.cierreSemanalService = cierreSemanalService;
-                this.egresosAgenteService = egresosAgenteService;
-                this.egresosGerenteService = egresosGerenteService;
-                this.ingresosAgenteService = ingresosAgenteService;
                 this.agenciaService = agenciaService;
                 this.procedimientoService = procedimientoService;
         }
@@ -179,8 +160,8 @@ public final class CierreSemanalController {
                                 + cierreSemanalModel.getId() + ".pdf";
 
                 cierreSemanalDTO.setPDF(urlPDF);
-                cierreSemanalModel.setPDF(urlPDF);
-                cierreSemanalModel.setLog(LogUtil.getLogCierreSemanal(cierreSemanalDTO.getBalanceAgencia()));
+                // cierreSemanalModel.setPDF(urlPDF);
+                // cierreSemanalModel.setLog(LogUtil.getLogCierreSemanal(cierreSemanalDTO.getBalanceAgencia()));
 
                 // if (staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")) {
                 if (!this.usuarioService.existsByUsuarioAndTipoIn(username, new String[] { "Gerente", "Seguridad" })) {
@@ -189,27 +170,12 @@ public final class CierreSemanalController {
                                 new String[] { "Gerente", "Seguridad" }, true)) {
                         responseStatus = HttpStatus.UNAUTHORIZED;
                 } else {
-                        if (this.cierreSemanalService.findById(cierreSemanalModel.getId()).isEmpty()) {
-                                BalanceAgenciaModel balanceAgenciaModel = this.balanceAgenciaService
-                                                .getBalanceAgenciaEntity(cierreSemanalDTO.getBalanceAgencia());
-                                balanceAgenciaModel.setId(cierreSemanalModel.getBalanceAgenciaId());
-                                this.balanceAgenciaService.save(balanceAgenciaModel);
+                        // To easy code
+                        String agencia = cierreSemanalDTO.getBalanceAgencia().getAgencia();
+                        int anio = cierreSemanalDTO.getAnio();
+                        int semana = cierreSemanalDTO.getSemana();
 
-                                EgresosAgenteModel egresosAgenteModel = this.egresosAgenteService
-                                                .getEgresosGerenteEntity(cierreSemanalDTO.getEgresosAgente());
-                                egresosAgenteModel.setId(cierreSemanalModel.getEgresosAgenteId());
-                                this.egresosAgenteService.save(egresosAgenteModel);
-
-                                EgresosGerenteModel egresosGerenteModel = this.egresosGerenteService
-                                                .getEgresosGerenteEntity(cierreSemanalDTO.getEgresosGerente());
-                                egresosGerenteModel.setId(cierreSemanalModel.getEgresosGerenteId());
-                                this.egresosGerenteService.save(egresosGerenteModel);
-
-                                IngresosAgenteModel ingresosAgenteModel = this.ingresosAgenteService
-                                                .getIngresosAgenteEntity(cierreSemanalDTO.getIngresosAgente());
-                                ingresosAgenteModel.setId(cierreSemanalModel.getIngresosAgenteId());
-                                this.ingresosAgenteService.save(ingresosAgenteModel);
-
+                        if (this.cierreSemanalService.findByAgenciaAnioAndSemana(agencia, anio, semana).isEmpty()) {
                                 this.cierreSemanalService.save(cierreSemanalModel);
 
                                 responseText = urlPDF;
