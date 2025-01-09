@@ -41,8 +41,8 @@ public class LiquidacionService {
                 .completedFuture(this.repo.findPagoModelsByAgenciaAndAnioAndSemana(strAgenciaI, anio, semana));
     }
 
-    public ArrayList<LiquidacionModel> findByAgenciaAndFechaPago(String agencia, String fechaPago) {
-        return this.repo.findByAgenciaAndFechaPago(agencia, fechaPago);
+    public ArrayList<LiquidacionModel> findByAgenciaInAndFechaPago(String[] agencias, String fechaPago) {
+        return this.repo.findByAgenciaInAndFechaPago(agencias, fechaPago);
     }
 
     public LiquidacionModel getLiquidacionEntity(LiquidacionDTO DTO) {

@@ -29,10 +29,6 @@ public class AsignacionService {
         return this.repo.findById(id).orElse(null);
     }
 
-    public ArrayList<AsignacionModel> findByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
-        return this.repo.findByAgenciaAndAnioAndSemana(agencia, anio, semana);
-    }
-
     public ArrayList<AsignacionModel> findByQuienRecibioUsuarioIdAnioAndSemana(Integer quienRecibioUsuarioId, int anio,
             int semana) {
         return this.repo.findByQuienRecibioUsuarioIdAndAnioAndSemana(quienRecibioUsuarioId, anio, semana);
@@ -41,6 +37,11 @@ public class AsignacionService {
     public ArrayList<AsignacionModel> findByQuienEntregoUsuarioIdAnioAndSemana(Integer quienEntregoUsuarioId, int anio,
             int semana) {
         return this.repo.findByQuienEntregoUsuarioIdAndAnioAndSemana(quienEntregoUsuarioId, anio, semana);
+    }
+
+    public ArrayList<AsignacionModel> findByQuienEntregoUsuarioIdInAnioAndSemana(Integer[] quienEntregoUsuarioIds, int anio,
+            int semana) {
+        return this.repo.findByQuienEntregoUsuarioIdInAndAnioAndSemana(quienEntregoUsuarioIds, anio, semana);
     }
 
     public ArrayList<AsignacionModel> findAll() {

@@ -1,16 +1,24 @@
 package tech.calaverita.sfast_xpress.threads.pwa;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import tech.calaverita.sfast_xpress.models.VentaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.AgenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.dynamic.PagoDynamicModel;
 import tech.calaverita.sfast_xpress.pojos.ObjectsContainer;
 import tech.calaverita.sfast_xpress.services.AgenciaService;
 import tech.calaverita.sfast_xpress.services.AsignacionService;
 import tech.calaverita.sfast_xpress.services.CalendarioService;
 import tech.calaverita.sfast_xpress.services.LiquidacionService;
 import tech.calaverita.sfast_xpress.services.PagoService;
+import tech.calaverita.sfast_xpress.services.UsuarioService;
+import tech.calaverita.sfast_xpress.services.VentaService;
 import tech.calaverita.sfast_xpress.services.cierre_semanal.CierreSemanalService;
 import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
 import tech.calaverita.sfast_xpress.services.views.PrestamoViewService;
@@ -30,6 +38,8 @@ public class DashboardPorDiaYHoraPWAThread implements Runnable {
     private static PagoDynamicService pagoDynamicService;
     private static CierreSemanalService cierreSemanalService;
     private static AgenciaService agenciaService;
+    private static UsuarioService usuarioService;
+    private static VentaService ventaService;
 
     @Autowired
     private DashboardPorDiaYHoraPWAThread(
@@ -40,7 +50,7 @@ public class DashboardPorDiaYHoraPWAThread implements Runnable {
             PrestamoViewService prestamoViewService,
             PagoDynamicService pagoDynamicService,
             CierreSemanalService cierreSemanalService,
-            AgenciaService agenciaService) {
+            AgenciaService agenciaService, UsuarioService usuarioService, VentaService ventaService) {
         DashboardPorDiaYHoraPWAThread.asignacionService = asignacionService;
         DashboardPorDiaYHoraPWAThread.calendarioService = calendarioService;
         DashboardPorDiaYHoraPWAThread.liquidacionService = liquidacionService;
@@ -49,6 +59,8 @@ public class DashboardPorDiaYHoraPWAThread implements Runnable {
         DashboardPorDiaYHoraPWAThread.pagoDynamicService = pagoDynamicService;
         DashboardPorDiaYHoraPWAThread.cierreSemanalService = cierreSemanalService;
         DashboardPorDiaYHoraPWAThread.agenciaService = agenciaService;
+        DashboardPorDiaYHoraPWAThread.usuarioService = usuarioService;
+        DashboardPorDiaYHoraPWAThread.ventaService = ventaService;
     }
 
     public DashboardPorDiaYHoraPWAThread(
@@ -164,7 +176,7 @@ public class DashboardPorDiaYHoraPWAThread implements Runnable {
         String gerencia = this.objectsContainer.getGerenciaModel().getDeprecatedName();
         String sucursal = this.objectsContainer.getGerenciaModel().getSucursal();
 
-        objectsContainer.setPagEntPagoModelsToDashboard(DashboardPorDiaYHoraPWAThread.pagoService
+        objectsContainer.setPagoDynamicModelsDashboard(DashboardPorDiaYHoraPWAThread.pagoService
                 .findByGerenciaAndFechaPagoLessThanEqualAndEsPrimerPagoInnerJoinPagoModel(
                         gerencia, sucursal,
                         objectsContainer.getFechaPago(), false, this.objectsContainer.getDashboard().getAnio(),
@@ -217,8 +229,9 @@ public class DashboardPorDiaYHoraPWAThread implements Runnable {
     }
 
     public void setLiquidacionesBd() {
-        objectsContainer.setLiquidaciones(DashboardPorDiaYHoraPWAThread.liquidacionService.findByAgenciaAndFechaPago(
-                objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
+        objectsContainer.setLiquidaciones(DashboardPorDiaYHoraPWAThread.liquidacionService.findByAgenciaInAndFechaPago(
+                objectsContainer.getAgencias().toArray(new String[objectsContainer.getAgencias().size()]),
+                objectsContainer.getFechaPago()));
         objectsContainer.setPagosOfLiquidaciones(
                 DashboardPorDiaYHoraPWAThread.pagoService.findByAgenteAndFechaPagoInnerJoinLiquidacionModel(
                         objectsContainer.getDashboard().getAgencia(), objectsContainer.getFechaPago()));
@@ -242,9 +255,23 @@ public class DashboardPorDiaYHoraPWAThread implements Runnable {
             throw new RuntimeException(e);
         }
 
-        objectsContainer.setAsignaciones(DashboardPorDiaYHoraPWAThread.asignacionService.findByAgenciaAnioAndSemana(
-                objectsContainer.getDashboard().getAgencia(), objectsContainer.getDashboard().getAnio(),
-                objectsContainer.getDashboard().getSemana()));
+        ArrayList<Integer> usuarioIds = new ArrayList<>();
+        for (String agencia : objectsContainer.getAgencias()) {
+            usuarioIds
+                    .add(DashboardPorDiaYHoraPWAThread.usuarioService.findByAgenciaTipoAndStatus(
+                            agencia, "Agente",
+                            true) == null ? 0
+                                    : DashboardPorDiaYHoraPWAThread.usuarioService
+                                            .findByAgenciaTipoAndStatus(agencia, "Agente", true).getUsuarioId());
+        }
+
+        objectsContainer.setAsignaciones(
+                DashboardPorDiaYHoraPWAThread.asignacionService.findByQuienEntregoUsuarioIdInAnioAndSemana(
+                        usuarioIds.toArray(new Integer[usuarioIds.size()]),
+                        objectsContainer.getDashboard().getAnio(),
+                        objectsContainer.getDashboard().getSemana()));
+
+        setVentasYNumeroVentas();
     }
 
     public void setGerencia() {
@@ -278,8 +305,8 @@ public class DashboardPorDiaYHoraPWAThread implements Runnable {
     public void setNoPagos() {
         int noPagos = 0;
 
-        for (int i = 0; i < objectsContainer.getPagEntPagoModelsToDashboard().size(); i++) {
-            if (objectsContainer.getPagEntPagoModelsToDashboard().get(i).getMonto() == 0) {
+        for (int i = 0; i < objectsContainer.getPagoDynamicModelsDashboard().size(); i++) {
+            if (objectsContainer.getPagoDynamicModelsDashboard().get(i).getMonto() == 0) {
                 noPagos++;
             }
         }
@@ -290,16 +317,16 @@ public class DashboardPorDiaYHoraPWAThread implements Runnable {
     public void setPagosReducidos() {
         int pagosReducidos = 0;
 
-        for (int i = 0; i < objectsContainer.getPagEntPagoModelsToDashboard().size(); i++) {
-            if (objectsContainer.getPagEntPagoModelsToDashboard().get(i).getAbreCon() < objectsContainer
-                    .getPagEntPagoModelsToDashboard().get(i).getTarifa()) {
-                if (objectsContainer.getPagEntPagoModelsToDashboard().get(i).getMonto() < objectsContainer
-                        .getPagEntPagoModelsToDashboard().get(i).getAbreCon()) {
+        for (int i = 0; i < objectsContainer.getPagoDynamicModelsDashboard().size(); i++) {
+            if (objectsContainer.getPagoDynamicModelsDashboard().get(i).getAbreCon() < objectsContainer
+                    .getPagoDynamicModelsDashboard().get(i).getTarifa()) {
+                if (objectsContainer.getPagoDynamicModelsDashboard().get(i).getMonto() < objectsContainer
+                        .getPagoDynamicModelsDashboard().get(i).getAbreCon()) {
                     pagosReducidos++;
                 }
             } else {
-                if (objectsContainer.getPagEntPagoModelsToDashboard().get(i).getMonto() < objectsContainer
-                        .getPagEntPagoModelsToDashboard().get(i).getTarifa()) {
+                if (objectsContainer.getPagoDynamicModelsDashboard().get(i).getMonto() < objectsContainer
+                        .getPagoDynamicModelsDashboard().get(i).getTarifa()) {
                     pagosReducidos++;
                 }
             }
@@ -406,18 +433,13 @@ public class DashboardPorDiaYHoraPWAThread implements Runnable {
 
     public void setMontoExcedente() {
         double montoExcedente = 0;
+        PagoDynamicModel pagoDynamicModel;
+        for (int i = 0; i < objectsContainer.getPagoDynamicModelsDashboard().size(); i++) {
+            // To easy code
+            pagoDynamicModel = objectsContainer.getPagoDynamicModelsDashboard().get(i);
 
-        for (int i = 0; i < objectsContainer.getPagEntPagoModelsToDashboard().size(); i++) {
-            if (objectsContainer.getPagEntPagoModelsToDashboard().get(i).getMonto() > objectsContainer
-                    .getPagEntPagoModelsToDashboard().get(i).getTarifa()) {
-                montoExcedente += objectsContainer.getPagEntPagoModelsToDashboard().get(i).getMonto()
-                        - objectsContainer.getPagEntPagoModelsToDashboard().get(i).getTarifa();
-            }
-        }
-
-        if (objectsContainer.getDashboard().getLiquidaciones() != null) {
-            if (objectsContainer.getDashboard().getLiquidaciones() > 0) {
-                montoExcedente -= objectsContainer.getDashboard().getLiquidaciones();
+            if (pagoDynamicModel.getTipo().equals("Excedente")) {
+                montoExcedente += pagoDynamicModel.getMonto() - pagoDynamicModel.getTarifa();
             }
         }
 
@@ -442,8 +464,8 @@ public class DashboardPorDiaYHoraPWAThread implements Runnable {
     public void setCobranzaTotal() {
         double cobranzaTotal = 0;
 
-        for (int i = 0; i < objectsContainer.getPagEntPagoModelsToDashboard().size(); i++) {
-            cobranzaTotal += objectsContainer.getPagEntPagoModelsToDashboard().get(i).getMonto();
+        for (int i = 0; i < objectsContainer.getPagoDynamicModelsDashboard().size(); i++) {
+            cobranzaTotal += objectsContainer.getPagoDynamicModelsDashboard().get(i).getMonto();
         }
 
         objectsContainer.getDashboard().setCobranzaTotal(MyUtil.getDouble(cobranzaTotal));
@@ -463,12 +485,19 @@ public class DashboardPorDiaYHoraPWAThread implements Runnable {
     }
 
     public void setMontoDeDebitoFaltante() {
-        if (objectsContainer.getDashboard().getDebitoTotal() != null
-                && objectsContainer.getDashboard().getDebitoTotal() > 0) {
-            objectsContainer.getDashboard()
-                    .setMontoDeDebitoFaltante(MyUtil.getDouble(objectsContainer.getDashboard().getDebitoTotal()
-                            - objectsContainer.getDashboard().getTotalCobranzaPura()));
+        Double debitoFaltante = 0D;
+        PagoDynamicModel pagoDynamicModel;
+        for (int i = 0; i < objectsContainer.getPagoDynamicModelsDashboard().size(); i++) {
+            // To easy code
+            pagoDynamicModel = objectsContainer.getPagoDynamicModelsDashboard().get(i);
+
+            if (pagoDynamicModel.getTipo().equals("Reducido")) {
+                debitoFaltante += pagoDynamicModel.getTarifa() - pagoDynamicModel.getMonto();
+            }
         }
+
+        objectsContainer.getDashboard()
+                .setMontoDeDebitoFaltante(MyUtil.getDouble(debitoFaltante));
     }
 
     public void setRendmiento() {
@@ -493,5 +522,23 @@ public class DashboardPorDiaYHoraPWAThread implements Runnable {
         System.out.println("CierreId: " + cierreId);
 
         objectsContainer.getDashboard().setIsCerrada(status_agencia);
+    }
+
+    public void setVentasYNumeroVentas() {
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd+HH:mm:ss");
+        LocalDateTime localDateTime = LocalDateTime.parse(objectsContainer.getFechaPago(), formato);
+        String createdAt = localDateTime.plusHours(6).format(formato);
+
+        // To easy code
+        int anio = objectsContainer.getCalendarioModel().getAnio();
+        int semana = objectsContainer.getCalendarioModel().getSemana();
+        String gerencia = objectsContainer.getDashboard().getGerencia();
+
+        ArrayList<VentaModel> ventaModels = DashboardPorDiaYHoraPWAThread.ventaService
+                .findByGerenciaCreatedAtLessThanEqualAnioAndSemana(gerencia, createdAt, anio, semana);
+
+        objectsContainer.getDashboard().setNumeroVentas(ventaModels.size());
+        objectsContainer.getDashboard()
+                .setVentas(ventaModels.stream().mapToDouble(ventaModel -> ventaModel.getMonto()).sum());
     }
 }

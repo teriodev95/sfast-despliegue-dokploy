@@ -25,4 +25,5 @@ public class VentaModel {
     private Integer plazo;
     private Double monto;
     private Double primerPago;
+    private String createdAt;
 }

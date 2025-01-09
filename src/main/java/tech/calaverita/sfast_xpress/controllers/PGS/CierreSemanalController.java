@@ -115,7 +115,8 @@ public final class CierreSemanalController {
                                                 agencia, "Agente",
                                                 true) == null ? UsuarioModel.getSinAgenteAsignado()
                                                                 : this.usuarioService
-                                                                                .findByAgenciaAndStatus(agencia, true);
+                                                                                .findByAgenciaTipoAndStatus(agencia,
+                                                                                                "Agente", true);
                                 AgenciaModel agenciaModel = this.agenciaService.findById(agencia);
 
                                 UsuarioModel gerenteUsuarioModel = this.usuarioService.findByGerenciaTipoAndStatus(

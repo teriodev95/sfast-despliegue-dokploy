@@ -17,6 +17,6 @@ public interface LiquidacionRepository extends CrudRepository<LiquidacionModel, 
         ArrayList<PagoDynamicModel> findPagoModelsByAgenciaAndAnioAndSemana(String agencia, int anio, int semana);
 
         @Query("SELECT liq FROM LiquidacionModel liq INNER JOIN PagoModel pag ON liq.pagoId = pag.pagoId " +
-                        "AND pag.agente = :agencia AND pag.fechaPago like :fechaPago%")
-        ArrayList<LiquidacionModel> findByAgenciaAndFechaPago(String agencia, String fechaPago);
+                        "AND pag.agente IN :agencias AND pag.fechaPago like :fechaPago%")
+        ArrayList<LiquidacionModel> findByAgenciaInAndFechaPago(String[] agencias, String fechaPago);
 }

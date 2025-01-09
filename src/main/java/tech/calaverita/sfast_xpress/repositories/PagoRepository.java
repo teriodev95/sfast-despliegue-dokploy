@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import tech.calaverita.sfast_xpress.models.mariaDB.PagoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.dynamic.PagoDynamicModel;
 
 @Repository
 public interface PagoRepository extends CrudRepository<PagoModel, String> {
@@ -29,10 +30,8 @@ public interface PagoRepository extends CrudRepository<PagoModel, String> {
                         "AND pag.agente = :agencia AND pag.fechaPago like :fechaPago%")
         ArrayList<PagoModel> findByAgenteAndFechaPagoInnerJoinLiquidacionModel(String agencia, String fechaPago);
 
-        @Query("SELECT pag FROM PagoModel pag INNER JOIN PrestamoViewModel prest ON prest.prestamoId = pag.prestamoId "
-                        +
-                        "AND pag.agente = :agencia AND pag.fechaPago like :fechaPago% AND pag.esPrimerPago = :esPrimerPago")
-        ArrayList<PagoModel> findByAgenteAndFechaPagoAndEsPrimerPagoInnerJoinPagoModel(String agencia, String fechaPago,
+        @Query("SELECT pag FROM PagoDynamicModel pag WHERE pag.agencia = :agencia AND pag.fechaPago like :fechaPago% AND pag.esPrimerPago = :esPrimerPago")
+        ArrayList<PagoDynamicModel> findByAgenteAndFechaPagoAndEsPrimerPagoInnerJoinPagoModel(String agencia, String fechaPago,
                         boolean esPrimerPago);
 
         @Query("SELECT pag FROM PagoModel pag INNER JOIN PrestamoViewModel prest ON prest.prestamoId = pag.prestamoId "
@@ -41,10 +40,10 @@ public interface PagoRepository extends CrudRepository<PagoModel, String> {
         ArrayList<PagoModel> findByAgenteAndFechaPagoLessThanEqualAndEsPrimerPagoInnerJoinPagoModel(String agencia,
                         String fechaPago, boolean esPrimerPago, int anio, int semana);
 
-        @Query("SELECT pag FROM PagoModel pag INNER JOIN PrestamoViewModel prest ON prest.prestamoId = pag.prestamoId "
+        @Query("SELECT pag FROM PagoDynamicModel pag INNER JOIN PrestamoViewModel prest ON prest.prestamoId = pag.prestamoId "
                         + "WHERE prest.gerencia = :gerencia AND prest.sucursal = :sucursal AND pag.fechaPago <= :fechaPago AND pag.esPrimerPago = :esPrimerPago "
                         + "AND pag.anio = :anio AND pag.semana = :semana")
-        ArrayList<PagoModel> findByGerenciaAndSucursalAndFechaPagoLessThanEqualAndEsPrimerPagoInnerJoinPagoModel(
+        ArrayList<PagoDynamicModel> findByGerenciaAndSucursalAndFechaPagoLessThanEqualAndEsPrimerPagoInnerJoinPagoModel(
                         String gerencia, String sucursal,
                         String fechaPago, boolean esPrimerPago, int anio, int semana);
 

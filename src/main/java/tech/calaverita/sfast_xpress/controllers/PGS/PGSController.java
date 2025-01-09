@@ -21,6 +21,7 @@ import tech.calaverita.sfast_xpress.Constants;
 import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
 import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 import tech.calaverita.sfast_xpress.pojos.ObjectsContainer;
 import tech.calaverita.sfast_xpress.pojos.PWA.CobranzaPWA;
 import tech.calaverita.sfast_xpress.pojos.PWA.HistoricoPWA;
@@ -28,6 +29,7 @@ import tech.calaverita.sfast_xpress.services.AgenciaService;
 import tech.calaverita.sfast_xpress.services.AsignacionService;
 import tech.calaverita.sfast_xpress.services.CalendarioService;
 import tech.calaverita.sfast_xpress.services.GerenciaService;
+import tech.calaverita.sfast_xpress.services.UsuarioService;
 import tech.calaverita.sfast_xpress.utils.DashboardPorDiaUtil;
 import tech.calaverita.sfast_xpress.utils.DashboardPorDiaYHoraUtil;
 import tech.calaverita.sfast_xpress.utils.pwa.PWAUtil;
@@ -40,13 +42,15 @@ public final class PGSController {
     private final CalendarioService calendarioService;
     private final AgenciaService agenciaService;
     private final GerenciaService gerenciaService;
+    private final UsuarioService usuarioService;
 
     public PGSController(AsignacionService asignacionService, CalendarioService calendarioService,
-            AgenciaService agenciaService, GerenciaService gerenciaService) {
+            AgenciaService agenciaService, GerenciaService gerenciaService, UsuarioService usuarioService) {
         this.asignacionService = asignacionService;
         this.calendarioService = calendarioService;
         this.agenciaService = agenciaService;
         this.gerenciaService = gerenciaService;
+        this.usuarioService = usuarioService;
     }
 
     @ModelAttribute
@@ -156,8 +160,10 @@ public final class PGSController {
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> getAsignacionesByAgenciaAnioAndSemana(
             @PathVariable String agencia, @PathVariable int anio, @PathVariable int semana) {
+        UsuarioModel agenteUsuarioModel = this.usuarioService.findByAgenciaTipoAndStatus(agencia, "Agente", true);
+
         ArrayList<AsignacionModel> darrasignEnt = this.asignacionService
-                .findByAgenciaAnioAndSemana(agencia, anio, semana);
+                .findByQuienEntregoUsuarioIdAnioAndSemana(agenteUsuarioModel.getUsuarioId(), anio, semana);
 
         if (darrasignEnt.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

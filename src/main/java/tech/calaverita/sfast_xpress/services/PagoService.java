@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import tech.calaverita.sfast_xpress.DTOs.LiquidacionDTO;
 import tech.calaverita.sfast_xpress.mappers.PagoMapper;
 import tech.calaverita.sfast_xpress.models.mariaDB.PagoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.dynamic.PagoDynamicModel;
 import tech.calaverita.sfast_xpress.repositories.PagoRepository;
 
 @Service
@@ -53,7 +54,7 @@ public class PagoService {
         return this.repo.findByPrestamoIdAndAnioAndSemanaAndEsPrimerPago(prestamoId, anio, semana, esPrimerPago);
     }
 
-    public ArrayList<PagoModel> findByAgenteFechaPagoAndEsPrimerPagoInnerJoinPagoModel(String agencia, String fechaPago,
+    public ArrayList<PagoDynamicModel> findByAgenteFechaPagoAndEsPrimerPagoInnerJoinPagoModel(String agencia, String fechaPago,
             boolean esPrimerPago) {
         return this.repo.findByAgenteAndFechaPagoAndEsPrimerPagoInnerJoinPagoModel(agencia, fechaPago, esPrimerPago);
     }
@@ -65,7 +66,7 @@ public class PagoService {
                 esPrimerPago, anio, semana);
     }
 
-    public ArrayList<PagoModel> findByGerenciaAndFechaPagoLessThanEqualAndEsPrimerPagoInnerJoinPagoModel(
+    public ArrayList<PagoDynamicModel> findByGerenciaAndFechaPagoLessThanEqualAndEsPrimerPagoInnerJoinPagoModel(
             String gerencia, String sucursal,
             String fechaPago,
             boolean esPrimerPago, int anio, int semana) {

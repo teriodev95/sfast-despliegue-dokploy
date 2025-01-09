@@ -26,4 +26,13 @@ public class VentaService {
     public ArrayList<VentaModel> findByGerenciaAnioAndSemana(String gerencia, int anio, int semana) {
         return this.repo.findByGerenciaAndAnioAndSemana(gerencia, anio, semana);
     }
+
+    public ArrayList<VentaModel> findByGerenciaCreatedAtLessThanEqualAnioAndSemana(String gerencia, String createdAt,
+            int anio, int semana) {
+        return this.repo.findByGerenciaAndCreatedAtLessThanEqualAndAnioAndSemana(gerencia, createdAt, anio, semana);
+    }
+
+    public ArrayList<VentaModel> findByAgenciaFechaAnioAndSemana(String agencia, String fecha, int anio, int semana) {
+        return this.repo.findByAgenciaAndFechaAndAnioAndSemana(agencia, fecha, anio, semana);
+    }
 }

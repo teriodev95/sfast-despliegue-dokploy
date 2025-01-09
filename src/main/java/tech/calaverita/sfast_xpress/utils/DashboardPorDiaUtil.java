@@ -19,8 +19,12 @@ public class DashboardPorDiaUtil implements Runnable {
             threads[i].setPriority(1);
         }
 
+        threads[5].start();
+
         for (int i = 0; i < 7; i++) {
-            threads[i].start();
+            if(i != 5){
+                threads[i].start();
+            }
         }
 
         for (int i = 0; i < 7; i++) {

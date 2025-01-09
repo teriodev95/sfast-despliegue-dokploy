@@ -17,6 +17,9 @@ public class DashboardDTO {
         private String agencia;
         private Integer anio;
         private Integer semana;
+        private Integer clientesMiercoles;
+        private Integer clientesJueves;
+        private Integer clientesViernes;
         private Integer clientes;
         private Integer clientesCobrados;
         private Integer noPagos;
