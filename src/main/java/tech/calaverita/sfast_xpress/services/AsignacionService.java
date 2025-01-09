@@ -64,8 +64,8 @@ public class AsignacionService {
     }
 
     @Async("asyncExecutor")
-    public CompletableFuture<Double> findSumaAsigancionesByAgenciaAnioAndSemana(String agencia, int anio, int semana) {
+    public CompletableFuture<Double> findSumaAsigancionesByQuienEntregoUsuarioIdAnioAndSemana(Integer quienEntregoUsuarioId, int anio, int semana) {
         return CompletableFuture
-                .completedFuture(this.repo.findSumaAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana));
+                .completedFuture(this.repo.findSumaAsigancionesByQuienEntregoUsuarioIdAnioAndSemana(quienEntregoUsuarioId, anio, semana));
     }
 }

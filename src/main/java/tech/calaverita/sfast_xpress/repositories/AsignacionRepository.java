@@ -19,8 +19,8 @@ public interface AsignacionRepository extends CrudRepository<AsignacionModel, St
                         int anio, int semana);
 
         @Query("SELECT IF((SUM(asign.monto) IS NULL), 0, SUM(asign.monto)) FROM AsignacionModel asign " +
-                        "WHERE asign.agencia = :agencia AND asign.anio = :anio AND asign.semana = :semana")
-        double findSumaAsigancionesByAgenciaAnioAndSemana(String agencia, int anio, int semana);
+                        "WHERE asign.quienEntregoUsuarioId = :quienEntregoUsuarioId AND asign.anio = :anio AND asign.semana = :semana")
+        double findSumaAsigancionesByQuienEntregoUsuarioIdAnioAndSemana(Integer quienEntregoUsuarioId, int anio, int semana);
 
         @Query("SELECT asign FROM AsignacionModel asign INNER JOIN UsuarioModel usuar ON asign.quienEntregoUsuarioId = usuar.usuarioId "
                         + "AND usuar.tipo = :tipo WHERE asign.quienRecibioUsuarioId = :quienRecibioUsuarioId AND asign.anio = :anio "

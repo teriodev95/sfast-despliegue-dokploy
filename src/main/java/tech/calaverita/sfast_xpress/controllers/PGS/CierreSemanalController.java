@@ -111,7 +111,8 @@ public final class CierreSemanalController {
                                 usuarioModels = new ArrayList<>();
 
                                 // To easy code
-                                UsuarioModel agenteUsuarioModel = this.usuarioService.findByAgenciaAndStatus(agencia,
+                                UsuarioModel agenteUsuarioModel = this.usuarioService.findByAgenciaTipoAndStatus(
+                                                agencia, "Agente",
                                                 true) == null ? UsuarioModel.getSinAgenteAsignado()
                                                                 : this.usuarioService
                                                                                 .findByAgenciaAndStatus(agencia, true);
@@ -129,7 +130,8 @@ public final class CierreSemanalController {
                                 usuarioModels.add(gerenteUsuarioModel);
 
                                 asignaciones = this.asignacionService
-                                                .findSumaAsigancionesByAgenciaAnioAndSemana(agencia, anio, semana)
+                                                .findSumaAsigancionesByQuienEntregoUsuarioIdAnioAndSemana(
+                                                                agenteUsuarioModel.getUsuarioId(), anio, semana)
                                                 .join();
 
                                 cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(dashboard, usuarioModels,
