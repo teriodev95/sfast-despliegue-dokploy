@@ -54,9 +54,11 @@ public class PagoService {
         return this.repo.findByPrestamoIdAndAnioAndSemanaAndEsPrimerPago(prestamoId, anio, semana, esPrimerPago);
     }
 
-    public ArrayList<PagoDynamicModel> findByAgenteFechaPagoAndEsPrimerPagoInnerJoinPagoModel(String agencia, String fechaPago,
-            boolean esPrimerPago) {
-        return this.repo.findByAgenteAndFechaPagoAndEsPrimerPagoInnerJoinPagoModel(agencia, fechaPago, esPrimerPago);
+    public ArrayList<PagoDynamicModel> findByAgenteFechaPagoEsPrimerPagoAnioAndSemanaInnerJoinPagoModel(String agencia,
+            String fechaPago,
+            boolean esPrimerPago, Integer anio, Integer semana) {
+        return this.repo.findByAgenteAndFechaPagoAndEsPrimerPagoAndAnioAndSemanaInnerJoinPagoModel(agencia, fechaPago,
+                esPrimerPago, anio, semana);
     }
 
     public ArrayList<PagoModel> findByAgenteAndFechaPagoLessThanEqualAndEsPrimerPagoInnerJoinPagoModel(String agencia,

@@ -62,9 +62,9 @@ public class PrestamoViewService {
         return this.repo.darrprestUtilEntFindByAgenciaAnioAndSemanaToCobranza(strAgencia_I, intAnio_I, intSemana_I);
     }
 
-    public ArrayList<PrestamoViewModel> darrprestUtilModByAgenciaAndFechaPagoToDashboard(String strAgencia_I,
-            String strFechaPago_I) {
-        return this.repo.darrprestUtilEntByAgenciaAndFechaPagoToDashboard(strAgencia_I, strFechaPago_I);
+    public ArrayList<PrestamoViewModel> darrprestUtilModByAgenciaFechaPagoAnioAndSemanaToDashboard(String strAgencia_I,
+            String strFechaPago_I, Integer anio, Integer semana) {
+        return this.repo.darrprestUtilEntByAgenciaAndFechaPagoAndAnioAndSemanaToDashboard(strAgencia_I, strFechaPago_I, anio, semana);
     }
 
     public ArrayList<PrestamoViewModel> darrprestUtilEntByAgenciaAndFechaPagoLessThanEqualToDashboard(

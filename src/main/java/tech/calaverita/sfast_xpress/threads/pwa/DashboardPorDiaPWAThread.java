@@ -108,9 +108,20 @@ public class DashboardPorDiaPWAThread implements Runnable {
     }
 
     public void setPrestamosToDashboard() {
+        try {
+            threads[5].join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        // To easy code
+        int anio = objectsContainer.getDashboard().getAnio();
+        int semana = objectsContainer.getDashboard().getSemana();
+
         objectsContainer.setPrestamoViewModelsDashboard(DashboardPorDiaPWAThread.prestamoViewService
-                .darrprestUtilModByAgenciaAndFechaPagoToDashboard(objectsContainer.getDashboard().getAgencia(),
-                        objectsContainer.getFechaPago()));
+                .darrprestUtilModByAgenciaFechaPagoAnioAndSemanaToDashboard(
+                        objectsContainer.getDashboard().getAgencia(),
+                        objectsContainer.getFechaPago() + " 23:59:59", anio, semana));
     }
 
     public void setPagosToCobranza() {
@@ -136,9 +147,20 @@ public class DashboardPorDiaPWAThread implements Runnable {
     }
 
     public void setPagosToDashboard() {
+        try {
+            threads[5].join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        
+        // To easy code
+        int anio = this.objectsContainer.getDashboard().getAnio();
+        int semana = this.objectsContainer.getDashboard().getSemana();
+
         objectsContainer.setPagoDynamicModelsDashboard(DashboardPorDiaPWAThread.pagoService
-                .findByAgenteFechaPagoAndEsPrimerPagoInnerJoinPagoModel(objectsContainer.getDashboard().getAgencia(),
-                        objectsContainer.getFechaPago(), false));
+                .findByAgenteFechaPagoEsPrimerPagoAnioAndSemanaInnerJoinPagoModel(
+                        objectsContainer.getDashboard().getAgencia(),
+                        objectsContainer.getFechaPago() + " 23:59:59", false, anio, semana));
 
         try {
             threads[0].join();
