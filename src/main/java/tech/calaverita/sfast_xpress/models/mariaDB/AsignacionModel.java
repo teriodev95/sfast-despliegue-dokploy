@@ -14,8 +14,6 @@ public class AsignacionModel {
     @Column(name = "asignacionid")
     private String asignacionId;
     private Double monto;
-    private String agencia;
-    private String gerencia;
     private Integer semana;
     private Integer anio;
     private Integer quienRecibioUsuarioId;

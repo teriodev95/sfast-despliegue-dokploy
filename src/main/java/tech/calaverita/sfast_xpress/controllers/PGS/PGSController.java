@@ -163,7 +163,7 @@ public final class PGSController {
         UsuarioModel agenteUsuarioModel = this.usuarioService.findByAgenciaTipoAndStatus(agencia, "Agente", true);
 
         ArrayList<AsignacionModel> darrasignEnt = this.asignacionService
-                .findByQuienEntregoUsuarioIdAnioAndSemana(agenteUsuarioModel.getUsuarioId(), anio, semana);
+                .findByQuienEntregoUsuarioIdAnioAndSemana(agenteUsuarioModel != null ? agenteUsuarioModel.getUsuarioId() : 0, anio, semana);
 
         if (darrasignEnt.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
