@@ -51,6 +51,7 @@ import tech.calaverita.sfast_xpress.services.CalendarioService;
 import tech.calaverita.sfast_xpress.services.SucursalService;
 import tech.calaverita.sfast_xpress.services.cierre_semanal.CierreSemanalService;
 import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
+import tech.calaverita.sfast_xpress.services.views.PrestamoViewService;
 
 @Component
 public class CierreSemanalUtil {
@@ -59,16 +60,19 @@ public class CierreSemanalUtil {
         private static AgenciaService agenciaService;
         private static PagoDynamicService pagoDynamicService;
         private static CalendarioService calendarioService;
+        private static PrestamoViewService prestamoViewService;
         private static final Fonts fuentes = new Fonts();
 
         public CierreSemanalUtil(CierreSemanalService cierreSemanalService, PagoDynamicService pagoDynamicService,
                         SucursalService sucursalService, AgenciaService agenciaService,
+                        PrestamoViewService prestamoViewService,
                         CalendarioService calendarioService) {
                 CierreSemanalUtil.cierreSemanalService = cierreSemanalService;
                 CierreSemanalUtil.sucursalService = sucursalService;
                 CierreSemanalUtil.agenciaService = agenciaService;
                 CierreSemanalUtil.pagoDynamicService = pagoDynamicService;
                 CierreSemanalUtil.calendarioService = calendarioService;
+                CierreSemanalUtil.prestamoViewService = prestamoViewService;
         }
 
         public static CierreSemanalDTO getCierreSemanalDTO(CierreSemanalModel cierreSemanalModel) {
@@ -108,8 +112,33 @@ public class CierreSemanalUtil {
                         balanceAgenciaDTO.setAgencia(dashboard.getAgencia());
                         balanceAgenciaDTO.setAgente(nombreAgente);
                         balanceAgenciaDTO.setRendimiento(dashboard.getRendimiento());
-                        balanceAgenciaDTO.setNivel(BalanceAgenciaUtil.getNivelAgente(dashboard.getClientes(),
-                                        dashboard.getRendimiento() / 100, agenteUsuarioModel));
+
+                        CalendarioModel calendarioModel = CierreSemanalUtil.calendarioService
+                                        .findByFechaActual(LocalDate.now().toString());
+
+                        // To easy code
+                        String agencia = dashboard.getAgencia();
+                        int anio = dashboard.getAnio();
+                        int semana = dashboard.getSemana();
+                        String fechaJueves = LocalDate.parse(calendarioModel.getDesde()).plusDays(1) + " 23:59:59";
+
+                        int clientesPagoCompleto = CierreSemanalUtil.pagoDynamicService
+                                        .findClientesPagoCompletoByAgenciaAnioAndSemanaAsync(agencia, anio, semana)
+                                        .join();
+
+                        double debitoTotal = CierreSemanalUtil.prestamoViewService
+                                        .findDebitoTotalByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(
+                                                        agencia, 0D, anio, semana)
+                                        .join();
+
+                        double cobranzaPura = CierreSemanalUtil.pagoDynamicService
+                                        .findCobranzaPuraByAgenciaAnioSemanaAndFechaPagoLessThanEqual(
+                                                        agencia, anio, semana, fechaJueves)
+                                        .join();
+
+                        balanceAgenciaDTO.setNivel(BalanceAgenciaUtil.getNivelAgente(clientesPagoCompleto,
+                                        cobranzaPura / debitoTotal, agenteUsuarioModel));
+
                         balanceAgenciaDTO.setNivelCalculado(balanceAgenciaDTO.getNivel());
                         balanceAgenciaDTO.setClientes(dashboard.getClientes());
                         balanceAgenciaDTO.setPagosReducidos(dashboard.getPagosReducidos());

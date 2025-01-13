@@ -32,6 +32,14 @@ public class PrestamoViewService {
     }
 
     @Async("asyncExecutor")
+    public CompletableFuture<Double> findDebitoTotalByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(
+            String agencia, Double saldoAlIniciarSemana, Integer anio, Integer semana) {
+        return CompletableFuture.completedFuture(
+                this.repo.findDebitoTotalByAgenciaAndSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(agencia,
+                        saldoAlIniciarSemana, anio, semana));
+    }
+
+    @Async("asyncExecutor")
     public CompletableFuture<ArrayList<PrestamoViewModel>> findByGerenciaSucursalAndSaldoAlIniciarSemanaGreaterThan(
             String gerencia, String sucursal, Double saldoAlIniciarSemana) {
         return CompletableFuture.completedFuture(
@@ -64,7 +72,8 @@ public class PrestamoViewService {
 
     public ArrayList<PrestamoViewModel> darrprestUtilModByAgenciaFechaPagoAnioAndSemanaToDashboard(String strAgencia_I,
             String strFechaPago_I, Integer anio, Integer semana) {
-        return this.repo.darrprestUtilEntByAgenciaAndFechaPagoAndAnioAndSemanaToDashboard(strAgencia_I, strFechaPago_I, anio, semana);
+        return this.repo.darrprestUtilEntByAgenciaAndFechaPagoAndAnioAndSemanaToDashboard(strAgencia_I, strFechaPago_I,
+                anio, semana);
     }
 
     public ArrayList<PrestamoViewModel> darrprestUtilEntByAgenciaAndFechaPagoLessThanEqualToDashboard(
@@ -95,4 +104,5 @@ public class PrestamoViewService {
     public ArrayList<PrestamoHistorialMigradoModel> findHistorialByAgencia(String agencia) {
         return this.repo.findHistorialByAgencia(agencia);
     }
+
 }

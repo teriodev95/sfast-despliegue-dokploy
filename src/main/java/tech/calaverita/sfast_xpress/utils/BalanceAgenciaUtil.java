@@ -12,11 +12,11 @@ public class BalanceAgenciaUtil {
         String nivel;
         int antiguedadEnSemanas = BalanceAgenciaUtil.getAntiguedadAgenteEnSemanas(agenteUsuarioModel);
 
-        if (antiguedadEnSemanas >= 52 && clientesPagoCompleto >= 80 && cobroAlJueves >= .9) {
+        if (antiguedadEnSemanas >= 52 && clientesPagoCompleto >= 80 && cobroAlJueves > .9) {
             nivel = "DIAMOND";
-        } else if (antiguedadEnSemanas >= 26 && clientesPagoCompleto >= 50 && cobroAlJueves >= .8) {
+        } else if (antiguedadEnSemanas >= 26 && clientesPagoCompleto >= 50 && cobroAlJueves > .8) {
             nivel = "PLATINUM";
-        } else if (antiguedadEnSemanas >= 13 && clientesPagoCompleto >= 30 && cobroAlJueves >= .7) {
+        } else if (antiguedadEnSemanas >= 13 && clientesPagoCompleto >= 30 && cobroAlJueves > .7) {
             nivel = "GOLD";
         } else {
             nivel = "SILVER";
@@ -52,7 +52,7 @@ public class BalanceAgenciaUtil {
         return porcentajeBonoMensual;
     }
 
-    private static int getAntiguedadAgenteEnSemanas(UsuarioModel agenteUsuarioModel) {
+    public static int getAntiguedadAgenteEnSemanas(UsuarioModel agenteUsuarioModel) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date fechaIngresoAgente;
 
@@ -66,7 +66,7 @@ public class BalanceAgenciaUtil {
         return (int) ((new Date().getTime() - fechaIngresoAgente.getTime()) / (1000 * 60 * 60 * 24 * 7));
     }
 
-    private static int getAntiguedadAgenteEnMeses(UsuarioModel agenteUsuarioModel) {
+    public static int getAntiguedadAgenteEnMeses(UsuarioModel agenteUsuarioModel) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date fechaIngresoAgente;
 

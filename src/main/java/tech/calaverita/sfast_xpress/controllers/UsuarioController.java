@@ -1,5 +1,9 @@
 package tech.calaverita.sfast_xpress.controllers;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,17 +16,30 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletResponse;
 import tech.calaverita.sfast_xpress.Constants;
+import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
+import tech.calaverita.sfast_xpress.services.CalendarioService;
 import tech.calaverita.sfast_xpress.services.UsuarioService;
+import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
+import tech.calaverita.sfast_xpress.services.views.PrestamoViewService;
+import tech.calaverita.sfast_xpress.utils.BalanceAgenciaUtil;
+import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @CrossOrigin
 @RestController
 @RequestMapping(path = "/xpress/v1/users")
 public final class UsuarioController {
     private final UsuarioService usuarioService;
+    private final PagoDynamicService pagoDynamicService;
+    private final PrestamoViewService prestamoViewService;
+    private final CalendarioService calendarioService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, PagoDynamicService pagoDynamicService,
+            PrestamoViewService prestamoViewService, CalendarioService calendarioService) {
         this.usuarioService = usuarioService;
+        this.pagoDynamicService = pagoDynamicService;
+        this.prestamoViewService = prestamoViewService;
+        this.calendarioService = calendarioService;
     }
 
     @ModelAttribute
@@ -71,5 +88,40 @@ public final class UsuarioController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         return new ResponseEntity<>(usuarioModel, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/nivel/by_agencia/{agencia}")
+    public @ResponseBody ResponseEntity<Object> getNivelByAgencia(@PathVariable String agencia) {
+        HashMap<String, Object> responseHM = new HashMap<>();
+
+        CalendarioModel calendarioModel = this.calendarioService.findByFechaActual(LocalDateTime.now().toString());
+        UsuarioModel usuarioModel = this.usuarioService.findByAgenciaTipoAndStatus(agencia, "Agente", true);
+
+        // To easy code
+        int anio = calendarioModel.getAnio();
+        int semana = calendarioModel.getSemana();
+        String fechaJueves = LocalDate.parse(calendarioModel.getDesde()).plusDays(1) + " 23:59:59";
+
+        int clientesPagoCompleto = this.pagoDynamicService
+                .findClientesPagoCompletoByAgenciaAnioAndSemanaAsync(agencia, anio, semana)
+                .join();
+
+        double debitoTotal = this.prestamoViewService
+                .findDebitoTotalByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(
+                        agencia, 0D, anio, semana)
+                .join();
+
+        double cobranzaPura = this.pagoDynamicService
+                .findCobranzaPuraByAgenciaAnioSemanaAndFechaPagoLessThanEqual(
+                        agencia, anio, semana, fechaJueves)
+                .join();
+
+        responseHM.put("clientesPagoCompleto", clientesPagoCompleto);
+        responseHM.put("rendimientoHastaJueves", MyUtil.getDouble(cobranzaPura / debitoTotal * 100));
+        responseHM.put("mesesTrabajando", BalanceAgenciaUtil.getAntiguedadAgenteEnMeses(usuarioModel));
+        responseHM.put("nivel",
+                BalanceAgenciaUtil.getNivelAgente(clientesPagoCompleto, cobranzaPura / debitoTotal, usuarioModel));
+
+        return new ResponseEntity<>(responseHM, HttpStatus.OK);
     }
 }

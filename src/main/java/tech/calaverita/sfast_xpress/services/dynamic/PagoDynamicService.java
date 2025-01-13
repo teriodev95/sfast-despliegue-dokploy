@@ -67,8 +67,21 @@ public class PagoDynamicService {
         @Async("asyncExecutor")
         public CompletableFuture<Integer> findClientesPagoCompletoByAgenciaAnioAndSemanaAsync(String agencia, int anio,
                         int semana) {
-                return CompletableFuture.completedFuture(this.repo
+                CompletableFuture<Integer> clientesPagoCompletoCF = CompletableFuture.completedFuture(this.repo
                                 .findClientesPagoCompletoByAgenciaAndAnioAndSemana(agencia, anio, semana));
+
+                return clientesPagoCompletoCF.join() != null ? clientesPagoCompletoCF : CompletableFuture.completedFuture(0);
+        }
+
+        @Async("asyncExecutor")
+        public CompletableFuture<Double> findCobranzaPuraByAgenciaAnioSemanaAndFechaPagoLessThanEqual(String agencia,
+                        int anio,
+                        int semana, String fechaPago) {
+                CompletableFuture<Double> cobranzaPuraCF = CompletableFuture.completedFuture(this.repo
+                                .findCobranzaPuraByAgenciaAndAnioAndSemanaAndFechaPagoLessThanEqual(agencia, anio,
+                                                semana, fechaPago));
+
+                return cobranzaPuraCF.join() != null ? cobranzaPuraCF : CompletableFuture.completedFuture(0D);
         }
 
         @Async("asyncExecutor")

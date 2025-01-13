@@ -100,4 +100,10 @@ public interface PrestamoViewRepository extends CrudRepository<PrestamoViewModel
 
         @Query("select prest from PrestamoHistorialMigradoModel prest where agencia = :agencia")
         ArrayList<PrestamoHistorialMigradoModel> findHistorialByAgencia(String agencia);
+
+        @Query(value = "SELECT SUM(IF(prest.saldo_al_iniciar_semana < prest.tarifa, prest.saldo_al_iniciar_semana, prest.tarifa)) FROM prestamos_view prest WHERE prest.agencia = :agencia "
+                        + "AND prest.saldo_al_iniciar_semana > :saldoAlIniciarSemana AND !(prest.anio = :anio "
+                        + "AND prest.semana = :semana)", nativeQuery = true)
+        Double findDebitoTotalByAgenciaAndSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(String agencia,
+                        Double saldoAlIniciarSemana, Integer anio, Integer semana);
 }
