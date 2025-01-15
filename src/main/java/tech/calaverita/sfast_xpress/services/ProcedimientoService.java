@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
 
-import tech.calaverita.sfast_xpress.models.ResumenYBalanceModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.ResumenYBalanceModel;
 import tech.calaverita.sfast_xpress.repositories.ProcedimientoRepository;
 
 @Service

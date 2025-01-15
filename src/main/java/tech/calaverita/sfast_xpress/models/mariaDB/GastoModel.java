@@ -1,4 +1,4 @@
-package tech.calaverita.sfast_xpress.models;
+package tech.calaverita.sfast_xpress.models.mariaDB;
 
 import org.hibernate.sql.ast.tree.predicate.BooleanExpressionPredicate;
 

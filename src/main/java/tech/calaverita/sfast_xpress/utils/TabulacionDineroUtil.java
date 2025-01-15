@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import org.springframework.stereotype.Component;
 
-import tech.calaverita.sfast_xpress.models.TabulacionDineroModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.TabulacionDineroModel;
 import tech.calaverita.sfast_xpress.services.TabulacionDineroService;
 
 @Component

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import tech.calaverita.sfast_xpress.models.VentaModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.VentaModel;
 import tech.calaverita.sfast_xpress.services.VentaService;
 
 @CrossOrigin

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
 
-import tech.calaverita.sfast_xpress.models.GastoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.GastoModel;
 import tech.calaverita.sfast_xpress.repositories.GastoRepository;
 
 @Service

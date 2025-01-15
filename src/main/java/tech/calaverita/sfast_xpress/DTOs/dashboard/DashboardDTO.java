@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import tech.calaverita.sfast_xpress.DTOs.cobranza.DebitosCobranzaDTO;
 import tech.calaverita.sfast_xpress.DTOs.cobranza.InfoCobranzaDTO;
-import tech.calaverita.sfast_xpress.models.VentaModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.VentaModel;
 import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Data

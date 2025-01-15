@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import tech.calaverita.sfast_xpress.models.GastoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.GastoModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 import tech.calaverita.sfast_xpress.services.GastoService;
 import tech.calaverita.sfast_xpress.services.UsuarioService;

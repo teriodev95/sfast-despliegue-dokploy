@@ -2,7 +2,7 @@ package tech.calaverita.sfast_xpress.services;
 
 import org.springframework.stereotype.Service;
 
-import tech.calaverita.sfast_xpress.models.TabulacionDineroModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.TabulacionDineroModel;
 import tech.calaverita.sfast_xpress.repositories.TabulacionDineroRepository;
 
 @Service

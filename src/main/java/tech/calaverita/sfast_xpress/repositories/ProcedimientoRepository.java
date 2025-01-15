@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import tech.calaverita.sfast_xpress.models.ResumenYBalanceModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.ResumenYBalanceModel;
 
 @Repository
 public interface ProcedimientoRepository extends CrudRepository<ResumenYBalanceModel, String> {

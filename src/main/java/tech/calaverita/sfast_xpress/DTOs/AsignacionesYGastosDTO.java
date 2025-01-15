@@ -3,7 +3,7 @@ package tech.calaverita.sfast_xpress.DTOs;
 import java.util.ArrayList;
 
 import lombok.Data;
-import tech.calaverita.sfast_xpress.models.ResumenYBalanceModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.ResumenYBalanceModel;
 
 @Data
 public class AsignacionesYGastosDTO {

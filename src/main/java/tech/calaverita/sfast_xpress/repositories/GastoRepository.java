@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import tech.calaverita.sfast_xpress.models.GastoModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.GastoModel;
 
 @Repository
 public interface GastoRepository extends CrudRepository<GastoModel, Integer> {

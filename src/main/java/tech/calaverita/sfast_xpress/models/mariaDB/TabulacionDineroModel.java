@@ -1,4 +1,4 @@
-package tech.calaverita.sfast_xpress.models;
+package tech.calaverita.sfast_xpress.models.mariaDB;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
