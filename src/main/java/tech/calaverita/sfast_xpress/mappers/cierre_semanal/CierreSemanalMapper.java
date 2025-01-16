@@ -4,12 +4,16 @@ import java.util.ArrayList;
 
 import org.springframework.stereotype.Component;
 
+import tech.calaverita.sfast_xpress.DTOs.CierreSemanalConsolidadoV2DTO;
 import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.BalanceAgenciaDTO;
 import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.CierreSemanalDTO;
+import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.ComisionesAPagarEnSemanaDTO;
 import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.EgresosAgenteDTO;
 import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.EgresosGerenteDTO;
 import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.IngresosAgenteDTO;
 import tech.calaverita.sfast_xpress.mappers.IMapper;
+import tech.calaverita.sfast_xpress.models.mariaDB.CierreSemanalConsolidadoV2Model;
+import tech.calaverita.sfast_xpress.models.mariaDB.ComisionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.CierreSemanalModel;
 
 @Component
@@ -28,6 +32,23 @@ public final class CierreSemanalMapper implements IMapper<CierreSemanalModel, Ci
             cierreSemanalDTO.setUidVerificacionGerente(out.getUidVerificacionGerente());
         }
         return cierreSemanalDTO;
+    }
+
+    public CierreSemanalConsolidadoV2DTO mapCierreSemanalConsolidadoDTOOut(CierreSemanalConsolidadoV2Model out,
+            ComisionModel comisionModel) {
+        CierreSemanalConsolidadoV2DTO cierreSemanalConsolidadoV2DTO = new CierreSemanalConsolidadoV2DTO();
+        {
+            cierreSemanalConsolidadoV2DTO.setSemana(out.getSemana());
+            cierreSemanalConsolidadoV2DTO.setAnio(out.getAnio());
+            cierreSemanalConsolidadoV2DTO.setBalanceAgenciaDTO(new BalanceAgenciaDTO(out, comisionModel));
+            cierreSemanalConsolidadoV2DTO.setIngresosAgenteDTO(new IngresosAgenteDTO(out, comisionModel));
+            cierreSemanalConsolidadoV2DTO.setEgresosAgenteDTO(new EgresosAgenteDTO(out));
+            cierreSemanalConsolidadoV2DTO
+                    .setComisionesAPagarEnSemanaDTO(new ComisionesAPagarEnSemanaDTO(comisionModel));
+            cierreSemanalConsolidadoV2DTO.setUidVerificacionAgente(out.getUidVerificacionAgente());
+            cierreSemanalConsolidadoV2DTO.setUidVerificacionGerente(out.getUidVerificacionGerente());
+        }
+        return cierreSemanalConsolidadoV2DTO;
     }
 
     @Override

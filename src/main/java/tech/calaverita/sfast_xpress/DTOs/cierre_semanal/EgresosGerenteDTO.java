@@ -1,6 +1,8 @@
 package tech.calaverita.sfast_xpress.DTOs.cierre_semanal;
 
 import lombok.Data;
+import tech.calaverita.sfast_xpress.models.mariaDB.CierreSemanalConsolidadoV2Model;
+import tech.calaverita.sfast_xpress.models.mariaDB.ComisionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.CierreSemanalModel;
 
 @Data

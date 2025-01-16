@@ -4,8 +4,11 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import tech.calaverita.sfast_xpress.DTOs.CierreSemanalConsolidadoV2DTO;
 import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.CierreSemanalDTO;
 import tech.calaverita.sfast_xpress.mappers.cierre_semanal.CierreSemanalMapper;
+import tech.calaverita.sfast_xpress.models.mariaDB.CierreSemanalConsolidadoV2Model;
+import tech.calaverita.sfast_xpress.models.mariaDB.ComisionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.CierreSemanalModel;
 import tech.calaverita.sfast_xpress.repositories.cierre_semanal.CierreSemanalRepository;
 
@@ -52,6 +55,11 @@ public class CierreSemanalService {
     public CierreSemanalDTO getCierreSemanalDTO(
             CierreSemanalModel entity) {
         return this.mapper.mapOut(entity);
+    }
+
+    public CierreSemanalConsolidadoV2DTO getCierreSemanalConsolidadoV2DTO(
+            CierreSemanalConsolidadoV2Model entity, ComisionModel comisionModel) {
+        return this.mapper.mapCierreSemanalConsolidadoDTOOut(entity, comisionModel);
     }
 
     public CierreSemanalModel getCierreSemanalEntity(

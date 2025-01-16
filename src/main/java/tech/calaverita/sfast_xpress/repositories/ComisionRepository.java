@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import tech.calaverita.sfast_xpress.models.mariaDB.ComisionModel;
 
 @Repository
-public interface ComisionRepository extends CrudRepository<ComisionModel, Integer> { 
-
+public interface ComisionRepository extends CrudRepository<ComisionModel, Integer> {
+    ComisionModel findByAgenciaAndAnioAndSemana(String agencia, Integer anio, Integer semana);
 }

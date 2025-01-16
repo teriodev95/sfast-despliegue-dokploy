@@ -35,8 +35,10 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import tech.calaverita.sfast_xpress.Constants;
+import tech.calaverita.sfast_xpress.DTOs.CierreSemanalConsolidadoV2DTO;
 import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.BalanceAgenciaDTO;
 import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.CierreSemanalDTO;
+import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.ComisionesAPagarEnSemanaDTO;
 import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.EgresosAgenteDTO;
 import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.EgresosGerenteDTO;
 import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.IngresosAgenteDTO;
@@ -44,10 +46,13 @@ import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
 import tech.calaverita.sfast_xpress.itext.PdfStyleManager;
 import tech.calaverita.sfast_xpress.itext.fonts.Fonts;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.CierreSemanalConsolidadoV2Model;
+import tech.calaverita.sfast_xpress.models.mariaDB.ComisionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.CierreSemanalModel;
 import tech.calaverita.sfast_xpress.services.AgenciaService;
 import tech.calaverita.sfast_xpress.services.CalendarioService;
+import tech.calaverita.sfast_xpress.services.ComisionService;
 import tech.calaverita.sfast_xpress.services.SucursalService;
 import tech.calaverita.sfast_xpress.services.cierre_semanal.CierreSemanalService;
 import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
@@ -62,17 +67,19 @@ public class CierreSemanalUtil {
         private static CalendarioService calendarioService;
         private static PrestamoViewService prestamoViewService;
         private static final Fonts fuentes = new Fonts();
+        private static ComisionService comisionService;
 
         public CierreSemanalUtil(CierreSemanalService cierreSemanalService, PagoDynamicService pagoDynamicService,
                         SucursalService sucursalService, AgenciaService agenciaService,
-                        PrestamoViewService prestamoViewService,
-                        CalendarioService calendarioService) {
+                        PrestamoViewService prestamoViewService, CalendarioService calendarioService,
+                        ComisionService comisionService) {
                 CierreSemanalUtil.cierreSemanalService = cierreSemanalService;
                 CierreSemanalUtil.sucursalService = sucursalService;
                 CierreSemanalUtil.agenciaService = agenciaService;
                 CierreSemanalUtil.pagoDynamicService = pagoDynamicService;
                 CierreSemanalUtil.calendarioService = calendarioService;
                 CierreSemanalUtil.prestamoViewService = prestamoViewService;
+                CierreSemanalUtil.comisionService = comisionService;
         }
 
         public static CierreSemanalDTO getCierreSemanalDTO(CierreSemanalModel cierreSemanalModel) {
@@ -82,6 +89,16 @@ public class CierreSemanalUtil {
                 cierreSemanalDTO.setIsAgenciaCerrada(true);
 
                 return cierreSemanalDTO;
+        }
+
+        public static CierreSemanalConsolidadoV2DTO getCierreSemanalConsolidadoV2DTO(
+                        CierreSemanalConsolidadoV2Model cierreSemanalConsolidadoV2Model, ComisionModel comisionModel) {
+                CierreSemanalConsolidadoV2DTO cierreSemanalConsolidadoV2DTO = CierreSemanalUtil.cierreSemanalService
+                                .getCierreSemanalConsolidadoV2DTO(cierreSemanalConsolidadoV2Model, comisionModel);
+
+                cierreSemanalConsolidadoV2DTO.setIsAgenciaCerrada(true);
+
+                return cierreSemanalConsolidadoV2DTO;
         }
 
         public static CierreSemanalDTO getCierreSemanalDTO(DashboardDTO dashboard, List<UsuarioModel> darrusuarEnt,
@@ -242,6 +259,137 @@ public class CierreSemanalUtil {
                 return cierreSemanalDTO;
         }
 
+        public static CierreSemanalConsolidadoV2DTO getCierreSemanalConsolidadoV2DTO(DashboardDTO dashboard,
+                        List<UsuarioModel> darrusuarEnt,
+                        double asignaciones)
+                        throws ExecutionException, InterruptedException {
+                CierreSemanalConsolidadoV2DTO cierreSemanalConsolidadoV2DTO = new CierreSemanalConsolidadoV2DTO();
+
+                CompletableFuture<Integer> clientesPagoCompletoCF = CierreSemanalUtil.pagoDynamicService
+                                .findClientesPagoCompletoByAgenciaAnioAndSemanaAsync(dashboard.getAgencia(),
+                                                dashboard.getAnio(),
+                                                dashboard.getSemana());
+                CompletableFuture<CalendarioModel> calendarioModelCF = CierreSemanalUtil.calendarioService
+                                .findByAnioAndSemanaAsync(dashboard.getAnio(), dashboard.getSemana());
+
+                // To easy code
+                UsuarioModel agenteUsuarioModel = darrusuarEnt.get(0);
+                UsuarioModel gerenteUsuarioModel = darrusuarEnt.get(1);
+                String nombreAgente = agenteUsuarioModel.getNombre() + " " + agenteUsuarioModel.getApellidoPaterno()
+                                + " "
+                                + agenteUsuarioModel.getApellidoMaterno();
+                String nombreGerente = gerenteUsuarioModel.getNombre() + " " + gerenteUsuarioModel.getApellidoPaterno()
+                                + " " + gerenteUsuarioModel.getApellidoMaterno();
+
+                BalanceAgenciaDTO balanceAgenciaDTO = new BalanceAgenciaDTO();
+                {
+                        balanceAgenciaDTO.setZona(dashboard.getGerencia());
+                        balanceAgenciaDTO.setGerente(nombreGerente);
+                        balanceAgenciaDTO.setAgencia(dashboard.getAgencia());
+                        balanceAgenciaDTO.setAgente(nombreAgente);
+                        balanceAgenciaDTO.setRendimiento(dashboard.getRendimiento());
+
+                        CalendarioModel calendarioModel = CierreSemanalUtil.calendarioService
+                                        .findByFechaActual(LocalDate.now().toString());
+
+                        // To easy code
+                        String agencia = dashboard.getAgencia();
+                        int anio = dashboard.getAnio();
+                        int semana = dashboard.getSemana();
+                        String fechaJueves = LocalDate.parse(calendarioModel.getDesde()).plusDays(1) + " 23:59:59";
+
+                        int clientesPagoCompleto = CierreSemanalUtil.pagoDynamicService
+                                        .findClientesPagoCompletoByAgenciaAnioAndSemanaAsync(agencia, anio, semana)
+                                        .join();
+
+                        double debitoTotal = CierreSemanalUtil.prestamoViewService
+                                        .findDebitoTotalByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(
+                                                        agencia, 0D, anio, semana)
+                                        .join();
+
+                        double cobranzaPura = CierreSemanalUtil.pagoDynamicService
+                                        .findCobranzaPuraByAgenciaAnioSemanaAndFechaPagoLessThanEqual(
+                                                        agencia, anio, semana, fechaJueves)
+                                        .join();
+
+                        balanceAgenciaDTO.setNivel(BalanceAgenciaUtil.getNivelAgente(clientesPagoCompleto,
+                                        cobranzaPura / debitoTotal, agenteUsuarioModel));
+
+                        balanceAgenciaDTO.setNivelCalculado(balanceAgenciaDTO.getNivel());
+                        balanceAgenciaDTO.setClientes(dashboard.getClientes());
+                        balanceAgenciaDTO.setPagosReducidos(dashboard.getPagosReducidos());
+                        balanceAgenciaDTO.setNoPagos(dashboard.getNoPagos());
+                        balanceAgenciaDTO.setLiquidaciones(dashboard.getNumeroLiquidaciones());
+                }
+
+                double cobranzaTotal = dashboard.getCobranzaTotal();
+
+                EgresosAgenteDTO egresosAgenteDTO = new EgresosAgenteDTO();
+                {
+                        egresosAgenteDTO.setAsignaciones(asignaciones);
+
+                        Double efectivoEntregadoEnCierre = cobranzaTotal - egresosAgenteDTO.getAsignaciones();
+                        egresosAgenteDTO.setEfectivoEntregadoCierre(MyUtil.getDouble(efectivoEntregadoEnCierre));
+                }
+
+                ComisionesAPagarEnSemanaDTO comisionesAPagarEnSemanaDTO = new ComisionesAPagarEnSemanaDTO();
+                {
+                        CalendarioModel semanaActualCalendarioModel = calendarioModelCF.join();
+                        CalendarioModel semanaAnteriorCalendarioModel = CierreSemanalUtil
+                                        .getSemanaAnterior(semanaActualCalendarioModel);
+
+                        // To easy code
+                        String agencia = dashboard.getAgencia();
+                        int anioSemanaAnterior = semanaAnteriorCalendarioModel.getAnio();
+                        int semanaAnterior = semanaAnteriorCalendarioModel.getSemana();
+
+                        ComisionModel comisionModel = CierreSemanalUtil.comisionService
+                                        .findByAgenciaAnioAndSemana(agencia, anioSemanaAnterior, semanaAnterior);
+
+                        if (comisionModel != null) {
+                                comisionesAPagarEnSemanaDTO.setPorcentajeComisionCobranza(
+                                                comisionModel.getPorcentajeComisionCobranza());
+                                comisionesAPagarEnSemanaDTO
+                                                .setPorcentajeBonoMensual(comisionModel.getPorcentajeBonoMensual());
+                                comisionesAPagarEnSemanaDTO
+                                                .setPagoComisionCobranza(comisionModel.getComisionCobranza());
+                                comisionesAPagarEnSemanaDTO.setPagoComisionVentas(comisionModel.getComisionVentas());
+                                comisionesAPagarEnSemanaDTO.setBonos(comisionModel.getBonos());
+                        }
+                }
+
+                IngresosAgenteDTO ingresosAgenteDTO = new IngresosAgenteDTO();
+                {
+                        ingresosAgenteDTO.setCobranzaPura(dashboard.getTotalCobranzaPura());
+                        ingresosAgenteDTO.setMontoExcedente(dashboard.getMontoExcedente());
+                        ingresosAgenteDTO.setLiquidaciones(dashboard.getLiquidaciones());
+                        ingresosAgenteDTO.setMultas(dashboard.getMultas());
+                }
+
+                cierreSemanalConsolidadoV2DTO.setSemana(dashboard.getSemana());
+                cierreSemanalConsolidadoV2DTO.setAnio(dashboard.getAnio());
+                cierreSemanalConsolidadoV2DTO.setBalanceAgenciaDTO(balanceAgenciaDTO);
+                cierreSemanalConsolidadoV2DTO.setEgresosAgenteDTO(egresosAgenteDTO);
+                cierreSemanalConsolidadoV2DTO.setComisionesAPagarEnSemanaDTO(comisionesAPagarEnSemanaDTO);
+                cierreSemanalConsolidadoV2DTO.setIngresosAgenteDTO(ingresosAgenteDTO);
+                cierreSemanalConsolidadoV2DTO.setPinAgente(agenteUsuarioModel.getPin());
+                cierreSemanalConsolidadoV2DTO.setIsAgenciaCerrada(false);
+                cierreSemanalConsolidadoV2DTO
+                                .setSucursal(sucursalService.findNombreSucursalByGerenciaId(dashboard.getGerencia()));
+                cierreSemanalConsolidadoV2DTO
+                                .setStatusAgencia(agenciaService.findStatusById(dashboard.getAgencia()).join());
+
+                String mes = LocalDate.now().getMonth().getDisplayName(TextStyle.FULL, new Locale("es",
+                                "ES"));
+                String primeraLetra = mes.substring(0, 1);
+                String mayuscula = primeraLetra.toUpperCase();
+                String demasLetras = mes.substring(1);
+                mes = mayuscula + demasLetras;
+                cierreSemanalConsolidadoV2DTO.setMes(mes);
+
+                return cierreSemanalConsolidadoV2DTO;
+        }
+
         private static void funSemanaAnterior(CalendarioModel calendarioModel) {
                 // To easy code
                 int anio = calendarioModel.getAnio();
@@ -257,6 +405,27 @@ public class CierreSemanalUtil {
 
                 calendarioModel.setAnio(anio);
                 calendarioModel.setSemana(semana);
+        }
+
+        private static CalendarioModel getSemanaAnterior(CalendarioModel calendarioModel) {
+                CalendarioModel semanaAnteriorCalendarioModel = new CalendarioModel();
+
+                // To easy code
+                int anio = calendarioModel.getAnio();
+                int semana = calendarioModel.getSemana();
+
+                if (semana == 1) {
+                        anio = anio - 1;
+                        semana = CierreSemanalUtil.calendarioService
+                                        .existsByAnioAndSemana(anio, 53) ? 53 : 52;
+                } else {
+                        semana = semana - 1;
+                }
+
+                semanaAnteriorCalendarioModel.setAnio(anio);
+                semanaAnteriorCalendarioModel.setSemana(semana);
+
+                return semanaAnteriorCalendarioModel;
         }
 
         public static void createCierreSemanalPDF(CierreSemanalDTO dto)
@@ -737,8 +906,29 @@ public class CierreSemanalUtil {
                 }
         }
 
+        public static void subSendCierreSemanalMessageConsolidadoV2(CierreSemanalConsolidadoV2Model cierreSemanalConsolidadoV2Model) {
+                OkHttpClient client = new OkHttpClient();
+
+                Request request = new Request.Builder()
+                                .url("https://fast-n8n.terio.xyz/webhook/08cff6e3-a379-4dc1-8d77-afc188147b99")
+                                .post(CierreSemanalUtil
+                                                .requestBodyCierreSemanalConsolidadoV2(cierreSemanalConsolidadoV2Model))
+                                .build();
+
+                try (Response response = client.newCall(request).execute()) {
+                } catch (IOException ignored) {
+                }
+        }
+
         private static RequestBody requestBodyCierreSemanal(CierreSemanalDTO cierreSemanalDTO) {
                 String cierreSemanalJSON = new Gson().toJson(cierreSemanalDTO);
+
+                return RequestBody.create(MediaType.parse("application/json"), cierreSemanalJSON);
+        }
+
+        private static RequestBody requestBodyCierreSemanalConsolidadoV2(
+                        CierreSemanalConsolidadoV2Model cierreSemanalConsolidadoV2Model) {
+                String cierreSemanalJSON = new Gson().toJson(cierreSemanalConsolidadoV2Model);
 
                 return RequestBody.create(MediaType.parse("application/json"), cierreSemanalJSON);
         }

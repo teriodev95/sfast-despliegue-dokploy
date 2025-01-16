@@ -37,7 +37,7 @@ public class UsuarioModel {
         usuarioModel.setApellidoPaterno("Agente");
         usuarioModel.setApellidoMaterno("Asignado");
         usuarioModel.setTipo("Agente");
-        usuarioModel.setPin(0000);
+        usuarioModel.setPin(1111);
         usuarioModel.setUsuario("SinAgenteAsignado");
         usuarioModel.setPuedeVerificarAsignaciones(true);
         usuarioModel.setPuedeCobrar(true);
@@ -58,7 +58,7 @@ public class UsuarioModel {
         usuarioModel.setApellidoPaterno("Gerente");
         usuarioModel.setApellidoMaterno("Asignado");
         usuarioModel.setTipo("Gerente");
-        usuarioModel.setPin(0000);
+        usuarioModel.setPin(1111);
         usuarioModel.setUsuario("SinGerenteAsignado");
         usuarioModel.setPuedeVerificarAsignaciones(true);
         usuarioModel.setPuedeCobrar(false);
