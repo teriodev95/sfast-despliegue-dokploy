@@ -13,7 +13,7 @@ import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 public interface PrestamoViewRepository extends CrudRepository<PrestamoViewModel, String> {
         @Query(value = "SELECT prest.* FROM prestamos_view prest WHERE prest.agencia = :agencia "
                         + "AND prest.saldo_al_iniciar_semana > :saldoAlIniciarSemana AND !(prest.anio = :anio "
-                        + "AND prest.semana = :semana)", nativeQuery = true)
+                        + "AND prest.semana = :semana) ORDER BY prest.excel_index ASC", nativeQuery = true)
         ArrayList<PrestamoViewModel> findByAgenciaAndSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(String agencia,
                         Double saldoAlIniciarSemana, Integer anio, Integer semana);
 
