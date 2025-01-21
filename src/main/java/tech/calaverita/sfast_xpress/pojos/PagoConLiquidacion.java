@@ -29,5 +29,5 @@ public class PagoConLiquidacion {
     private String updatedAt;
     private String log;
     private String quienPago;
-    private Object infoLiquidacion;
+    private LiquidacionModel infoLiquidacion;
 }

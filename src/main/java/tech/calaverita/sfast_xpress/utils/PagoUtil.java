@@ -1,8 +1,7 @@
 package tech.calaverita.sfast_xpress.utils;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 import java.util.UUID;
 
 import org.json.JSONException;
@@ -101,14 +100,7 @@ public final class PagoUtil {
         PagoModel pagMod = PagoUtil.pagoModelFromPagoConLiquidacion(pagoConLiquidacion);
 
         // To easy code
-        Object infoLiquidacion = pagoConLiquidacion.getInfoLiquidacion();
-
-        LiquidacionModel liqMod = null;
-        if (infoLiquidacion instanceof String) {
-            liqMod = new Gson().fromJson(infoLiquidacion.toString(), LiquidacionModel.class);
-        } else if (infoLiquidacion instanceof LiquidacionModel) {
-            liqMod = (LiquidacionModel) infoLiquidacion;
-        }
+        LiquidacionModel liqMod = pagoConLiquidacion.getInfoLiquidacion();
 
         modelValidation.setStrResponse("Pago Insertado con Éxito");
         modelValidation.setHttpStatus(HttpStatus.CREATED);
@@ -273,7 +265,7 @@ public final class PagoUtil {
     public static PagoModel getPagoEntity(LiquidacionDTO liquidacionDTO) {
         PagoModel pagoModel = PagoUtil.pagoService.getPagoEntity(liquidacionDTO);
         {
-            String fechaActual = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            String fechaActual = LocalDate.now().toString();
             CalendarioModel calendarioModel = PagoUtil.calendarioService.findByFechaActual(fechaActual);
             PrestamoViewModel prestamoModel = PagoUtil.prestamoViewService.findById(liquidacionDTO.getPrestamoId());
 
