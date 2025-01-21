@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
@@ -52,6 +53,7 @@ import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.CierreSemanalModel;
 import tech.calaverita.sfast_xpress.services.AgenciaService;
 import tech.calaverita.sfast_xpress.services.CalendarioService;
+import tech.calaverita.sfast_xpress.services.CierreSemanalConsolidadoV2Service;
 import tech.calaverita.sfast_xpress.services.ComisionService;
 import tech.calaverita.sfast_xpress.services.SucursalService;
 import tech.calaverita.sfast_xpress.services.cierre_semanal.CierreSemanalService;
@@ -68,11 +70,13 @@ public class CierreSemanalUtil {
         private static PrestamoViewService prestamoViewService;
         private static final Fonts fuentes = new Fonts();
         private static ComisionService comisionService;
+        private static CierreSemanalConsolidadoV2Service cierreSemanalConsolidadoV2Service;
 
         public CierreSemanalUtil(CierreSemanalService cierreSemanalService, PagoDynamicService pagoDynamicService,
                         SucursalService sucursalService, AgenciaService agenciaService,
                         PrestamoViewService prestamoViewService, CalendarioService calendarioService,
-                        ComisionService comisionService) {
+                        ComisionService comisionService,
+                        CierreSemanalConsolidadoV2Service cierreSemanalConsolidadoV2Service) {
                 CierreSemanalUtil.cierreSemanalService = cierreSemanalService;
                 CierreSemanalUtil.sucursalService = sucursalService;
                 CierreSemanalUtil.agenciaService = agenciaService;
@@ -80,6 +84,7 @@ public class CierreSemanalUtil {
                 CierreSemanalUtil.calendarioService = calendarioService;
                 CierreSemanalUtil.prestamoViewService = prestamoViewService;
                 CierreSemanalUtil.comisionService = comisionService;
+                CierreSemanalUtil.cierreSemanalConsolidadoV2Service = cierreSemanalConsolidadoV2Service;
         }
 
         public static CierreSemanalDTO getCierreSemanalDTO(CierreSemanalModel cierreSemanalModel) {
@@ -209,9 +214,13 @@ public class CierreSemanalUtil {
 
                         egresosGerenteDTO.setBonos(0.0);
                         if (calendarioModel.isPagoBono()) {
+                                int indiceMes = Calendar.MONTH - 1;
+                                String[] meses = { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio",
+                                                "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" };
+
                                 ArrayList<CalendarioModel> semanasDelMes = CierreSemanalUtil.calendarioService
                                                 .findByAnioAndMesAsync(calendarioModel.getAnio(),
-                                                                calendarioModel.getMes())
+                                                                meses[indiceMes])
                                                 .join();
 
                                 for (int i = 0; i < semanasDelMes.size() - 1; i++) {
@@ -355,6 +364,50 @@ public class CierreSemanalUtil {
                                                 .setPagoComisionCobranza(comisionModel.getComisionCobranza());
                                 comisionesAPagarEnSemanaDTO.setPagoComisionVentas(comisionModel.getComisionVentas());
                                 comisionesAPagarEnSemanaDTO.setBonos(comisionModel.getBonos());
+                        }
+
+                        comisionesAPagarEnSemanaDTO.setPorcentajeBonoMensual(1);
+
+                        comisionesAPagarEnSemanaDTO.setBonos(0.0);
+                        if (semanaActualCalendarioModel.isPagoBono()) {
+                                String[] meses = { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio",
+                                                "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" };
+                                int indiceMes = 0;
+                                for (int i = 0; i < meses.length; i++) {
+                                        if (semanaActualCalendarioModel.getMes().equals(meses[i])) {
+                                                indiceMes = i - 1;
+                                                break;
+                                        }
+                                }
+
+                                // To easy code
+                                int anio = semanaActualCalendarioModel.getAnio();
+
+                                ArrayList<CalendarioModel> semanasDelMes = CierreSemanalUtil.calendarioService
+                                                .findByAnioAndMesAsync(indiceMes < 0 ? anio - 1 : anio,
+                                                                meses[indiceMes < 0 ? 11 : indiceMes])
+                                                .join();
+
+                                CierreSemanalConsolidadoV2Model cierreSemanalConsolidadoV2Model;
+                                for (int i = 0; i < semanasDelMes.size(); i++) {
+                                        cobranzaTotal = 0;
+                                        cierreSemanalConsolidadoV2Model = CierreSemanalUtil.cierreSemanalConsolidadoV2Service
+                                                        .findByAgenciaAnioAndSemana(agencia,
+                                                                        semanasDelMes.get(i).getAnio(),
+                                                                        semanasDelMes.get(i).getSemana());
+                                        comisionModel = CierreSemanalUtil.comisionService.findByAgenciaAnioAndSemana(
+                                                        agencia, semanasDelMes.get(i).getAnio(),
+                                                        semanasDelMes.get(i).getSemana());
+
+                                        if (cierreSemanalConsolidadoV2Model != null && comisionModel != null) {
+                                                cobranzaTotal += comisionModel.getCobranzaTotal()
+                                                                - cierreSemanalConsolidadoV2Model.getLiquidaciones();
+                                        }
+                                }
+
+                                Double bonos = cobranzaTotal / 100
+                                                * comisionesAPagarEnSemanaDTO.getPorcentajeBonoMensual();
+                                comisionesAPagarEnSemanaDTO.setBonos(bonos);
                         }
                 }
 
@@ -906,7 +959,8 @@ public class CierreSemanalUtil {
                 }
         }
 
-        public static void subSendCierreSemanalMessageConsolidadoV2(CierreSemanalConsolidadoV2Model cierreSemanalConsolidadoV2Model) {
+        public static void subSendCierreSemanalMessageConsolidadoV2(
+                        CierreSemanalConsolidadoV2Model cierreSemanalConsolidadoV2Model) {
                 OkHttpClient client = new OkHttpClient();
 
                 Request request = new Request.Builder()

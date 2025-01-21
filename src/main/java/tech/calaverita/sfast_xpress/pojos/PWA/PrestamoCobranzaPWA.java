@@ -16,4 +16,5 @@ public class PrestamoCobranzaPWA {
     private Double pagado;
     private Double restante;
     private Double porcentaje;
+    private Integer excelIndex;
 }
