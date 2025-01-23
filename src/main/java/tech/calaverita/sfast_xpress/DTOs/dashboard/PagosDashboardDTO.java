@@ -35,9 +35,11 @@ public class PagosDashboardDTO {
                                                 .filter(pagoModel -> !pagoModel.getTipo().equals("Multa"))
                                                 .mapToDouble(PagoDynamicModel::getMonto).sum());
                 this.montoExcedente = MyUtil.getDouble(pagoDynamicModels.stream()
-                                .filter(pagoModel -> pagoModel.getMonto() > pagoModel.getTarifa()
-                                                && !pagoModel.getTipo().equals("Liquidacion"))
-                                .mapToDouble(pagoModel -> pagoModel.getMonto() - pagoModel.getTarifa()).sum());
+                                .filter(pagoModel -> pagoModel.getTipo().equals("Excedente"))
+                                .mapToDouble(pagoModel -> pagoModel.getAbreCon() < pagoModel.getTarifa()
+                                                ? pagoModel.getMonto() - pagoModel.getAbreCon()
+                                                : pagoModel.getMonto() - pagoModel.getTarifa())
+                                .sum());
                 this.multas = MyUtil
                                 .getDouble(pagoDynamicModels.stream()
                                                 .filter(pagoModel -> pagoModel.getTipo().equals("Multa"))
@@ -49,11 +51,7 @@ public class PagosDashboardDTO {
                                                 ? pagoModel.getAbreCon() - pagoModel.getMonto()
                                                 : pagoModel.getTarifa() - pagoModel.getMonto())
                                 .sum());
-                this.totalCobranzaPura = MyUtil.getDouble(pagoDynamicModels.stream()
-                                .mapToDouble(pagoModel -> pagoModel.getMonto() >= pagoModel.getTarifa()
-                                                ? pagoModel.getTarifa()
-                                                : pagoModel.getMonto())
-                                .sum());
+                this.totalCobranzaPura = this.cobranzaTotal - this.montoExcedente - liquidaciones;
 
         }
 }

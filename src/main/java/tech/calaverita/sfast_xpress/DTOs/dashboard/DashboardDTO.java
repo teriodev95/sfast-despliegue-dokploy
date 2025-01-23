@@ -76,6 +76,8 @@ public class DashboardDTO {
                 this.statusAgencia = cierreDashboardDTO.getStatusAgencia();
                 this.numeroVentas = ventaModels.size();
                 this.ventas = ventaModels.stream().mapToDouble(VentaModel::getMonto).sum();
+
+                dashboardFormatDoubles();
         }
 
         public DashboardDTO(ArrayList<DashboardDTO> dashboardDTOs) {
