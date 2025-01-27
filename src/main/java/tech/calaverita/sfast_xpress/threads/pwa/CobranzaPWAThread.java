@@ -70,8 +70,12 @@ public class CobranzaPWAThread implements Runnable {
         LocalDateTime cierreMiercoles = fechaInicioSemana.plusHours(21);
         LocalDateTime cierreJueves = fechaInicioSemana.plusDays(1).plusHours(21);
 
+        // To easy code
+        String[] tipos = { "Multa", "Visita" };
+
         ArrayList<PagoModel> pagEntPagoEntities = CobranzaPWAThread.pagServ
-                .findByPrestamoIdAnioAndSemanaOrderByFechaPagoDesc(prestamoViewModel.getPrestamoId(), anio, semana);
+                .findByPrestamoIdAnioAndSemanaAndTipoNotInOrderByFechaPagoDesc(prestamoViewModel.getPrestamoId(), anio,
+                        semana, tipos);
 
         prestamoCobranzaPwa.setNombre(prestamoViewModel.getNombres() + " " + prestamoViewModel.getApellidoPaterno()
                 + " " + prestamoViewModel.getApellidoMaterno());
@@ -86,6 +90,7 @@ public class CobranzaPWAThread implements Runnable {
         prestamoCobranzaPwa.setExcelIndex(prestamoViewModel.getExcelIndex());
 
         if (!pagEntPagoEntities.isEmpty()) {
+            prestamoCobranzaPwa.setCrtp(pagEntPagoEntities.size());
             if (pagEntPagoEntities.size() == 1) {
                 prestamoCobranzaPwa.setCobradoEnLaSemana(pagEntPagoEntities.get(0).getMonto());
                 prestamoCobranzaPwa.setFechaUltimoPago(pagEntPagoEntities.get(0).getFechaPago());
@@ -99,6 +104,8 @@ public class CobranzaPWAThread implements Runnable {
                 prestamoCobranzaPwa.setCobradoEnLaSemana(cobradoEnLaSemana);
                 prestamoCobranzaPwa.setFechaUltimoPago(pagEntPagoEntities.get(0).getFechaPago());
             }
+        } else {
+            prestamoCobranzaPwa.setCrtp(0);
         }
 
         prestamoCobranzaPwa.setStatus(prestamoCobranzaPwa.getCobradoEnLaSemana() == 0 ? CobranzaStatusPWAEnum.Pendiente

@@ -14,8 +14,9 @@ public interface PagoRepository extends CrudRepository<PagoModel, String> {
         PagoModel findByPrestamoIdAndAnioAndSemanaAndCreadoDesde(String prestamoId, int anio, int semana,
                         String creadoDesde);
 
-        ArrayList<PagoModel> findByPrestamoIdAndAnioAndSemanaOrderByFechaPagoDesc(String prestamoId, int anio,
-                        int semana);
+        ArrayList<PagoModel> findByPrestamoIdAndAnioAndSemanaAndTipoNotInOrderByFechaPagoDesc(String prestamoId,
+                        int anio,
+                        int semana, String[] tipos);
 
         ArrayList<PagoModel> findByAgenteAndAnioAndSemanaAndEsPrimerPago(String agencia, int anio, int semana,
                         boolean esPrimerPago);
