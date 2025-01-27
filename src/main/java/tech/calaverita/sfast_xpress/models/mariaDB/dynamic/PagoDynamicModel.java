@@ -2,8 +2,11 @@ package tech.calaverita.sfast_xpress.models.mariaDB.dynamic;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 
 @Data
 @Entity
@@ -29,4 +32,7 @@ public class PagoDynamicModel {
     private String comentario;
     private Double lat;
     private Double lng;
+    @ManyToOne
+    @JoinColumn(name = "prestamoId", insertable = false, updatable = false)
+    private PrestamoViewModel prestamoViewModel;
 }

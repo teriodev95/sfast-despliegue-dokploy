@@ -1,6 +1,7 @@
 package tech.calaverita.sfast_xpress.services.views;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.cache.annotation.Cacheable;
@@ -105,4 +106,9 @@ public class PrestamoViewService {
         return this.repo.findHistorialByAgencia(agencia);
     }
 
+    public List<PrestamoViewModel> findPrestamosSinPagoByAgenciaSaldoAlIniciarSemanaGreaterThanAnioSemana(
+            String agencia, Double saldoAlIniciarSemana, Integer anio, Integer semana) {
+        return this.repo.findPrestamosSinPagoByAgenciaAndSaldoAlIniciarSemanaGreaterThanAndAnioAndSemana(agencia,
+                saldoAlIniciarSemana, anio, semana);
+    }
 }

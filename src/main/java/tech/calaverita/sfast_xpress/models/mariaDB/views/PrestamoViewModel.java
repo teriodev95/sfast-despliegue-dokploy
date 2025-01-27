@@ -1,11 +1,15 @@
 package tech.calaverita.sfast_xpress.models.mariaDB.views;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
+import tech.calaverita.sfast_xpress.models.mariaDB.dynamic.PagoDynamicModel;
 
 @Data
 @Entity
@@ -78,4 +82,6 @@ public class PrestamoViewModel {
     private String avalPersonaId;
     @Transient
     private Double porcentajeCobrado;
+    @OneToMany(mappedBy = "prestamoViewModel")
+    List<PagoDynamicModel> pagoDynamicModels;
 }

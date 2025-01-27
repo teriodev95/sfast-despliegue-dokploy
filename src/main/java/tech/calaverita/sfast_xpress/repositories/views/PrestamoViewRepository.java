@@ -1,6 +1,7 @@
 package tech.calaverita.sfast_xpress.repositories.views;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -106,4 +107,11 @@ public interface PrestamoViewRepository extends CrudRepository<PrestamoViewModel
                         + "AND prest.semana = :semana)", nativeQuery = true)
         Double findDebitoTotalByAgenciaAndSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(String agencia,
                         Double saldoAlIniciarSemana, Integer anio, Integer semana);
+
+        @Query("SELECT prestView FROM PrestamoViewModel prestView "
+                        + "LEFT JOIN prestView.pagoDynamicModels pagDyn "
+                        + "ON pagDyn.anio = :anio AND pagDyn.semana = :semana WHERE prestView.agencia = :agencia "
+                        + "AND prestView.saldoAlIniciarSemana > :saldoAlIniciarSemana AND pagDyn.pagoId IS NULL")
+        List<PrestamoViewModel> findPrestamosSinPagoByAgenciaAndSaldoAlIniciarSemanaGreaterThanAndAnioAndSemana(
+                        String agencia, Double saldoAlIniciarSemana, Integer anio, Integer semana);
 }
