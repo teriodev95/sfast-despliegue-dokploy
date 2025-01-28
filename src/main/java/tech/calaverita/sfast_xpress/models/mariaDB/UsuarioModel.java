@@ -29,6 +29,12 @@ public class UsuarioModel {
     private String numeroCelular;
     private String createdAt;
     private String updatedAt;
+    // @OneToMany(mappedBy = "recibioUsuarioModel")
+    // private List<AsignacionModel> recibioAsignacionModels;
+    // @OneToMany(mappedBy = "entregoUsuarioModel")
+    // private List<AsignacionModel> entregoAsignacionModels;
+    // @OneToMany(mappedBy = "usuarioModel")
+    // private List<GastoModel> gastoModels;
 
     public static UsuarioModel getSinAgenteAsignado() {
         UsuarioModel usuarioModel = new UsuarioModel();

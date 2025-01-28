@@ -147,7 +147,7 @@ public final class CierreSemanalController {
                                 usuarioModels.add(gerenteUsuarioModel);
 
                                 asignaciones = this.asignacionService
-                                                .findSumaAsigancionesByQuienEntregoUsuarioIdAnioAndSemana(
+                                                .findSumaAsignacionesByQuienEntregoUsuarioIdAnioAndSemana(
                                                                 agenteUsuarioModel.getUsuarioId(), anio, semana)
                                                 .join();
 
@@ -221,7 +221,7 @@ public final class CierreSemanalController {
                                 usuarioModels.add(gerenteUsuarioModel);
 
                                 asignaciones = this.asignacionService
-                                                .findSumaAsigancionesByQuienEntregoUsuarioIdAnioAndSemana(
+                                                .findSumaAsignacionesByQuienEntregoUsuarioIdAnioAndSemana(
                                                                 agenteUsuarioModel.getUsuarioId(), anio, semana)
                                                 .join();
 

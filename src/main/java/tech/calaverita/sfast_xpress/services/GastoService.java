@@ -1,7 +1,10 @@
 package tech.calaverita.sfast_xpress.services;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import tech.calaverita.sfast_xpress.models.mariaDB.GastoModel;
@@ -40,5 +43,12 @@ public class GastoService {
     public ArrayList<GastoModel> findByCreadoPorIdAnioSemanaAndTipoGasto(Integer creadoPorId, int anio, int semana,
             String tipo) {
         return this.gastoRepository.findByCreadoPorIdAndAnioAndSemanaAndTipoGasto(creadoPorId, anio, semana, tipo);
+    }
+
+    @Async("asyncExecutor")
+    public CompletableFuture<List<GastoModel>> findByGerenciaAnioSemanaAsync(String gerencia, int anio, int semana) {
+        List<GastoModel> gastoModels = this.gastoRepository.findByGerenciaAndAnioAndSemana(gerencia, anio, semana);
+
+        return CompletableFuture.completedFuture(gastoModels);
     }
 }

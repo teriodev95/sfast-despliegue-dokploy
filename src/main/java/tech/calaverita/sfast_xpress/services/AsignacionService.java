@@ -1,6 +1,7 @@
 package tech.calaverita.sfast_xpress.services;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.scheduling.annotation.Async;
@@ -39,7 +40,8 @@ public class AsignacionService {
         return this.repo.findByQuienEntregoUsuarioIdAndAnioAndSemana(quienEntregoUsuarioId, anio, semana);
     }
 
-    public ArrayList<AsignacionModel> findByQuienEntregoUsuarioIdInAnioAndSemana(Integer[] quienEntregoUsuarioIds, int anio,
+    public ArrayList<AsignacionModel> findByQuienEntregoUsuarioIdInAnioAndSemana(Integer[] quienEntregoUsuarioIds,
+            int anio,
             int semana) {
         return this.repo.findByQuienEntregoUsuarioIdInAndAnioAndSemana(quienEntregoUsuarioIds, anio, semana);
     }
@@ -65,8 +67,27 @@ public class AsignacionService {
     }
 
     @Async("asyncExecutor")
-    public CompletableFuture<Double> findSumaAsigancionesByQuienEntregoUsuarioIdAnioAndSemana(Integer quienEntregoUsuarioId, int anio, int semana) {
+    public CompletableFuture<Double> findSumaAsignacionesByQuienEntregoUsuarioIdAnioAndSemana(
+            Integer quienEntregoUsuarioId, int anio, int semana) {
         return CompletableFuture
-                .completedFuture(this.repo.findSumaAsigancionesByQuienEntregoUsuarioIdAnioAndSemana(quienEntregoUsuarioId, anio, semana));
+                .completedFuture(this.repo
+                        .findSumaAsigancionesByQuienEntregoUsuarioIdAnioAndSemana(quienEntregoUsuarioId, anio, semana));
+    }
+
+    @Async("asyncExecutor")
+    public CompletableFuture<List<AsignacionModel>> findAsignacionesIngresoByGerenciaAnioSemanaAsync(
+            String gerencia, int anio, int semana) {
+        ArrayList<AsignacionModel> asignacionModels = this.repo
+                .findAsignacionesIngresoByGerenciaAndAnioAndSemana(gerencia, anio, semana);
+
+        return CompletableFuture.completedFuture(asignacionModels);
+    }
+
+    @Async("asyncExecutor")
+    public CompletableFuture<List<AsignacionModel>> findAsignacionesEgresoByGerenciaAnioSemanaAsync(
+            String gerencia, int anio, int semana) {
+        ArrayList<AsignacionModel> asignacionModels = this.repo
+                .findAsignacionesEgresoByGerenciaAndAnioAndSemana(gerencia, anio, semana);
+        return CompletableFuture.completedFuture(asignacionModels);
     }
 }

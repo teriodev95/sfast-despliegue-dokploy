@@ -1,8 +1,12 @@
 package tech.calaverita.sfast_xpress.models.mariaDB;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -21,4 +25,12 @@ public class AsignacionModel {
     private String log;
     private String createdAt;
     private String updatedAt;
+    @ManyToOne
+    @JoinColumn(name = "quienRecibioUsuarioId", insertable = false, updatable = false)
+    @JsonIgnore
+    private UsuarioModel recibioUsuarioModel;
+    @ManyToOne
+    @JoinColumn(name = "quienEntregoUsuarioId", insertable = false, updatable = false)
+    @JsonIgnore
+    private UsuarioModel entregoUsuarioModel;
 }

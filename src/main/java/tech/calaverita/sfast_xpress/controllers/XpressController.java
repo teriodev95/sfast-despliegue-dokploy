@@ -140,7 +140,7 @@ public final class XpressController {
                 CompletableFuture<Double> asignaciones = CompletableFuture.completedFuture(0D);
                 if (agenteUsuarioModel != null) {
                         asignaciones = this.asignacionService
-                                        .findSumaAsigancionesByQuienEntregoUsuarioIdAnioAndSemana(
+                                        .findSumaAsignacionesByQuienEntregoUsuarioIdAnioAndSemana(
                                                         agenteUsuarioModel.getUsuarioId(),
                                                         calendarioModel.getAnio(),
                                                         calendarioModel.getSemana());
@@ -349,7 +349,7 @@ public final class XpressController {
                                         CompletableFuture<Double> asignaciones = CompletableFuture.completedFuture(0D);
                                         if (agenteUsuarioModel != null) {
                                                 asignaciones = this.asignacionService
-                                                                .findSumaAsigancionesByQuienEntregoUsuarioIdAnioAndSemana(
+                                                                .findSumaAsignacionesByQuienEntregoUsuarioIdAnioAndSemana(
                                                                                 agenteUsuarioModel.getUsuarioId(),
                                                                                 calendarioModel.getAnio(),
                                                                                 calendarioModel.getSemana());
@@ -405,7 +405,7 @@ public final class XpressController {
                 CompletableFuture<Double> asignaciones = CompletableFuture.completedFuture(0D);
                 if (agenteUsuarioModel != null) {
                         asignaciones = this.asignacionService
-                                        .findSumaAsigancionesByQuienEntregoUsuarioIdAnioAndSemana(
+                                        .findSumaAsignacionesByQuienEntregoUsuarioIdAnioAndSemana(
                                                         agenteUsuarioModel.getUsuarioId(), anio, semana);
                 }
                 CompletableFuture<String> statusAgencia = this.agenciaService.findStatusById(agencia);

@@ -1,6 +1,6 @@
 package tech.calaverita.sfast_xpress.controllers.PGS;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,11 +39,11 @@ public class VentaController {
     }
 
     @GetMapping(path = "/by_gerencia_anio_and_semana/{gerencia}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<ArrayList<VentaModel>> getByGerenciaAnioAndSemana(@PathVariable String gerencia,
+    public @ResponseBody ResponseEntity<List<VentaModel>> getByGerenciaAnioAndSemana(@PathVariable String gerencia,
             @PathVariable Integer anio,
             @PathVariable Integer semana) {
 
-        ArrayList<VentaModel> ventaModels = this.ventaService.findByGerenciaAnioAndSemana(gerencia, anio, semana);
+        List<VentaModel> ventaModels = this.ventaService.findByGerenciaAnioAndSemana(gerencia, anio, semana);
 
         return new ResponseEntity<>(ventaModels, HttpStatus.OK);
     }

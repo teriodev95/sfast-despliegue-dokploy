@@ -1,6 +1,7 @@
 package tech.calaverita.sfast_xpress.services;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.scheduling.annotation.Async;
@@ -25,7 +26,7 @@ public class VentaService {
         return this.repo.findByAgenciaAndAnioAndSemana(agencia, anio, semana);
     }
 
-    public ArrayList<VentaModel> findByGerenciaAnioAndSemana(String gerencia, int anio, int semana) {
+    public List<VentaModel> findByGerenciaAnioAndSemana(String gerencia, int anio, int semana) {
         return this.repo.findByGerenciaAndAnioAndSemana(gerencia, anio, semana);
     }
 
@@ -42,5 +43,12 @@ public class VentaService {
     public CompletableFuture<ArrayList<VentaModel>> findByAgenciaAnioAndSemanaAsync(String agencia, int anio,
             int semana) {
         return CompletableFuture.completedFuture(this.repo.findByAgenciaAndAnioAndSemana(agencia, anio, semana));
+    }
+
+    @Async("asyncExecutor")
+    public CompletableFuture<List<VentaModel>> findByGerenciaAnioSemanaAsync(String gerencia, int anio, int semana) {
+        List<VentaModel> ventaModels = this.repo.findByGerenciaAndAnioAndSemana(gerencia, anio, semana);
+
+        return CompletableFuture.completedFuture(ventaModels);
     }
 }

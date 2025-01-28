@@ -2,6 +2,7 @@ package tech.calaverita.sfast_xpress.utils;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.stereotype.Component;
@@ -52,5 +53,13 @@ public class MyUtil {
     public static CalendarioModel getSemanaActual() {
         return calendarioService
                 .findByFechaActualAsync(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).join();
+    }
+
+    public static LocalDate getLocalDateFromString(String fecha) {
+        return LocalDate.parse(fecha, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+
+    public static LocalDateTime getLocalDateTimeFromString(String fecha) {
+        return LocalDateTime.parse(fecha, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 }
