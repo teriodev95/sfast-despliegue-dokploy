@@ -1,5 +1,7 @@
 package tech.calaverita.sfast_xpress.models.mariaDB;
 
+import java.beans.Transient;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.persistence.Entity;
@@ -34,4 +36,6 @@ public class ComisionModel {
     private Double comisionCobranza;
     private Double comisionVentas;
     private Double bonos;
+    @jakarta.persistence.Transient
+    private Integer promedioClientesPagoCompleto;
 }
