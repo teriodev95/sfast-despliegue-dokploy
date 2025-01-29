@@ -103,15 +103,16 @@ public final class CierreSemanalController {
                         @PathVariable String agencia,
                         @PathVariable int anio, @PathVariable int semana)
                         throws ExecutionException, InterruptedException {
-                CierreSemanalDTO cierreSemanalDTO = null;
+                CierreSemanalConsolidadoV2DTO cierreSemanalConsolidadoV2DTO = null;
                 HttpStatus responseStatus = HttpStatus.OK;
 
                 DashboardDTO dashboard;
                 List<UsuarioModel> usuarioModels;
                 double asignaciones;
 
-                Optional<CierreSemanalModel> cierreSemanalEntity = this.cierreSemanalService
+                CierreSemanalConsolidadoV2Model cierreSemanalConsolidadoV2Model = this.cierreSemanalConsolidadoV2Service
                                 .findByAgenciaAnioAndSemana(agencia, anio, semana);
+                ComisionModel comisionModel = this.comisionService.findByAgenciaAnioAndSemana(agencia, anio, semana);
 
                 // if (staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")) {
                 if (!this.usuarioService.existsByUsuario(username)) {
@@ -119,8 +120,9 @@ public final class CierreSemanalController {
                 } else if (!this.usuarioService.existsByUsuarioAndStatus(username, true)) {
                         responseStatus = HttpStatus.UNAUTHORIZED;
                 } else {
-                        if (cierreSemanalEntity.isPresent()) {
-                                cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(cierreSemanalEntity.get());
+                        if (cierreSemanalConsolidadoV2Model != null) {
+                                cierreSemanalConsolidadoV2DTO = CierreSemanalUtil.getCierreSemanalConsolidadoV2DTO(
+                                                cierreSemanalConsolidadoV2Model, comisionModel);
                         } else if (this.agenciaService.existsById(agencia)) {
                                 dashboard = xpressController.getDashboardByAgenciaAnioAndSemana(agencia, anio, semana)
                                                 .getBody();
@@ -151,7 +153,9 @@ public final class CierreSemanalController {
                                                                 agenteUsuarioModel.getUsuarioId(), anio, semana)
                                                 .join();
 
-                                cierreSemanalDTO = CierreSemanalUtil.getCierreSemanalDTO(dashboard, usuarioModels,
+                                cierreSemanalConsolidadoV2DTO = CierreSemanalUtil.getCierreSemanalConsolidadoV2DTO(
+                                                dashboard,
+                                                usuarioModels,
                                                 asignaciones);
                         } else {
                                 return new ResponseEntity<>("La agencia no existe", HttpStatus.BAD_REQUEST);
@@ -161,7 +165,7 @@ public final class CierreSemanalController {
                 // responseStatus = HttpStatus.BAD_REQUEST;
                 // }
 
-                return new ResponseEntity<>(cierreSemanalDTO, responseStatus);
+                return new ResponseEntity<>(cierreSemanalConsolidadoV2DTO, responseStatus);
         }
 
         @GetMapping(path = "/by_agencia/{agencia}")
