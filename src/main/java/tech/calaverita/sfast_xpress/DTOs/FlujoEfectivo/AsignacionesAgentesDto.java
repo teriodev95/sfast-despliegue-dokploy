@@ -24,18 +24,18 @@ public class AsignacionesAgentesDto {
     public AsignacionesAgentesDto(List<AsignacionModel> asignacionesAgenteAsignacionModel) {
         this();
 
-        boolean existsPrevious = false;
         for (AsignacionModel asignacionModel : asignacionesAgenteAsignacionModel) {
-            if (!this.ingresoAsignacionAgenteDtos.isEmpty()) {
-                for (AsignacionIngresoAgenteDto asignacionIngresoAgenteDto : this.ingresoAsignacionAgenteDtos) {
-                    if (asignacionModel.getEntregoUsuarioModel().getAgencia()
-                            .equals(asignacionIngresoAgenteDto.getAgencia())) {
-                        asignacionIngresoAgenteDto
-                                .setMonto(asignacionIngresoAgenteDto.getMonto() + asignacionModel.getMonto());
-                        asignacionIngresoAgenteDto.setCantidad(asignacionIngresoAgenteDto.getCantidad() + 1);
+            boolean existsPrevious = false;
+            for (AsignacionIngresoAgenteDto asignacionIngresoAgenteDto : this.ingresoAsignacionAgenteDtos) {
+                if (asignacionModel.getEntregoUsuarioModel().getAgencia()
+                        .equals(asignacionIngresoAgenteDto.getAgencia())) {
+                    asignacionIngresoAgenteDto
+                            .setMonto(asignacionIngresoAgenteDto.getMonto() + asignacionModel.getMonto());
+                    asignacionIngresoAgenteDto.setCantidad(asignacionIngresoAgenteDto.getCantidad() + 1);
 
-                        existsPrevious = true;
-                    }
+                    this.subTotalIngresos += asignacionModel.getMonto();
+                    existsPrevious = true;
+                    break;
                 }
             }
 
