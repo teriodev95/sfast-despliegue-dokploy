@@ -1,7 +1,7 @@
 package tech.calaverita.sfast_xpress.DTOs.cierre_semanal;
 
 import lombok.Data;
-import tech.calaverita.sfast_xpress.models.mariaDB.ComisionModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.CierreSemanalConsolidadoV2Model;
 import tech.calaverita.sfast_xpress.models.mariaDB.cierre_semanal.CierreSemanalModel;
 
 @Data
@@ -24,13 +24,13 @@ public class ComisionesAPagarEnSemanaDTO {
         this.bonos = cierreSemanalModel.getBonos();
     }
 
-    public ComisionesAPagarEnSemanaDTO(ComisionModel comisionModel) {
-        if (comisionModel != null) {
-            this.porcentajeComisionCobranza = comisionModel.getPorcentajeComisionCobranza();
-            this.porcentajeBonoMensual = comisionModel.getPorcentajeBonoMensual();
-            this.pagoComisionCobranza = comisionModel.getComisionCobranza();
-            this.pagoComisionVentas = comisionModel.getComisionVentas();
-            this.bonos = comisionModel.getBonos();
+    public ComisionesAPagarEnSemanaDTO(CierreSemanalConsolidadoV2Model cierreSemanalConsolidadoV2Model) {
+        if (cierreSemanalConsolidadoV2Model != null) {
+            this.porcentajeComisionCobranza = cierreSemanalConsolidadoV2Model.getPorcentajePorCobranzaPagadoEnSemana();
+            this.porcentajeBonoMensual = cierreSemanalConsolidadoV2Model.getPorcentajePorBonoMensualPagadoEnSemana();
+            this.pagoComisionCobranza = cierreSemanalConsolidadoV2Model.getComisionCobranzaPagadaEnSemana();
+            this.pagoComisionVentas = cierreSemanalConsolidadoV2Model.getComisionVentasPagadaEnSemana();
+            this.bonos = cierreSemanalConsolidadoV2Model.getBonosPagadosEnSemana();
         }
     }
 }

@@ -44,7 +44,7 @@ public final class CierreSemanalMapper implements IMapper<CierreSemanalModel, Ci
             cierreSemanalConsolidadoV2DTO.setIngresosAgenteDTO(new IngresosAgenteDTO(out, comisionModel));
             cierreSemanalConsolidadoV2DTO.setEgresosAgenteDTO(new EgresosAgenteDTO(out));
             cierreSemanalConsolidadoV2DTO
-                    .setComisionesAPagarEnSemanaDTO(new ComisionesAPagarEnSemanaDTO(comisionModel));
+                    .setComisionesAPagarEnSemanaDTO(new ComisionesAPagarEnSemanaDTO(out));
             cierreSemanalConsolidadoV2DTO.setUidVerificacionAgente(out.getUidVerificacionAgente());
             cierreSemanalConsolidadoV2DTO.setUidVerificacionGerente(out.getUidVerificacionGerente());
         }
