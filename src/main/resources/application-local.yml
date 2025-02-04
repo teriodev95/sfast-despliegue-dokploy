@@ -1,0 +1,12 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+  datasource:
+    url: jdbc:mariadb://localhost:3306/xpress
+    username: xpress
+    password: xpress
+    driver-class-name: org.mariadb.jdbc.Driver
+  data:
+    mongodb:
+      uri: mongodb+srv://reports_xpress_user_rw:ULh0VykDvetWM3JM@cluster0.zoa5e.gcp.mongodb.net/ReportsXpress
