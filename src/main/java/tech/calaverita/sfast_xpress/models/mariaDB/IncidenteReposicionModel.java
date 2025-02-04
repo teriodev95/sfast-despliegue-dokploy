@@ -22,7 +22,7 @@ public class IncidenteReposicionModel {
     private LocalDate fecha;
     private String comentario;
     private Double monto;
-    @Column(name = "id_usuario")
+    @Column(name = "usuario_id")
     private Integer usuarioId;
     private String gerencia;
     private Integer semana;
