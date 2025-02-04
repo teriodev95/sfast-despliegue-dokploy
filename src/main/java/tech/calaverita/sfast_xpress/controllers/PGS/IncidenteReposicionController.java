@@ -1,6 +1,8 @@
 package tech.calaverita.sfast_xpress.controllers.PGS;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -68,14 +70,27 @@ public class IncidenteReposicionController {
     public ResponseEntity<Object> create(@RequestBody IncidenteReposicionModel incidente) {
         try {
             // Validación simple (puedes agregar más con @Valid)
-            // if (incidente.getCategoria() == null || incidente.getTipo() == null || incidente.getMonto() == null) {
-            //     return ResponseEntity.badRequest().body(Map.of(
-            //         "timestamp", LocalDateTime.now(),
-            //         "status", 400,
-            //         "error", "Bad Request",
-            //         "message", "Los campos 'categoria', 'tipo' y 'monto' son obligatorios"
-            //     ));
-            // }
+            if (incidente.getCategoria() == null || incidente.getCategoria().length() == 0 
+            || incidente.getTipo() == null || incidente.getTipo().length() == 0
+            || incidente.getMonto() == null) {
+                return ResponseEntity.badRequest().body(Map.of(
+                    "timestamp", LocalDateTime.now(),
+                    "status", 400,
+                    "error", "Bad Request",
+                    "message", "Los campos 'categoria', 'tipo' y 'monto' son obligatorios"
+                ));
+            }
+
+            if (incidente.getMonto() == 0) {
+                return ResponseEntity.badRequest().body(Map.of(
+                    "timestamp", LocalDateTime.now(),
+                    "status", 400,
+                    "error", "Bad Request",
+                    "message", "El monto no puede ser 0"
+                ));
+            }
+
+            // incidente.setFecha(LocalDate.now(ZoneId.of("America/Mexico_City")));
     
             IncidenteReposicionModel savedIncidente = incidenteReposicionRepository.save(incidente);
             return ResponseEntity.ok(savedIncidente);
