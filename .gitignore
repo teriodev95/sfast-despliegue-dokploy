@@ -11,4 +11,3 @@ target/
 *.ipr
 
 ### Personalizado ###
-.src/main/resources/application.properties
