@@ -31,11 +31,11 @@ public class OtrosFlujoEfectivoDto {
         this();
 
         for (IncidenteReposicionModel incidenteReposicionModel : incidenteReposicionModels) {
-            if (incidenteReposicionModel.getTipo().equals("Ingreso")) {
+            if (incidenteReposicionModel.getTipo().equals("ingreso")) {
                 this.subTotalIngresos += incidenteReposicionModel.getMonto();
                 this.otroIngresoDtos.add(new OtroIngresoOEgresoDto(incidenteReposicionModel));
             } else {
-                this.subTotalIngresos += incidenteReposicionModel.getMonto();
+                this.subTotalEgresos += incidenteReposicionModel.getMonto();
                 this.otroEgresoDtos.add(new OtroIngresoOEgresoDto(incidenteReposicionModel));
             }
         }

@@ -17,7 +17,7 @@ public class OtroIngresoOEgresoDto {
 
     public OtroIngresoOEgresoDto(IncidenteReposicionModel incidenteReposicionModel) {
         this.fecha = incidenteReposicionModel.getFecha();
-        this.descripcion = incidenteReposicionModel.getComentario();
+        this.descripcion = incidenteReposicionModel.getCategoria() + " · " + incidenteReposicionModel.getComentario();
         this.monto = incidenteReposicionModel.getMonto();
     }
 
