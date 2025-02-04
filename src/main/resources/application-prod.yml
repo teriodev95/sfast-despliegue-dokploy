@@ -11,5 +11,5 @@ spring:
     mongodb:
       uri: mongodb+srv://reports_xpress_user_rw:ULh0VykDvetWM3JM@cluster0.zoa5e.gcp.mongodb.net/ReportsXpress
 sentry:
-  dsn: https://f360fabed6cd43dd9d735176f43ee1d8@o4505409905098752.ingest.sentry.io/4505409906802688
+  dsn: https://91bb4322f0905e42c4acc5b9f3873975@o1037894.ingest.us.sentry.io/4508762622459904
   traces-sample-rate: 1.0
