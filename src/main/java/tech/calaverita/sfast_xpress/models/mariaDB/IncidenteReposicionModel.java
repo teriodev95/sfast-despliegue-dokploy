@@ -2,7 +2,6 @@ package tech.calaverita.sfast_xpress.models.mariaDB;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,7 +21,6 @@ public class IncidenteReposicionModel {
     private LocalDate fecha;
     private String comentario;
     private Double monto;
-    @Column(name = "id_usuario")
     private Integer usuarioId;
     private String gerencia;
     private Integer semana;
