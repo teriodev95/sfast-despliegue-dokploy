@@ -485,19 +485,12 @@ public class DashboardPorDiaYHoraPWAThread implements Runnable {
     }
 
     public void setMontoDeDebitoFaltante() {
-        Double debitoFaltante = 0D;
-        PagoDynamicModel pagoDynamicModel;
-        for (int i = 0; i < objectsContainer.getPagoDynamicModelsDashboard().size(); i++) {
-            // To easy code
-            pagoDynamicModel = objectsContainer.getPagoDynamicModelsDashboard().get(i);
-
-            if (pagoDynamicModel.getTipo().equals("Reducido")) {
-                debitoFaltante += pagoDynamicModel.getTarifa() - pagoDynamicModel.getMonto();
-            }
-        }
+        // To easy code
+        double debitoTotal = objectsContainer.getDashboard().getDebitoTotal();
+        double cobranzaPura = objectsContainer.getDashboard().getTotalCobranzaPura();
 
         objectsContainer.getDashboard()
-                .setMontoDeDebitoFaltante(MyUtil.getDouble(debitoFaltante));
+                .setMontoDeDebitoFaltante(MyUtil.getDouble(debitoTotal - cobranzaPura));
     }
 
     public void setRendmiento() {

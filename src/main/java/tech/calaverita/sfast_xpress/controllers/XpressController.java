@@ -425,7 +425,8 @@ public final class XpressController {
                                         liquidacionModels.join(),
                                         pagoAgrupagoModels.join(), liquidacionesPagoModels.join());
                         PagosDashboardDTO pagosDashboardDTO = new PagosDashboardDTO(pagoAgrupagoModels.join(),
-                                        liquidacionesDashboardDTO.getLiquidaciones());
+                                        liquidacionesDashboardDTO.getLiquidaciones(),
+                                        debitosCobranzaDTO.getDebitoTotal());
                         CierreDashboardDTO cierreDashboardDTO = new CierreDashboardDTO(pagosDashboardDTO,
                                         debitosCobranzaDTO,
                                         asignaciones.join(), statusAgencia.join());

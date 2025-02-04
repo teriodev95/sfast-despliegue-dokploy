@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.VentaModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.dynamic.PagoDynamicModel;
 import tech.calaverita.sfast_xpress.pojos.ObjectsContainer;
 import tech.calaverita.sfast_xpress.services.AsignacionService;
 import tech.calaverita.sfast_xpress.services.CalendarioService;
@@ -152,7 +151,7 @@ public class DashboardPorDiaPWAThread implements Runnable {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        
+
         // To easy code
         int anio = this.objectsContainer.getDashboard().getAnio();
         int semana = this.objectsContainer.getDashboard().getSemana();
@@ -463,19 +462,12 @@ public class DashboardPorDiaPWAThread implements Runnable {
     }
 
     public void setMontoDeDebitoFaltante() {
-        Double debitoFaltante = 0D;
-        PagoDynamicModel pagoDynamicModel;
-        for (int i = 0; i < objectsContainer.getPagoDynamicModelsDashboard().size(); i++) {
-            // To easy code
-            pagoDynamicModel = objectsContainer.getPagoDynamicModelsDashboard().get(i);
-
-            if (pagoDynamicModel.getTipo().equals("Reducido")) {
-                debitoFaltante += pagoDynamicModel.getTarifa() - pagoDynamicModel.getMonto();
-            }
-        }
+        // To easy code
+        double debitoTotal = objectsContainer.getDashboard().getDebitoTotal();
+        double cobranzaPura = objectsContainer.getDashboard().getTotalCobranzaPura();
 
         objectsContainer.getDashboard()
-                .setMontoDeDebitoFaltante(MyUtil.getDouble(debitoFaltante));
+                .setMontoDeDebitoFaltante(MyUtil.getDouble(debitoTotal - cobranzaPura));
     }
 
     public void setRendmiento() {

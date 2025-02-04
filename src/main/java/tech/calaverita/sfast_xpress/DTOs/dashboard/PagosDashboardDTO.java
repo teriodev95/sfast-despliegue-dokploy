@@ -18,7 +18,8 @@ public class PagosDashboardDTO {
         private Double cobranzaTotal;
         private Double montoDeDebitoFaltante;
 
-        public PagosDashboardDTO(ArrayList<PagoDynamicModel> pagoDynamicModels, double liquidaciones) {
+        public PagosDashboardDTO(ArrayList<PagoDynamicModel> pagoDynamicModels, double liquidaciones,
+                        double debitoTotal) {
                 this.clientesCobrados = (int) pagoDynamicModels.stream()
                                 .filter(pagoModel -> !pagoModel.getTipo().equals("Multa"))
                                 .count();
@@ -45,13 +46,7 @@ public class PagosDashboardDTO {
                                                 .filter(pagoModel -> pagoModel.getTipo().equals("Multa"))
                                                 .mapToDouble(PagoDynamicModel::getMonto)
                                                 .sum());
-                this.montoDeDebitoFaltante = MyUtil.getDouble(pagoDynamicModels.stream()
-                                .filter(pagoModel -> pagoModel.getTipo().equals("Reducido"))
-                                .mapToDouble(pagoModel -> pagoModel.getAbreCon() < pagoModel.getTarifa()
-                                                ? pagoModel.getAbreCon() - pagoModel.getMonto()
-                                                : pagoModel.getTarifa() - pagoModel.getMonto())
-                                .sum());
                 this.totalCobranzaPura = this.cobranzaTotal - this.montoExcedente - liquidaciones;
-
+                this.montoDeDebitoFaltante = debitoTotal - this.totalCobranzaPura;
         }
 }
