@@ -1,6 +1,8 @@
 package tech.calaverita.sfast_xpress.controllers.PGS;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.http.HttpStatus;
@@ -55,7 +57,7 @@ public class IncidenteReposicionController {
         try {
             List<IncidenteReposicionModel> resultados = incidenteReposicionService
                     .findByGerenciaAnioSemanaAsync(gerencia, anio, semana)
-                    .get(); // Espera el resultado del CompletableFuture
+                    .get();
             return ResponseEntity.ok(resultados);
         } catch (InterruptedException | ExecutionException e) {
             return ResponseEntity.internalServerError().build();
@@ -63,14 +65,29 @@ public class IncidenteReposicionController {
     }
 
     @PostMapping("/create-one")
-    public ResponseEntity<IncidenteReposicionModel> create(@RequestBody IncidenteReposicionModel incidente) {
-        HttpStatus responseHttpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        IncidenteReposicionModel responseIncidente = this.incidenteReposicionRepository.save(incidente);
-
-        if (responseIncidente != null) {
-            responseHttpStatus = HttpStatus.CREATED;
+    public ResponseEntity<Object> create(@RequestBody IncidenteReposicionModel incidente) {
+        try {
+            // Validación simple (puedes agregar más con @Valid)
+            // if (incidente.getCategoria() == null || incidente.getTipo() == null || incidente.getMonto() == null) {
+            //     return ResponseEntity.badRequest().body(Map.of(
+            //         "timestamp", LocalDateTime.now(),
+            //         "status", 400,
+            //         "error", "Bad Request",
+            //         "message", "Los campos 'categoria', 'tipo' y 'monto' son obligatorios"
+            //     ));
+            // }
+    
+            IncidenteReposicionModel savedIncidente = incidenteReposicionRepository.save(incidente);
+            return ResponseEntity.ok(savedIncidente);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 500,
+                "error", "Internal Server Error",
+                "message", "Error al guardar el incidente: " + e.getMessage()
+            ));
         }
-        return new ResponseEntity<>(responseIncidente, responseHttpStatus);
+        
     }
 
 }
