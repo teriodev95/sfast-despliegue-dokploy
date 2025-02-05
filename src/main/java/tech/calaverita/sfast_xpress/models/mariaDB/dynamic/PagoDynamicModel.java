@@ -1,6 +1,7 @@
 package tech.calaverita.sfast_xpress.models.mariaDB.dynamic;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -32,7 +33,7 @@ public class PagoDynamicModel {
     private String comentario;
     private Double lat;
     private Double lng;
-    // @ManyToOne
-    // @JoinColumn(name = "prestamoId", insertable = false, updatable = false)
-    // private PrestamoViewModel prestamoViewModel;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "prestamoId", insertable = false, updatable = false)
+    private PrestamoViewModel prestamoViewModel;
 }

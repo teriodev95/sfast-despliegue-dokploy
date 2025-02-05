@@ -109,8 +109,8 @@ public interface PrestamoViewRepository extends CrudRepository<PrestamoViewModel
                         Double saldoAlIniciarSemana, Integer anio, Integer semana);
 
         @Query("SELECT prestView FROM PrestamoViewModel prestView "
-                        + "LEFT JOIN PagoDynamicModel pagDyn ON prestView.prestamoId = pagDyn.prestamoId "
-                        + "AND pagDyn.anio = :anio AND pagDyn.semana = :semana WHERE prestView.agencia = :agencia "
+                        + "LEFT JOIN prestView.pagoDynamicModels pagDyn "
+                        + "ON pagDyn.anio = :anio AND pagDyn.semana = :semana WHERE prestView.agencia = :agencia "
                         + "AND prestView.saldoAlIniciarSemana > :saldoAlIniciarSemana AND pagDyn.pagoId IS NULL")
         List<PrestamoViewModel> findPrestamosSinPagoByAgenciaAndSaldoAlIniciarSemanaGreaterThanAndAnioAndSemana(
                         String agencia, Double saldoAlIniciarSemana, Integer anio, Integer semana);
