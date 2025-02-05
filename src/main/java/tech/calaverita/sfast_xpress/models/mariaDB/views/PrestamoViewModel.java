@@ -84,7 +84,7 @@ public class PrestamoViewModel {
     private String avalPersonaId;
     @Transient
     private Double porcentajeCobrado;
-    @OneToMany(mappedBy = "prestamoViewModel")
-    @JsonIgnore
-    List<PagoDynamicModel> pagoDynamicModels;
+    // @OneToMany(mappedBy = "prestamoViewModel")
+    // @JsonIgnore
+    // List<PagoDynamicModel> pagoDynamicModels;
 }

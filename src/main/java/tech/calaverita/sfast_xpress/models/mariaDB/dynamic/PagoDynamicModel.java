@@ -32,7 +32,7 @@ public class PagoDynamicModel {
     private String comentario;
     private Double lat;
     private Double lng;
-    @ManyToOne
-    @JoinColumn(name = "prestamoId", insertable = false, updatable = false)
-    private PrestamoViewModel prestamoViewModel;
+    // @ManyToOne
+    // @JoinColumn(name = "prestamoId", insertable = false, updatable = false)
+    // private PrestamoViewModel prestamoViewModel;
 }
