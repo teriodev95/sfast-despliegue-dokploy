@@ -21,7 +21,10 @@ public class PagosDashboardDTO {
         public PagosDashboardDTO(ArrayList<PagoDynamicModel> pagoDynamicModels, double liquidaciones,
                         double debitoTotal) {
                 this.clientesCobrados = (int) pagoDynamicModels.stream()
-                                .filter(pagoModel -> !pagoModel.getTipo().equals("Multa"))
+                                .filter(pagoModel -> !pagoModel.getTipo().equals("Multa")
+                                                && !pagoModel.getTipo().equals("No_pago")
+                                                && !pagoModel.getTipo().equals(
+                                                                "Visita"))
                                 .count();
                 this.noPagos = (int) pagoDynamicModels.stream()
                                 .filter(pagoModel -> pagoModel.getTipo().equals("No_pago"))
