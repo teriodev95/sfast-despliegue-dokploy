@@ -358,17 +358,18 @@ public class CierreSemanalUtil {
                         if (comisionModel != null) {
                                 comisionesAPagarEnSemanaDTO.setPorcentajeComisionCobranza(
                                                 comisionModel.getPorcentajeComisionCobranza());
-                                comisionesAPagarEnSemanaDTO
-                                                .setPorcentajeBonoMensual(comisionModel.getPorcentajeBonoMensual());
+
                                 comisionesAPagarEnSemanaDTO
                                                 .setPagoComisionCobranza(comisionModel.getComisionCobranza());
                                 comisionesAPagarEnSemanaDTO.setPagoComisionVentas(comisionModel.getComisionVentas());
-                                comisionesAPagarEnSemanaDTO.setBonos(comisionModel.getBonos());
+                                if (semanaActualCalendarioModel.isPagoBono()) {
+                                        comisionesAPagarEnSemanaDTO
+                                                        .setPorcentajeBonoMensual(
+                                                                        comisionModel.getPorcentajeBonoMensual());
+                                        comisionesAPagarEnSemanaDTO.setBonos(comisionModel.getBonos());
+                                }
                         }
 
-                        comisionesAPagarEnSemanaDTO.setPorcentajeBonoMensual(1);
-
-                        comisionesAPagarEnSemanaDTO.setBonos(0.0);
                         if (semanaActualCalendarioModel.isPagoBono()) {
                                 String[] meses = { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio",
                                                 "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" };
