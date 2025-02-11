@@ -99,6 +99,18 @@ public final class PagoController {
             // guardar el pago.
 
             @RequestBody PagoConLiquidacion pagoConLiquidacion) {
+        String[] recuperadoPorValidos = { "agente", "gerente", "seguridad" };
+        int contadorNoCoincidencias = 0;
+        for (String recuperadorPor : recuperadoPorValidos) {
+            if (!pagoConLiquidacion.getRecuperadoPor().equals(recuperadorPor)) {
+                contadorNoCoincidencias++;
+            }
+
+            if (contadorNoCoincidencias == recuperadoPorValidos.length) {
+                return new ResponseEntity<>("El campo \"recuperadoPor\" no es válido", HttpStatus.BAD_REQUEST);
+            }
+        }
+
         pagoConLiquidacion.setTipo(pagoConLiquidacion.getTipo() == null ? "Pago" : pagoConLiquidacion.getTipo());
         ModelValidation modVal;
         PrestamoViewModel prestMod = this.prestamoViewService
@@ -113,12 +125,26 @@ public final class PagoController {
     }
 
     @PostMapping(path = "/create-many")
-    public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> redarrdicobjectCreatePagMod(
+    public @ResponseBody ResponseEntity<?> redarrdicobjectCreatePagMod(
             @RequestBody ArrayList<PagoConLiquidacion> darrpagConLiq_I) {
         ArrayList<HashMap<String, Object>> darrdicpagMod_O = new ArrayList<>();
         HttpStatus httpStatus_O = HttpStatus.CREATED;
 
         for (PagoConLiquidacion pagConLiq : darrpagConLiq_I) {
+            String[] recuperadoPorValidos = { "agente", "gerente", "seguridad" };
+            int contadorNoCoincidencias = 0;
+            for (String recuperadorPor : recuperadoPorValidos) {
+                if (!pagConLiq.getRecuperadoPor().equals(recuperadorPor)) {
+                    contadorNoCoincidencias++;
+                }
+
+                if (contadorNoCoincidencias == recuperadoPorValidos.length) {
+                    return new ResponseEntity<>(
+                            "El campo \"recuperadoPor\" no es válido en el pago con id \"" + pagConLiq.getPagoId()
+                                    + "\"",
+                            HttpStatus.BAD_REQUEST);
+                }
+            }
             HashMap<String, Object> dirobjeto = new HashMap<>();
 
             ModelValidation modVal;

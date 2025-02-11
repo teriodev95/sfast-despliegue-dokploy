@@ -41,6 +41,7 @@ public class PagoModel {
     private String updatedAt;
     private String log;
     private String quienPago;
+    private String recuperadoPor;
 
     public PagoModel() {
 
@@ -66,5 +67,6 @@ public class PagoModel {
         this.pagoId = pagoDynamicModel.getPagoId();
         this.lat = pagoDynamicModel.getLat();
         this.lng = pagoDynamicModel.getLng();
+        this.recuperadoPor = pagoDynamicModel.getRecuperadoPor();
     }
 }

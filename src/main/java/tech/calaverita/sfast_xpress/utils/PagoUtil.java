@@ -10,8 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 
-import com.google.gson.Gson;
-
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -161,6 +159,7 @@ public final class PagoUtil {
         pagoModel.setUpdatedAt(pagoConLiquidacion.getUpdatedAt());
         pagoModel.setLog(pagoConLiquidacion.getLog());
         pagoModel.setQuienPago(pagoConLiquidacion.getQuienPago());
+        pagoModel.setRecuperadoPor(pagoConLiquidacion.getRecuperadoPor());
 
         return pagoModel;
     }

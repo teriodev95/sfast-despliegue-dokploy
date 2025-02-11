@@ -20,4 +20,5 @@ public class PagoPWA {
     private String updatedAt;
     private String log;
     private String quienPago;
+    private String recuperadoPor;
 }
