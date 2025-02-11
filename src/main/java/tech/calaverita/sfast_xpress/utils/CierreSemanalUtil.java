@@ -362,12 +362,6 @@ public class CierreSemanalUtil {
                                 comisionesAPagarEnSemanaDTO
                                                 .setPagoComisionCobranza(comisionModel.getComisionCobranza());
                                 comisionesAPagarEnSemanaDTO.setPagoComisionVentas(comisionModel.getComisionVentas());
-                                if (semanaActualCalendarioModel.isPagoBono()) {
-                                        comisionesAPagarEnSemanaDTO
-                                                        .setPorcentajeBonoMensual(
-                                                                        comisionModel.getPorcentajeBonoMensual());
-                                        comisionesAPagarEnSemanaDTO.setBonos(comisionModel.getBonos());
-                                }
                         }
 
                         if (semanaActualCalendarioModel.isPagoBono()) {
@@ -390,8 +384,11 @@ public class CierreSemanalUtil {
                                                 .join();
 
                                 CierreSemanalConsolidadoV2Model cierreSemanalConsolidadoV2Model;
+
+                                cobranzaTotal = 0;
+                                double rendimiento = 0D;
+                                int clientesPagoCompleto = 0;
                                 for (int i = 0; i < semanasDelMes.size(); i++) {
-                                        cobranzaTotal = 0;
                                         cierreSemanalConsolidadoV2Model = CierreSemanalUtil.cierreSemanalConsolidadoV2Service
                                                         .findByAgenciaAnioAndSemana(agencia,
                                                                         semanasDelMes.get(i).getAnio(),
@@ -403,12 +400,26 @@ public class CierreSemanalUtil {
                                         if (cierreSemanalConsolidadoV2Model != null && comisionModel != null) {
                                                 cobranzaTotal += comisionModel.getCobranzaTotal()
                                                                 - cierreSemanalConsolidadoV2Model.getLiquidaciones();
+
+                                                rendimiento += comisionModel.getRendimiento();
+
+                                                clientesPagoCompleto += cierreSemanalConsolidadoV2Model.getClientes()
+                                                                - cierreSemanalConsolidadoV2Model.getPagosReducidos()
+                                                                - cierreSemanalConsolidadoV2Model.getNoPagos();
                                         }
                                 }
 
-                                Double bonos = cobranzaTotal / 100
-                                                * comisionesAPagarEnSemanaDTO.getPorcentajeBonoMensual();
-                                comisionesAPagarEnSemanaDTO.setBonos(bonos);
+                                rendimiento = rendimiento / semanasDelMes.size();
+                                clientesPagoCompleto = clientesPagoCompleto / semanasDelMes.size();
+                                cobranzaTotal = MyUtil.getDouble(cobranzaTotal);
+
+                                comisionesAPagarEnSemanaDTO.setPorcentajeBonoMensual(
+                                                BalanceAgenciaUtil.getPorcentajeBonoMensual(clientesPagoCompleto,
+                                                                rendimiento,
+                                                                agenteUsuarioModel));
+                                comisionesAPagarEnSemanaDTO.setBonos(MyUtil.getDouble(
+                                                cobranzaTotal / 100 * comisionesAPagarEnSemanaDTO
+                                                                .getPorcentajeBonoMensual()));
                         }
                 }
 
