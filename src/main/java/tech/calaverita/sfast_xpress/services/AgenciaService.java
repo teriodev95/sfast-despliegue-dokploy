@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import tech.calaverita.sfast_xpress.models.mariaDB.AgenciaModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.EstadoAgenciaModel;
 import tech.calaverita.sfast_xpress.repositories.AgenciaRepository;
 
 @Service
@@ -27,6 +28,10 @@ public class AgenciaService {
 
     public Boolean existsById(String agenciaId) {
         return this.repo.existsById(agenciaId);
+    }
+
+    public EstadoAgenciaModel findEstadoAgenciaModelByAgencia(String agenciaId) {
+        return this.repo.findEstadoAgenciaModelByAgencia(agenciaId);
     }
 
     @Async("asyncExecutor")

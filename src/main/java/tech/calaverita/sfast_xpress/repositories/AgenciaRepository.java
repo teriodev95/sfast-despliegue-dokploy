@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import tech.calaverita.sfast_xpress.models.mariaDB.AgenciaModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.EstadoAgenciaModel;
 
 @Repository
 public interface AgenciaRepository extends CrudRepository<AgenciaModel, String> {
@@ -19,4 +20,7 @@ public interface AgenciaRepository extends CrudRepository<AgenciaModel, String> 
     ArrayList<String> findIdsByGerenciaId(String gerenciaId);
 
     ArrayList<AgenciaModel> findByGerenciaIdAndStatusOrderById(String gerenciaId, String status);
+
+    @Query("SELECT estAgenc FROM EstadoAgenciaModel estAgenc WHERE estAgenc.agenciaId = :agenciaId")
+    EstadoAgenciaModel findEstadoAgenciaModelByAgencia(String agenciaId);
 }
