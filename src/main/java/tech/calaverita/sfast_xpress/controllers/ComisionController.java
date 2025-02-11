@@ -215,10 +215,6 @@ public class ComisionController {
                         clientesPagoCompleto = clientesPagoCompleto / semanasDelMes.size();
                         cobranzaTotal = MyUtil.getDouble(cobranzaTotal);
 
-                        System.out.println("cobranzaTotal: " + cobranzaTotal);
-                        System.out.println("rendimiento: " + rendimiento);
-                        System.out.println("clientesPagoCompleto: " + clientesPagoCompleto);
-
                         comisionModel.setPromedioClientesPagoCompleto(clientesPagoCompleto);
                         comisionModel.setPorcentajeBonoMensual(
                                         BalanceAgenciaUtil.getPorcentajeBonoMensual(clientesPagoCompleto, rendimiento,
