@@ -15,9 +15,8 @@ public interface AgenciaRepository extends CrudRepository<AgenciaModel, String> 
     @Query("SELECT agenc.status FROM AgenciaModel agenc WHERE agenc.id = :id")
     String findStatusById(String id);
 
-    @Query("SELECT agenc.id FROM AgenciaModel agenc WHERE agenc.gerenciaId = :gerenciaId AND agenc.status = :status " +
-            "ORDER BY agenc.id")
-    ArrayList<String> findIdsByGerenciaIdAndStatus(String gerenciaId, String status);
+    @Query("SELECT agenc.id FROM AgenciaModel agenc WHERE agenc.gerenciaId = :gerenciaId ORDER BY agenc.id")
+    ArrayList<String> findIdsByGerenciaId(String gerenciaId);
 
     ArrayList<AgenciaModel> findByGerenciaIdAndStatusOrderById(String gerenciaId, String status);
 }
