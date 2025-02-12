@@ -99,6 +99,10 @@ public final class PagoController {
             // guardar el pago.
 
             @RequestBody PagoConLiquidacion pagoConLiquidacion) {
+        if (pagoConLiquidacion.getRecuperadoPor() == null) {
+            pagoConLiquidacion.setRecuperadoPor("agente");
+        }
+
         String[] recuperadoPorValidos = { "agente", "gerente", "seguridad" };
         int contadorNoCoincidencias = 0;
         for (String recuperadorPor : recuperadoPorValidos) {
@@ -131,6 +135,10 @@ public final class PagoController {
         HttpStatus httpStatus_O = HttpStatus.CREATED;
 
         for (PagoConLiquidacion pagConLiq : darrpagConLiq_I) {
+            if (pagConLiq.getRecuperadoPor() == null) {
+                pagConLiq.setRecuperadoPor("agente");
+            }
+
             String[] recuperadoPorValidos = { "agente", "gerente", "seguridad" };
             int contadorNoCoincidencias = 0;
             for (String recuperadorPor : recuperadoPorValidos) {
