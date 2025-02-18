@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tech.calaverita.sfast_xpress.models.mariaDB.EstadoAgenciaModel;
 import tech.calaverita.sfast_xpress.services.AgenciaService;
 
+@CrossOrigin
 @RestController
 @RequestMapping(path = "/api/v2/agencias")
 public class AgenciaController {
