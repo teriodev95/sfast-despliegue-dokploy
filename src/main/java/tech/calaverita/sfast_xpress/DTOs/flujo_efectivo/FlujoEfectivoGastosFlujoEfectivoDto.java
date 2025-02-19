@@ -29,17 +29,14 @@ public class FlujoEfectivoGastosFlujoEfectivoDto {
             this.subTotalGastos += gastoModel.getMonto();
             HashMap<String, Object> gasto = new HashMap<>();
 
+            gasto.put("id", gastoModel.getId());
+            gasto.put("fecha", MyUtil.getLocalDateFromString(gastoModel.getFecha()));
+            gasto.put("tipo", gastoModel.getTipoGasto());
+            gasto.put("concepto", gastoModel.getConcepto());
+            gasto.put("monto", gastoModel.getMonto());
+
             if (gastoModel.getTipoGasto().equals("GASOLINA")) {
-                gasto.put("fecha", MyUtil.getLocalDateFromString(gastoModel.getFecha()));
-                gasto.put("tipo", gastoModel.getTipoGasto());
-                gasto.put("concepto", gastoModel.getConcepto());
-                gasto.put("monto", gastoModel.getMonto());
                 gasto.put("litros", gastoModel.getLitros());
-            } else {
-                gasto.put("fecha", MyUtil.getLocalDateFromString(gastoModel.getFecha()));
-                gasto.put("tipo", gastoModel.getTipoGasto());
-                gasto.put("concepto", gastoModel.getConcepto());
-                gasto.put("monto", gastoModel.getMonto());
             }
 
             this.gastoFlujoEfectivoDtos.add(gasto);
