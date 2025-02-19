@@ -1,10 +1,7 @@
 package tech.calaverita.sfast_xpress.DTOs.detalle_cierre_semanal;
 
-import java.util.List;
-
 import lombok.Data;
-import tech.calaverita.sfast_xpress.models.mariaDB.CierreSemanalConsolidadoV2Model;
-import tech.calaverita.sfast_xpress.models.mariaDB.ComisionModel;
+import tech.calaverita.sfast_xpress.pojos.CobranzaGerencia;
 import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Data
@@ -27,21 +24,15 @@ public class DetalleCierreSemanalCobranzaDto {
         this.total = 0D;
     }
 
-    public DetalleCierreSemanalCobranzaDto(List<CierreSemanalConsolidadoV2Model> cierreSemanalConsolidadoV2Models,
-            List<ComisionModel> comisionModels) {
+    public DetalleCierreSemanalCobranzaDto(CobranzaGerencia cobranzaGerencia) {
         this();
 
-        for (CierreSemanalConsolidadoV2Model cierreSemanalConsolidadoV2Model : cierreSemanalConsolidadoV2Models) {
-            this.liquidaciones += cierreSemanalConsolidadoV2Model.getLiquidaciones();
-            this.multas += cierreSemanalConsolidadoV2Model.getMultas();
-            this.otros += cierreSemanalConsolidadoV2Model.getOtrosIngresos();
-        }
-
-        for (ComisionModel comisionModel : comisionModels) {
-            this.primerosPagos += comisionModel.getPrimerosPagos();
-            this.cobranzaPura += comisionModel.getCobranzaPura();
-            this.montoExcedente += comisionModel.getMontoExcedente();
-        }
+        this.liquidaciones += cobranzaGerencia.getLiquidaciones();
+        this.multas += cobranzaGerencia.getMultas();
+        this.otros += cobranzaGerencia.getOtros();
+        this.primerosPagos += cobranzaGerencia.getPrimerosPagos();
+        this.cobranzaPura += cobranzaGerencia.getCobranzaPura();
+        this.montoExcedente += cobranzaGerencia.getMontoExcedente();
 
         this.total = this.cobranzaPura + this.montoExcedente + this.liquidaciones + this.primerosPagos + this.multas
                 + this.otros;

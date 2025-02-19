@@ -7,11 +7,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.CierreSemanalConsolidadoV2Model;
-import tech.calaverita.sfast_xpress.models.mariaDB.ComisionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.GastoModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.IncidenteReposicionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.VentaModel;
 import tech.calaverita.sfast_xpress.pojos.AlmacenObjects;
+import tech.calaverita.sfast_xpress.pojos.CobranzaGerencia;
 import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Data
@@ -35,14 +35,16 @@ public class DetalleCierreSemanalDto {
                                 .getObject("egresosAsignacionModel");
                 List<CierreSemanalConsolidadoV2Model> cierreSemanalConsolidadoV2Models = (List<CierreSemanalConsolidadoV2Model>) almacenObjects
                                 .getObject("cierreSemanalConsolidadoV2Models");
-                List<ComisionModel> comisionModels = (List<ComisionModel>) almacenObjects.getObject("comisionModels");
+                CobranzaGerencia cobranzaGerencia = (CobranzaGerencia) almacenObjects.getObject("cobranzaGerencia");
+                // List<ComisionModel> comisionModels = (List<ComisionModel>)
+                // almacenObjects.getObject("comisionModels");
                 List<GastoModel> gastoModels = (List<GastoModel>) almacenObjects.getObject("gastoModels");
                 List<IncidenteReposicionModel> incidenteReposicionModels = (List<IncidenteReposicionModel>) almacenObjects
                                 .getObject("incidenteReposicionModels");
                 List<VentaModel> ventaModels = (List<VentaModel>) almacenObjects.getObject("ventaModels");
 
                 this.detalleCierreSemanalIngresosDto = new DetalleCierreSemanalIngresosDto(ingresosAsignacionModel,
-                                cierreSemanalConsolidadoV2Models, comisionModels, incidenteReposicionModels);
+                                cobranzaGerencia, incidenteReposicionModels);
                 this.detalleCierreSemanalEgresosDto = new DetalleCierreSemanalEgresosDto(egresosAsignacionModel,
                                 cierreSemanalConsolidadoV2Models, gastoModels, incidenteReposicionModels, ventaModels);
 

@@ -6,9 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
-import tech.calaverita.sfast_xpress.models.mariaDB.CierreSemanalConsolidadoV2Model;
-import tech.calaverita.sfast_xpress.models.mariaDB.ComisionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.IncidenteReposicionModel;
+import tech.calaverita.sfast_xpress.pojos.CobranzaGerencia;
 import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Data
@@ -24,16 +23,13 @@ public class DetalleCierreSemanalIngresosDto {
         }
 
         public DetalleCierreSemanalIngresosDto(List<AsignacionModel> asignacionModels,
-                        List<CierreSemanalConsolidadoV2Model> cierreSemanalConsolidadoV2Models,
-                        List<ComisionModel> comisionModels,
-                        List<IncidenteReposicionModel> incidenteReposicionModels) {
+                        CobranzaGerencia cobranzaGerencia, List<IncidenteReposicionModel> incidenteReposicionModels) {
                 this();
 
                 this.detalleCierreSemanalAsignacionesDto = new DetalleCierreSemanalAsignacionesDto(asignacionModels,
                                 incidenteReposicionModels, "ingreso");
                 this.detalleCierreSemanalCobranzaDto = new DetalleCierreSemanalCobranzaDto(
-                                cierreSemanalConsolidadoV2Models,
-                                comisionModels);
+                                cobranzaGerencia);
 
                 this.total = MyUtil.getDouble(this.detalleCierreSemanalAsignacionesDto.getTotal()
                                 + this.detalleCierreSemanalCobranzaDto.getTotal());
