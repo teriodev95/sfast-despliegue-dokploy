@@ -119,4 +119,59 @@ public class DetalleCierreSemanalController {
 
                 return new ResponseEntity<>(detalleCierreSemanalDto, HttpStatus.OK);
         }
+
+        @GetMapping(path = "/gerencia/{gerencia}/semana/{semana}")
+        public ResponseEntity<DetalleCierreSemanalDto> getByGerenciaSemana(@PathVariable String gerencia,
+                        @PathVariable int semana) {
+                CalendarioModel calendarioModel = this.calendarioService.findByFechaActual(LocalDate.now().toString());
+                GerenciaModel gerenciaModel = this.gerenciaService.findById(gerencia);
+
+                // To easy code
+                int anio = calendarioModel.getAnio();
+                String deprecatedNameGerencia = gerenciaModel.getDeprecatedName();
+                String sucursal = gerenciaModel.getSucursal();
+
+                CompletableFuture<List<AsignacionModel>> ingresosAsignacionModelCf = this.asignacionService
+                                .findAsignacionesIngresoByGerenciaAnioSemanaAsync(gerencia, anio, semana);
+                CompletableFuture<List<AsignacionModel>> egresosAsignacionModelCf = this.asignacionService
+                                .findAsignacionesEgresoByGerenciaAnioSemanaAsync(gerencia, anio, semana);
+                CompletableFuture<List<CierreSemanalConsolidadoV2Model>> cierreSemanalConsolidadoV2ModelsCf = this.cierreSemanalConsolidadoV2Service
+                                .findByGerenciaAnioSemanaAsync(gerencia, anio, semana);
+                CompletableFuture<List<ComisionModel>> comisionModelsCf = this.comisionService
+                                .findByGerenciaAnioSemanaAsync(
+                                                gerencia,
+                                                anio, semana);
+                CompletableFuture<List<GastoModel>> gastoModelsCf = this.gastoService.findByGerenciaAnioSemanaAsync(
+                                gerencia,
+                                anio, semana);
+                CompletableFuture<List<IncidenteReposicionModel>> incidenteReposicionModelsCf = this.incidenteReposicionService
+                                .findByCategoriaGerenciaAnioSemanaAsync("incidente", gerencia, anio, semana);
+                CompletableFuture<ArrayList<PagoDynamicModel>> pagoDynamicModelsCf = this.pagoDynamicService
+                                .findByGerenciaSucursalAnioSemanaAndEsPrimerPago(deprecatedNameGerencia, sucursal, anio,
+                                                semana, false);
+                CompletableFuture<List<VentaModel>> ventaModelsCf = this.ventaService.findByGerenciaAnioSemanaAsync(
+                                gerencia,
+                                anio, semana);
+
+                CompletableFuture.allOf(ingresosAsignacionModelCf, egresosAsignacionModelCf,
+                                cierreSemanalConsolidadoV2ModelsCf, comisionModelsCf,
+                                gastoModelsCf, incidenteReposicionModelsCf, pagoDynamicModelsCf, ventaModelsCf);
+
+                CobranzaGerencia cobranzaGerencia = new CobranzaGerencia(pagoDynamicModelsCf.join(),
+                                ventaModelsCf.join());
+
+                AlmacenObjects almacenObjects = new AlmacenObjects();
+                almacenObjects.addObject("ingresosAsignacionModel", ingresosAsignacionModelCf.join());
+                almacenObjects.addObject("egresosAsignacionModel", egresosAsignacionModelCf.join());
+                almacenObjects.addObject("cierreSemanalConsolidadoV2Models", cierreSemanalConsolidadoV2ModelsCf.join());
+                almacenObjects.addObject("cobranzaGerencia", cobranzaGerencia);
+                almacenObjects.addObject("comisionModels", comisionModelsCf.join());
+                almacenObjects.addObject("gastoModels", gastoModelsCf.join());
+                almacenObjects.addObject("incidenteReposicionModels", incidenteReposicionModelsCf.join());
+                almacenObjects.addObject("ventaModels", ventaModelsCf.join());
+
+                DetalleCierreSemanalDto detalleCierreSemanalDto = new DetalleCierreSemanalDto(almacenObjects);
+
+                return new ResponseEntity<>(detalleCierreSemanalDto, HttpStatus.OK);
+        }
 }
