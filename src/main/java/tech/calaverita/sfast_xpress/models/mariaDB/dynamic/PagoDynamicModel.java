@@ -7,6 +7,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import tech.calaverita.sfast_xpress.models.mariaDB.EstadoAgenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 
 @Data
@@ -37,4 +38,7 @@ public class PagoDynamicModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "prestamoId", insertable = false, updatable = false)
     private PrestamoViewModel prestamoViewModel;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "agencia", insertable = false, updatable = false)
+    private EstadoAgenciaModel estadoAgenciaModel;
 }

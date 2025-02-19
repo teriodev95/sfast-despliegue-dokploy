@@ -10,6 +10,7 @@ import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.GastoModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.IncidenteReposicionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.VentaModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.dynamic.PagoDynamicModel;
 import tech.calaverita.sfast_xpress.pojos.AlmacenObjects;
 import tech.calaverita.sfast_xpress.utils.MyUtil;
 
@@ -27,11 +28,14 @@ public class FlujoEfectivoDto {
     private HashMap<String, Object> primerosPagosFlujoEfectivoHm;
     @JsonProperty(value = "resumen")
     private HashMap<String, Double> resumenFlujoEfectivoHm;
+    @JsonProperty(value = "cobranzaAgenciasVacantes")
+    private HashMap<String, Double> cobranzaAgenciasVacantesHm;
 
     public FlujoEfectivoDto() {
         initializeVentasFlujoEfectivoHm();
         initializePrimerosPagosFlujoEfectivoHm();
         initializeResumenFlujoEfectivoHm();
+        initializeCobranzaAgenciasVacantesHm();
     }
 
     @SuppressWarnings("unchecked")
@@ -42,10 +46,12 @@ public class FlujoEfectivoDto {
                 .getObject("recibioAsignacionModels");
         List<AsignacionModel> entregoAsignacionModels = (List<AsignacionModel>) almacenObjects
                 .getObject("entregoAsignacionModels");
-        List<IncidenteReposicionModel> incidenteReposicionModels = (List<IncidenteReposicionModel>) almacenObjects
-                .getObject("incidenteReposicionModels");
         List<GastoModel> gastoModels = (List<GastoModel>) almacenObjects
                 .getObject("gastoModels");
+        List<IncidenteReposicionModel> incidenteReposicionModels = (List<IncidenteReposicionModel>) almacenObjects
+                .getObject("incidenteReposicionModels");
+        List<PagoDynamicModel> pagoDynamicModels = (List<PagoDynamicModel>) almacenObjects
+                .getObject("pagoDynamicModels");
         List<VentaModel> ventaModels = (List<VentaModel>) almacenObjects
                 .getObject("ventaModels");
 
@@ -55,30 +61,36 @@ public class FlujoEfectivoDto {
         this.gastosFlujoEfectivoDto = new FlujoEfectivoGastosFlujoEfectivoDto(gastoModels);
         setVentasYPrimerosPagos(ventaModels);
         setResumenFlujoEfectivoHm();
+        setCobranzaAgenciasVacantes(pagoDynamicModels);
     }
 
-    public void initializeVentasFlujoEfectivoHm() {
+    private void initializeVentasFlujoEfectivoHm() {
         this.ventasFlujoEfectivoHm = new HashMap<>();
         this.ventasFlujoEfectivoHm.put("tipo", "Egreso");
         this.ventasFlujoEfectivoHm.put("total", 0D);
         this.ventasFlujoEfectivoHm.put("cantidad", 0);
     }
 
-    public void initializePrimerosPagosFlujoEfectivoHm() {
+    private void initializePrimerosPagosFlujoEfectivoHm() {
         this.primerosPagosFlujoEfectivoHm = new HashMap<>();
         this.primerosPagosFlujoEfectivoHm.put("tipo", "Ingreso");
         this.primerosPagosFlujoEfectivoHm.put("total", 0D);
         this.primerosPagosFlujoEfectivoHm.put("cantidad", 0);
     }
 
-    public void initializeResumenFlujoEfectivoHm() {
+    private void initializeResumenFlujoEfectivoHm() {
         this.resumenFlujoEfectivoHm = new HashMap<>();
         this.resumenFlujoEfectivoHm.put("ingresos", 0D);
         this.resumenFlujoEfectivoHm.put("egresos", 0D);
         this.resumenFlujoEfectivoHm.put("diferencia", 0D);
     }
 
-    public void setVentasYPrimerosPagos(List<VentaModel> ventaModels) {
+    private void initializeCobranzaAgenciasVacantesHm() {
+        this.cobranzaAgenciasVacantesHm = new HashMap<>();
+        this.cobranzaAgenciasVacantesHm.put("totalIngresos", 0D);
+    }
+
+    private void setVentasYPrimerosPagos(List<VentaModel> ventaModels) {
         double totalVentas = 0D;
         double totalPrimerosPagos = 0D;
 
@@ -93,7 +105,7 @@ public class FlujoEfectivoDto {
         this.primerosPagosFlujoEfectivoHm.put("cantidad", ventaModels.size());
     }
 
-    public void setResumenFlujoEfectivoHm() {
+    private void setResumenFlujoEfectivoHm() {
         double ingresos = 0D;
         ingresos += this.asignacionesFlujoEfectivoDto.getAsignacionesAgenteDto().getSubTotalIngresos();
         ingresos += this.asignacionesFlujoEfectivoDto.getAsignacionesAdministracionDto().getSubTotalIngresos();
@@ -113,5 +125,14 @@ public class FlujoEfectivoDto {
         this.resumenFlujoEfectivoHm.put("ingresos", MyUtil.getDouble(ingresos));
         this.resumenFlujoEfectivoHm.put("egresos", MyUtil.getDouble(egresos));
         this.resumenFlujoEfectivoHm.put("diferencia", MyUtil.getDouble(ingresos - egresos));
+    }
+
+    private void setCobranzaAgenciasVacantes(List<PagoDynamicModel> pagoDynamicModels) {
+        double cobranzaAgenciasVacantes = 0D;
+        for (PagoDynamicModel pagoDynamicModel : pagoDynamicModels) {
+            cobranzaAgenciasVacantes += pagoDynamicModel.getMonto();
+        }
+
+        this.cobranzaAgenciasVacantesHm.put("totalIngresos", cobranzaAgenciasVacantes);
     }
 }

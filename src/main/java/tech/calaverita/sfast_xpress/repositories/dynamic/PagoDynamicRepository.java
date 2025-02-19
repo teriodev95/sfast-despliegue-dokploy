@@ -1,6 +1,7 @@
 package tech.calaverita.sfast_xpress.repositories.dynamic;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -20,6 +21,12 @@ public interface PagoDynamicRepository extends CrudRepository<PagoDynamicModel, 
                         String sucursal,
                         int anio, int semana,
                         boolean esPrimerPago);
+
+        @Query("SELECT pagDyn FROM PagoDynamicModel pagDyn INNER JOIN pagDyn.estadoAgenciaModel estAgenc "
+                        + "ON estAgenc.gerenciaId = :gerencia AND estAgenc.status = :status WHERE pagDyn.anio = :anio "
+                        + "AND pagDyn.semana = :semana")
+        List<PagoDynamicModel> findByGerenciaAndAnioAndSemanaAndStatus(String gerencia, int anio, int semana,
+                        String status);
 
         @Query("SELECT SUM(pag.tarifa) FROM PagoDynamicModel pag WHERE pag.agencia = :agencia AND pag.anio = :anio " +
                         "AND pag.semana = :semana")

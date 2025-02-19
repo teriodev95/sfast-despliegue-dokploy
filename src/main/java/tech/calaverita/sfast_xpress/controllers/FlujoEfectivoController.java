@@ -18,12 +18,14 @@ import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.GastoModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.IncidenteReposicionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.VentaModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.dynamic.PagoDynamicModel;
 import tech.calaverita.sfast_xpress.pojos.AlmacenObjects;
 import tech.calaverita.sfast_xpress.services.AsignacionService;
 import tech.calaverita.sfast_xpress.services.CalendarioService;
 import tech.calaverita.sfast_xpress.services.GastoService;
 import tech.calaverita.sfast_xpress.services.IncidenteReposicionService;
 import tech.calaverita.sfast_xpress.services.VentaService;
+import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
 
 @CrossOrigin
 @RestController
@@ -33,15 +35,17 @@ public class FlujoEfectivoController {
         private final CalendarioService calendarioService;
         private final GastoService gastoService;
         private final IncidenteReposicionService incidenteReposicionService;
+        private final PagoDynamicService pagoDynamicService;
         private final VentaService ventaService;
 
         public FlujoEfectivoController(AsignacionService asignacionService, CalendarioService calendarioService,
                         GastoService gastoService, IncidenteReposicionService incidenteReposicionService,
-                        VentaService ventaService) {
+                        PagoDynamicService pagoDynamicService, VentaService ventaService) {
                 this.asignacionService = asignacionService;
                 this.calendarioService = calendarioService;
                 this.gastoService = gastoService;
                 this.incidenteReposicionService = incidenteReposicionService;
+                this.pagoDynamicService = pagoDynamicService;
                 this.ventaService = ventaService;
         }
 
@@ -57,18 +61,21 @@ public class FlujoEfectivoController {
                                 .findAsignacionesIngresoByGerenciaAnioSemanaAsync(gerencia, anio, semana);
                 CompletableFuture<List<AsignacionModel>> entregoAsignacionModelsCF = this.asignacionService
                                 .findAsignacionesEgresoByGerenciaAnioSemanaAsync(gerencia, anio, semana);
-                CompletableFuture<List<IncidenteReposicionModel>> incidenteReposicionModelsCF = this.incidenteReposicionService
-                                .findByGerenciaAnioSemanaAsync(gerencia, anio, semana);
                 CompletableFuture<List<GastoModel>> gastoModelsCF = this.gastoService
                                 .findByGerenciaAnioSemanaAsync(gerencia, anio, semana);
+                CompletableFuture<List<IncidenteReposicionModel>> incidenteReposicionModelsCF = this.incidenteReposicionService
+                                .findByGerenciaAnioSemanaAsync(gerencia, anio, semana);
+                CompletableFuture<List<PagoDynamicModel>> pagoDynamicModelsCf = this.pagoDynamicService
+                                .findByGerenciaAnioSemanaStatusAsync(gerencia, anio, semana, "Vacante");
                 CompletableFuture<List<VentaModel>> ventaModelsCF = this.ventaService
                                 .findByGerenciaAnioSemanaAsync(gerencia, anio, semana);
 
                 AlmacenObjects almacenObjects = new AlmacenObjects();
                 almacenObjects.addObject("recibioAsignacionModels", recibioAsignacionModelsCF.join());
                 almacenObjects.addObject("entregoAsignacionModels", entregoAsignacionModelsCF.join());
-                almacenObjects.addObject("incidenteReposicionModels", incidenteReposicionModelsCF.join());
                 almacenObjects.addObject("gastoModels", gastoModelsCF.join());
+                almacenObjects.addObject("incidenteReposicionModels", incidenteReposicionModelsCF.join());
+                almacenObjects.addObject("pagoDynamicModels", pagoDynamicModelsCf.join());
                 almacenObjects.addObject("ventaModels", ventaModelsCF.join());
 
                 return new ResponseEntity<>(new FlujoEfectivoDto(almacenObjects, gerencia), HttpStatus.OK);

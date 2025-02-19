@@ -1,6 +1,7 @@
 package tech.calaverita.sfast_xpress.services.dynamic;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.scheduling.annotation.Async;
@@ -37,6 +38,14 @@ public class PagoDynamicService {
         }
 
         @Async("asyncExecutor")
+        public CompletableFuture<List<PagoDynamicModel>> findByGerenciaAnioSemanaStatusAsync(String gerencia, int anio,
+                        int semana, String status) {
+                return CompletableFuture.completedFuture(
+                                this.repo.findByGerenciaAndAnioAndSemanaAndStatus(gerencia, anio,
+                                                semana, status));
+        }
+
+        @Async("asyncExecutor")
         public CompletableFuture<Double> findDebitoTotalByAgenciaAnioAndSemanaAsync(String agencia, int anio,
                         int semana) {
                 return CompletableFuture.completedFuture(this.repo
@@ -70,7 +79,8 @@ public class PagoDynamicService {
                 CompletableFuture<Integer> clientesPagoCompletoCF = CompletableFuture.completedFuture(this.repo
                                 .findClientesPagoCompletoByAgenciaAndAnioAndSemana(agencia, anio, semana));
 
-                return clientesPagoCompletoCF.join() != null ? clientesPagoCompletoCF : CompletableFuture.completedFuture(0);
+                return clientesPagoCompletoCF.join() != null ? clientesPagoCompletoCF
+                                : CompletableFuture.completedFuture(0);
         }
 
         @Async("asyncExecutor")
