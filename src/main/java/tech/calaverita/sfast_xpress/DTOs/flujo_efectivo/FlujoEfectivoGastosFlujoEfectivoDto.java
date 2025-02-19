@@ -1,4 +1,4 @@
-package tech.calaverita.sfast_xpress.DTOs.FlujoEfectivo;
+package tech.calaverita.sfast_xpress.DTOs.flujo_efectivo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,18 +11,18 @@ import tech.calaverita.sfast_xpress.models.mariaDB.GastoModel;
 import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Data
-public class GastosFlujoEfectivoDto {
+public class FlujoEfectivoGastosFlujoEfectivoDto {
     @JsonProperty(value = "subtotal")
     private Double subTotalGastos;
     @JsonProperty(value = "gastos")
     private List<HashMap<String, Object>> gastoFlujoEfectivoDtos;
 
-    public GastosFlujoEfectivoDto() {
+    public FlujoEfectivoGastosFlujoEfectivoDto() {
         this.subTotalGastos = 0D;
         this.gastoFlujoEfectivoDtos = new ArrayList<>();
     }
 
-    public GastosFlujoEfectivoDto(List<GastoModel> gastoModels) {
+    public FlujoEfectivoGastosFlujoEfectivoDto(List<GastoModel> gastoModels) {
         this();
 
         for (GastoModel gastoModel : gastoModels) {

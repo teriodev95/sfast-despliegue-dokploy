@@ -1,4 +1,4 @@
-package tech.calaverita.sfast_xpress.DTOs.FlujoEfectivo;
+package tech.calaverita.sfast_xpress.DTOs.flujo_efectivo;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,11 +16,11 @@ import tech.calaverita.sfast_xpress.utils.MyUtil;
 @Data
 public class FlujoEfectivoDto {
     @JsonProperty(value = "asignaciones")
-    private AsignacionesFlujoEfectivoDto asignacionesFlujoEfectivoDto;
+    private FlujoEfectivoAsignacionesDto asignacionesFlujoEfectivoDto;
     @JsonProperty(value = "otros")
-    private OtrosFlujoEfectivoDto otrosFlujoEfectivoDto;
+    private FlujoEfectivoOtrosDto otrosFlujoEfectivoDto;
     @JsonProperty(value = "gastosSemanales")
-    private GastosFlujoEfectivoDto gastosFlujoEfectivoDto;
+    private FlujoEfectivoGastosFlujoEfectivoDto gastosFlujoEfectivoDto;
     @JsonProperty(value = "ventas")
     private HashMap<String, Object> ventasFlujoEfectivoHm;
     @JsonProperty(value = "primerosPagos")
@@ -49,10 +49,10 @@ public class FlujoEfectivoDto {
         List<VentaModel> ventaModels = (List<VentaModel>) almacenObjects
                 .getObject("ventaModels");
 
-        this.asignacionesFlujoEfectivoDto = new AsignacionesFlujoEfectivoDto(recibioAsignacionModels,
+        this.asignacionesFlujoEfectivoDto = new FlujoEfectivoAsignacionesDto(recibioAsignacionModels,
                 entregoAsignacionModels, gerencia);
-        this.otrosFlujoEfectivoDto = new OtrosFlujoEfectivoDto(incidenteReposicionModels);
-        this.gastosFlujoEfectivoDto = new GastosFlujoEfectivoDto(gastoModels);
+        this.otrosFlujoEfectivoDto = new FlujoEfectivoOtrosDto(incidenteReposicionModels);
+        this.gastosFlujoEfectivoDto = new FlujoEfectivoGastosFlujoEfectivoDto(gastoModels);
         setVentasYPrimerosPagos(ventaModels);
         setResumenFlujoEfectivoHm();
     }

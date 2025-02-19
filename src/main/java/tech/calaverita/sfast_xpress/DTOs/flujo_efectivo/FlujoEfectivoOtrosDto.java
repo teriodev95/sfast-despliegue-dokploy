@@ -1,4 +1,4 @@
-package tech.calaverita.sfast_xpress.DTOs.FlujoEfectivo;
+package tech.calaverita.sfast_xpress.DTOs.flujo_efectivo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,33 +10,33 @@ import tech.calaverita.sfast_xpress.models.mariaDB.IncidenteReposicionModel;
 import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Data
-public class OtrosFlujoEfectivoDto {
+public class FlujoEfectivoOtrosDto {
     @JsonProperty(value = "subtotalIngresos")
     private Double subTotalIngresos;
     @JsonProperty(value = "ingresos")
-    private List<OtroIngresoOEgresoDto> otroIngresoDtos;
+    private List<FlujoEfectivoOtroIngresoOEgresoDto> otroIngresoDtos;
     @JsonProperty(value = "subtotalEgresos")
     private Double subTotalEgresos;
     @JsonProperty(value = "egresos")
-    private List<OtroIngresoOEgresoDto> otroEgresoDtos;
+    private List<FlujoEfectivoOtroIngresoOEgresoDto> otroEgresoDtos;
 
-    public OtrosFlujoEfectivoDto() {
+    public FlujoEfectivoOtrosDto() {
         this.subTotalIngresos = 0D;
         this.otroIngresoDtos = new ArrayList<>();
         this.subTotalEgresos = 0D;
         this.otroEgresoDtos = new ArrayList<>();
     }
 
-    public OtrosFlujoEfectivoDto(List<IncidenteReposicionModel> incidenteReposicionModels) {
+    public FlujoEfectivoOtrosDto(List<IncidenteReposicionModel> incidenteReposicionModels) {
         this();
 
         for (IncidenteReposicionModel incidenteReposicionModel : incidenteReposicionModels) {
             if (incidenteReposicionModel.getTipo().equals("ingreso")) {
                 this.subTotalIngresos += incidenteReposicionModel.getMonto();
-                this.otroIngresoDtos.add(new OtroIngresoOEgresoDto(incidenteReposicionModel));
+                this.otroIngresoDtos.add(new FlujoEfectivoOtroIngresoOEgresoDto(incidenteReposicionModel));
             } else {
                 this.subTotalEgresos += incidenteReposicionModel.getMonto();
-                this.otroEgresoDtos.add(new OtroIngresoOEgresoDto(incidenteReposicionModel));
+                this.otroEgresoDtos.add(new FlujoEfectivoOtroIngresoOEgresoDto(incidenteReposicionModel));
             }
         }
 
@@ -44,8 +44,8 @@ public class OtrosFlujoEfectivoDto {
         this.subTotalEgresos = MyUtil.getDouble(this.subTotalEgresos);
     }
 
-    public OtrosFlujoEfectivoDto(Double subTotalIngresos, List<OtroIngresoOEgresoDto> otroIngresoDtos,
-            List<OtroIngresoOEgresoDto> otroEgresoDtos) {
+    public FlujoEfectivoOtrosDto(Double subTotalIngresos, List<FlujoEfectivoOtroIngresoOEgresoDto> otroIngresoDtos,
+            List<FlujoEfectivoOtroIngresoOEgresoDto> otroEgresoDtos) {
         this.subTotalIngresos = subTotalIngresos;
         this.otroIngresoDtos = otroIngresoDtos;
         this.otroEgresoDtos = otroEgresoDtos;

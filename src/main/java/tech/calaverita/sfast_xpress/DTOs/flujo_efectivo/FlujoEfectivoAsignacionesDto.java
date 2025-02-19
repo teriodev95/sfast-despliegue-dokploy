@@ -1,4 +1,4 @@
-package tech.calaverita.sfast_xpress.DTOs.FlujoEfectivo;
+package tech.calaverita.sfast_xpress.DTOs.flujo_efectivo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,21 +10,21 @@ import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 import tech.calaverita.sfast_xpress.pojos.AlmacenObjects;
 
 @Data
-public class AsignacionesFlujoEfectivoDto {
+public class FlujoEfectivoAsignacionesDto {
     @JsonProperty(value = "agentes")
-    private AsignacionesAgentesDto asignacionesAgenteDto;
+    private FlujoEfectivoAsignacionesAgentesDto asignacionesAgenteDto;
     @JsonProperty(value = "administracion")
-    private AsignacionFlujoEfectivoDto asignacionesAdministracionDto;
+    private FlujoEfectivoAsignacionDto asignacionesAdministracionDto;
     @JsonProperty(value = "seguridad")
-    private AsignacionFlujoEfectivoDto asignacionesSeguridadDto;
+    private FlujoEfectivoAsignacionDto asignacionesSeguridadDto;
     @JsonProperty(value = "operaciones")
-    private AsignacionFlujoEfectivoDto asignacionesOperacionDto;
+    private FlujoEfectivoAsignacionDto asignacionesOperacionDto;
 
-    public AsignacionesFlujoEfectivoDto() {
+    public FlujoEfectivoAsignacionesDto() {
 
     }
 
-    public AsignacionesFlujoEfectivoDto(List<AsignacionModel> recibioAsignacionModels,
+    public FlujoEfectivoAsignacionesDto(List<AsignacionModel> recibioAsignacionModels,
             List<AsignacionModel> entregoAsignacionModels, String gerencia) {
         List<AsignacionModel> asignacionesAgenteAsignacionModel = new ArrayList<>();
         List<AsignacionModel> asignacionesAdministracionAsignacionModel = new ArrayList<>();
@@ -41,11 +41,11 @@ public class AsignacionesFlujoEfectivoDto {
         setAsignaciones(recibioAsignacionModels, almacenObjects, true);
         setAsignaciones(entregoAsignacionModels, almacenObjects, false);
 
-        this.asignacionesAgenteDto = new AsignacionesAgentesDto(asignacionesAgenteAsignacionModel);
-        this.asignacionesAdministracionDto = new AsignacionFlujoEfectivoDto(
+        this.asignacionesAgenteDto = new FlujoEfectivoAsignacionesAgentesDto(asignacionesAgenteAsignacionModel);
+        this.asignacionesAdministracionDto = new FlujoEfectivoAsignacionDto(
                 asignacionesAdministracionAsignacionModel, gerencia);
-        this.asignacionesSeguridadDto = new AsignacionFlujoEfectivoDto(asignacionesSeguridadAsignacionModel, gerencia);
-        this.asignacionesOperacionDto = new AsignacionFlujoEfectivoDto(asignacionesOperacionAsignacionModel, gerencia);
+        this.asignacionesSeguridadDto = new FlujoEfectivoAsignacionDto(asignacionesSeguridadAsignacionModel, gerencia);
+        this.asignacionesOperacionDto = new FlujoEfectivoAsignacionDto(asignacionesOperacionAsignacionModel, gerencia);
     }
 
     @SuppressWarnings("unchecked")
@@ -86,10 +86,10 @@ public class AsignacionesFlujoEfectivoDto {
         }
     }
 
-    public AsignacionesFlujoEfectivoDto(AsignacionesAgentesDto asignacionesAgentes,
-            AsignacionFlujoEfectivoDto asignacionesAdministracionDto,
-            AsignacionFlujoEfectivoDto asignacionesSeguridadDto,
-            AsignacionFlujoEfectivoDto asignacionesOperacionesDto) {
+    public FlujoEfectivoAsignacionesDto(FlujoEfectivoAsignacionesAgentesDto asignacionesAgentes,
+            FlujoEfectivoAsignacionDto asignacionesAdministracionDto,
+            FlujoEfectivoAsignacionDto asignacionesSeguridadDto,
+            FlujoEfectivoAsignacionDto asignacionesOperacionesDto) {
         this.asignacionesAgenteDto = asignacionesAgentes;
         this.asignacionesAdministracionDto = asignacionesAdministracionDto;
         this.asignacionesSeguridadDto = asignacionesSeguridadDto;

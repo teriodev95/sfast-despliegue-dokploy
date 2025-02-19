@@ -1,4 +1,4 @@
-package tech.calaverita.sfast_xpress.DTOs.FlujoEfectivo;
+package tech.calaverita.sfast_xpress.DTOs.flujo_efectivo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,24 +10,24 @@ import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Data
-public class AsignacionFlujoEfectivoDto {
+public class FlujoEfectivoAsignacionDto {
     @JsonProperty(value = "subtotalIngresos")
     private Double subTotalIngresos;
     @JsonProperty(value = "ingresos")
-    private List<AsignacionIngresoDto> asignacionIngresoDtos;
+    private List<FlujoEfectivoAsignacionIngresoDto> asignacionIngresoDtos;
     @JsonProperty(value = "subtotalEgresos")
     private Double subTotalEgresos;
     @JsonProperty(value = "egresos")
-    private List<AsignacionEgresoDto> asignacionEgresoDtos;
+    private List<FlujoEfectivoAsignacionEgresoDto> asignacionEgresoDtos;
 
-    public AsignacionFlujoEfectivoDto() {
+    public FlujoEfectivoAsignacionDto() {
         this.subTotalIngresos = 0D;
         this.asignacionIngresoDtos = new ArrayList<>();
         this.subTotalEgresos = 0D;
         this.asignacionEgresoDtos = new ArrayList<>();
     }
 
-    public AsignacionFlujoEfectivoDto(List<AsignacionModel> asignacionModels, String gerencia) {
+    public FlujoEfectivoAsignacionDto(List<AsignacionModel> asignacionModels, String gerencia) {
         this();
 
         for (AsignacionModel asignacionModel : asignacionModels) {
@@ -36,10 +36,10 @@ public class AsignacionFlujoEfectivoDto {
 
             if (gerenciaAsignacionModel != null && gerenciaAsignacionModel.equals(gerencia)) {
                 this.subTotalIngresos += asignacionModel.getMonto();
-                this.asignacionIngresoDtos.add(new AsignacionIngresoDto(asignacionModel));
+                this.asignacionIngresoDtos.add(new FlujoEfectivoAsignacionIngresoDto(asignacionModel));
             } else {
                 this.subTotalEgresos += asignacionModel.getMonto();
-                this.asignacionEgresoDtos.add(new AsignacionEgresoDto(asignacionModel));
+                this.asignacionEgresoDtos.add(new FlujoEfectivoAsignacionEgresoDto(asignacionModel));
             }
         }
 
@@ -47,8 +47,9 @@ public class AsignacionFlujoEfectivoDto {
         this.subTotalEgresos = MyUtil.getDouble(this.subTotalEgresos);
     }
 
-    public AsignacionFlujoEfectivoDto(Double subTotalIngresos, List<AsignacionIngresoDto> asignacionIngresoDtos,
-            Double subTotalEgresos, List<AsignacionEgresoDto> asignacionEgresoDtos) {
+    public FlujoEfectivoAsignacionDto(Double subTotalIngresos,
+            List<FlujoEfectivoAsignacionIngresoDto> asignacionIngresoDtos,
+            Double subTotalEgresos, List<FlujoEfectivoAsignacionEgresoDto> asignacionEgresoDtos) {
         this.subTotalIngresos = subTotalIngresos;
         this.asignacionIngresoDtos = asignacionIngresoDtos;
         this.subTotalEgresos = subTotalEgresos;

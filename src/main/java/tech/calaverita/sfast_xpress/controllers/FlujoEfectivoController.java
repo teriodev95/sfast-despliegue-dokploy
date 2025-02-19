@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import tech.calaverita.sfast_xpress.DTOs.FlujoEfectivo.FlujoEfectivoDto;
+import tech.calaverita.sfast_xpress.DTOs.flujo_efectivo.FlujoEfectivoDto;
 import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.GastoModel;

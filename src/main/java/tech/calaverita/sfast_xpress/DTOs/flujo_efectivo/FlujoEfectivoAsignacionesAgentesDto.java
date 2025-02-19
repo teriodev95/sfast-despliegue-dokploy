@@ -1,4 +1,4 @@
-package tech.calaverita.sfast_xpress.DTOs.FlujoEfectivo;
+package tech.calaverita.sfast_xpress.DTOs.flujo_efectivo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,23 +10,23 @@ import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Data
-public class AsignacionesAgentesDto {
+public class FlujoEfectivoAsignacionesAgentesDto {
     @JsonProperty(value = "subtotalIngresos")
     private Double subTotalIngresos;
     @JsonProperty(value = "ingresos")
-    private List<AsignacionIngresoAgenteDto> ingresoAsignacionAgenteDtos;
+    private List<FlujoEfectivoAsignacionIngresoAgenteDto> ingresoAsignacionAgenteDtos;
 
-    public AsignacionesAgentesDto() {
+    public FlujoEfectivoAsignacionesAgentesDto() {
         this.subTotalIngresos = 0D;
         this.ingresoAsignacionAgenteDtos = new ArrayList<>();
     }
 
-    public AsignacionesAgentesDto(List<AsignacionModel> asignacionesAgenteAsignacionModel) {
+    public FlujoEfectivoAsignacionesAgentesDto(List<AsignacionModel> asignacionesAgenteAsignacionModel) {
         this();
 
         for (AsignacionModel asignacionModel : asignacionesAgenteAsignacionModel) {
             boolean existsPrevious = false;
-            for (AsignacionIngresoAgenteDto asignacionIngresoAgenteDto : this.ingresoAsignacionAgenteDtos) {
+            for (FlujoEfectivoAsignacionIngresoAgenteDto asignacionIngresoAgenteDto : this.ingresoAsignacionAgenteDtos) {
                 if (asignacionModel.getEntregoUsuarioModel().getAgencia()
                         .equals(asignacionIngresoAgenteDto.getAgencia())) {
                     asignacionIngresoAgenteDto
@@ -41,15 +41,15 @@ public class AsignacionesAgentesDto {
 
             if (!existsPrevious) {
                 this.subTotalIngresos += asignacionModel.getMonto();
-                this.ingresoAsignacionAgenteDtos.add(new AsignacionIngresoAgenteDto(asignacionModel));
+                this.ingresoAsignacionAgenteDtos.add(new FlujoEfectivoAsignacionIngresoAgenteDto(asignacionModel));
             }
         }
 
         this.subTotalIngresos = MyUtil.getDouble(this.subTotalIngresos);
     }
 
-    public AsignacionesAgentesDto(Double subTotalIngresos,
-            List<AsignacionIngresoAgenteDto> ingresoAsignacionAgenteDtos) {
+    public FlujoEfectivoAsignacionesAgentesDto(Double subTotalIngresos,
+            List<FlujoEfectivoAsignacionIngresoAgenteDto> ingresoAsignacionAgenteDtos) {
         this.subTotalIngresos = subTotalIngresos;
         this.ingresoAsignacionAgenteDtos = ingresoAsignacionAgenteDtos;
     }

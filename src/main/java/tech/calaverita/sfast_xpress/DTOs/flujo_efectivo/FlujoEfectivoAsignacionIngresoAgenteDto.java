@@ -1,21 +1,21 @@
-package tech.calaverita.sfast_xpress.DTOs.FlujoEfectivo;
+package tech.calaverita.sfast_xpress.DTOs.flujo_efectivo;
 
 import lombok.Data;
 import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 
 @Data
-public class AsignacionIngresoAgenteDto {
+public class FlujoEfectivoAsignacionIngresoAgenteDto {
     private String agencia;
     private String agente;
     private Double monto;
     private Integer cantidad;
 
-    public AsignacionIngresoAgenteDto() {
+    public FlujoEfectivoAsignacionIngresoAgenteDto() {
         this.monto = 0D;
         this.cantidad = 0;
     }
 
-    public AsignacionIngresoAgenteDto(AsignacionModel asignacionModel) {
+    public FlujoEfectivoAsignacionIngresoAgenteDto(AsignacionModel asignacionModel) {
         this.agencia = asignacionModel.getEntregoUsuarioModel().getAgencia();
         this.agente = asignacionModel.getEntregoUsuarioModel().getNombre();
         this.monto = asignacionModel.getMonto();
