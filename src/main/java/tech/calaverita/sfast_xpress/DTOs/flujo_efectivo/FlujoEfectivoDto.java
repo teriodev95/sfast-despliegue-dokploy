@@ -106,7 +106,7 @@ public class FlujoEfectivoDto {
         egresos += this.asignacionesFlujoEfectivoDto.getAsignacionesAdministracionDto().getSubTotalEgresos();
         egresos += this.asignacionesFlujoEfectivoDto.getAsignacionesSeguridadDto().getSubTotalEgresos();
         egresos += this.asignacionesFlujoEfectivoDto.getAsignacionesOperacionDto().getSubTotalEgresos();
-        egresos += this.otrosFlujoEfectivoDto.getSubTotalIngresos();
+        egresos += this.otrosFlujoEfectivoDto.getSubTotalEgresos();
         egresos += this.gastosFlujoEfectivoDto.getSubTotalGastos();
         egresos += (Double) this.ventasFlujoEfectivoHm.get("total");
 
