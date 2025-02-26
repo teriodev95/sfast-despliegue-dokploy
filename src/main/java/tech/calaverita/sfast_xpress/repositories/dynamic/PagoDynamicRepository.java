@@ -28,6 +28,12 @@ public interface PagoDynamicRepository extends CrudRepository<PagoDynamicModel, 
         List<PagoDynamicModel> findByGerenciaAndAnioAndSemanaAndStatus(String gerencia, int anio, int semana,
                         String status);
 
+        @Query("SELECT pagDyn FROM PagoDynamicModel pagDyn INNER JOIN pagDyn.agenciaModel agenc "
+                        + "ON agenc.gerenciaId = :gerencia WHERE pagDyn.anio = :anio "
+                        + "AND pagDyn.semana = :semana AND pagDyn.esPrimerPago = :esPrimerPago")
+        List<PagoDynamicModel> findByGerenciaAndAnioAndSemanaAndEsPrimerPago(String gerencia, int anio, int semana,
+                        boolean esPrimerPago);
+
         @Query("SELECT SUM(pag.tarifa) FROM PagoDynamicModel pag WHERE pag.agencia = :agencia AND pag.anio = :anio " +
                         "AND pag.semana = :semana")
         double findDebitoTotalByAgenciaAndAnioAndSemana(String agencia, int anio, int semana);

@@ -48,6 +48,13 @@ public class PrestamoViewService {
                         saldoAlIniciarSemana));
     }
 
+    @Async("asyncExecutor")
+    public CompletableFuture<List<PrestamoViewModel>> findByGerenciaSaldoAlIniciarSemanaGreaterThan(
+            String gerencia, Double saldoAlIniciarSemana) {
+        return CompletableFuture.completedFuture(
+                this.repo.findByGerenciaAndSaldoAlIniciarSemanaGreaterThan(gerencia, saldoAlIniciarSemana));
+    }
+
     @Cacheable("PrestamosPorFinalizarByAgenciaAnioAndSemana")
     public ArrayList<PrestamoViewModel> findPorFinalizarByAgenciaAnioAndSemana(String agencia, int anio,
             int semana) {
