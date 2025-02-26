@@ -2,6 +2,8 @@ package tech.calaverita.sfast_xpress.models.mariaDB;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -28,6 +30,7 @@ public class GerenciaModel {
     private String sucursalId;
     private String deprecatedName;
     private String sucursal;
+    @JsonIgnore
     @OneToMany(mappedBy = "gerenciaModel", fetch = FetchType.LAZY)
     private List<UsuarioModel> usuarioModels;
 }

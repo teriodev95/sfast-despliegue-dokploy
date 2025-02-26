@@ -11,7 +11,7 @@ import tech.calaverita.sfast_xpress.services.BalanceGeneralService;
 
 @CrossOrigin
 @RestController
-@RequestMapping(path = "/api/v2/balance-general")
+@RequestMapping(path = "/api/v2/balances-generales")
 public class BalanceGeneralController {
     private final BalanceGeneralService balanceGeneralService;
 
@@ -21,6 +21,6 @@ public class BalanceGeneralController {
 
     @GetMapping(path = "/gerencia/{gerencia}")
     public BalanceGeneralDto getBalanceGeneralByGerencia(@PathVariable String gerencia) {
-        return balanceGeneralService.getBalanceGeneralByGerencia(gerencia);
+        return this.balanceGeneralService.getBalanceGeneralByGerencia(gerencia);
     }
 }

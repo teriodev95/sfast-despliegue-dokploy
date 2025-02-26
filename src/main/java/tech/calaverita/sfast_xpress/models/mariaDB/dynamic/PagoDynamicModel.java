@@ -1,5 +1,7 @@
 package tech.calaverita.sfast_xpress.models.mariaDB.dynamic;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -36,12 +38,15 @@ public class PagoDynamicModel {
     private Double lat;
     private Double lng;
     private String recuperadoPor;
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "prestamoId", insertable = false, updatable = false)
     private PrestamoViewModel prestamoViewModel;
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agencia", insertable = false, updatable = false)
     private EstadoAgenciaModel estadoAgenciaModel;
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agencia", insertable = false, updatable = false)
     private AgenciaModel agenciaModel;
