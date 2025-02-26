@@ -88,9 +88,10 @@ public class PrestamoViewModel {
     private String avalPersonaId;
     @Transient
     private Double porcentajeCobrado;
-    @OneToMany(mappedBy = "prestamoViewModel", fetch = FetchType.LAZY)
     @JsonIgnore
+    @OneToMany(mappedBy = "prestamoViewModel", fetch = FetchType.LAZY)
     List<PagoDynamicModel> pagoDynamicModels;
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agencia", insertable = false, updatable = false)
     private AgenciaModel agenciaModel;
