@@ -8,10 +8,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
+import tech.calaverita.sfast_xpress.models.mariaDB.AgenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.dynamic.PagoDynamicModel;
 
 @Data
@@ -88,4 +91,7 @@ public class PrestamoViewModel {
     @OneToMany(mappedBy = "prestamoViewModel", fetch = FetchType.LAZY)
     @JsonIgnore
     List<PagoDynamicModel> pagoDynamicModels;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "agencia", insertable = false, updatable = false)
+    private AgenciaModel agenciaModel;
 }
