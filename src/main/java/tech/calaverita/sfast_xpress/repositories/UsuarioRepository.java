@@ -1,6 +1,7 @@
 package tech.calaverita.sfast_xpress.repositories;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -39,7 +40,7 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
 
         ArrayList<UsuarioModel> findByGerenciaAndStatus(String gerencia, boolean status);
 
-        ArrayList<UsuarioModel> findByGerenciaAndTipoAndStatus(String gerencia, String tipo, Boolean status);
+        List<UsuarioModel> findAgentesByGerenciaAndTipoAndStatus(String gerencia, String tipo, Boolean status);
 
         @Query("SELECT CONCAT(usuar.nombre, ' ' , usuar.apellidoPaterno, ' ', usuar.apellidoMaterno) AS agente, " +
                         "usuar.agencia AS agencia FROM UsuarioModel usuar WHERE usuar.gerencia = :gerencia " +

@@ -1,6 +1,7 @@
 package tech.calaverita.sfast_xpress.services;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.scheduling.annotation.Async;
@@ -71,7 +72,7 @@ public class UsuarioService {
     }
 
     public UsuarioModel findByGerenciaTipoAndStatus(String gerencia, String tipo, Boolean status) {
-        ArrayList<UsuarioModel> usuarioModels = this.repo.findByGerenciaAndTipoAndStatus(gerencia, tipo, status);
+        List<UsuarioModel> usuarioModels = this.repo.findAgentesByGerenciaAndTipoAndStatus(gerencia, tipo, status);
 
         if (usuarioModels.isEmpty())
             return null;
@@ -105,6 +106,13 @@ public class UsuarioService {
     public CompletableFuture<UsuarioModel> findByGerenciaTipoAndStatusAsync(String gerencia, String tipo,
             boolean status) {
         return CompletableFuture.completedFuture(this.repo.findByGerenciaAndTipoAndStatus(gerencia, tipo, status));
+    }
+
+    @Async("asyncExecutor")
+    public CompletableFuture<List<UsuarioModel>> findAgentesByGerenciaTipoAndStatusAsync(String gerencia, String tipo,
+            boolean status) {
+        return CompletableFuture
+                .completedFuture(this.repo.findAgentesByGerenciaAndTipoAndStatus(gerencia, tipo, status));
     }
 
     @Async("asyncExecutor")
