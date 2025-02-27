@@ -80,12 +80,14 @@ public class BalanceGeneralService {
         UsuarioModel usuarioModel = usuarioModelCf.join();
         GerenciaModel gerenciaModel = usuarioModel.getGerenciaModel();
         String sucursal = gerenciaModel.getSucursal().toUpperCase();
+        String gerente = usuarioModel.getNombre() + " " + usuarioModel.getApellidoPaterno() + " "
+                + usuarioModel.getApellidoMaterno();
 
         AlmacenObjects almacenObjects = new AlmacenObjects();
         almacenObjects.addObject("semana", semana);
         almacenObjects.addObject("anio", anio);
         almacenObjects.addObject("sucursal", sucursal);
-        almacenObjects.addObject("gerente", usuarioModelCf.join().getNombre());
+        almacenObjects.addObject("gerente", gerente);
         almacenObjects.addObject("zona", gerencia);
 
         return new BalanceGeneralDto(almacenObjects, balanceGeneralAgenciaDtos);

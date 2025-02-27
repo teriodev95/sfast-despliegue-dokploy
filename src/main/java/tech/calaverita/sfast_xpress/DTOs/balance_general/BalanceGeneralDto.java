@@ -1,6 +1,7 @@
 package tech.calaverita.sfast_xpress.DTOs.balance_general;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import lombok.Data;
@@ -14,7 +15,7 @@ public class BalanceGeneralDto {
     private String sucursal;
     private String gerente;
     private String zona;
-    private LocalDateTime curdate;
+    private String curdate;
     private List<BalanceGeneralAgenciaDto> agencias;
 
     public BalanceGeneralDto() {
@@ -24,7 +25,7 @@ public class BalanceGeneralDto {
         this.sucursal = "";
         this.gerente = "";
         this.zona = "";
-        this.curdate = LocalDateTime.now();
+        this.curdate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
     }
 
     public BalanceGeneralDto(AlmacenObjects almacenObjects, List<BalanceGeneralAgenciaDto> agenciasDtos) {
