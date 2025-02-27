@@ -68,8 +68,8 @@ public class BalanceGeneralService {
         for (CobranzaAgencia cobranzaAgenciaSemanaActual : cobranzaAgenciasSemanaActualCf.join()) {
             for (CobranzaAgencia cobranzaAgenciaSemanaAnterior : cobranzaAgenciasSemanaAnteriorCf.join()) {
                 if (cobranzaAgenciaSemanaActual.getAgencia().equals(cobranzaAgenciaSemanaAnterior.getAgencia())) {
-                    balanceGeneralAgenciaDto = new BalanceGeneralAgenciaDto(
-                            cobranzaAgenciaSemanaActual, cobranzaAgenciaSemanaAnterior);
+                    balanceGeneralAgenciaDto = new BalanceGeneralAgenciaDto(cobranzaAgenciaSemanaAnterior,
+                            cobranzaAgenciaSemanaActual);
                     balanceGeneralAgenciaDtos.add(balanceGeneralAgenciaDto);
                     break;
                 }

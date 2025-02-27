@@ -59,11 +59,6 @@ public class CobranzaAgenciaService {
         return cobranzaAgencias;
     }
 
-    @Async("asyncExecutor")
-    public CompletableFuture<List<CobranzaAgencia>> getCobranzaAgenciasByGerenciaAsync(String gerencia) {
-        return CompletableFuture.completedFuture(getCobranzaAgenciasByGerencia(gerencia));
-    }
-
     public List<CobranzaAgencia> getCobranzaAgenciasByGerenciaAnioSemana(String gerencia, int anio,
             int semana) {
         List<CobranzaAgencia> cobranzaAgencias = new ArrayList<>();
@@ -106,12 +101,6 @@ public class CobranzaAgenciaService {
         return cobranzaAgencias;
     }
 
-    @Async("asyncExecutor")
-    public CompletableFuture<List<CobranzaAgencia>> getCobranzaAgenciasByGerenciaAnioSemanaAsync(String gerencia,
-            int anio, int semana) {
-        return CompletableFuture.completedFuture(getCobranzaAgenciasByGerenciaAnioSemana(gerencia, anio, semana));
-    }
-
     private List<PagoDynamicModel> getPagosByAgencia(List<PagoDynamicModel> pagoDynamicModels, String agencia) {
         List<PagoDynamicModel> pagoDynamicModelsFiltrados = new ArrayList<>();
 
@@ -146,5 +135,16 @@ public class CobranzaAgenciaService {
         }
 
         return ventaModelsFiltrados;
+    }
+
+    @Async("asyncExecutor")
+    public CompletableFuture<List<CobranzaAgencia>> getCobranzaAgenciasByGerenciaAsync(String gerencia) {
+        return CompletableFuture.completedFuture(getCobranzaAgenciasByGerencia(gerencia));
+    }
+
+    @Async("asyncExecutor")
+    public CompletableFuture<List<CobranzaAgencia>> getCobranzaAgenciasByGerenciaAnioSemanaAsync(String gerencia,
+            int anio, int semana) {
+        return CompletableFuture.completedFuture(getCobranzaAgenciasByGerenciaAnioSemana(gerencia, anio, semana));
     }
 }
