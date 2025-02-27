@@ -50,7 +50,7 @@ public class CobranzaAgencia {
                 .getObject("prestamoViewModels");
         List<VentaModel> ventaModels = (List<VentaModel>) almacenObjects.getObject("ventaModels");
 
-        this.clientes = pagoDynamicModels.size();
+        this.clientes = prestamoViewModels.size();
         setDebito(prestamoViewModels);
         setResultadosCobranza(pagoDynamicModels);
         setVentas(ventaModels);
@@ -81,7 +81,6 @@ public class CobranzaAgencia {
                 this.cobranzaPura += tarifaCalculada;
             } else {
                 this.cobranzaPura += monto;
-                this.faltante += tarifaCalculada - monto;
                 this.pagosReducidos++;
             }
 
@@ -103,6 +102,8 @@ public class CobranzaAgencia {
         } else {
             this.eficiencia = this.cobranzaPura / this.debito * 100;
         }
+
+        this.faltante += this.debito - this.cobranzaPura;
     }
 
     private void setVentas(List<VentaModel> ventaModels) {
