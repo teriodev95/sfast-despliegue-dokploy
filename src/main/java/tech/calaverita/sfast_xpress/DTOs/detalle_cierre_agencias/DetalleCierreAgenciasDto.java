@@ -1,4 +1,4 @@
-package tech.calaverita.sfast_xpress.DTOs.balance_general;
+package tech.calaverita.sfast_xpress.DTOs.detalle_cierre_agencias;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -8,7 +8,7 @@ import lombok.Data;
 import tech.calaverita.sfast_xpress.pojos.AlmacenObjects;
 
 @Data
-public class BalanceGeneralDto {
+public class DetalleCierreAgenciasDto {
     private Integer semana;
     private Integer anio;
     private String tituloReporte;
@@ -16,19 +16,19 @@ public class BalanceGeneralDto {
     private String gerente;
     private String zona;
     private String curdate;
-    private List<BalanceGeneralAgenciaDto> agencias;
+    private List<DetalleCierreAgenciasAgenciaDto> agencias;
 
-    public BalanceGeneralDto() {
+    public DetalleCierreAgenciasDto() {
         this.semana = 0;
         this.anio = 0;
-        this.tituloReporte = "BALANCE GENERAL DE CIERRE SEMANAL";
+        this.tituloReporte = "BALANCE GENERAL DE CIERRE ";
         this.sucursal = "";
         this.gerente = "";
         this.zona = "";
         this.curdate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
     }
 
-    public BalanceGeneralDto(AlmacenObjects almacenObjects, List<BalanceGeneralAgenciaDto> agenciasDtos) {
+    public DetalleCierreAgenciasDto(AlmacenObjects almacenObjects, List<DetalleCierreAgenciasAgenciaDto> agenciasDtos) {
         this();
         this.semana = (Integer) almacenObjects.getObject("semana");
         this.anio = (Integer) almacenObjects.getObject("anio");

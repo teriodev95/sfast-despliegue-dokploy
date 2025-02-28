@@ -7,8 +7,8 @@ import java.util.concurrent.CompletableFuture;
 
 import org.springframework.stereotype.Service;
 
-import tech.calaverita.sfast_xpress.DTOs.balance_general.BalanceGeneralAgenciaDto;
-import tech.calaverita.sfast_xpress.DTOs.balance_general.BalanceGeneralDto;
+import tech.calaverita.sfast_xpress.DTOs.detalle_cierre_agencias.DetalleCierreAgenciasAgenciaDto;
+import tech.calaverita.sfast_xpress.DTOs.detalle_cierre_agencias.DetalleCierreAgenciasDto;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.GerenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
@@ -17,19 +17,19 @@ import tech.calaverita.sfast_xpress.pojos.CobranzaAgencia;
 import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Service
-public class BalanceGeneralService {
+public class DetalleCierreAgenciasService {
     private final CalendarioService calendarioService;
     private final CobranzaAgenciaService cobranzaAgenciaService;
     private final UsuarioService usuarioService;
 
-    public BalanceGeneralService(CalendarioService calendarioService, CobranzaAgenciaService cobranzaAgenciaService,
+    public DetalleCierreAgenciasService(CalendarioService calendarioService, CobranzaAgenciaService cobranzaAgenciaService,
             UsuarioService usuarioService) {
         this.calendarioService = calendarioService;
         this.cobranzaAgenciaService = cobranzaAgenciaService;
         this.usuarioService = usuarioService;
     }
 
-    public BalanceGeneralDto getBalanceGeneralByGerencia(String gerencia) {
+    public DetalleCierreAgenciasDto getBalanceGeneralByGerencia(String gerencia) {
         CalendarioModel calendarioModel = this.calendarioService
                 .findByFechaActual(LocalDate.now().toString());
 
@@ -37,7 +37,7 @@ public class BalanceGeneralService {
         int anio = calendarioModel.getAnio();
         int semana = calendarioModel.getSemana();
 
-        BalanceGeneralDto balanceGeneralDto = new BalanceGeneralDto();
+        DetalleCierreAgenciasDto balanceGeneralDto = new DetalleCierreAgenciasDto();
         if (calendarioModel != null) {
             balanceGeneralDto = getBalanceGeneralByGerenciaAnioSemana(gerencia, anio, semana);
         }
@@ -45,7 +45,7 @@ public class BalanceGeneralService {
         return balanceGeneralDto;
     }
 
-    public BalanceGeneralDto getBalanceGeneralByGerenciaAnioSemana(String gerencia, int anio, int semana) {
+    public DetalleCierreAgenciasDto getBalanceGeneralByGerenciaAnioSemana(String gerencia, int anio, int semana) {
         // To easy code
         CalendarioModel semanaActualCalendarioModel = new CalendarioModel();
         semanaActualCalendarioModel.setAnio(anio);
@@ -63,12 +63,12 @@ public class BalanceGeneralService {
         CompletableFuture<List<CobranzaAgencia>> cobranzaAgenciasSemanaAnteriorCf = this.cobranzaAgenciaService
                 .getCobranzaAgenciasByGerenciaAnioSemanaAsync(gerencia, anioSemanaAnterior, semanaAnterior);
 
-        List<BalanceGeneralAgenciaDto> balanceGeneralAgenciaDtos = new ArrayList<>();
-        BalanceGeneralAgenciaDto balanceGeneralAgenciaDto = new BalanceGeneralAgenciaDto();
+        List<DetalleCierreAgenciasAgenciaDto> balanceGeneralAgenciaDtos = new ArrayList<>();
+        DetalleCierreAgenciasAgenciaDto balanceGeneralAgenciaDto = new DetalleCierreAgenciasAgenciaDto();
         for (CobranzaAgencia cobranzaAgenciaSemanaActual : cobranzaAgenciasSemanaActualCf.join()) {
             for (CobranzaAgencia cobranzaAgenciaSemanaAnterior : cobranzaAgenciasSemanaAnteriorCf.join()) {
                 if (cobranzaAgenciaSemanaActual.getAgencia().equals(cobranzaAgenciaSemanaAnterior.getAgencia())) {
-                    balanceGeneralAgenciaDto = new BalanceGeneralAgenciaDto(cobranzaAgenciaSemanaAnterior,
+                    balanceGeneralAgenciaDto = new DetalleCierreAgenciasAgenciaDto(cobranzaAgenciaSemanaAnterior,
                             cobranzaAgenciaSemanaActual);
                     balanceGeneralAgenciaDtos.add(balanceGeneralAgenciaDto);
                     break;
@@ -90,6 +90,6 @@ public class BalanceGeneralService {
         almacenObjects.addObject("gerente", gerente);
         almacenObjects.addObject("zona", gerencia);
 
-        return new BalanceGeneralDto(almacenObjects, balanceGeneralAgenciaDtos);
+        return new DetalleCierreAgenciasDto(almacenObjects, balanceGeneralAgenciaDtos);
     }
 }

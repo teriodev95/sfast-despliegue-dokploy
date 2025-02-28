@@ -6,21 +6,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import tech.calaverita.sfast_xpress.DTOs.balance_general.BalanceGeneralDto;
-import tech.calaverita.sfast_xpress.services.BalanceGeneralService;
+import tech.calaverita.sfast_xpress.DTOs.detalle_cierre_agencias.DetalleCierreAgenciasDto;
+import tech.calaverita.sfast_xpress.services.DetalleCierreAgenciasService;
 
 @CrossOrigin
 @RestController
-@RequestMapping(path = "/api/v2/balances-generales")
-public class BalanceGeneralController {
-    private final BalanceGeneralService balanceGeneralService;
+@RequestMapping(path = "/api/v2/detalles-cierres-agencias")
+public class DetalleCierreAgenciasController {
+    private final DetalleCierreAgenciasService balanceGeneralService;
 
-    public BalanceGeneralController(BalanceGeneralService balanceGeneralService) {
+    public DetalleCierreAgenciasController(DetalleCierreAgenciasService balanceGeneralService) {
         this.balanceGeneralService = balanceGeneralService;
     }
 
     @GetMapping(path = "/gerencia/{gerencia}")
-    public BalanceGeneralDto getBalanceGeneralByGerencia(@PathVariable String gerencia) {
+    public DetalleCierreAgenciasDto getBalanceGeneralByGerencia(@PathVariable String gerencia) {
         return this.balanceGeneralService.getBalanceGeneralByGerencia(gerencia);
     }
 }

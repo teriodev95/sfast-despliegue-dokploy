@@ -1,11 +1,10 @@
-package tech.calaverita.sfast_xpress.DTOs.balance_general;
+package tech.calaverita.sfast_xpress.DTOs.detalle_cierre_agencias;
 
 import lombok.Data;
 import tech.calaverita.sfast_xpress.pojos.CobranzaAgencia;
-import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Data
-public class BalanceGeneralAgenciaDto {
+public class DetalleCierreAgenciasAgenciaDto {
 	private Double debito;
 	private Double cobranzaPura;
 	private Double faltante;
@@ -13,12 +12,12 @@ public class BalanceGeneralAgenciaDto {
 	private Double ventas;
 	private String agencia;
 	private String agente;
-	private BalanceGeneralMetricaDto clientes;
-	private BalanceGeneralMetricaDto noPagos;
-	private BalanceGeneralMetricaDto pagosReducidos;
-	private BalanceGeneralMetricaDto clientesLiquidados;
+	private DetalleCierreAgenciasMetricaDto clientes;
+	private DetalleCierreAgenciasMetricaDto noPagos;
+	private DetalleCierreAgenciasMetricaDto pagosReducidos;
+	private DetalleCierreAgenciasMetricaDto clientesLiquidados;
 
-	public BalanceGeneralAgenciaDto() {
+	public DetalleCierreAgenciasAgenciaDto() {
 		this.debito = 0.0;
 		this.cobranzaPura = 0.0;
 		this.faltante = 0.0;
@@ -26,13 +25,13 @@ public class BalanceGeneralAgenciaDto {
 		this.ventas = 0.0;
 		this.agencia = "";
 		this.agente = "";
-		this.clientes = new BalanceGeneralMetricaDto();
-		this.noPagos = new BalanceGeneralMetricaDto();
-		this.pagosReducidos = new BalanceGeneralMetricaDto();
-		this.clientesLiquidados = new BalanceGeneralMetricaDto();
+		this.clientes = new DetalleCierreAgenciasMetricaDto();
+		this.noPagos = new DetalleCierreAgenciasMetricaDto();
+		this.pagosReducidos = new DetalleCierreAgenciasMetricaDto();
+		this.clientesLiquidados = new DetalleCierreAgenciasMetricaDto();
 	}
 
-	public BalanceGeneralAgenciaDto(CobranzaAgencia cobranzaAgenciaSemanaAnterior,
+	public DetalleCierreAgenciasAgenciaDto(CobranzaAgencia cobranzaAgenciaSemanaAnterior,
 			CobranzaAgencia cobranzaAgenciaSemanaActual) {
 		this();
 		this.debito = cobranzaAgenciaSemanaActual.getDebito();
@@ -42,16 +41,16 @@ public class BalanceGeneralAgenciaDto {
 		this.ventas = cobranzaAgenciaSemanaActual.getVentas();
 		this.agencia = cobranzaAgenciaSemanaActual.getAgencia();
 		this.agente = cobranzaAgenciaSemanaActual.getAgente();
-		this.clientes = new BalanceGeneralMetricaDto(
+		this.clientes = new DetalleCierreAgenciasMetricaDto(
 				cobranzaAgenciaSemanaAnterior.getClientes(),
 				cobranzaAgenciaSemanaActual.getClientes());
-		this.noPagos = new BalanceGeneralMetricaDto(
+		this.noPagos = new DetalleCierreAgenciasMetricaDto(
 				cobranzaAgenciaSemanaAnterior.getNoPagos(),
 				cobranzaAgenciaSemanaActual.getNoPagos());
-		this.pagosReducidos = new BalanceGeneralMetricaDto(
+		this.pagosReducidos = new DetalleCierreAgenciasMetricaDto(
 				cobranzaAgenciaSemanaAnterior.getPagosReducidos(),
 				cobranzaAgenciaSemanaActual.getPagosReducidos());
-		this.clientesLiquidados = new BalanceGeneralMetricaDto(
+		this.clientesLiquidados = new DetalleCierreAgenciasMetricaDto(
 				cobranzaAgenciaSemanaAnterior.getClientesLiquidados(),
 				cobranzaAgenciaSemanaActual.getClientesLiquidados());
 	}
