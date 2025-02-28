@@ -55,8 +55,12 @@ public class MyUtil {
                 .findByFechaActualAsync(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).join();
     }
 
-    public static LocalDate getLocalDateFromString(String fecha) {
+    public static LocalDate getLocalDateFromStringLocalDate(String fecha) {
         return LocalDate.parse(fecha, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+
+    public static LocalDate getLocalDateFromStringLocalDateTime(String fecha) {
+        return LocalDate.parse(fecha, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     public static LocalDateTime getLocalDateTimeFromString(String fecha) {
