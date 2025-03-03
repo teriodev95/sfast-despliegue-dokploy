@@ -30,7 +30,7 @@ public class FlujoEfectivoGastosFlujoEfectivoDto {
             HashMap<String, Object> gasto = new HashMap<>();
 
             gasto.put("id", gastoModel.getId());
-            gasto.put("fecha", MyUtil.getLocalDateFromStringLocalDate(gastoModel.getFecha()));
+            gasto.put("fecha", MyUtil.getLocalDateFromStringLocalDate(gastoModel.getFecha()).toString());
             gasto.put("tipo", gastoModel.getTipoGasto());
             gasto.put("concepto", gastoModel.getConcepto());
             gasto.put("monto", gastoModel.getMonto());
