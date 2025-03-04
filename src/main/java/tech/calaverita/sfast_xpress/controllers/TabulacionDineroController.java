@@ -22,7 +22,6 @@ import tech.calaverita.sfast_xpress.services.TabulacionDineroService;
 import tech.calaverita.sfast_xpress.utils.TabulacionDineroUtil;
 import org.springframework.web.bind.annotation.PutMapping;
 
-
 @CrossOrigin
 @RestController
 @RequestMapping(path = "/xpress/v1/pwa/tabulaciones")
@@ -67,12 +66,12 @@ public class TabulacionDineroController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping(path = "/update/by_usuario-id_anio_and_semana/{usuarioId}/{anio}/{semana}{id}")
+    @PutMapping(path = "/update/gerencia/{gerencia}/anio/{anio}/semana/{semana}")
     public @ResponseBody ResponseEntity<Object> updateByUsuarioIdAnioAndSemana(
-        @RequestBody TabulacionDineroModel tabulacionDineroModelUpdate,
-        @PathVariable Integer usuarioId,
-        @PathVariable Integer anio, 
-        @PathVariable Integer semana) {
+            @RequestBody TabulacionDineroModel tabulacionDineroModelUpdate,
+            @PathVariable String gerencia,
+            @PathVariable Integer anio,
+            @PathVariable Integer semana) {
         HttpStatus status = HttpStatus.OK;
         Object response;
         try {
@@ -81,23 +80,24 @@ public class TabulacionDineroController {
                 throw new Exception("Body vacio");
             }
 
-            TabulacionDineroModel tabulacionDineroFound = this.tabulacionDineroService.findByUsuarioIdAnioAndSemana(usuarioId, anio, semana);
+            TabulacionDineroModel tabulacionDineroFound = this.tabulacionDineroService
+                    .findByGerenciaAnioAndSemana(gerencia, anio, semana);
             if (tabulacionDineroFound == null) {
                 status = HttpStatus.NO_CONTENT;
                 throw new Exception("No se encontro el registro");
             }
 
-            BeanUtils.copyProperties(tabulacionDineroModelUpdate, tabulacionDineroFound, "id", "anio", "semana", "usuarioId");
+            BeanUtils.copyProperties(tabulacionDineroModelUpdate, tabulacionDineroFound, "id", "anio", "semana",
+                    "gerencia");
             response = this.tabulacionDineroService.save(tabulacionDineroFound);
             return new ResponseEntity<>(response, status);
 
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of(
-                "timestamp", LocalDateTime.now(),
-                "status", status,
-                "error", "Internal Server Error",
-                "message", e.getMessage()
-            ));
+                    "timestamp", LocalDateTime.now(),
+                    "status", status,
+                    "error", "Internal Server Error",
+                    "message", e.getMessage()));
         }
     }
 
