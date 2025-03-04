@@ -10,7 +10,7 @@ import tech.calaverita.sfast_xpress.services.TabulacionDineroService;
 @Component
 public class TabulacionDineroUtil {
     private static TabulacionDineroService tabulacionDineroService;
-    private static Integer usuarioId;
+    private static String gerencia;
     private static Integer anio;
     private static Integer semana;
 
@@ -19,7 +19,7 @@ public class TabulacionDineroUtil {
     }
 
     public static HashMap<String, Object> validateTabulacionDinero(TabulacionDineroModel tabulacionDineroModel) {
-        TabulacionDineroUtil.usuarioId = tabulacionDineroModel.getUsuarioId();
+        TabulacionDineroUtil.gerencia = tabulacionDineroModel.getGerencia();
         TabulacionDineroUtil.anio = tabulacionDineroModel.getAnio();
         TabulacionDineroUtil.semana = tabulacionDineroModel.getSemana();
 
@@ -37,7 +37,7 @@ public class TabulacionDineroUtil {
     }
 
     private static Boolean isDuplicated() {
-        return TabulacionDineroUtil.tabulacionDineroService.existsByUsuarioIdAnioAndSemana(usuarioId, anio, semana);
+        return TabulacionDineroUtil.tabulacionDineroService.existsByGerenciaAnioAndSemana(gerencia, anio, semana);
     }
 
     private static Boolean isValidAnio() {

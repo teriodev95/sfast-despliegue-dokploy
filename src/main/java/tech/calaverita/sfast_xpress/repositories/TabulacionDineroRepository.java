@@ -8,11 +8,11 @@ import tech.calaverita.sfast_xpress.models.mariaDB.TabulacionDineroModel;
 
 @Repository
 public interface TabulacionDineroRepository extends CrudRepository<TabulacionDineroModel, Integer> {
-    Boolean existsByUsuarioIdAndAnioAndSemana(Integer usuarioId, Integer anio, Integer semana);
+    Boolean existsByGerenciaAndAnioAndSemana(String gerencia, Integer anio, Integer semana);
 
-    TabulacionDineroModel findByUsuarioIdAndAnioAndSemana(Integer usuarioId, Integer anio, Integer semana);
+    TabulacionDineroModel findByGerenciaAndAnioAndSemana(String gerencia, Integer anio, Integer semana);
 
-    @Query("SELECT tab.id FROM TabulacionDineroModel tab WHERE tab.usuarioId = :usuarioId AND tab.anio = :anio "
+    @Query("SELECT tab.id FROM TabulacionDineroModel tab WHERE tab.gerencia = :gerencia AND tab.anio = :anio "
             + "AND tab.semana = :semana")
-    int findIdByUsuarioIdAndAnioAndSemana(Integer usuarioId, Integer anio, Integer semana);
+    Integer findIdByGerenciaAndAnioAndSemana(String gerencia, Integer anio, Integer semana);
 }

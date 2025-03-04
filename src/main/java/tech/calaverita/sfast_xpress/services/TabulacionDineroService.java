@@ -22,40 +22,40 @@ public class TabulacionDineroService {
         this.calendarioService = calendarioService;
     }
 
-    public Boolean existsByUsuarioIdAnioAndSemana(Integer usuarioId, Integer anio, Integer semana) {
-        return this.tabulacionDineroRepository.existsByUsuarioIdAndAnioAndSemana(usuarioId, anio, semana);
+    public Boolean existsByGerenciaAnioAndSemana(String gerencia, Integer anio, Integer semana) {
+        return this.tabulacionDineroRepository.existsByGerenciaAndAnioAndSemana(gerencia, anio, semana);
     }
 
-    public TabulacionDineroModel findByUsuarioIdAnioAndSemana(Integer usuarioId, Integer anio, Integer semana) {
-        return this.tabulacionDineroRepository.findByUsuarioIdAndAnioAndSemana(usuarioId, anio, semana);
+    public TabulacionDineroModel findByGerenciaAnioAndSemana(String gerencia, Integer anio, Integer semana) {
+        return this.tabulacionDineroRepository.findByGerenciaAndAnioAndSemana(gerencia, anio, semana);
     }
 
     public TabulacionDineroModel save(TabulacionDineroModel tabulacionDineroModel) {
         return this.tabulacionDineroRepository.save(tabulacionDineroModel);
     }
 
-    public int findIdByUsuarioId(Integer usuarioId) {
+    public Integer findIdByGerencia(String gerencia) {
         CalendarioModel calendarioModel = this.calendarioService.findByFechaActual(LocalDate.now().toString());
 
         // To easy code
         int anio = calendarioModel.getAnio();
         int semana = calendarioModel.getSemana();
 
-        return this.tabulacionDineroRepository.findIdByUsuarioIdAndAnioAndSemana(usuarioId, anio, semana);
+        return this.tabulacionDineroRepository.findIdByGerenciaAndAnioAndSemana(gerencia, anio, semana);
     }
 
-    public int findIdByUsuarioIdAnioSemana(Integer usuarioId, Integer anio, Integer semana) {
-        return this.tabulacionDineroRepository.findIdByUsuarioIdAndAnioAndSemana(usuarioId, anio, semana);
-    }
-
-    @Async("asyncExecutor")
-    public CompletableFuture<Integer> findIdByUsuarioIdAnioAndSemanaAsync(Integer usuarioId, Integer anio,
-            Integer semana) {
-        return CompletableFuture.completedFuture(findIdByUsuarioIdAnioSemana(usuarioId, anio, semana));
+    public Integer findIdByGerenciaAnioSemana(String gerencia, Integer anio, Integer semana) {
+        return this.tabulacionDineroRepository.findIdByGerenciaAndAnioAndSemana(gerencia, anio, semana);
     }
 
     @Async("asyncExecutor")
-    public CompletableFuture<Integer> findIdByUsuarioIdAsync(Integer usuarioId) {
-        return CompletableFuture.completedFuture(findIdByUsuarioId(usuarioId));
+    public CompletableFuture<Integer> findIdByGerenciaAnioAndSemanaAsync(
+            String gerencia, Integer anio, Integer semana) {
+        return CompletableFuture.completedFuture(findIdByGerenciaAnioSemana(gerencia, anio, semana));
+    }
+
+    @Async("asyncExecutor")
+    public CompletableFuture<Integer> findIdByGerenciaAsync(String gerencia) {
+        return CompletableFuture.completedFuture(findIdByGerencia(gerencia));
     }
 }
