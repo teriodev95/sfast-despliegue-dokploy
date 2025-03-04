@@ -70,29 +70,30 @@ public class CierreGerenciaService {
 	}
 
 	public Object getCierreGerenciaByUsuarioIdAndGerencia(Integer usuarioId, String gerencia) {
+		CompletableFuture<Integer> idTabulacionDineroCf = this.tabulacionDineroService
+				.findIdByGerenciaAsync(gerencia);
 		CompletableFuture<List<CobranzaAgencia>> cobranzaAgenciaCf = this.cobranzaAgenciaService
 				.getCobranzaAgenciasByGerenciaAsync(gerencia);
 		CompletableFuture<DetalleCierreSemanalDto> detalleCierreAgenciasCf = this.detalleCierreAgenciasService
 				.getDetalleCierreSemanalByGerenciaAsync(gerencia);
 		CompletableFuture<FlujoEfectivoDto> flujoEfectivoCf = this.flujoEfectivoService
 				.getFlujoEfectivoByGerenciaAsync(gerencia);
-		CompletableFuture<Integer> idTabulacionDineroCf = this.tabulacionDineroService
-				.findIdByGerenciaAsync(gerencia);
-		CobranzaAgencia cobranzaAgencia = new CobranzaAgencia(cobranzaAgenciaCf.join());
 
 		HashMap<String, String> respuestaHm = new HashMap<>();
+		if (idTabulacionDineroCf.join() == null) {
+			respuestaHm.put("tabulacionDinero", "Debe existir un registro previo de tabulación");
+		}
 		if (detalleCierreAgenciasCf.join() == null) {
 			respuestaHm.put("detalleCierreSemanal", "No se pudo obtener correctamente");
 		}
 		if (flujoEfectivoCf.join() == null) {
 			respuestaHm.put("flujoEfectivo", "No se pudo obtener correctamente");
 		}
-		if (idTabulacionDineroCf.join() == null) {
-			respuestaHm.put("tabulacionDinero", "Debe existir un registro previo de tabulación");
-		}
 		if (!respuestaHm.isEmpty()) {
 			return respuestaHm;
 		}
+
+		CobranzaAgencia cobranzaAgencia = new CobranzaAgencia(cobranzaAgenciaCf.join());
 
 		return new CierreGerenciaModel(cobranzaAgencia, detalleCierreAgenciasCf.join(), flujoEfectivoCf.join(),
 				idTabulacionDineroCf.join(), usuarioId);
