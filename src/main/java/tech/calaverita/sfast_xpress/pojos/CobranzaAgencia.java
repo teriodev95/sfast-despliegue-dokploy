@@ -20,8 +20,11 @@ public class CobranzaAgencia {
     private Integer noPagos;
     private Integer pagosReducidos;
     private Integer clientesLiquidados;
+    private Integer semana;
+    private Integer anio;
     private String agencia;
     private String agente;
+    private String gerencia;
 
     public CobranzaAgencia() {
         this.debito = 0.0;
@@ -36,14 +39,49 @@ public class CobranzaAgencia {
         this.clientesLiquidados = 0;
         this.agencia = "";
         this.agente = "";
+        this.semana = 0;
+        this.anio = 0;
+        this.gerencia = "";
+    }
+
+    public CobranzaAgencia(List<CobranzaAgencia> cobranzaAgencias) {
+        this();
+
+        int agenciasActivas = 0;
+        for (CobranzaAgencia cobranzaAgencia : cobranzaAgencias) {
+            this.debito += cobranzaAgencia.getDebito();
+            this.cobranzaPura += cobranzaAgencia.getCobranzaPura();
+            this.faltante += cobranzaAgencia.getFaltante();
+            this.eficiencia += cobranzaAgencia.getEficiencia();
+            this.ventas += cobranzaAgencia.getVentas();
+            this.descuentoPorLiquidacion += cobranzaAgencia.getDescuentoPorLiquidacion();
+            this.clientes += cobranzaAgencia.getClientes();
+            this.noPagos += cobranzaAgencia.getNoPagos();
+            this.pagosReducidos += cobranzaAgencia.getPagosReducidos();
+            this.clientesLiquidados += cobranzaAgencia.getClientesLiquidados();
+
+            if (cobranzaAgencia.getDebito() > 0) {
+                agenciasActivas++;
+            }
+        }
+        this.eficiencia = this.eficiencia / agenciasActivas;
+        this.anio = cobranzaAgencias.get(0).getAnio();
+        this.semana = cobranzaAgencias.get(0).getSemana();
+        this.gerencia = cobranzaAgencias.get(0).getGerencia();
+
+        formatDoubles();
     }
 
     @SuppressWarnings("unchecked")
     public CobranzaAgencia(AlmacenObjects almacenObjects) {
         this();
 
+        this.gerencia = (String) almacenObjects.getObject("gerencia");
         this.agencia = (String) almacenObjects.getObject("agencia");
         this.agente = (String) almacenObjects.getObject("agente");
+        this.semana = (Integer) almacenObjects.getObject("semana");
+        this.anio = (Integer) almacenObjects.getObject("anio");
+
         List<PagoDynamicModel> pagoDynamicModels = (List<PagoDynamicModel>) almacenObjects
                 .getObject("pagoDynamicModels");
         List<PrestamoViewModel> prestamoViewModels = (List<PrestamoViewModel>) almacenObjects
