@@ -17,7 +17,7 @@ public class TabulacionDineroModel {
     private Integer id;
     private Integer anio;
     private Integer semana;
-    private Integer usuarioId;
+    private String gerencia;
     @Column(name = "cantidad_50_centavos")
     private Integer cantidad50Centavos;
     @Column(name = "cantidad_1_peso")

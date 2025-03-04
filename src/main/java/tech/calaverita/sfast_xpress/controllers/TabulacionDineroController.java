@@ -33,13 +33,13 @@ public class TabulacionDineroController {
         this.tabulacionDineroService = tabulacionDineroService;
     }
 
-    @GetMapping(path = "/by_usuario-id_anio_and_semana/{usuarioId}/{anio}/{semana}")
-    public @ResponseBody ResponseEntity<Object> getByUsuarioIdAnioAndSemana(@PathVariable Integer usuarioId,
+    @GetMapping(path = "/gerencia/{gerencia}/anio/{anio}/semana/{semana}")
+    public @ResponseBody ResponseEntity<Object> getByGerenciaAnioAndSemana(@PathVariable String gerencia,
             @PathVariable Integer anio, @PathVariable Integer semana) {
         Object response;
 
         TabulacionDineroModel tabulacionDineroModel = this.tabulacionDineroService
-                .findByUsuarioIdAnioAndSemana(usuarioId, anio, semana);
+                .findByGerenciaAnioAndSemana(gerencia, anio, semana);
 
         if (tabulacionDineroModel != null) {
             response = tabulacionDineroModel;
