@@ -94,6 +94,9 @@ public class CobranzaAgenciaService {
             almacenObjects.addObject("pagoDynamicModels", pagoDynamicModels);
             almacenObjects.addObject("prestamoViewModels", prestamoViewModels);
             almacenObjects.addObject("ventaModels", ventaModels);
+            almacenObjects.addObject("anio", anio);
+            almacenObjects.addObject("semana", semana);
+            almacenObjects.addObject("gerencia", gerencia);
 
             cobranzaAgencias.add(new CobranzaAgencia(almacenObjects));
         }
