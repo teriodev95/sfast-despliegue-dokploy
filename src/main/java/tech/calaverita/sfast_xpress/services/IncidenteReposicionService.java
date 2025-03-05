@@ -35,4 +35,14 @@ public class IncidenteReposicionService {
 
         return CompletableFuture.completedFuture(incidenteReposicionModels);
     }
+
+    @Async("asyncExecutor")
+    public CompletableFuture<List<IncidenteReposicionModel>> findByCategoriaNotGerenciaAnioSemanaAsync(String categoria,
+            String gerencia, int anio,
+            int semana) {
+        List<IncidenteReposicionModel> incidenteReposicionModels = this.incidenteReposicionRepository
+                .findByCategoriaNotAndGerenciaAndAnioAndSemana(categoria, gerencia, anio, semana);
+
+        return CompletableFuture.completedFuture(incidenteReposicionModels);
+    }
 }

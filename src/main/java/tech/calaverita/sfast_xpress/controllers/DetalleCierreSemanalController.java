@@ -90,7 +90,7 @@ public class DetalleCierreSemanalController {
                                 gerencia,
                                 anio, semana);
                 CompletableFuture<List<IncidenteReposicionModel>> incidenteReposicionModelsCf = this.incidenteReposicionService
-                                .findByCategoriaGerenciaAnioSemanaAsync("incidente", gerencia, anio, semana);
+                                .findByCategoriaNotGerenciaAnioSemanaAsync("reposicion", gerencia, anio, semana);
                 CompletableFuture<ArrayList<PagoDynamicModel>> pagoDynamicModelsCf = this.pagoDynamicService
                                 .findByGerenciaSucursalAnioSemanaAndEsPrimerPago(deprecatedNameGerencia, sucursal, anio,
                                                 semana, false);
@@ -145,7 +145,7 @@ public class DetalleCierreSemanalController {
                                 gerencia,
                                 anio, semana);
                 CompletableFuture<List<IncidenteReposicionModel>> incidenteReposicionModelsCf = this.incidenteReposicionService
-                                .findByCategoriaGerenciaAnioSemanaAsync("incidente", gerencia, anio, semana);
+                                .findByCategoriaNotGerenciaAnioSemanaAsync("reposicion", gerencia, anio, semana);
                 CompletableFuture<ArrayList<PagoDynamicModel>> pagoDynamicModelsCf = this.pagoDynamicService
                                 .findByGerenciaSucursalAnioSemanaAndEsPrimerPago(deprecatedNameGerencia, sucursal, anio,
                                                 semana, false);

@@ -56,8 +56,16 @@ public class DetalleCierreSemanalAsignacionesDto {
         }
 
         for (IncidenteReposicionModel incidenteReposicionModel : incidenteReposicionModels) {
-            if (incidenteReposicionModel.getTipo().equals("ingreso")) {
-                this.incidente += incidenteReposicionModel.getMonto();
+            if (tipoAsignaciones.equals("ingreso")) {
+                if (incidenteReposicionModel.getTipo().equals("ingreso")) {
+                    this.incidente += incidenteReposicionModel.getMonto();
+                    this.total += incidenteReposicionModel.getMonto();
+                }
+            } else {
+                if (incidenteReposicionModel.getTipo().equals("egreso")) {
+                    this.incidente += incidenteReposicionModel.getMonto();
+                    this.total += incidenteReposicionModel.getMonto();
+                }
             }
         }
 

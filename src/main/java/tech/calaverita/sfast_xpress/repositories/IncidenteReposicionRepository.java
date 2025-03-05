@@ -13,4 +13,7 @@ public interface IncidenteReposicionRepository extends CrudRepository<IncidenteR
 
     List<IncidenteReposicionModel> findByCategoriaAndGerenciaAndAnioAndSemana(String categoria, String gerencia,
             int anio, int semana);
+
+    List<IncidenteReposicionModel> findByCategoriaNotAndGerenciaAndAnioAndSemana(String categoria, String gerencia,
+            int anio, int semana);
 }
