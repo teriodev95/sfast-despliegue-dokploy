@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.core.io.InputStreamResource;
@@ -38,6 +37,7 @@ import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
 import tech.calaverita.sfast_xpress.controllers.XpressController;
 import tech.calaverita.sfast_xpress.itext.CierreGerenciaAdmin.page1.tables.classes.TablaDetallesCierreAgencias;
 import tech.calaverita.sfast_xpress.models.mariaDB.AgenciaModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.CierreSemanalConsolidadoV2Model;
 import tech.calaverita.sfast_xpress.models.mariaDB.ComisionModel;
@@ -108,7 +108,7 @@ public final class CierreSemanalController {
 
                 DashboardDTO dashboard;
                 List<UsuarioModel> usuarioModels;
-                double asignaciones;
+                List<AsignacionModel> asignacionModels;
 
                 CierreSemanalConsolidadoV2Model cierreSemanalConsolidadoV2Model = this.cierreSemanalConsolidadoV2Service
                                 .findByAgenciaAnioAndSemana(agencia, anio, semana);
@@ -148,15 +148,13 @@ public final class CierreSemanalController {
                                 usuarioModels.add(agenteUsuarioModel);
                                 usuarioModels.add(gerenteUsuarioModel);
 
-                                asignaciones = this.asignacionService
-                                                .findSumaAsignacionesByQuienEntregoUsuarioIdAnioAndSemana(
-                                                                agenteUsuarioModel.getUsuarioId(), anio, semana)
-                                                .join();
+                                asignacionModels = this.asignacionService.findByAgenciaAnioSemana(agencia, anio,
+                                                semana);
 
                                 cierreSemanalConsolidadoV2DTO = CierreSemanalUtil.getCierreSemanalConsolidadoV2DTO(
                                                 dashboard,
                                                 usuarioModels,
-                                                asignaciones);
+                                                asignacionModels);
                         } else {
                                 return new ResponseEntity<>("La agencia no existe", HttpStatus.BAD_REQUEST);
                         }
@@ -184,7 +182,7 @@ public final class CierreSemanalController {
 
                 DashboardDTO dashboard;
                 List<UsuarioModel> usuarioModels;
-                double asignaciones;
+                List<AsignacionModel> asignacionModels;
 
                 CierreSemanalConsolidadoV2Model cierreSemanalConsolidadoV2Model = this.cierreSemanalConsolidadoV2Service
                                 .findByAgenciaAnioAndSemana(agencia, anio, semana);
@@ -224,15 +222,13 @@ public final class CierreSemanalController {
                                 usuarioModels.add(agenteUsuarioModel);
                                 usuarioModels.add(gerenteUsuarioModel);
 
-                                asignaciones = this.asignacionService
-                                                .findSumaAsignacionesByQuienEntregoUsuarioIdAnioAndSemana(
-                                                                agenteUsuarioModel.getUsuarioId(), anio, semana)
-                                                .join();
+                                asignacionModels = this.asignacionService.findByAgenciaAnioSemana(agencia, anio,
+                                                semana);
 
                                 cierreSemanalConsolidadoV2DTO = CierreSemanalUtil.getCierreSemanalConsolidadoV2DTO(
                                                 dashboard,
                                                 usuarioModels,
-                                                asignaciones);
+                                                asignacionModels);
                         } else {
                                 return new ResponseEntity<>("La agencia no existe", HttpStatus.BAD_REQUEST);
                         }

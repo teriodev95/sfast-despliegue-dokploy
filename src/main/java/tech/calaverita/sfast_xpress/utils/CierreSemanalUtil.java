@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
@@ -46,6 +47,7 @@ import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.IngresosAgenteDTO;
 import tech.calaverita.sfast_xpress.DTOs.dashboard.DashboardDTO;
 import tech.calaverita.sfast_xpress.itext.PdfStyleManager;
 import tech.calaverita.sfast_xpress.itext.fonts.Fonts;
+import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.CierreSemanalConsolidadoV2Model;
 import tech.calaverita.sfast_xpress.models.mariaDB.ComisionModel;
@@ -270,7 +272,7 @@ public class CierreSemanalUtil {
 
         public static CierreSemanalConsolidadoV2DTO getCierreSemanalConsolidadoV2DTO(DashboardDTO dashboard,
                         List<UsuarioModel> darrusuarEnt,
-                        double asignaciones)
+                        List<AsignacionModel> asignacionModels)
                         throws ExecutionException, InterruptedException {
                 CierreSemanalConsolidadoV2DTO cierreSemanalConsolidadoV2DTO = new CierreSemanalConsolidadoV2DTO();
 
@@ -335,7 +337,23 @@ public class CierreSemanalUtil {
 
                 EgresosAgenteDTO egresosAgenteDTO = new EgresosAgenteDTO();
                 {
+                        // To easy code
+                        double asignaciones = asignacionModels.stream().mapToDouble(AsignacionModel::getMonto).sum();
+                        int asignacionesASeguridad = (int) asignacionModels.stream()
+                                        .filter(asignacionModel -> asignacionModel.getRecibioUsuarioModel().getTipo()
+                                                        .equals("Seguridad"))
+                                        .count();
+                        int asignacionesAGerente = (int) asignacionModels.stream()
+                                        .filter(asignacionModel -> asignacionModel.getRecibioUsuarioModel().getTipo()
+                                                        .equals("Gerente"))
+                                        .count();
+
+                        HashMap<String, Integer> asignacionesDesglose = new HashMap<>();
+                        asignacionesDesglose.put("aSeguridad", asignacionesASeguridad);
+                        asignacionesDesglose.put("aGerente", asignacionesAGerente);
+
                         egresosAgenteDTO.setAsignaciones(asignaciones);
+                        egresosAgenteDTO.setAsignaciones_desglose(asignacionesDesglose);
 
                         Double efectivoEntregadoEnCierre = cobranzaTotal - egresosAgenteDTO.getAsignaciones();
                         egresosAgenteDTO.setEfectivoEntregadoCierre(MyUtil.getDouble(efectivoEntregadoEnCierre));
