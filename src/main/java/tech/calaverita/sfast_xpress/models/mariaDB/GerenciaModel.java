@@ -24,8 +24,9 @@ public class GerenciaModel {
     private String chatIdPagos;
     @Column(name = "chatidnumeros")
     private String chatIdNumeros;
-    @Column(name = "seguridadid")
     private Integer seguridadId;
+    @Column(name = "usuario_a_cargo")
+    private Integer usuarioACargo;
     @Column(name = "sucursalid")
     private String sucursalId;
     private String deprecatedName;
