@@ -21,6 +21,7 @@ public class GastoModel {
     @Column(name = "gasto_id")
     private Integer id;
     private Integer creadoPorId;
+    private String gerencia;
     private String tipoGasto;
     private String fecha;
     private Integer semana;
