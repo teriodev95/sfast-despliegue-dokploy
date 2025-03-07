@@ -1,6 +1,7 @@
 package tech.calaverita.sfast_xpress.repositories;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -10,6 +11,8 @@ import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 
 @Repository
 public interface AsignacionRepository extends CrudRepository<AsignacionModel, String> {
+        List<AsignacionModel> findByAgenciaAndAnioAndSemana(String agencia, int anio, int semana);
+
         ArrayList<AsignacionModel> findByQuienRecibioUsuarioIdAndAnioAndSemana(Integer quienRecibioUsuarioId,
                         int anio, int semana);
 

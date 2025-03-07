@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -40,9 +42,13 @@ public class UsuarioModel {
     // @OneToMany(mappedBy = "usuarioModel")
     // private List<GastoModel> gastoModels;
     @JsonIgnore
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gerencia", insertable = false, updatable = false)
     private GerenciaModel gerenciaModel;
+    @JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "agencia", insertable = false, updatable = false)
+    private EstadoAgenciaModel estadoAgenciaModel;
 
     public static UsuarioModel getSinAgenteAsignado() {
         UsuarioModel usuarioModel = new UsuarioModel();

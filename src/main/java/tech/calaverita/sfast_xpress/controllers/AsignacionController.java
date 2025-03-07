@@ -2,6 +2,7 @@ package tech.calaverita.sfast_xpress.controllers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +17,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 
+import com.google.gson.Gson;
+
 import jakarta.servlet.http.HttpServletResponse;
 import retrofit2.Call;
 import tech.calaverita.sfast_xpress.Constants;
 import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.EstadoAgenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 import tech.calaverita.sfast_xpress.retrofit.RetrofitOdoo;
 import tech.calaverita.sfast_xpress.retrofit.pojos.AsignacionBody;
@@ -29,15 +33,19 @@ import tech.calaverita.sfast_xpress.services.AsignacionService;
 import tech.calaverita.sfast_xpress.services.UsuarioService;
 import tech.calaverita.sfast_xpress.utils.RetrofitOdooUtil;
 import tech.calaverita.sfast_xpress.utils.pwa.PWAUtil;
+import tech.calaverita.sfast_xpress.validations.AsignacionValidationService;
 
 @CrossOrigin
 @RestController
 @RequestMapping(path = "/xpress/v1/assignments")
 public final class AsignacionController {
+    private final AsignacionValidationService asignacionValidationService;
     private final AsignacionService asignacionService;
     private final UsuarioService usuarioService;
 
-    public AsignacionController(AsignacionService asignacionService, UsuarioService usuarioService) {
+    public AsignacionController(AsignacionValidationService asignacionValidationService,
+            AsignacionService asignacionService, UsuarioService usuarioService) {
+        this.asignacionValidationService = asignacionValidationService;
         this.asignacionService = asignacionService;
         this.usuarioService = usuarioService;
     }
@@ -106,33 +114,39 @@ public final class AsignacionController {
         return new ResponseEntity<>(asignacionModel, HttpStatus.OK);
     }
 
+    @SuppressWarnings("unchecked")
     @PostMapping(path = "/create-one")
     public @ResponseBody ResponseEntity<String> postCreateOne(@RequestBody AsignacionModel asignacionModel) {
         String strSession = "session_id=76d814874514726176f0615260848da2aab725ea";
 
-        if (this.asignacionService.existById(asignacionModel.getAsignacionId())) {
-            return new ResponseEntity<>("La Asignación Ya Existe", HttpStatus.CONFLICT);
+        String resultadoValidacion = this.asignacionValidationService.validateAsignacion(asignacionModel);
+
+        if (!resultadoValidacion.isEmpty()) {
+            return new ResponseEntity<>(resultadoValidacion, HttpStatus.BAD_REQUEST);
         }
 
-        UsuarioModel optusuarMod = this.usuarioService.findById(asignacionModel.getQuienRecibioUsuarioId());
+        CompletableFuture<UsuarioModel> entregoUsuarioModelCf = this.usuarioService
+                .findByIdAsync(asignacionModel.getQuienEntregoUsuarioId());
+        CompletableFuture<UsuarioModel> recibioUsuarioModelCf = this.usuarioService
+                .findByIdAsync(asignacionModel.getQuienRecibioUsuarioId());
 
-        if (optusuarMod == null) {
-            return new ResponseEntity<>("Debe ingresar un quienRecibioUsuarioId válido", HttpStatus.BAD_REQUEST);
+        // To easy code
+        EstadoAgenciaModel estadoAgenciaModel = entregoUsuarioModelCf.join().getEstadoAgenciaModel();
+
+        if (entregoUsuarioModelCf.join().getTipo().equals("Agente")
+                && estadoAgenciaModel.getStatus().equals("Vacante")) {
+            HashMap<String, Object> logAsignacion = new Gson().fromJson(asignacionModel.getLog(), HashMap.class);
+            logAsignacion.put("status_agencia", "vacante");
+            asignacionModel.setLog(new Gson().toJson(logAsignacion));
         }
 
-        optusuarMod = this.usuarioService.findById(asignacionModel.getQuienEntregoUsuarioId());
+        HashMap<String, String> agenciaYGerenciaHm = this.asignacionService
+                .getAgenciaAndGerencia(entregoUsuarioModelCf.join(), recibioUsuarioModelCf.join());
 
-        if (optusuarMod == null) {
-            return new ResponseEntity<>("Debe ingresar un quienEntregoUsuarioId válido", HttpStatus.BAD_REQUEST);
-        }
-
-        if (!asignacionModel.getLog().contains("{")) {
-            return new ResponseEntity<>("Debe ingresar un log con formato json", HttpStatus.BAD_REQUEST);
-        }
-
-        if (!asignacionModel.getLog().contains("}")) {
-            return new ResponseEntity<>("Debe ingresar un log con formato json", HttpStatus.BAD_REQUEST);
-        }
+        asignacionModel
+                .setTipo(this.asignacionService.getTipo(entregoUsuarioModelCf.join(), recibioUsuarioModelCf.join()));
+        asignacionModel.setAgencia(agenciaYGerenciaHm.get("agencia"));
+        asignacionModel.setGerencia(agenciaYGerenciaHm.get("gerencia"));
 
         this.asignacionService.save(asignacionModel);
 

@@ -26,8 +26,11 @@ public class AsignacionModel {
     private Double monto;
     private Integer semana;
     private Integer anio;
+    private String agencia;
+    private String gerencia;
     private Integer quienRecibioUsuarioId;
     private Integer quienEntregoUsuarioId;
+    private String tipo;
     private String log;
     private String createdAt;
     private String updatedAt;
@@ -39,7 +42,6 @@ public class AsignacionModel {
     @JoinColumn(name = "quienEntregoUsuarioId", insertable = false, updatable = false)
     @JsonIgnore
     private UsuarioModel entregoUsuarioModel;
-
 
     @PostLoad
     private void ajustarZonaHoraria() {

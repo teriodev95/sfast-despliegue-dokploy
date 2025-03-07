@@ -48,7 +48,7 @@ public class UsuarioService {
     }
 
     public UsuarioModel findById(int id) {
-        return this.repo.findById(id).orElseThrow();
+        return this.repo.findById(id).orElse(null);
     }
 
     public UsuarioModel findByUsuario(String usuario) {
