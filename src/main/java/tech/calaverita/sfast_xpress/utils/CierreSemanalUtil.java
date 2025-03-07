@@ -339,16 +339,16 @@ public class CierreSemanalUtil {
                 {
                         // To easy code
                         double asignaciones = asignacionModels.stream().mapToDouble(AsignacionModel::getMonto).sum();
-                        int asignacionesASeguridad = (int) asignacionModels.stream()
+                        double asignacionesASeguridad = asignacionModels.stream()
                                         .filter(asignacionModel -> asignacionModel.getRecibioUsuarioModel().getTipo()
                                                         .equals("Seguridad"))
-                                        .count();
-                        int asignacionesAGerente = (int) asignacionModels.stream()
+                                        .mapToDouble(AsignacionModel::getMonto).sum();
+                        double asignacionesAGerente = asignacionModels.stream()
                                         .filter(asignacionModel -> asignacionModel.getRecibioUsuarioModel().getTipo()
                                                         .equals("Gerente"))
-                                        .count();
+                                        .mapToDouble(AsignacionModel::getMonto).sum();
 
-                        HashMap<String, Integer> asignacionesDesglose = new HashMap<>();
+                        HashMap<String, Double> asignacionesDesglose = new HashMap<>();
                         asignacionesDesglose.put("aSeguridad", asignacionesASeguridad);
                         asignacionesDesglose.put("aGerente", asignacionesAGerente);
 

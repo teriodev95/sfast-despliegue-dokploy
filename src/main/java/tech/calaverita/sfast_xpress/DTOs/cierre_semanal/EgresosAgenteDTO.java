@@ -13,7 +13,7 @@ public class EgresosAgenteDTO {
     private String motivoOtros;
     private Double efectivoEntregadoCierre;
     private Double total;
-    private HashMap<String, Integer> asignaciones_desglose;
+    private HashMap<String, Double> asignaciones_desglose;
 
     public EgresosAgenteDTO() {
         this.asignaciones = 0.0;
@@ -22,9 +22,9 @@ public class EgresosAgenteDTO {
         this.efectivoEntregadoCierre = 0.0;
         this.total = 0.0;
 
-        HashMap<String, Integer> asignaciones_desglose = new HashMap<>();
-        asignaciones_desglose.put("aSeguridad", 0);
-        asignaciones_desglose.put("aGerente", 0);
+        HashMap<String, Double> asignaciones_desglose = new HashMap<>();
+        asignaciones_desglose.put("aSeguridad", 0.0);
+        asignaciones_desglose.put("aGerente", 0.0);
         this.asignaciones_desglose = asignaciones_desglose;
     }
 
