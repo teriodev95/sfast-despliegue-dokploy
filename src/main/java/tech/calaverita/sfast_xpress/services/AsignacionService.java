@@ -109,7 +109,8 @@ public class AsignacionService {
             tipo = "Agente";
         } else if (tipoUsuarioEntrego.equals("Seguridad") && !tipoUsuarioRecibio.equals("Jefe de Admin")) {
             tipo = "Seguridad";
-        } else if (tipoUsuarioEntrego.equals("Gerente") && !tipoUsuarioRecibio.equals("Jefe de Admin")) {
+        } else if ((tipoUsuarioEntrego.equals("Gerente") || tipoUsuarioEntrego
+                .equals("Regional")) && !tipoUsuarioRecibio.equals("Jefe de Admin")) {
             tipo = "Operación";
         } else {
             tipo = "Admin";
@@ -118,7 +119,7 @@ public class AsignacionService {
         return tipo;
     }
 
-    public HashMap<String, String> getAgenciaAndGerencia(UsuarioModel entregoUsuarioModel,
+    public HashMap<String, String> getAgenciaYGerencia(UsuarioModel entregoUsuarioModel,
             UsuarioModel recibioUsuarioModel) {
         HashMap<String, String> agenciaYGerencia = new HashMap<>();
         agenciaYGerencia.put("agencia", "");

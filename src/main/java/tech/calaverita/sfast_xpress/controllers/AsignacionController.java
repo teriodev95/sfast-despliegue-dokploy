@@ -141,7 +141,7 @@ public final class AsignacionController {
         }
 
         HashMap<String, String> agenciaYGerenciaHm = this.asignacionService
-                .getAgenciaAndGerencia(entregoUsuarioModelCf.join(), recibioUsuarioModelCf.join());
+                .getAgenciaYGerencia(entregoUsuarioModelCf.join(), recibioUsuarioModelCf.join());
 
         asignacionModel
                 .setTipo(this.asignacionService.getTipo(entregoUsuarioModelCf.join(), recibioUsuarioModelCf.join()));
