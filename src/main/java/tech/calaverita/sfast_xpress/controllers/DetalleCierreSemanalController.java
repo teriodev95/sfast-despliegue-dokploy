@@ -80,6 +80,8 @@ public class DetalleCierreSemanalController {
                                 .findAsignacionesIngresoByGerenciaAnioSemanaAsync(gerencia, anio, semana);
                 CompletableFuture<List<AsignacionModel>> egresosAsignacionModelCf = this.asignacionService
                                 .findAsignacionesEgresoByGerenciaAnioSemanaAsync(gerencia, anio, semana);
+                CompletableFuture<List<AsignacionModel>> egresosAgenteAsignacionModelCf = this.asignacionService
+                                .findAsignacionesEgresoAgentesByGerenciaAnioSemanaAsync(gerencia, anio, semana);
                 CompletableFuture<List<CierreSemanalConsolidadoV2Model>> cierreSemanalConsolidadoV2ModelsCf = this.cierreSemanalConsolidadoV2Service
                                 .findByGerenciaAnioSemanaAsync(gerencia, anio, semana);
                 CompletableFuture<List<ComisionModel>> comisionModelsCf = this.comisionService
@@ -99,8 +101,10 @@ public class DetalleCierreSemanalController {
                                 anio, semana);
 
                 CompletableFuture.allOf(ingresosAsignacionModelCf, egresosAsignacionModelCf,
-                                cierreSemanalConsolidadoV2ModelsCf, comisionModelsCf,
+                                egresosAgenteAsignacionModelCf, cierreSemanalConsolidadoV2ModelsCf, comisionModelsCf,
                                 gastoModelsCf, incidenteReposicionModelsCf, pagoDynamicModelsCf, ventaModelsCf);
+
+                egresosAsignacionModelCf.join().addAll(egresosAgenteAsignacionModelCf.join());
 
                 CobranzaGerencia cobranzaGerencia = new CobranzaGerencia(pagoDynamicModelsCf.join(),
                                 ventaModelsCf.join());
@@ -135,6 +139,8 @@ public class DetalleCierreSemanalController {
                                 .findAsignacionesIngresoByGerenciaAnioSemanaAsync(gerencia, anio, semana);
                 CompletableFuture<List<AsignacionModel>> egresosAsignacionModelCf = this.asignacionService
                                 .findAsignacionesEgresoByGerenciaAnioSemanaAsync(gerencia, anio, semana);
+                CompletableFuture<List<AsignacionModel>> egresosAgenteAsignacionModelCf = this.asignacionService
+                                .findAsignacionesEgresoAgentesByGerenciaAnioSemanaAsync(gerencia, anio, semana);
                 CompletableFuture<List<CierreSemanalConsolidadoV2Model>> cierreSemanalConsolidadoV2ModelsCf = this.cierreSemanalConsolidadoV2Service
                                 .findByGerenciaAnioSemanaAsync(gerencia, anio, semana);
                 CompletableFuture<List<ComisionModel>> comisionModelsCf = this.comisionService
@@ -154,8 +160,10 @@ public class DetalleCierreSemanalController {
                                 anio, semana);
 
                 CompletableFuture.allOf(ingresosAsignacionModelCf, egresosAsignacionModelCf,
-                                cierreSemanalConsolidadoV2ModelsCf, comisionModelsCf,
+                                egresosAgenteAsignacionModelCf, cierreSemanalConsolidadoV2ModelsCf, comisionModelsCf,
                                 gastoModelsCf, incidenteReposicionModelsCf, pagoDynamicModelsCf, ventaModelsCf);
+
+                egresosAsignacionModelCf.join().addAll(egresosAgenteAsignacionModelCf.join());
 
                 CobranzaGerencia cobranzaGerencia = new CobranzaGerencia(pagoDynamicModelsCf.join(),
                                 ventaModelsCf.join());

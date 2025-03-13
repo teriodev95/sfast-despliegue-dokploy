@@ -98,6 +98,14 @@ public class AsignacionService {
         return CompletableFuture.completedFuture(asignacionModels);
     }
 
+    @Async("asyncExecutor")
+    public CompletableFuture<List<AsignacionModel>> findAsignacionesEgresoAgentesByGerenciaAnioSemanaAsync(
+            String gerencia, int anio, int semana) {
+        ArrayList<AsignacionModel> asignacionModels = this.repo
+                .findAsignacionesEgresoAgentesByGerenciaAndAnioAndSemana(gerencia, anio, semana);
+        return CompletableFuture.completedFuture(asignacionModels);
+    }
+
     public String getTipo(UsuarioModel entregoUsuarioModel, UsuarioModel recibioUsuarioModel) {
         String tipo = "";
 
