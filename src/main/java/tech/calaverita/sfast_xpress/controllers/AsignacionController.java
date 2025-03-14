@@ -103,6 +103,18 @@ public final class AsignacionController {
         return new ResponseEntity<>(responseHM, HttpStatus.OK);
     }
 
+    @GetMapping(path = "/gerencia/{gerencia}/current")
+    public @ResponseBody ResponseEntity<HashMap<String, Object>> getByGerencia(
+            @PathVariable String gerencia) {
+        HashMap<String, Object> responseHM = this.asignacionService.getByGerencia(gerencia);
+
+        if (responseHM.isEmpty()) {
+            return new ResponseEntity<>(responseHM, HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(responseHM, HttpStatus.OK);
+    }
+
     @GetMapping(path = "/one/{id}")
     public @ResponseBody ResponseEntity<AsignacionModel> getOneById(@PathVariable String id) {
         AsignacionModel asignacionModel = this.asignacionService.findById(id);

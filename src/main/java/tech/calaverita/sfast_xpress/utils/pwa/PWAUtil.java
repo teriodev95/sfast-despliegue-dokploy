@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import org.springframework.stereotype.Component;
 
+import tech.calaverita.sfast_xpress.controllers.UsuarioController;
 import tech.calaverita.sfast_xpress.models.mariaDB.AsignacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.PagoModel;
@@ -28,6 +29,8 @@ import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Component
 public final class PWAUtil {
+
+    private final UsuarioController usuarioController;
     private static PrestamoViewService prestamoViewService;
     private static UsuarioService usuarioService;
     private static PagoService pagoService;
@@ -35,12 +38,14 @@ public final class PWAUtil {
     private static PagoDynamicService pagoDynamicService;
 
     public PWAUtil(PrestamoViewService prestamoViewService, UsuarioService usuarioService,
-            PagoService pagoService, CalendarioService calendarioService, PagoDynamicService pagoDynamicService) {
+            PagoService pagoService, CalendarioService calendarioService, PagoDynamicService pagoDynamicService,
+            UsuarioController usuarioController) {
         PWAUtil.prestamoViewService = prestamoViewService;
         PWAUtil.usuarioService = usuarioService;
         PWAUtil.pagoService = pagoService;
         PWAUtil.calendarioService = calendarioService;
         PWAUtil.pagoDynamicService = pagoDynamicService;
+        this.usuarioController = usuarioController;
     }
 
     public static ArrayList<PrestamoCobranzaPWA> darrprestamoCobranzaPwaFromPrestamoModelsAndPagoModels(String agencia,
@@ -169,16 +174,23 @@ public final class PWAUtil {
 
         ArrayList<Object> ingresosHM = new ArrayList<>();
         for (AsignacionModel asignacionModel : (ArrayList<AsignacionModel>) responseHM.get("ingresos")) {
-            UsuarioModel usuarioModel = PWAUtil.usuarioService.findById(asignacionModel
-                    .getQuienRecibioUsuarioId());
+            UsuarioModel recibioUsuarioModel = asignacionModel.getRecibioUsuarioModel();
+            UsuarioModel entregoUsuarioModel = asignacionModel.getEntregoUsuarioModel();
 
             HashMap<String, Object> recibioHashMap = new HashMap<>();
-            recibioHashMap.put("usuario", usuarioModel.getUsuario());
-            recibioHashMap.put("tipo", usuarioModel.getTipo());
+            recibioHashMap.put("usuario", recibioUsuarioModel.getUsuario());
+            recibioHashMap.put("tipo", recibioUsuarioModel.getTipo());
+            recibioHashMap.put("nombre", recibioUsuarioModel.getNombre());
+
+            HashMap<String, Object> entregoHashMap = new HashMap<>();
+            entregoHashMap.put("usuario", entregoUsuarioModel.getUsuario());
+            entregoHashMap.put("tipo", entregoUsuarioModel.getTipo());
+            entregoHashMap.put("nombre", entregoUsuarioModel.getNombre());
 
             HashMap<String, Object> responseHashMap = new HashMap<>();
             responseHashMap.put("asignacion", asignacionModel);
             responseHashMap.put("recibio", recibioHashMap);
+            responseHashMap.put("entrego", entregoHashMap);
 
             ingresosHM.add(responseHashMap);
         }
@@ -186,16 +198,23 @@ public final class PWAUtil {
 
         ArrayList<Object> egresosHM = new ArrayList<>();
         for (AsignacionModel asignacionModel : (ArrayList<AsignacionModel>) responseHM.get("egresos")) {
-            UsuarioModel usuarioModel = PWAUtil.usuarioService.findById(asignacionModel
-                    .getQuienRecibioUsuarioId());
+            UsuarioModel recibioUsuarioModel = asignacionModel.getRecibioUsuarioModel();
+            UsuarioModel entregoUsuarioModel = asignacionModel.getEntregoUsuarioModel();
 
             HashMap<String, Object> recibioHashMap = new HashMap<>();
-            recibioHashMap.put("usuario", usuarioModel.getUsuario());
-            recibioHashMap.put("tipo", usuarioModel.getTipo());
+            recibioHashMap.put("usuario", recibioUsuarioModel.getUsuario());
+            recibioHashMap.put("tipo", recibioUsuarioModel.getTipo());
+            recibioHashMap.put("nombre", recibioUsuarioModel.getNombre());
+
+            HashMap<String, Object> entregoHashMap = new HashMap<>();
+            entregoHashMap.put("usuario", entregoUsuarioModel.getUsuario());
+            entregoHashMap.put("tipo", entregoUsuarioModel.getTipo());
+            entregoHashMap.put("nombre", entregoUsuarioModel.getNombre());
 
             HashMap<String, Object> responseHashMap = new HashMap<>();
             responseHashMap.put("asignacion", asignacionModel);
             responseHashMap.put("recibio", recibioHashMap);
+            responseHashMap.put("entrego", entregoHashMap);
 
             egresosHM.add(responseHashMap);
         }
