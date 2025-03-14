@@ -13,6 +13,7 @@ public class DetalleCierreSemanalAsignacionesDto {
     private Double cajaChica;
     private Double seguridad;
     private Double operacion;
+    private Double regional;
     private Double incidente;
     private Double total;
 
@@ -20,6 +21,7 @@ public class DetalleCierreSemanalAsignacionesDto {
         this.cajaChica = 0D;
         this.seguridad = 0D;
         this.operacion = 0D;
+        this.regional = 0D;
         this.incidente = 0D;
         this.total = 0D;
     }
@@ -45,6 +47,9 @@ public class DetalleCierreSemanalAsignacionesDto {
                 // case "Agente":
                 case "Gerente":
                     this.operacion += monto;
+                    break;
+                case "Regional":
+                    this.regional += monto;
                     break;
                 default:
                     break;
@@ -76,6 +81,7 @@ public class DetalleCierreSemanalAsignacionesDto {
         this.cajaChica = MyUtil.getDouble(this.cajaChica);
         this.seguridad = MyUtil.getDouble(this.seguridad);
         this.operacion = MyUtil.getDouble(this.operacion);
+        this.regional = MyUtil.getDouble(this.regional);
         this.incidente = MyUtil.getDouble(this.incidente);
         this.total = MyUtil.getDouble(this.total);
     }

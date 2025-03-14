@@ -19,6 +19,8 @@ public class FlujoEfectivoAsignacionesDto {
     private FlujoEfectivoAsignacionDto asignacionesSeguridadDto;
     @JsonProperty(value = "operaciones")
     private FlujoEfectivoAsignacionDto asignacionesOperacionDto;
+    @JsonProperty(value = "regional")
+    private FlujoEfectivoAsignacionDto asignacionesRegionalDto;
 
     public FlujoEfectivoAsignacionesDto() {
 
@@ -30,6 +32,7 @@ public class FlujoEfectivoAsignacionesDto {
         List<AsignacionModel> asignacionesAdministracionAsignacionModel = new ArrayList<>();
         List<AsignacionModel> asignacionesSeguridadAsignacionModel = new ArrayList<>();
         List<AsignacionModel> asignacionesOperacionAsignacionModel = new ArrayList<>();
+        List<AsignacionModel> asignacionesRegionalAsignacionModel = new ArrayList<>();
 
         AlmacenObjects almacenObjects = new AlmacenObjects();
         almacenObjects.addObject("asignacionesAgenteAsignacionModel", asignacionesAgenteAsignacionModel);
@@ -37,6 +40,7 @@ public class FlujoEfectivoAsignacionesDto {
                 asignacionesAdministracionAsignacionModel);
         almacenObjects.addObject("asignacionesSeguridadAsignacionModel", asignacionesSeguridadAsignacionModel);
         almacenObjects.addObject("asignacionesOperacionAsignacionModel", asignacionesOperacionAsignacionModel);
+        almacenObjects.addObject("asignacionesRegionalAsignacionModel", asignacionesRegionalAsignacionModel);
 
         setAsignaciones(recibioAsignacionModels, almacenObjects, true);
         setAsignaciones(entregoAsignacionModels, almacenObjects, false);
@@ -46,6 +50,7 @@ public class FlujoEfectivoAsignacionesDto {
                 asignacionesAdministracionAsignacionModel, gerencia);
         this.asignacionesSeguridadDto = new FlujoEfectivoAsignacionDto(asignacionesSeguridadAsignacionModel, gerencia);
         this.asignacionesOperacionDto = new FlujoEfectivoAsignacionDto(asignacionesOperacionAsignacionModel, gerencia);
+        this.asignacionesRegionalDto = new FlujoEfectivoAsignacionDto(asignacionesRegionalAsignacionModel, gerencia);
     }
 
     @SuppressWarnings("unchecked")
@@ -60,6 +65,8 @@ public class FlujoEfectivoAsignacionesDto {
                 .getObject("asignacionesSeguridadAsignacionModel");
         List<AsignacionModel> asignacionesOperacionAsignacionModel = (List<AsignacionModel>) almacenObjects
                 .getObject("asignacionesOperacionAsignacionModel");
+        List<AsignacionModel> asignacionesRegionalAsignacionModel = (List<AsignacionModel>) almacenObjects
+                .getObject("asignacionesRegionalAsignacionModel");
 
         for (AsignacionModel asignacionModel : asignacionModels) {
             // To easy code
@@ -79,6 +86,9 @@ public class FlujoEfectivoAsignacionesDto {
                     break;
                 case "Gerente":
                     asignacionesOperacionAsignacionModel.add(asignacionModel);
+                    break;
+                case "Regional":
+                    asignacionesRegionalAsignacionModel.add(asignacionModel);
                     break;
                 default:
                     break;
