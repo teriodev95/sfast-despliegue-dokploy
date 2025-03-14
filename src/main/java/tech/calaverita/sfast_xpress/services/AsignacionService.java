@@ -155,13 +155,16 @@ public class AsignacionService {
         String tipoUsuarioEntrego = entregoUsuarioModel.getTipo();
         String tipoUsuarioRecibio = recibioUsuarioModel.getTipo();
 
-        if (tipoUsuarioEntrego.equals("Agente")) {
+        if (tipoUsuarioEntrego.equals("Agente") && !tipoUsuarioRecibio.equals("Regional")) {
             tipo = "Agente";
-        } else if (tipoUsuarioEntrego.equals("Seguridad") && !tipoUsuarioRecibio.equals("Jefe de Admin")) {
+        } else if (tipoUsuarioEntrego.equals("Seguridad") && !tipoUsuarioRecibio.equals("Regional")
+                && !tipoUsuarioRecibio.equals("Jefe de Admin")) {
             tipo = "Seguridad";
-        } else if ((tipoUsuarioEntrego.equals("Gerente") || tipoUsuarioEntrego
-                .equals("Regional")) && !tipoUsuarioRecibio.equals("Jefe de Admin")) {
+        } else if (tipoUsuarioEntrego.equals("Gerente") && !tipoUsuarioRecibio.equals("Regional")
+                && !tipoUsuarioRecibio.equals("Jefe de Admin")) {
             tipo = "Operación";
+        } else if (tipoUsuarioRecibio.equals("Regional")) {
+            tipo = "Regional";
         } else {
             tipo = "Admin";
         }
