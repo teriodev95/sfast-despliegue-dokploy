@@ -157,8 +157,9 @@ public class AsignacionService {
 
         if (tipoUsuarioEntrego.equals("Agente") && !tipoUsuarioRecibio.equals("Regional")) {
             tipo = "Agente";
-        } else if (tipoUsuarioEntrego.equals("Seguridad") && !tipoUsuarioRecibio.equals("Regional")
-                && !tipoUsuarioRecibio.equals("Jefe de Admin")) {
+        } else if ((tipoUsuarioEntrego.equals("Seguridad") && !tipoUsuarioRecibio.equals("Regional")
+                && !tipoUsuarioRecibio.equals("Jefe de Admin"))
+                || tipoUsuarioEntrego.equals("Gerente") && tipoUsuarioRecibio.equals("Seguridad")) {
             tipo = "Seguridad";
         } else if ((tipoUsuarioEntrego.equals("Gerente") && !tipoUsuarioRecibio.equals("Regional")
                 && !tipoUsuarioRecibio.equals("Jefe de Admin"))
