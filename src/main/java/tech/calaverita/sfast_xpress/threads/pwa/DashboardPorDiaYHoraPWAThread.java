@@ -258,11 +258,10 @@ public class DashboardPorDiaYHoraPWAThread implements Runnable {
         ArrayList<Integer> usuarioIds = new ArrayList<>();
         for (String agencia : objectsContainer.getAgencias()) {
             usuarioIds
-                    .add(DashboardPorDiaYHoraPWAThread.usuarioService.findByAgenciaTipoAndStatus(
-                            agencia, "Agente",
-                            true) == null ? 0
+                    .add(DashboardPorDiaYHoraPWAThread.usuarioService.findByAgenciaTipo(
+                            agencia, "Agente") == null ? 0
                                     : DashboardPorDiaYHoraPWAThread.usuarioService
-                                            .findByAgenciaTipoAndStatus(agencia, "Agente", true).getUsuarioId());
+                                            .findByAgenciaTipo(agencia, "Agente").getUsuarioId());
         }
 
         objectsContainer.setAsignaciones(

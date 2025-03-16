@@ -135,8 +135,7 @@ public final class XpressController {
                                 .findByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(agencia, 0D,
                                                 calendarioModel.getAnio(),
                                                 calendarioModel.getSemana());
-                UsuarioModel agenteUsuarioModel = this.usuarioService.findByAgenciaTipoAndStatus(agencia, "Agente",
-                                true);
+                UsuarioModel agenteUsuarioModel = this.usuarioService.findByAgenciaTipo(agencia, "Agente");
                 CompletableFuture<Double> asignaciones = CompletableFuture.completedFuture(0D);
                 if (agenteUsuarioModel != null) {
                         asignaciones = this.asignacionService
@@ -344,7 +343,7 @@ public final class XpressController {
                         case "efectivo_en_campo":
                                 agencias.forEach(agencia -> {
                                         UsuarioModel agenteUsuarioModel = this.usuarioService
-                                                        .findByAgenciaTipoAndStatus(agencia, "Agente", true);
+                                                        .findByAgenciaTipo(agencia, "Agente");
 
                                         CompletableFuture<Double> asignaciones = CompletableFuture.completedFuture(0D);
                                         if (agenteUsuarioModel != null) {
@@ -385,8 +384,7 @@ public final class XpressController {
                         @PathVariable int anio,
                         @PathVariable int semana) {
                 DashboardDTO dashboardDTO = new DashboardDTO();
-                UsuarioModel agenteUsuarioModel = this.usuarioService.findByAgenciaTipoAndStatus(agencia, "Agente",
-                                true);
+                UsuarioModel agenteUsuarioModel = this.usuarioService.findByAgenciaTipo(agencia, "Agente");
 
                 CompletableFuture<ArrayList<PrestamoViewModel>> prestamoViewModels = this.prestamoViewService
                                 .findByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(agencia, 0D, anio,
@@ -403,6 +401,7 @@ public final class XpressController {
                                                 anio,
                                                 semana);
                 CompletableFuture<Double> asignaciones = CompletableFuture.completedFuture(0D);
+                System.out.println("agencia " + agenteUsuarioModel.getUsuarioId());
                 if (agenteUsuarioModel != null) {
                         asignaciones = this.asignacionService
                                         .findSumaAsignacionesByQuienEntregoUsuarioIdAnioAndSemana(

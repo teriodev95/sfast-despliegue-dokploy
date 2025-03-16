@@ -59,6 +59,10 @@ public class UsuarioService {
         return this.repo.findByAgenciaAndStatus(agencia, status);
     }
 
+    public UsuarioModel findByAgenciaTipo(String agencia, String tipo) {
+        return this.repo.findByAgenciaAndTipo(agencia, tipo);
+    }
+
     public UsuarioModel findByAgenciaTipoAndStatus(String agencia, String tipo, boolean status) {
         return this.repo.findByAgenciaAndTipoAndStatus(agencia, tipo, status);
     }

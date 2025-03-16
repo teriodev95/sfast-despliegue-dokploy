@@ -70,7 +70,7 @@ public final class AsignacionController {
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<Iterable<AsignacionModel>> getByAgenciaAnioAndSemana(
             @PathVariable String agencia, @PathVariable int anio, @PathVariable int semana) {
-        UsuarioModel agenteUsuarioModel = this.usuarioService.findByAgenciaTipoAndStatus(agencia, "Agente", true);
+        UsuarioModel agenteUsuarioModel = this.usuarioService.findByAgenciaTipo(agencia, "Agente");
 
         Iterable<AsignacionModel> asignacionModelIterable = this.asignacionService
                 .findByQuienEntregoUsuarioIdAnioAndSemana(agenteUsuarioModel.getUsuarioId(), anio, semana);

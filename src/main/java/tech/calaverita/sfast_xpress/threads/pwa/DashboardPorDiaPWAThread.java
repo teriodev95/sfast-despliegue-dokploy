@@ -233,9 +233,8 @@ public class DashboardPorDiaPWAThread implements Runnable {
             throw new RuntimeException(e);
         }
 
-        UsuarioModel agenteUsuarioModel = DashboardPorDiaPWAThread.usuarioService.findByAgenciaTipoAndStatus(
-                objectsContainer.getDashboard().getAgencia(), "Agente",
-                true);
+        UsuarioModel agenteUsuarioModel = DashboardPorDiaPWAThread.usuarioService.findByAgenciaTipo(
+                objectsContainer.getDashboard().getAgencia(), "Agente");
 
         ArrayList<Integer> usuarioIds = new ArrayList<>();
         usuarioIds.add(agenteUsuarioModel != null ? agenteUsuarioModel.getUsuarioId() : 0);

@@ -160,10 +160,11 @@ public final class PGSController {
     @GetMapping(path = "/{agencia}/{anio}/{semana}")
     public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> getAsignacionesByAgenciaAnioAndSemana(
             @PathVariable String agencia, @PathVariable int anio, @PathVariable int semana) {
-        UsuarioModel agenteUsuarioModel = this.usuarioService.findByAgenciaTipoAndStatus(agencia, "Agente", true);
+        UsuarioModel agenteUsuarioModel = this.usuarioService.findByAgenciaTipo(agencia, "Agente");
 
         ArrayList<AsignacionModel> darrasignEnt = this.asignacionService
-                .findByQuienEntregoUsuarioIdAnioAndSemana(agenteUsuarioModel != null ? agenteUsuarioModel.getUsuarioId() : 0, anio, semana);
+                .findByQuienEntregoUsuarioIdAnioAndSemana(
+                        agenteUsuarioModel != null ? agenteUsuarioModel.getUsuarioId() : 0, anio, semana);
 
         if (darrasignEnt.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
