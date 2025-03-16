@@ -33,4 +33,12 @@ public class SolicitudService {
     public SolicitudModel findById(String id) {
         return this.repo.findById(id).orElseThrow();
     }
+
+    public ArrayList<SolicitudModel> findByAgenciaAnioYEntre3Semanas(String agencia, Integer anio, Integer semanaActual, Integer semanaAnterior, String status) {
+        return this.repo.findByAgenciaAnioStatusYEntre3Semanas(agencia, anio, semanaActual, semanaAnterior, status);
+    }
+
+    public ArrayList<SolicitudModel> findByAgenciaAnioSemanasYStatus(String agencia, Integer anio, Integer semana, String status) {
+        return this.repo.findByAgenciaAnioSemanasYStatus(agencia, anio, semana, status);
+    }
 }
