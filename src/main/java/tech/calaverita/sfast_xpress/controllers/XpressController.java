@@ -401,7 +401,6 @@ public final class XpressController {
                                                 anio,
                                                 semana);
                 CompletableFuture<Double> asignaciones = CompletableFuture.completedFuture(0D);
-                System.out.println("agencia " + agenteUsuarioModel.getUsuarioId());
                 if (agenteUsuarioModel != null) {
                         asignaciones = this.asignacionService
                                         .findSumaAsignacionesByQuienEntregoUsuarioIdAnioAndSemana(

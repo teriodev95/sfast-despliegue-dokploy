@@ -60,7 +60,21 @@ public class UsuarioService {
     }
 
     public UsuarioModel findByAgenciaTipo(String agencia, String tipo) {
-        return this.repo.findByAgenciaAndTipo(agencia, tipo);
+        List<UsuarioModel> usuarioModels = this.repo.findByAgenciaAndTipoOrderByUsuarioIdDesc(agencia, tipo);
+        UsuarioModel agente = null;
+
+        if (usuarioModels.size() == 1) {
+            agente = usuarioModels.get(0);
+        } else if (usuarioModels.size() > 1) {
+            agente = usuarioModels.stream().filter(usuarioModel -> usuarioModel.getStatus() == true).findFirst()
+                    .orElse(null);
+
+            if (agente == null) {
+                agente = usuarioModels.get(0);
+            }
+        }
+
+        return agente;
     }
 
     public UsuarioModel findByAgenciaTipoAndStatus(String agencia, String tipo, boolean status) {
