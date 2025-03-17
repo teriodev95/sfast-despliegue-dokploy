@@ -2,6 +2,7 @@ package tech.calaverita.sfast_xpress.controllers;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.springframework.http.HttpStatus;
@@ -16,9 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletResponse;
 import tech.calaverita.sfast_xpress.Constants;
+import tech.calaverita.sfast_xpress.DTOs.UsuarioDto;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.GerenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.UsuarioModel;
 import tech.calaverita.sfast_xpress.services.CalendarioService;
+import tech.calaverita.sfast_xpress.services.GerenciaService;
 import tech.calaverita.sfast_xpress.services.UsuarioService;
 import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
 import tech.calaverita.sfast_xpress.services.views.PrestamoViewService;
@@ -33,13 +37,16 @@ public final class UsuarioController {
     private final PagoDynamicService pagoDynamicService;
     private final PrestamoViewService prestamoViewService;
     private final CalendarioService calendarioService;
+    private final GerenciaService gerenciaService;
 
     public UsuarioController(UsuarioService usuarioService, PagoDynamicService pagoDynamicService,
-            PrestamoViewService prestamoViewService, CalendarioService calendarioService) {
+            PrestamoViewService prestamoViewService, CalendarioService calendarioService,
+            GerenciaService gerenciaService) {
         this.usuarioService = usuarioService;
         this.pagoDynamicService = pagoDynamicService;
         this.prestamoViewService = prestamoViewService;
         this.calendarioService = calendarioService;
+        this.gerenciaService = gerenciaService;
     }
 
     @ModelAttribute
@@ -81,13 +88,16 @@ public final class UsuarioController {
     }
 
     @GetMapping(path = "/pin/{pin}")
-    public @ResponseBody ResponseEntity<UsuarioModel> getByPin(@PathVariable Integer pin) {
+    public @ResponseBody ResponseEntity<UsuarioDto> getByPin(@PathVariable Integer pin) {
         UsuarioModel usuarioModel = this.usuarioService.findByPin(pin);
 
-        if (usuarioModel == null)
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        if (usuarioModel != null) {
+            ArrayList<GerenciaModel> gerenciaModels = this.gerenciaService.findByUsuario(usuarioModel.getUsuario());
+            UsuarioDto usuarioDto = new UsuarioDto(usuarioModel, gerenciaModels);
+            return new ResponseEntity<>(usuarioDto, HttpStatus.OK);
+        }
 
-        return new ResponseEntity<>(usuarioModel, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping(path = "/nivel/by_agencia/{agencia}")
