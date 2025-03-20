@@ -13,9 +13,32 @@ public interface SolicitudRepository extends CrudRepository<SolicitudModel, Stri
 
     ArrayList<SolicitudModel> findByAgencia(String agencia);
 
-    @Query("SELECT s FROM SolicitudModel s WHERE s.agencia = :agencia AND s.anio = :anio AND s.semana BETWEEN :semanaAnterior AND :semanaActual AND s.status LIKE %:status%")
+    // @Query("SELECT s FROM SolicitudModel s WHERE s.agencia = :agencia AND s.anio = :anio AND s.semana BETWEEN :semanaAnterior AND :semanaActual AND s.status LIKE %:status%")
+    @Query(value = "SELECT * " +
+                   "FROM solicitudes " +
+                   "WHERE agencia = :agencia " +
+                   "  AND anio = :anio " +
+                   "  AND semana between :semanaAnterior " +
+                   "  AND :semanaActual" +
+                   "  AND JSON_UNQUOTE(" +
+                   "        JSON_EXTRACT(" +
+                   "            status_historial, " +
+                   "            CONCAT('$[', JSON_LENGTH(status_historial) - 1, '].status')" +
+                   "        )" +
+                   "    ) LIKE %:status%", nativeQuery = true)
     ArrayList<SolicitudModel> findByAgenciaAnioStatusYEntre3Semanas(String agencia, Integer anio, Integer semanaActual, Integer semanaAnterior, String status);
 
-    @Query("SELECT s FROM SolicitudModel s WHERE s.agencia = :agencia AND s.anio = :anio AND s.semana = :semana AND s.status LIKE %:status%")
+    // @Query("SELECT s FROM SolicitudModel s WHERE s.agencia = :agencia AND s.anio = :anio AND s.semana = :semana AND s.status LIKE %:status%")
+    @Query(value = "SELECT * " +
+                   "FROM solicitudes " +
+                   "WHERE agencia = :agencia " +
+                   "  AND anio = :anio " +
+                   "  AND semana = :semana " +
+                   "  AND JSON_UNQUOTE(" +
+                   "        JSON_EXTRACT(" +
+                   "            status_historial, " +
+                   "            CONCAT('$[', JSON_LENGTH(status_historial) - 1, '].status')" +
+                   "        )" +
+                   "    ) LIKE %:status%", nativeQuery = true)
     ArrayList<SolicitudModel> findByAgenciaAnioSemanasYStatus(String agencia, Integer anio, Integer semana, String status);
 }
