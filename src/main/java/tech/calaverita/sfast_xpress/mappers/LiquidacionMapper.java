@@ -52,6 +52,7 @@ public class LiquidacionMapper implements IMapper<LiquidacionModel, LiquidacionD
         DTO.setCobrado(prestamoViewModel.getCobrado());
         DTO.setSaldo(prestamoViewModel.getSaldo());
         DTO.setPrestamoId(prestamoViewModel.getPrestamoId());
+        DTO.setSaldoAlIniciarSemana(prestamoViewModel.getSaldoAlIniciarSemana());
 
         return DTO;
     }

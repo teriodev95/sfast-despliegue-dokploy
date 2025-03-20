@@ -6,10 +6,12 @@ import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.LiquidacionModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.PagoModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.PorcentajesDescuentoLiquidacionesModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.dynamic.PagoDynamicModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.views.PrestamoViewModel;
 import tech.calaverita.sfast_xpress.services.CalendarioService;
 import tech.calaverita.sfast_xpress.services.LiquidacionService;
 import tech.calaverita.sfast_xpress.services.PorcentajesDescuentoLiquidacionesService;
+import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
 import tech.calaverita.sfast_xpress.services.views.PrestamoViewService;
 
 import java.time.LocalDate;
@@ -20,23 +22,30 @@ import java.util.Optional;
 @Component
 public class LiquidacionUtil {
     private static PrestamoViewService prestamoViewService;
+    private static PagoDynamicService pagoDynamicService;
     private static LiquidacionService liquidacionService;
     private static CalendarioService calendarioService;
     private static PorcentajesDescuentoLiquidacionesService porcentajesDescuentoLiquidacionesService;
 
     public LiquidacionUtil(PrestamoViewService prestamoViewService, LiquidacionService liquidacionService,
-                           CalendarioService calendarioService,
-                           PorcentajesDescuentoLiquidacionesService porcentajesDescuentoLiquidacionesService) {
+            CalendarioService calendarioService,
+            PorcentajesDescuentoLiquidacionesService porcentajesDescuentoLiquidacionesService,
+            PagoDynamicService pagoDynamicService) {
         LiquidacionUtil.prestamoViewService = prestamoViewService;
         LiquidacionUtil.liquidacionService = liquidacionService;
         LiquidacionUtil.calendarioService = calendarioService;
         LiquidacionUtil.porcentajesDescuentoLiquidacionesService = porcentajesDescuentoLiquidacionesService;
+        LiquidacionUtil.pagoDynamicService = pagoDynamicService;
     }
 
     public static LiquidacionDTO getLiquidacionDTO(String prestamoId) {
         LiquidacionDTO liquidacionDTO = null;
 
-        PrestamoViewModel prestamoViewModel = prestamoViewService.findById(prestamoId);
+        CalendarioModel calendarioModel = LiquidacionUtil.calendarioService
+                .findByFechaActual(LocalDate.now().toString());
+        PrestamoViewModel prestamoViewModel = LiquidacionUtil.prestamoViewService.findById(prestamoId);
+        PagoDynamicModel pagoDynamicModel = LiquidacionUtil.pagoDynamicService.findByPrestamoIdAnioAndSemana(prestamoId,
+                calendarioModel.getAnio(), calendarioModel.getSemana());
 
         if (prestamoViewModel != null) {
             // To easy code
@@ -48,10 +57,18 @@ public class LiquidacionUtil {
                     semanaEntrega));
             liquidacionDTO.setDescuentoPorcentaje(LiquidacionUtil.getDescuentoPorcentaje(liquidacionDTO
                     .getIdentificador(), liquidacionDTO.getSemanasTranscurridas()));
-            liquidacionDTO.setDescuentoDinero(LiquidacionUtil.getDescuentoDinero(liquidacionDTO.getSaldo(),
+            liquidacionDTO.setPagoSemanal(pagoDynamicModel.getMonto());
+            liquidacionDTO.setTarifa(pagoDynamicModel.getTarifa());
+            if (pagoDynamicModel.getTipo().equals("Excedente")) {
+                liquidacionDTO.setExcedente(liquidacionDTO.getPagoSemanal() - liquidacionDTO.getTarifa());
+                liquidacionDTO.setExcedente(MyUtil.getDouble(liquidacionDTO.getExcedente()));
+                liquidacionDTO.setLiquidaCon(liquidacionDTO.getLiquidaCon() - liquidacionDTO.getExcedente());
+            }
+            liquidacionDTO.setDescuentoDinero(LiquidacionUtil.getDescuentoDinero(
+                    liquidacionDTO.getSaldoAlIniciarSemana() - liquidacionDTO.getTarifa(),
                     liquidacionDTO.getDescuentoPorcentaje()));
-            liquidacionDTO.setLiquidaCon(LiquidacionUtil.getLiquidaCon(liquidacionDTO.getSaldo(),
-                    liquidacionDTO.getDescuentoDinero()));
+            liquidacionDTO.setLiquidaCon(liquidacionDTO.getSaldoAlIniciarSemana() - liquidacionDTO.getTarifa() -
+                    liquidacionDTO.getDescuentoDinero() - liquidacionDTO.getExcedente());
         }
 
         return liquidacionDTO;
@@ -60,8 +77,8 @@ public class LiquidacionUtil {
     private static int getDescuentoPorcentaje(String identificadorCredito, int semanasTranscurridas) {
         int descuentoPorcentaje = 0;
 
-        Optional<PorcentajesDescuentoLiquidacionesModel> porcentajeDescuentoLiquidacionesEntity = LiquidacionUtil
-                .porcentajesDescuentoLiquidacionesService.findById(identificadorCredito);
+        Optional<PorcentajesDescuentoLiquidacionesModel> porcentajeDescuentoLiquidacionesEntity = LiquidacionUtil.porcentajesDescuentoLiquidacionesService
+                .findById(identificadorCredito);
 
         if (porcentajeDescuentoLiquidacionesEntity.isPresent()
                 && (semanasTranscurridas >= 1 && semanasTranscurridas <= 25)) {
@@ -127,11 +144,9 @@ public class LiquidacionUtil {
                 .existsByAnioAndSemana(anio, 53);
 
         int semanasTranscurridas = 0;
-        while (!(
-                Objects.equals(semanaEntregaCalendarioModel.getAnio(), semanaActualCalendarioModel.getAnio())
-                        && Objects.equals(semanaEntregaCalendarioModel.getSemana(), semanaActualCalendarioModel
-                        .getSemana())
-        )) {
+        while (!(Objects.equals(semanaEntregaCalendarioModel.getAnio(), semanaActualCalendarioModel.getAnio())
+                && Objects.equals(semanaEntregaCalendarioModel.getSemana(), semanaActualCalendarioModel
+                        .getSemana()))) {
             LiquidacionUtil.funSemanaSiguiente(semanaEntregaCalendarioModel, existsSemana53);
             semanasTranscurridas++;
         }
