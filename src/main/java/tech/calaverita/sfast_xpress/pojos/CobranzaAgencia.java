@@ -117,7 +117,7 @@ public class CobranzaAgencia {
 
             if (monto >= tarifaCalculada) {
                 this.cobranzaPura += tarifaCalculada;
-            } else {
+            } else if (tipo.equals("Reducido")) {
                 this.cobranzaPura += monto;
                 this.pagosReducidos++;
             }
