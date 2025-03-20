@@ -152,8 +152,11 @@ public final class AsignacionController {
             asignacionModel.setLog(new Gson().toJson(logAsignacion));
         }
 
-        HashMap<String, String> agenciaYGerenciaHm = this.asignacionService
-                .getAgenciaYGerencia(entregoUsuarioModelCf.join(), recibioUsuarioModelCf.join());
+        HashMap<String, String> agenciaYGerenciaHm = new HashMap<>();
+        if (entregoUsuarioModelCf.join().getTipo().equals("Agente")) {
+            agenciaYGerenciaHm.put("agencia", entregoUsuarioModelCf.join().getAgencia());
+            agenciaYGerenciaHm.put("gerencia", entregoUsuarioModelCf.join().getGerencia());
+        }
 
         asignacionModel
                 .setTipo(this.asignacionService.getTipo(entregoUsuarioModelCf.join(), recibioUsuarioModelCf.join()));

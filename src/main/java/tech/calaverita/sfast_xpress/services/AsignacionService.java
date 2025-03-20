@@ -173,39 +173,4 @@ public class AsignacionService {
 
         return tipo;
     }
-
-    public HashMap<String, String> getAgenciaYGerencia(UsuarioModel entregoUsuarioModel,
-            UsuarioModel recibioUsuarioModel) {
-        HashMap<String, String> agenciaYGerencia = new HashMap<>();
-        agenciaYGerencia.put("agencia", "");
-        agenciaYGerencia.put("gerencia", "");
-
-        // To easy code
-        String tipoEntrego = entregoUsuarioModel.getTipo();
-        String tipoRecibio = recibioUsuarioModel.getTipo();
-
-        if (!(tipoEntrego.equals("Gerente") && tipoRecibio.equals("Gerente"))) {
-            setAgenciaYGerencia(agenciaYGerencia, entregoUsuarioModel);
-
-            if (agenciaYGerencia.get("gerencia").isEmpty()) {
-                setAgenciaYGerencia(agenciaYGerencia, recibioUsuarioModel);
-            }
-        }
-
-        return agenciaYGerencia;
-    }
-
-    private void setAgenciaYGerencia(HashMap<String, String> agenciaYGerencia, UsuarioModel usuarioModel) {
-        switch (usuarioModel.getTipo()) {
-            case "Agente":
-                agenciaYGerencia.put("agencia", usuarioModel.getAgencia());
-                agenciaYGerencia.put("gerencia", usuarioModel.getGerencia());
-                break;
-            case "Gerente":
-                agenciaYGerencia.put("gerencia", usuarioModel.getGerencia());
-                break;
-            default:
-                break;
-        }
-    }
 }
