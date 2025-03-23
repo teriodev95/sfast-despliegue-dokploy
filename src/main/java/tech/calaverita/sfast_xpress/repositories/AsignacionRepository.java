@@ -54,11 +54,21 @@ public interface AsignacionRepository extends CrudRepository<AsignacionModel, St
 	ArrayList<AsignacionModel> findAsignacionesIngresoByGerenciaAndAnioAndSemana(
 			String gerencia, int anio, int semana);
 
+	@Query("SELECT asign FROM AsignacionModel asign WHERE asign.quienRecibioUsuarioId = :usuarioId "
+			+ "AND asign.anio = :anio AND asign.semana = :semana")
+	ArrayList<AsignacionModel> findAsignacionesIngresoByUsuarioIdAndAnioAndSemana(
+			int usuarioId, int anio, int semana);
+
 	@Query("SELECT asign FROM AsignacionModel asign INNER JOIN asign.entregoUsuarioModel usuar "
 			+ "ON usuar.gerencia = :gerencia AND usuar.tipo = 'Gerente' WHERE asign.anio = :anio "
 			+ "AND asign.semana = :semana")
 	ArrayList<AsignacionModel> findAsignacionesEgresoByGerenciaAndAnioAndSemana(
 			String gerencia, int anio, int semana);
+
+	@Query("SELECT asign FROM AsignacionModel asign WHERE asign.quienEntregoUsuarioId = :usuarioId "
+			+ "AND asign.anio = :anio AND asign.semana = :semana")
+	ArrayList<AsignacionModel> findAsignacionesEgresoByUsuarioIdAndAnioAndSemana(
+			int usuarioId, int anio, int semana);
 
 	@Query("SELECT asign FROM AsignacionModel asign INNER JOIN asign.recibioUsuarioModel usuar "
 			+ "ON usuar.tipo != 'Gerente' WHERE asign.gerencia = :gerencia AND asign.anio = :anio "

@@ -51,4 +51,11 @@ public class GastoService {
 
         return CompletableFuture.completedFuture(gastoModels);
     }
+
+    @Async("asyncExecutor")
+    public CompletableFuture<List<GastoModel>> findByUsuarioIdAnioSemanaAsync(int usuarioId, int anio, int semana) {
+        List<GastoModel> gastoModels = this.gastoRepository.findByCreadoPorIdAndAnioAndSemana(usuarioId, anio, semana);
+
+        return CompletableFuture.completedFuture(gastoModels);
+    }
 }

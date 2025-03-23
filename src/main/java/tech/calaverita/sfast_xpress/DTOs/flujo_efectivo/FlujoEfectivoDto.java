@@ -3,6 +3,7 @@ package tech.calaverita.sfast_xpress.DTOs.flujo_efectivo;
 import java.util.HashMap;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -15,6 +16,7 @@ import tech.calaverita.sfast_xpress.pojos.AlmacenObjects;
 import tech.calaverita.sfast_xpress.utils.MyUtil;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class FlujoEfectivoDto {
     @JsonProperty(value = "asignaciones")
     private FlujoEfectivoAsignacionesDto asignacionesFlujoEfectivoDto;
@@ -62,6 +64,26 @@ public class FlujoEfectivoDto {
         setVentasYPrimerosPagos(ventaModels);
         setResumenFlujoEfectivoHm();
         setCobranzaAgenciasVacantes(pagoDynamicModels);
+    }
+
+    @SuppressWarnings("unchecked")
+    public FlujoEfectivoDto(AlmacenObjects almacenObjects, int usuarioId) {
+        initializeResumenFlujoEfectivoHm();
+
+        List<AsignacionModel> recibioAsignacionModels = (List<AsignacionModel>) almacenObjects
+                .getObject("recibioAsignacionModels");
+        List<AsignacionModel> entregoAsignacionModels = (List<AsignacionModel>) almacenObjects
+                .getObject("entregoAsignacionModels");
+        List<GastoModel> gastoModels = (List<GastoModel>) almacenObjects
+                .getObject("gastoModels");
+        List<IncidenteReposicionModel> incidenteReposicionModels = (List<IncidenteReposicionModel>) almacenObjects
+                .getObject("incidenteReposicionModels");
+
+        this.asignacionesFlujoEfectivoDto = new FlujoEfectivoAsignacionesDto(recibioAsignacionModels,
+                entregoAsignacionModels, usuarioId);
+        this.otrosFlujoEfectivoDto = new FlujoEfectivoOtrosDto(incidenteReposicionModels);
+        this.gastosFlujoEfectivoDto = new FlujoEfectivoGastosFlujoEfectivoDto(gastoModels);
+        setResumenFlujoEfectivoUsuarioIdHm();
     }
 
     private void initializeVentasFlujoEfectivoHm() {
@@ -121,6 +143,26 @@ public class FlujoEfectivoDto {
         egresos += this.otrosFlujoEfectivoDto.getSubTotalEgresos();
         egresos += this.gastosFlujoEfectivoDto.getSubTotalGastos();
         egresos += (Double) this.ventasFlujoEfectivoHm.get("total");
+
+        this.resumenFlujoEfectivoHm.put("ingresos", MyUtil.getDouble(ingresos));
+        this.resumenFlujoEfectivoHm.put("egresos", MyUtil.getDouble(egresos));
+        this.resumenFlujoEfectivoHm.put("diferencia", MyUtil.getDouble(ingresos - egresos));
+    }
+
+    private void setResumenFlujoEfectivoUsuarioIdHm() {
+        double ingresos = 0D;
+        ingresos += this.asignacionesFlujoEfectivoDto.getAsignacionesAgenteDto().getSubTotalIngresos();
+        ingresos += this.asignacionesFlujoEfectivoDto.getAsignacionesAdministracionDto().getSubTotalIngresos();
+        ingresos += this.asignacionesFlujoEfectivoDto.getAsignacionesSeguridadDto().getSubTotalIngresos();
+        ingresos += this.asignacionesFlujoEfectivoDto.getAsignacionesOperacionDto().getSubTotalIngresos();
+        ingresos += this.otrosFlujoEfectivoDto.getSubTotalIngresos();
+
+        double egresos = 0D;
+        egresos += this.asignacionesFlujoEfectivoDto.getAsignacionesAdministracionDto().getSubTotalEgresos();
+        egresos += this.asignacionesFlujoEfectivoDto.getAsignacionesSeguridadDto().getSubTotalEgresos();
+        egresos += this.asignacionesFlujoEfectivoDto.getAsignacionesOperacionDto().getSubTotalEgresos();
+        egresos += this.otrosFlujoEfectivoDto.getSubTotalEgresos();
+        egresos += this.gastosFlujoEfectivoDto.getSubTotalGastos();
 
         this.resumenFlujoEfectivoHm.put("ingresos", MyUtil.getDouble(ingresos));
         this.resumenFlujoEfectivoHm.put("egresos", MyUtil.getDouble(egresos));

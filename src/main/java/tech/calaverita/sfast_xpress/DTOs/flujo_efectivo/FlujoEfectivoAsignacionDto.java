@@ -47,6 +47,26 @@ public class FlujoEfectivoAsignacionDto {
         this.subTotalEgresos = MyUtil.getDouble(this.subTotalEgresos);
     }
 
+    public FlujoEfectivoAsignacionDto(List<AsignacionModel> asignacionModels, int usuarioId) {
+        this();
+
+        for (AsignacionModel asignacionModel : asignacionModels) {
+            // To easy code
+            int quienRecibioUsuarioId = asignacionModel.getQuienRecibioUsuarioId();
+
+            if (quienRecibioUsuarioId == usuarioId) {
+                this.subTotalIngresos += asignacionModel.getMonto();
+                this.asignacionIngresoDtos.add(new FlujoEfectivoAsignacionIngresoDto(asignacionModel));
+            } else {
+                this.subTotalEgresos += asignacionModel.getMonto();
+                this.asignacionEgresoDtos.add(new FlujoEfectivoAsignacionEgresoDto(asignacionModel));
+            }
+        }
+
+        this.subTotalIngresos = MyUtil.getDouble(this.subTotalIngresos);
+        this.subTotalEgresos = MyUtil.getDouble(this.subTotalEgresos);
+    }
+
     public FlujoEfectivoAsignacionDto(Double subTotalIngresos,
             List<FlujoEfectivoAsignacionIngresoDto> asignacionIngresoDtos,
             Double subTotalEgresos, List<FlujoEfectivoAsignacionEgresoDto> asignacionEgresoDtos) {

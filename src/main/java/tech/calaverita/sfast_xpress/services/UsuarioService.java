@@ -19,6 +19,10 @@ public class UsuarioService {
         this.repo = repo;
     }
 
+    public boolean existsByUsuarioIdAndStatus(int usuarioId, boolean status) {
+        return this.repo.existsByUsuarioIdAndStatus(usuarioId, status);
+    }
+
     public boolean existsByUsuario(String usuario) {
         return this.repo.existsByUsuario(usuario);
     }

@@ -9,11 +9,13 @@ import tech.calaverita.sfast_xpress.models.mariaDB.IncidenteReposicionModel;
 
 @Repository
 public interface IncidenteReposicionRepository extends CrudRepository<IncidenteReposicionModel, Integer> {
-    List<IncidenteReposicionModel> findByGerenciaAndAnioAndSemana(String gerencia, int anio, int semana);
+        List<IncidenteReposicionModel> findByGerenciaAndAnioAndSemana(String gerencia, int anio, int semana);
 
-    List<IncidenteReposicionModel> findByCategoriaAndGerenciaAndAnioAndSemana(String categoria, String gerencia,
-            int anio, int semana);
+        List<IncidenteReposicionModel> findByCategoriaAndGerenciaAndAnioAndSemana(String categoria, String gerencia,
+                        int anio, int semana);
 
-    List<IncidenteReposicionModel> findByCategoriaNotAndGerenciaAndAnioAndSemana(String categoria, String gerencia,
-            int anio, int semana);
+        List<IncidenteReposicionModel> findByCategoriaNotAndGerenciaAndAnioAndSemana(String categoria, String gerencia,
+                        int anio, int semana);
+
+        List<IncidenteReposicionModel> findByUsuarioIdAndAnioAndSemana(int usuarioId, int anio, int semana);
 }

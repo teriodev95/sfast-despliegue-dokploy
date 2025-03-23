@@ -16,6 +16,8 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
 
         boolean existsByAgencia(String agencia);
 
+        boolean existsByUsuarioIdAndStatus(int usuarioId, boolean status);
+
         boolean existsByUsuarioAndTipoIn(String usuario, String[] tipo);
 
         boolean existsByUsuarioAndTipo(String usuario, String tipo);

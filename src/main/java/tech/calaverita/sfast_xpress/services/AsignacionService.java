@@ -133,10 +133,27 @@ public class AsignacionService {
     }
 
     @Async("asyncExecutor")
+    public CompletableFuture<List<AsignacionModel>> findAsignacionesIngresoByUsuarioIdAnioSemanaAsync(
+            int usuarioId, int anio, int semana) {
+        ArrayList<AsignacionModel> asignacionModels = this.asignacionRespository
+                .findAsignacionesIngresoByUsuarioIdAndAnioAndSemana(usuarioId, anio, semana);
+
+        return CompletableFuture.completedFuture(asignacionModels);
+    }
+
+    @Async("asyncExecutor")
     public CompletableFuture<List<AsignacionModel>> findAsignacionesEgresoByGerenciaAnioSemanaAsync(
             String gerencia, int anio, int semana) {
         ArrayList<AsignacionModel> asignacionModels = this.asignacionRespository
                 .findAsignacionesEgresoByGerenciaAndAnioAndSemana(gerencia, anio, semana);
+        return CompletableFuture.completedFuture(asignacionModels);
+    }
+
+    @Async("asyncExecutor")
+    public CompletableFuture<List<AsignacionModel>> findAsignacionesEgresoByUsuarioIdAnioSemanaAsync(
+            int usuarioId, int anio, int semana) {
+        ArrayList<AsignacionModel> asignacionModels = this.asignacionRespository
+                .findAsignacionesEgresoByUsuarioIdAndAnioAndSemana(usuarioId, anio, semana);
         return CompletableFuture.completedFuture(asignacionModels);
     }
 

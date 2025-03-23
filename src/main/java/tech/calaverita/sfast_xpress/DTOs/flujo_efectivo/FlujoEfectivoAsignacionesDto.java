@@ -53,6 +53,33 @@ public class FlujoEfectivoAsignacionesDto {
         this.asignacionesRegionalDto = new FlujoEfectivoAsignacionDto(asignacionesRegionalAsignacionModel, gerencia);
     }
 
+    public FlujoEfectivoAsignacionesDto(List<AsignacionModel> recibioAsignacionModels,
+            List<AsignacionModel> entregoAsignacionModels, int usuarioId) {
+        List<AsignacionModel> asignacionesAgenteAsignacionModel = new ArrayList<>();
+        List<AsignacionModel> asignacionesAdministracionAsignacionModel = new ArrayList<>();
+        List<AsignacionModel> asignacionesSeguridadAsignacionModel = new ArrayList<>();
+        List<AsignacionModel> asignacionesOperacionAsignacionModel = new ArrayList<>();
+        List<AsignacionModel> asignacionesRegionalAsignacionModel = new ArrayList<>();
+
+        AlmacenObjects almacenObjects = new AlmacenObjects();
+        almacenObjects.addObject("asignacionesAgenteAsignacionModel", asignacionesAgenteAsignacionModel);
+        almacenObjects.addObject("asignacionesAdministracionAsignacionModel",
+                asignacionesAdministracionAsignacionModel);
+        almacenObjects.addObject("asignacionesSeguridadAsignacionModel", asignacionesSeguridadAsignacionModel);
+        almacenObjects.addObject("asignacionesOperacionAsignacionModel", asignacionesOperacionAsignacionModel);
+        almacenObjects.addObject("asignacionesRegionalAsignacionModel", asignacionesRegionalAsignacionModel);
+
+        setAsignaciones(recibioAsignacionModels, almacenObjects, true);
+        setAsignaciones(entregoAsignacionModels, almacenObjects, false);
+
+        this.asignacionesAgenteDto = new FlujoEfectivoAsignacionesAgentesDto(asignacionesAgenteAsignacionModel);
+        this.asignacionesAdministracionDto = new FlujoEfectivoAsignacionDto(
+                asignacionesAdministracionAsignacionModel, usuarioId);
+        this.asignacionesSeguridadDto = new FlujoEfectivoAsignacionDto(asignacionesSeguridadAsignacionModel, usuarioId);
+        this.asignacionesOperacionDto = new FlujoEfectivoAsignacionDto(asignacionesOperacionAsignacionModel, usuarioId);
+        this.asignacionesRegionalDto = new FlujoEfectivoAsignacionDto(asignacionesRegionalAsignacionModel, usuarioId);
+    }
+
     @SuppressWarnings("unchecked")
     public void setAsignaciones(List<AsignacionModel> asignacionModels, AlmacenObjects almacenObjects,
             boolean recibio) {

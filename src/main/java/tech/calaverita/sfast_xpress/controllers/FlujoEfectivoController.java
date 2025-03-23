@@ -1,6 +1,7 @@
 package tech.calaverita.sfast_xpress.controllers;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -24,6 +25,7 @@ import tech.calaverita.sfast_xpress.services.AsignacionService;
 import tech.calaverita.sfast_xpress.services.CalendarioService;
 import tech.calaverita.sfast_xpress.services.GastoService;
 import tech.calaverita.sfast_xpress.services.IncidenteReposicionService;
+import tech.calaverita.sfast_xpress.services.UsuarioService;
 import tech.calaverita.sfast_xpress.services.VentaService;
 import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
 
@@ -37,16 +39,19 @@ public class FlujoEfectivoController {
         private final IncidenteReposicionService incidenteReposicionService;
         private final PagoDynamicService pagoDynamicService;
         private final VentaService ventaService;
+        private final UsuarioService usuarioService;
 
         public FlujoEfectivoController(AsignacionService asignacionService, CalendarioService calendarioService,
                         GastoService gastoService, IncidenteReposicionService incidenteReposicionService,
-                        PagoDynamicService pagoDynamicService, VentaService ventaService) {
+                        PagoDynamicService pagoDynamicService, VentaService ventaService,
+                        UsuarioService usuarioService) {
                 this.asignacionService = asignacionService;
                 this.calendarioService = calendarioService;
                 this.gastoService = gastoService;
                 this.incidenteReposicionService = incidenteReposicionService;
                 this.pagoDynamicService = pagoDynamicService;
                 this.ventaService = ventaService;
+                this.usuarioService = usuarioService;
         }
 
         @GetMapping(path = "/gerencia/{gerencia}")
@@ -79,5 +84,38 @@ public class FlujoEfectivoController {
                 almacenObjects.addObject("ventaModels", ventaModelsCF.join());
 
                 return new ResponseEntity<>(new FlujoEfectivoDto(almacenObjects, gerencia), HttpStatus.OK);
+        }
+
+        @GetMapping(path = "/usuarioId/{usuarioId}")
+        public ResponseEntity<?> getFlujoEfectivoGerencia(@PathVariable Integer usuarioId) {
+                if (!this.usuarioService.existsByUsuarioIdAndStatus(usuarioId, true)) {
+                        HashMap<String, String> responseHm = new HashMap<>();
+                        responseHm.put("error", "Recurso no encontrado");
+                        responseHm.put("mensaje", "No existe el registro solicitado o está inactivo");
+                        return new ResponseEntity<>(responseHm, HttpStatus.NOT_FOUND);
+                }
+
+                CalendarioModel calendarioModel = this.calendarioService.findByFechaActual(LocalDate.now().toString());
+
+                // To easy code
+                int anio = calendarioModel.getAnio();
+                int semana = calendarioModel.getSemana();
+
+                CompletableFuture<List<AsignacionModel>> recibioAsignacionModelsCF = this.asignacionService
+                                .findAsignacionesIngresoByUsuarioIdAnioSemanaAsync(usuarioId, anio, semana);
+                CompletableFuture<List<AsignacionModel>> entregoAsignacionModelsCF = this.asignacionService
+                                .findAsignacionesEgresoByUsuarioIdAnioSemanaAsync(usuarioId, anio, semana);
+                CompletableFuture<List<GastoModel>> gastoModelsCF = this.gastoService
+                                .findByUsuarioIdAnioSemanaAsync(usuarioId, anio, semana);
+                CompletableFuture<List<IncidenteReposicionModel>> incidenteReposicionModelsCF = this.incidenteReposicionService
+                                .findByUsuarioIdAnioSemanaAsync(usuarioId, anio, semana);
+
+                AlmacenObjects almacenObjects = new AlmacenObjects();
+                almacenObjects.addObject("recibioAsignacionModels", recibioAsignacionModelsCF.join());
+                almacenObjects.addObject("entregoAsignacionModels", entregoAsignacionModelsCF.join());
+                almacenObjects.addObject("gastoModels", gastoModelsCF.join());
+                almacenObjects.addObject("incidenteReposicionModels", incidenteReposicionModelsCF.join());
+
+                return new ResponseEntity<>(new FlujoEfectivoDto(almacenObjects, usuarioId), HttpStatus.OK);
         }
 }
