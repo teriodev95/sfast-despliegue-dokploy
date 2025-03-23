@@ -46,6 +46,10 @@ public class FlujoEfectivoAsignacionesAgentesDto {
         }
 
         this.subTotalIngresos = MyUtil.getDouble(this.subTotalIngresos);
+
+        for (FlujoEfectivoAsignacionIngresoAgenteDto asignacionIngresoAgenteDto : this.ingresoAsignacionAgenteDtos) {
+            asignacionIngresoAgenteDto.setMonto(MyUtil.getDouble(asignacionIngresoAgenteDto.getMonto()));
+        }
     }
 
     public FlujoEfectivoAsignacionesAgentesDto(Double subTotalIngresos,
