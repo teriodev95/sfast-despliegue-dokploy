@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import tech.calaverita.sfast_xpress.DTOs.detalle_cierre_semanal.DetalleCierreSemanalDto;
@@ -22,6 +23,16 @@ public class CierreGerenciaService {
 	private final DetalleCierreSemanalService detalleCierreAgenciasService;
 	private final FlujoEfectivoService flujoEfectivoService;
 	private final TabulacionDineroService tabulacionDineroService;
+
+	public CierreGerenciaModel findByGerenciaAnioSemana(String gerencia, int anio, int semana) {
+		return this.cierreGerenciaRepository.findByGerenciaAndAnioAndSemana(gerencia, anio, semana);
+	}
+
+	@Async("asyncExecutor")
+	public CompletableFuture<CierreGerenciaModel> findByGerenciaAnioSemanaAsync(String gerencia, int anio,
+			int semana) {
+		return CompletableFuture.completedFuture(findByGerenciaAnioSemana(gerencia, anio, semana));
+	}
 
 	public CierreGerenciaService(CalendarioService calendarioService, CierreGerenciaRepository cierreGerenciaRepository,
 			CobranzaAgenciaService cobranzaAgenciaService, DetalleCierreSemanalService detalleCierreAgenciasService,

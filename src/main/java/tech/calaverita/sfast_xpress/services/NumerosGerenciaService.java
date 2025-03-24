@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import tech.calaverita.sfast_xpress.DTOs.numeros_gerencia.NumerosGerenciaDto;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
+import tech.calaverita.sfast_xpress.models.mariaDB.CierreGerenciaModel;
 import tech.calaverita.sfast_xpress.models.mariaDB.VentaModel;
 import tech.calaverita.sfast_xpress.pojos.CobranzaAgencia;
 import tech.calaverita.sfast_xpress.utils.MyUtil;
@@ -15,12 +16,15 @@ import tech.calaverita.sfast_xpress.utils.MyUtil;
 @Service
 public class NumerosGerenciaService {
     private final CalendarioService calendarioService;
+    private final CierreGerenciaService cierreGerenciaService;
     private final CobranzaAgenciaService cobranzaAgenciaService;
     private final VentaService ventaService;
 
-    public NumerosGerenciaService(CalendarioService calendarioService, CobranzaAgenciaService cobranzaAgenciaService,
-            VentaService ventaService) {
+    public NumerosGerenciaService(CalendarioService calendarioService,
+            CierreGerenciaService cierreGerenciaService,
+            CobranzaAgenciaService cobranzaAgenciaService, VentaService ventaService) {
         this.calendarioService = calendarioService;
+        this.cierreGerenciaService = cierreGerenciaService;
         this.cobranzaAgenciaService = cobranzaAgenciaService;
         this.ventaService = ventaService;
     }
@@ -50,14 +54,14 @@ public class NumerosGerenciaService {
         int anioSemanaAnterior = semanaAnteriorCalendarioModel.getAnio();
         int semanaAnterior = semanaAnteriorCalendarioModel.getSemana();
 
-        CompletableFuture<List<CobranzaAgencia>> cobranzaAgenciasSemanaAnteriorCf = this.cobranzaAgenciaService
-                .getCobranzaAgenciasByGerenciaAnioSemanaAsync(gerencia, anioSemanaAnterior, semanaAnterior);
+        CompletableFuture<CierreGerenciaModel> cierreGerenciaModel = this.cierreGerenciaService
+                .findByGerenciaAnioSemanaAsync(gerencia, anioSemanaAnterior, semanaAnterior);
         CompletableFuture<List<CobranzaAgencia>> cobranzaAgenciasSemanaActualCf = this.cobranzaAgenciaService
                 .getCobranzaAgenciasByGerenciaAnioSemanaAsync(gerencia, anio, semana);
         CompletableFuture<List<VentaModel>> ventaModelsCf = this.ventaService.findByGerenciaAnioSemanaAsync(gerencia,
                 anio, semana);
 
-        return new NumerosGerenciaDto(cobranzaAgenciasSemanaAnteriorCf.join(), cobranzaAgenciasSemanaActualCf.join(),
+        return new NumerosGerenciaDto(cierreGerenciaModel.join(), cobranzaAgenciasSemanaActualCf.join(),
                 ventaModelsCf.join());
     }
 
