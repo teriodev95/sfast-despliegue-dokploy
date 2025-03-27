@@ -2,6 +2,7 @@ package tech.calaverita.sfast_xpress.controllers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.http.HttpStatus;
@@ -128,7 +129,7 @@ public final class AsignacionController {
 
     @SuppressWarnings("unchecked")
     @PostMapping(path = "/create-one")
-    public @ResponseBody ResponseEntity<String> postCreateOne(@RequestBody AsignacionModel asignacionModel) {
+    public @ResponseBody ResponseEntity<?> postCreateOne(@RequestBody AsignacionModel asignacionModel) {
         String strSession = "session_id=76d814874514726176f0615260848da2aab725ea";
 
         String resultadoValidacion = this.asignacionValidationService.validateAsignacion(asignacionModel);
@@ -141,6 +142,16 @@ public final class AsignacionController {
                 .findByIdAsync(asignacionModel.getQuienEntregoUsuarioId());
         CompletableFuture<UsuarioModel> recibioUsuarioModelCf = this.usuarioService
                 .findByIdAsync(asignacionModel.getQuienRecibioUsuarioId());
+
+        if (!this.asignacionService.isAsignacionPermitida(entregoUsuarioModelCf.join(), recibioUsuarioModelCf.join())) {
+            Map<String, Object> responseHM = new HashMap<>();
+            responseHM.put("error", HttpStatus.BAD_REQUEST.getReasonPhrase());
+            responseHM.put("valor", HttpStatus.BAD_REQUEST.value());
+            responseHM.put("mensaje", "Asignación no permitida según matriz de permisos");
+            responseHM.put("quienEntrega", entregoUsuarioModelCf.join());
+            responseHM.put("quienRecibe", recibioUsuarioModelCf.join());
+            return new ResponseEntity<>(responseHM, HttpStatus.BAD_REQUEST);
+        }
 
         // To easy code
         EstadoAgenciaModel estadoAgenciaModel = entregoUsuarioModelCf.join().getEstadoAgenciaModel();

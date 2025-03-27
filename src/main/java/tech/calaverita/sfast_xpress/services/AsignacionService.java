@@ -192,4 +192,40 @@ public class AsignacionService {
 
         return tipo;
     }
+
+    public boolean isAsignacionPermitida(UsuarioModel entregoUsuarioModel, UsuarioModel recibioUsuarioModel) {
+        // To easy code
+        String tipoUsuarioEntrego = entregoUsuarioModel.getTipo();
+        String tipoUsuarioRecibio = recibioUsuarioModel.getTipo();
+
+        String[] asignacionesPermitidasAgentes = { "Gerente", "Seguridad", "Regional" };
+        String[] asignacionesPermitidasGerente = { "Gerente", "Seguridad", "Regional", "Jefe de Admin" };
+        String[] asignacionesPermitidasSeguridad = { "Gerente", "Seguridad", "Regional", "Jefe de Admin" };
+        String[] asignacionesPermitidasRegional = { "Gerente", "Seguridad", "Regional", "Jefe de Admin" };
+        String[] asignacionesPermitidasAdmin = { "Gerente", "Regional", "Jefe de Admin" };
+
+        switch (tipoUsuarioEntrego) {
+            case "Agente":
+                return validateAsignacion(asignacionesPermitidasAgentes, tipoUsuarioRecibio);
+            case "Gerente":
+                return validateAsignacion(asignacionesPermitidasGerente, tipoUsuarioRecibio);
+            case "Seguridad":
+                return validateAsignacion(asignacionesPermitidasSeguridad, tipoUsuarioRecibio);
+            case "Regional":
+                return validateAsignacion(asignacionesPermitidasRegional, tipoUsuarioRecibio);
+            case "Jefe de Admin":
+                return validateAsignacion(asignacionesPermitidasAdmin, tipoUsuarioRecibio);
+            default:
+                return false;
+        }
+    }
+
+    private boolean validateAsignacion(String[] asignacionesPermitidas, String tipoUsuarioRecibio) {
+        for (String tipo : asignacionesPermitidas) {
+            if (tipo.equals(tipoUsuarioRecibio)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
