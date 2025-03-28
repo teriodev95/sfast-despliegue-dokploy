@@ -33,89 +33,89 @@ import tech.calaverita.sfast_xpress.services.dynamic.PagoDynamicService;
 @RestController
 @RequestMapping(path = "/api/v2/flujos-efectivo")
 public class FlujoEfectivoController {
-        private final AsignacionService asignacionService;
-        private final CalendarioService calendarioService;
-        private final GastoService gastoService;
-        private final IncidenteReposicionService incidenteReposicionService;
-        private final PagoDynamicService pagoDynamicService;
-        private final VentaService ventaService;
-        private final UsuarioService usuarioService;
+	private final AsignacionService asignacionService;
+	private final CalendarioService calendarioService;
+	private final GastoService gastoService;
+	private final IncidenteReposicionService incidenteReposicionService;
+	private final PagoDynamicService pagoDynamicService;
+	private final VentaService ventaService;
+	private final UsuarioService usuarioService;
 
-        public FlujoEfectivoController(AsignacionService asignacionService, CalendarioService calendarioService,
-                        GastoService gastoService, IncidenteReposicionService incidenteReposicionService,
-                        PagoDynamicService pagoDynamicService, VentaService ventaService,
-                        UsuarioService usuarioService) {
-                this.asignacionService = asignacionService;
-                this.calendarioService = calendarioService;
-                this.gastoService = gastoService;
-                this.incidenteReposicionService = incidenteReposicionService;
-                this.pagoDynamicService = pagoDynamicService;
-                this.ventaService = ventaService;
-                this.usuarioService = usuarioService;
-        }
+	public FlujoEfectivoController(AsignacionService asignacionService, CalendarioService calendarioService,
+			GastoService gastoService, IncidenteReposicionService incidenteReposicionService,
+			PagoDynamicService pagoDynamicService, VentaService ventaService,
+			UsuarioService usuarioService) {
+		this.asignacionService = asignacionService;
+		this.calendarioService = calendarioService;
+		this.gastoService = gastoService;
+		this.incidenteReposicionService = incidenteReposicionService;
+		this.pagoDynamicService = pagoDynamicService;
+		this.ventaService = ventaService;
+		this.usuarioService = usuarioService;
+	}
 
-        @GetMapping(path = "/gerencia/{gerencia}")
-        public ResponseEntity<FlujoEfectivoDto> getFlujoEfectivoGerencia(@PathVariable String gerencia) {
-                CalendarioModel calendarioModel = this.calendarioService.findByFechaActual(LocalDate.now().toString());
+	@GetMapping(path = "/gerencia/{gerencia}")
+	public ResponseEntity<FlujoEfectivoDto> getFlujoEfectivoGerencia(@PathVariable String gerencia) {
+		CalendarioModel calendarioModel = this.calendarioService.findByFechaActual(LocalDate.now().toString());
 
-                // To easy code
-                int anio = calendarioModel.getAnio();
-                int semana = calendarioModel.getSemana();
+		// To easy code
+		int anio = calendarioModel.getAnio();
+		int semana = calendarioModel.getSemana();
 
-                CompletableFuture<List<AsignacionModel>> recibioAsignacionModelsCF = this.asignacionService
-                                .findAsignacionesIngresoByGerenciaAnioSemanaAsync(gerencia, anio, semana);
-                CompletableFuture<List<AsignacionModel>> entregoAsignacionModelsCF = this.asignacionService
-                                .findAsignacionesEgresoByGerenciaAnioSemanaAsync(gerencia, anio, semana);
-                CompletableFuture<List<GastoModel>> gastoModelsCF = this.gastoService
-                                .findByGerenciaAnioSemanaAsync(gerencia, anio, semana);
-                CompletableFuture<List<IncidenteReposicionModel>> incidenteReposicionModelsCF = this.incidenteReposicionService
-                                .findByGerenciaAnioSemanaAsync(gerencia, anio, semana);
-                CompletableFuture<List<PagoDynamicModel>> pagoDynamicModelsCf = this.pagoDynamicService
-                                .findByGerenciaAnioSemanaStatusAsync(gerencia, anio, semana, "Vacante");
-                CompletableFuture<List<VentaModel>> ventaModelsCF = this.ventaService
-                                .findByGerenciaAnioSemanaAsync(gerencia, anio, semana);
+		CompletableFuture<List<AsignacionModel>> recibioAsignacionModelsCF = this.asignacionService
+				.findAsignacionesIngresoByGerenciaAnioSemanaAsync(gerencia, anio, semana);
+		CompletableFuture<List<AsignacionModel>> entregoAsignacionModelsCF = this.asignacionService
+				.findAsignacionesEgresoByGerenciaAnioSemanaAsync(gerencia, anio, semana);
+		CompletableFuture<List<GastoModel>> gastoModelsCF = this.gastoService
+				.findByGerenciaAnioSemanaAsync(gerencia, anio, semana);
+		CompletableFuture<List<IncidenteReposicionModel>> incidenteReposicionModelsCF = this.incidenteReposicionService
+				.findByGerenciaAnioSemanaAsync(gerencia, anio, semana);
+		CompletableFuture<List<PagoDynamicModel>> pagoDynamicModelsCf = this.pagoDynamicService
+				.findByGerenciaAnioSemanaStatusAsync(gerencia, anio, semana, "Vacante");
+		CompletableFuture<List<VentaModel>> ventaModelsCF = this.ventaService
+				.findByGerenciaAnioSemanaAsync(gerencia, anio, semana);
 
-                AlmacenObjects almacenObjects = new AlmacenObjects();
-                almacenObjects.addObject("recibioAsignacionModels", recibioAsignacionModelsCF.join());
-                almacenObjects.addObject("entregoAsignacionModels", entregoAsignacionModelsCF.join());
-                almacenObjects.addObject("gastoModels", gastoModelsCF.join());
-                almacenObjects.addObject("incidenteReposicionModels", incidenteReposicionModelsCF.join());
-                almacenObjects.addObject("pagoDynamicModels", pagoDynamicModelsCf.join());
-                almacenObjects.addObject("ventaModels", ventaModelsCF.join());
+		AlmacenObjects almacenObjects = new AlmacenObjects();
+		almacenObjects.addObject("recibioAsignacionModels", recibioAsignacionModelsCF.join());
+		almacenObjects.addObject("entregoAsignacionModels", entregoAsignacionModelsCF.join());
+		almacenObjects.addObject("gastoModels", gastoModelsCF.join());
+		almacenObjects.addObject("incidenteReposicionModels", incidenteReposicionModelsCF.join());
+		almacenObjects.addObject("pagoDynamicModels", pagoDynamicModelsCf.join());
+		almacenObjects.addObject("ventaModels", ventaModelsCF.join());
 
-                return new ResponseEntity<>(new FlujoEfectivoDto(almacenObjects, gerencia), HttpStatus.OK);
-        }
+		return new ResponseEntity<>(new FlujoEfectivoDto(almacenObjects, gerencia), HttpStatus.OK);
+	}
 
-        @GetMapping(path = "/usuarioId/{usuarioId}")
-        public ResponseEntity<?> getFlujoEfectivoGerencia(@PathVariable Integer usuarioId) {
-                if (!this.usuarioService.existsByUsuarioIdAndStatus(usuarioId, true)) {
-                        HashMap<String, String> responseHm = new HashMap<>();
-                        responseHm.put("error", "Recurso no encontrado");
-                        responseHm.put("mensaje", "No existe el registro solicitado o está inactivo");
-                        return new ResponseEntity<>(responseHm, HttpStatus.NOT_FOUND);
-                }
+	@GetMapping(path = "/usuarioId/{usuarioId}")
+	public ResponseEntity<?> getFlujoEfectivoGerencia(@PathVariable Integer usuarioId) {
+		if (!this.usuarioService.existsByUsuarioIdAndStatus(usuarioId, true)) {
+			HashMap<String, String> responseHm = new HashMap<>();
+			responseHm.put("error", "Recurso no encontrado");
+			responseHm.put("mensaje", "No existe el registro solicitado o está inactivo");
+			return new ResponseEntity<>(responseHm, HttpStatus.NOT_FOUND);
+		}
 
-                CalendarioModel calendarioModel = this.calendarioService.findByFechaActual(LocalDate.now().toString());
+		CalendarioModel calendarioModel = this.calendarioService.findByFechaActual(LocalDate.now().toString());
 
-                // To easy code
-                int anio = calendarioModel.getAnio();
-                int semana = calendarioModel.getSemana();
+		// To easy code
+		int anio = calendarioModel.getAnio();
+		int semana = calendarioModel.getSemana();
 
-                CompletableFuture<List<AsignacionModel>> recibioAsignacionModelsCF = this.asignacionService
-                                .findAsignacionesIngresoByUsuarioIdAnioSemanaAsync(usuarioId, anio, semana);
-                CompletableFuture<List<AsignacionModel>> entregoAsignacionModelsCF = this.asignacionService
-                                .findAsignacionesEgresoByUsuarioIdAnioSemanaAsync(usuarioId, anio, semana);
-                CompletableFuture<List<GastoModel>> gastoModelsCF = this.gastoService
-                                .findByUsuarioIdAnioSemanaAsync(usuarioId, anio, semana);
-                CompletableFuture<List<IncidenteReposicionModel>> incidenteReposicionModelsCF = this.incidenteReposicionService
-                                .findByUsuarioIdAnioSemanaAsync(usuarioId, anio, semana);
+		CompletableFuture<List<AsignacionModel>> recibioAsignacionModelsCF = this.asignacionService
+				.findAsignacionesIngresoByUsuarioIdAnioSemanaAsync(usuarioId, anio, semana);
+		CompletableFuture<List<AsignacionModel>> entregoAsignacionModelsCF = this.asignacionService
+				.findAsignacionesEgresoByUsuarioIdAnioSemanaAsync(usuarioId, anio, semana);
+		CompletableFuture<List<GastoModel>> gastoModelsCF = this.gastoService
+				.findByUsuarioIdAnioSemanaAsync(usuarioId, anio, semana);
+		CompletableFuture<List<IncidenteReposicionModel>> incidenteReposicionModelsCF = this.incidenteReposicionService
+				.findByUsuarioIdAnioSemanaAsync(usuarioId, anio, semana);
 
-                AlmacenObjects almacenObjects = new AlmacenObjects();
-                almacenObjects.addObject("recibioAsignacionModels", recibioAsignacionModelsCF.join());
-                almacenObjects.addObject("entregoAsignacionModels", entregoAsignacionModelsCF.join());
-                almacenObjects.addObject("gastoModels", gastoModelsCF.join());
-                almacenObjects.addObject("incidenteReposicionModels", incidenteReposicionModelsCF.join());
+		AlmacenObjects almacenObjects = new AlmacenObjects();
+		almacenObjects.addObject("recibioAsignacionModels", recibioAsignacionModelsCF.join());
+		almacenObjects.addObject("entregoAsignacionModels", entregoAsignacionModelsCF.join());
+		almacenObjects.addObject("gastoModels", gastoModelsCF.join());
+		almacenObjects.addObject("incidenteReposicionModels", incidenteReposicionModelsCF.join());
 
-                return new ResponseEntity<>(new FlujoEfectivoDto(almacenObjects, usuarioId), HttpStatus.OK);
-        }
+		return new ResponseEntity<>(new FlujoEfectivoDto(almacenObjects, usuarioId), HttpStatus.OK);
+	}
 }
