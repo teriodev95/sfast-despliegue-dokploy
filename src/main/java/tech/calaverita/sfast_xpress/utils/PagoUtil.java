@@ -275,7 +275,7 @@ public final class PagoUtil {
 
             if (prestamoModel != null) {
                 pagoModel.setTarifa(prestamoModel.getTarifa());
-                pagoModel.setAgente(prestamoModel.getAgente());
+                pagoModel.setAgente(prestamoModel.getAgencia());
             }
 
             pagoModel.setTipo("Liquidacion");

@@ -141,11 +141,8 @@ public class DetalleCierreSemanalController {
 		CompletableFuture<List<CierreSemanalConsolidadoV2Model>> cierreSemanalConsolidadoV2ModelsCf = this.cierreSemanalConsolidadoV2Service
 				.findByGerenciaAnioSemanaAsync(gerencia, anio, semana);
 		CompletableFuture<List<ComisionModel>> comisionModelsCf = this.comisionService
-				.findByGerenciaAnioSemanaAsync(
-						gerencia,
-						anio, semana);
-		CompletableFuture<List<GastoModel>> gastoModelsCf = this.gastoService.findByGerenciaAnioSemanaAsync(
-				gerencia,
+				.findByGerenciaAnioSemanaAsync(gerencia, anio, semana);
+		CompletableFuture<List<GastoModel>> gastoModelsCf = this.gastoService.findByGerenciaAnioSemanaAsync(gerencia,
 				anio, semana);
 		CompletableFuture<List<IncidenteReposicionModel>> incidenteReposicionModelsCf = this.incidenteReposicionService
 				.findByCategoriaNotGerenciaAnioSemanaAsync("reposicion", gerencia, anio, semana);
