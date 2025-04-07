@@ -1,0 +1,226 @@
+{
+	"info": {
+		"_postman_id": "b5e5b5b5-5b5b-5b5b-5b5b-5b5b5b5b5b5b",
+		"name": "SFast-Xpress V2",
+		"description": "Colección de endpoints para la versión 2 de la API de SFast-Xpress",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Asignaciones",
+			"item": [
+				{
+					"name": "Obtener todas las asignaciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}asignaciones",
+							"host": ["{{base_url}}"],
+							"path": ["asignaciones"]
+						},
+						"description": "Obtiene todas las asignaciones disponibles"
+					}
+				},
+				{
+					"name": "Obtener asignación por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}asignaciones/{{asignacion_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["asignaciones", "{{asignacion_id}}"]
+						},
+						"description": "Obtiene una asignación específica por su ID"
+					}
+				},
+				{
+					"name": "Obtener asignaciones por agencia",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}asignaciones/agencia/{{agencia}}",
+							"host": ["{{base_url}}"],
+							"path": ["asignaciones", "agencia", "{{agencia}}"]
+						},
+						"description": "Obtiene todas las asignaciones de una agencia específica"
+					}
+				},
+				{
+					"name": "Obtener asignaciones por gerencia entrega",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}asignaciones/gerencia-entrega/{{gerencia}}",
+							"host": ["{{base_url}}"],
+							"path": ["asignaciones", "gerencia-entrega", "{{gerencia}}"]
+						},
+						"description": "Obtiene todas las asignaciones donde la gerencia especificada es la que entrega"
+					}
+				},
+				{
+					"name": "Obtener asignaciones por gerencia recibe",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}asignaciones/gerencia-recibe/{{gerencia}}",
+							"host": ["{{base_url}}"],
+							"path": ["asignaciones", "gerencia-recibe", "{{gerencia}}"]
+						},
+						"description": "Obtiene todas las asignaciones donde la gerencia especificada es la que recibe"
+					}
+				},
+				{
+					"name": "Obtener asignaciones por quien entrega",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}asignaciones/quien-entrego/{{usuario_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["asignaciones", "quien-entrego", "{{usuario_id}}"]
+						},
+						"description": "Obtiene todas las asignaciones donde el usuario especificado es quien entrega"
+					}
+				},
+				{
+					"name": "Obtener asignaciones por quien recibe",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}asignaciones/quien-recibio/{{usuario_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["asignaciones", "quien-recibio", "{{usuario_id}}"]
+						},
+						"description": "Obtiene todas las asignaciones donde el usuario especificado es quien recibe"
+					}
+				},
+				{
+					"name": "Obtener asignaciones por período",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}asignaciones/periodo/{{anio}}/{{semana}}",
+							"host": ["{{base_url}}"],
+							"path": ["asignaciones", "periodo", "{{anio}}", "{{semana}}"]
+						},
+						"description": "Obtiene todas las asignaciones de un período específico (año y semana)"
+					}
+				},
+				{
+					"name": "Obtener asignaciones por agencia y período",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}asignaciones/agencia/{{agencia}}/periodo/{{anio}}/{{semana}}",
+							"host": ["{{base_url}}"],
+							"path": ["asignaciones", "agencia", "{{agencia}}", "periodo", "{{anio}}", "{{semana}}"]
+						},
+						"description": "Obtiene todas las asignaciones de una agencia en un período específico"
+					}
+				},
+				{
+					"name": "Crear nueva asignación",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"monto\": 1000.00,\n    \"agencia\": \"AGD001\",\n    \"gerenciaEntrega\": \"GERD001\",\n    \"gerenciaRecibe\": \"GERD002\",\n    \"semana\": 1,\n    \"anio\": 2024,\n    \"tipo\": \"Agente\",\n    \"cubreVacante\": false,\n    \"quienEntrego\": 1,\n    \"quienRecibio\": 2,\n    \"log\": \"{\\\"environment\\\":\\\"forAgentsReady\\\",\\\"coordinates_curdate\\\":1705003314,\\\"lng\\\":-97.9184692,\\\"lat\\\":19.4777448}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}asignaciones",
+							"host": ["{{base_url}}"],
+							"path": ["asignaciones"]
+						},
+						"description": "Crea una nueva asignación"
+					}
+				},
+				{
+					"name": "Actualizar asignación",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"monto\": 1500.00,\n    \"agencia\": \"AGD001\",\n    \"gerenciaEntrega\": \"GERD001\",\n    \"gerenciaRecibe\": \"GERD002\",\n    \"semana\": 1,\n    \"anio\": 2024,\n    \"tipo\": \"Agente\",\n    \"cubreVacante\": false,\n    \"quienEntrego\": 1,\n    \"quienRecibio\": 2,\n    \"log\": \"{\\\"environment\\\":\\\"forAgentsReady\\\",\\\"coordinates_curdate\\\":1705003314,\\\"lng\\\":-97.9184692,\\\"lat\\\":19.4777448}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}asignaciones/{{asignacion_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["asignaciones", "{{asignacion_id}}"]
+						},
+						"description": "Actualiza una asignación existente"
+					}
+				},
+				{
+					"name": "Eliminar asignación",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}asignaciones/{{asignacion_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["asignaciones", "{{asignacion_id}}"]
+						},
+						"description": "Elimina una asignación existente"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://sfast-api.terio.xyz/api/v2/",
+			"type": "string"
+		},
+		{
+			"key": "asignacion_id",
+			"value": "1ef48f94-ea04-4c09-b31f-e0f757ff04ee",
+			"type": "string"
+		},
+		{
+			"key": "agencia",
+			"value": "AGD039",
+			"type": "string"
+		},
+		{
+			"key": "gerencia",
+			"value": "GERD003",
+			"type": "string"
+		},
+		{
+			"key": "usuario_id",
+			"value": "10",
+			"type": "string"
+		},
+		{
+			"key": "anio",
+			"value": "2024",
+			"type": "string"
+		},
+		{
+			"key": "semana",
+			"value": "2",
+			"type": "string"
+		}
+	]
+} 
