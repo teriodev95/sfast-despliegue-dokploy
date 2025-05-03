@@ -10,6 +10,7 @@ import tech.calaverita.sfast_xpress.DTOs.cierre_semanal.IngresosAgenteDTO;
 
 @Data
 public class CierreSemanalConsolidadoV2DTO {
+    private Long id;
     private Integer semana;
     private Integer anio;
     private String sucursal;
