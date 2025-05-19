@@ -1,12 +1,14 @@
 package tech.calaverita.sfast_xpress.services;
 
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
-import tech.calaverita.sfast_xpress.repositories.CalendarioRepository;
-
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
+
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
+import tech.calaverita.sfast_xpress.cierre_agencia.pojo.Calendario;
+import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
+import tech.calaverita.sfast_xpress.repositories.CalendarioRepository;
 
 @Service
 public class CalendarioService {
@@ -22,6 +24,16 @@ public class CalendarioService {
 
     public CalendarioModel findByFechaActual(String fechaActual) {
         return this.repo.findByFechaActual(fechaActual);
+    }
+
+    public Calendario getSemanaAnteriorByAnioSemana(int anio, int semana) {
+        if (semana == 1) {
+            anio = anio - 1;
+            semana = this.repo.existsByAnioAndSemana(anio, 53) ? 53 : 52;
+        } else {
+            semana = semana - 1;
+        }
+        return new Calendario(anio, semana);
     }
 
     @Async("asyncExecutor")
