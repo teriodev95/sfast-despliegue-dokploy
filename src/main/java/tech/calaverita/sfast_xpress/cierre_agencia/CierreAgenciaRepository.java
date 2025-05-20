@@ -10,4 +10,6 @@ public interface CierreAgenciaRepository extends JpaRepository<CierreAgenciaMode
     CierreAgenciaModel findByAgenciaAndAnioAndSemana(String agencia, Integer anio, Integer semana);
 
     List<CierreAgenciaModel> findByGerenciaAndAnioAndSemana(String gerencia, Integer anio, Integer semana);
+
+    boolean existsByAgenciaAndAnioAndSemana(String agencia, int anio, int semana);
 }
