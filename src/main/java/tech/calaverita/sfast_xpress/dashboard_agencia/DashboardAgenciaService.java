@@ -116,62 +116,6 @@ public class DashboardAgenciaService {
 	@Async("asyncExecutor")
 	public CompletableFuture<ResponseEntity<DashboardAgenciaDto>> getByAgenciaAnioSemanaAsync(String agencia, int anio,
 			int semana) {
-		UsuarioModel agenteUsuarioModel = this.usuarioService.findByAgenciaTipo(agencia, "Agente");
-
-		CompletableFuture<ArrayList<PrestamoViewModel>> prestamoViewModels = this.prestamoViewService
-				.findByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(agencia, 0D, anio,
-						semana);
-		CompletableFuture<ArrayList<PagoDynamicModel>> pagoAgrupagoModels = this.pagoAgrupadoService
-				.findByAgenciaAnioSemanaAndEsPrimerPago(agencia, anio, semana, false);
-		CompletableFuture<ArrayList<LiquidacionModel>> liquidacionModels = this.liquidacionService
-				.findByAgenciaAnioAndSemana(agencia, anio, semana);
-		CompletableFuture<ArrayList<PagoDynamicModel>> liquidacionesPagoModels = this.liquidacionService
-				.findPagoModelsByAgenciaAnioAndSemana(agencia, anio, semana);
-		CompletableFuture<String> statusAgencia = this.agenciaService.findStatusById(agencia);
-
-		if (prestamoViewModels.join().isEmpty()) {
-			return CompletableFuture.completedFuture(new ResponseEntity<>(HttpStatus.NO_CONTENT));
-		}
-
-		CompletableFuture<Double> asignaciones = CompletableFuture.completedFuture(0D);
-		if (agenteUsuarioModel != null) {
-			asignaciones = this.asignacionService
-					.findSumaAsignacionesByQuienEntregoUsuarioIdAnioAndSemana(
-							agenteUsuarioModel.getUsuarioId(), anio, semana);
-		}
-
-		// To easy code
-		String gerencia = prestamoViewModels.join().get(0).getGerencia();
-		String sucursal = prestamoViewModels.join().get(0).getSucursal();
-
-		CompletableFuture<GerenciaModel> gerenciaModel = this.gerenciaService
-				.findByDeprecatedNameAndSucursal(gerencia, sucursal);
-
-		InfoCobranzaAgencia infoCobranzaAgenciaDto = new InfoCobranzaAgencia()
-				.setGerencia(gerenciaModel.join().getGerenciaId())
-				.setAgencia(agencia)
-				.setAnio(anio)
-				.setSemana(semana)
-				.setClientes(prestamoViewModels.join().size());
-		DebitosCobranzaAgencia debitosCobranzaAgencia = new DebitosCobranzaAgencia(prestamoViewModels.join());
-		LiquidacionesDashboardAgencia liquidacionesDashboardAgencia = new LiquidacionesDashboardAgencia(
-				liquidacionModels.join(), pagoAgrupagoModels.join(), liquidacionesPagoModels.join());
-		PagosDashboardAgencia pagosDashboardAgencia = new PagosDashboardAgencia(pagoAgrupagoModels.join(),
-				liquidacionesDashboardAgencia.getLiquidaciones(), debitosCobranzaAgencia.getDebitoTotal());
-		CierreDashboardAgencia cierreDashboardAgencia = new CierreDashboardAgencia(pagosDashboardAgencia,
-				debitosCobranzaAgencia, asignaciones.join())
-				.setStatusAgencia(statusAgencia.join());
-		VentasDashboardAgencia ventasDashboardAgencia = new VentasDashboardAgencia(
-				this.ventaService.findByAgenciaAnioAndSemana(agencia, anio, semana));
-
-		DashboardAgenciaDto dashboardAgenciaDto = new DashboardAgenciaDto()
-				.cierreDashboardAgencia(cierreDashboardAgencia)
-				.liquidacionesDashboardAgencia(liquidacionesDashboardAgencia)
-				.pagosDashboardAgencia(pagosDashboardAgencia)
-				.debitosCobranzaAgencia(debitosCobranzaAgencia)
-				.infoCobranzaAgencia(infoCobranzaAgenciaDto)
-				.ventasDashboardAgencia(ventasDashboardAgencia);
-
-		return CompletableFuture.completedFuture(new ResponseEntity<>(dashboardAgenciaDto, HttpStatus.OK));
+		return CompletableFuture.completedFuture(this.getByAgenciaAnioSemana(agencia, anio, semana));
 	}
 }
