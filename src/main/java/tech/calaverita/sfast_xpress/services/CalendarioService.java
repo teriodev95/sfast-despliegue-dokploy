@@ -6,7 +6,7 @@ import java.util.concurrent.CompletableFuture;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import tech.calaverita.sfast_xpress.cierre_agencia.pojo.Calendario;
+import tech.calaverita.sfast_xpress.f_by_f_cierre_agencia.pojo.Calendario;
 import tech.calaverita.sfast_xpress.models.mariaDB.CalendarioModel;
 import tech.calaverita.sfast_xpress.repositories.CalendarioRepository;
 

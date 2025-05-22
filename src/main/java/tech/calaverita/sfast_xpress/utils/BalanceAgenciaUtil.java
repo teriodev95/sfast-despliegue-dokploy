@@ -8,7 +8,7 @@ import java.util.Date;
 
 public class BalanceAgenciaUtil {
     public static String getNivelAgente(int clientesPagoCompleto, double cobroAlJueves,
-                                        UsuarioModel agenteUsuarioModel) {
+            UsuarioModel agenteUsuarioModel) {
         String nivel;
         int antiguedadEnSemanas = BalanceAgenciaUtil.getAntiguedadAgenteEnSemanas(agenteUsuarioModel);
 
@@ -36,7 +36,7 @@ public class BalanceAgenciaUtil {
     }
 
     public static int getPorcentajeBonoMensual(int clientesPagoCompleto, double rendimiento,
-                                               UsuarioModel agenteUsuarioModel) {
+            UsuarioModel agenteUsuarioModel) {
         int porcentajeBonoMensual = 0;
 
         int antiguedadEnMeses = BalanceAgenciaUtil.getAntiguedadAgenteEnMeses(agenteUsuarioModel);
