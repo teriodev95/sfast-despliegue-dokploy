@@ -313,10 +313,10 @@ public final class CierreSemanalController {
 		// cierreSemanalModel.setLog(LogUtil.getLogCierreSemanal(cierreSemanalDTO.getBalanceAgencia()));
 
 		// if (staticToken.equals("c4u&S7HizL5!PU$5c2gwYastgMs5%RUViAbK")) {
-		if (!this.usuarioService.existsByUsuarioAndTipoIn(username, new String[] { "Gerente", "Seguridad" })) {
+		if (!this.usuarioService.existsByUsuarioAndTipoIn(username, new String[] { "Gerente", "Seguridad", "Regional" })) {
 			responseStatus = HttpStatus.FORBIDDEN;
 		} else if (!this.usuarioService.existsByUsuarioTipoInAndStatus(username,
-				new String[] { "Gerente", "Seguridad" }, true)) {
+				new String[] { "Gerente", "Seguridad", "Regional" }, true)) {
 			responseStatus = HttpStatus.UNAUTHORIZED;
 		} else {
 			if (this.cierreSemanalConsolidadoV2Service.findByAgenciaAnioAndSemana(agencia, anio,
