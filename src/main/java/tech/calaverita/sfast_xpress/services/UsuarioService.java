@@ -90,7 +90,8 @@ public class UsuarioService {
     }
 
     public UsuarioModel findByUsuarioAndPin(String usuario, int pin) {
-        return this.repo.findByUsuarioAndPinAndStatus(usuario, pin, true);
+        // return this.repo.findByUsuarioAndPinAndStatus(usuario, pin, true);
+        return this.repo.findByUsuarioAndPin(usuario, pin);
     }
 
     public UsuarioModel findByGerenciaTipoAndStatus(String gerencia, String tipo, Boolean status) {
