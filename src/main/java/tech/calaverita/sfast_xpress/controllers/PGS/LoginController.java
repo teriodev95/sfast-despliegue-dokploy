@@ -66,6 +66,10 @@ public final class LoginController {
             return new ResponseEntity<>("Usuario y/o contraseña incorrecto", HttpStatus.BAD_REQUEST);
         }
 
+        if(usuarMod_O.getStatus() == false){
+            return new ResponseEntity<>("Este usuario ha sido deshabilitado. Contacta a Administracion", HttpStatus.UNAUTHORIZED);
+        }
+
         return new ResponseEntity<>(usuarMod_O, HttpStatus.OK);
     }
 
