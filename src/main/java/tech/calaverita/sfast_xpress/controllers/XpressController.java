@@ -92,6 +92,10 @@ public final class XpressController {
                         return new ResponseEntity<>("Usuario y/o contraseña incorrecto", HttpStatus.BAD_REQUEST);
                 }
 
+                if(usuarioModel.getStatus() == false){
+                        return new ResponseEntity<>("Este usuario ha sido deshabilitado. Contacta a Administracion", HttpStatus.UNAUTHORIZED);
+                }
+
                 loginResponse.setSolicitante(usuarioModel);
                 loginResponse.setInvolucrados(this.usuarioService.findByGerencia(usuarioModel.getGerencia()));
 

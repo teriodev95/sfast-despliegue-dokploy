@@ -30,6 +30,8 @@ public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer>
 
         UsuarioModel findByUsuarioAndPinAndStatus(String usuario, int pin, boolean status);
 
+        UsuarioModel findByUsuarioAndPin(String usuario, int pin);
+
         UsuarioModel findByGerenciaAndTipoAndStatus(String gerencia, String tipo, boolean status);
 
         List<UsuarioModel> findByAgenciaAndTipoOrderByUsuarioIdDesc(String agencia, String tipo);
