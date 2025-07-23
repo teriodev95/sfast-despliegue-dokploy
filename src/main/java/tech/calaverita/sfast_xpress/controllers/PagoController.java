@@ -207,68 +207,97 @@ public final class PagoController {
     public @ResponseBody ResponseEntity<ArrayList<HashMap<String, Object>>> getNoPagosConVisitasByUsuarioAnioAndSemana(
             @PathVariable String usuario, @PathVariable int anio, @PathVariable int semana)
             throws ExecutionException, InterruptedException {
-        UsuarioModel usuarioModel = this.usuarioService.findByUsuario(usuario);
-        ArrayList<String> gerenciaIds = this.usuarioGerenciaService
-                .darrstrGerenciaIdFindByUsuarioId(usuarioModel.getUsuarioId());
 
-        CompletableFuture<ArrayList<PagoModel>> pagoEntitiesCF = this.pagoService
-                .findByGerenciasAnioSemanaAndTipoAsync(gerenciaIds, anio, semana);
-        CompletableFuture<ArrayList<VisitaModel>> visitaEntitiesCF = this.visitaService
-                .findByGerenciasAnioAndSemanaAsync(gerenciaIds, anio, semana);
+        try {
+            UsuarioModel usuarioModel = this.usuarioService.findByUsuario(usuario);
+            ArrayList<String> gerenciaIds = this.usuarioGerenciaService
+                    .darrstrGerenciaIdFindByUsuarioId(usuarioModel.getUsuarioId());
 
-        CompletableFuture.allOf(pagoEntitiesCF, visitaEntitiesCF);
-        ArrayList<PagoModel> pagoEntities = pagoEntitiesCF.get();
-        ArrayList<VisitaModel> visitaEntities = visitaEntitiesCF.get();
+            CompletableFuture<ArrayList<PagoModel>> pagoEntitiesCF = this.pagoService
+                    .findByGerenciasAnioSemanaAndTipoAsync(gerenciaIds, anio, semana);
+            CompletableFuture<ArrayList<VisitaModel>> visitaEntitiesCF = this.visitaService
+                    .findByGerenciasAnioAndSemanaAsync(gerenciaIds, anio, semana);
 
-        ArrayList<HashMap<String, Object>> noPagosConVisitas = new ArrayList<>();
-        pagoEntities.parallelStream().forEach(noPago -> {
-            HashMap<String, Object> noPagoConVisitasHM = new HashMap<>();
-            noPagoConVisitasHM.put("pagoId", noPago.getPagoId());
-            noPagoConVisitasHM.put("prestamoId", noPago.getPrestamoId());
-            noPagoConVisitasHM.put("monto", noPago.getMonto());
-            noPagoConVisitasHM.put("semana", noPago.getSemana());
-            noPagoConVisitasHM.put("anio", noPago.getAnio());
-            noPagoConVisitasHM.put("tarifa", noPago.getTarifa());
-            noPagoConVisitasHM.put("cliente", noPago.getCliente());
-            noPagoConVisitasHM.put("agente", noPago.getAgente());
-            noPagoConVisitasHM.put("creadoDesde", noPago.getCreadoDesde());
-            noPagoConVisitasHM.put("fechaPago", noPago.getFechaPago());
-            noPagoConVisitasHM.put("lat", noPago.getLat());
-            noPagoConVisitasHM.put("lng", noPago.getLng());
-            noPagoConVisitasHM.put("gerencia", this.agenciaService.findById(noPago.getAgente())
-                    .getGerenciaId());
+            CompletableFuture.allOf(pagoEntitiesCF, visitaEntitiesCF).join();
+            ArrayList<PagoModel> pagoEntities = pagoEntitiesCF.get();
+            ArrayList<VisitaModel> visitaEntities = visitaEntitiesCF.get();
 
-            // To easy code
-            String agente = noPagoConVisitasHM.get("agente").toString();
-            String gerencia = noPagoConVisitasHM.get("gerencia").toString();
+            // System.out.println("Pagos: " + pagoEntities.size());
+            // System.out.println("Visitas: " + visitaEntities.size());
+            // System.out.println(visitaEntities);
 
-            noPagoConVisitasHM.put("numeroCelularAgente", this.usuarioService.findByAgenciaAndStatus(agente, true)
-                    .getNumeroCelular());
+            ArrayList<HashMap<String, Object>> noPagosConVisitas = new ArrayList<>();
+            pagoEntities.parallelStream().forEach(noPago -> {
+                HashMap<String, Object> noPagoConVisitasHM = new HashMap<>();
+                noPagoConVisitasHM.put("pagoId", noPago.getPagoId());
+                noPagoConVisitasHM.put("prestamoId", noPago.getPrestamoId());
+                noPagoConVisitasHM.put("monto", noPago.getMonto());
+                noPagoConVisitasHM.put("semana", noPago.getSemana());
+                noPagoConVisitasHM.put("anio", noPago.getAnio());
+                noPagoConVisitasHM.put("tarifa", noPago.getTarifa());
+                noPagoConVisitasHM.put("cliente", noPago.getCliente());
+                noPagoConVisitasHM.put("agente", noPago.getAgente());
+                noPagoConVisitasHM.put("creadoDesde", noPago.getCreadoDesde());
+                noPagoConVisitasHM.put("fechaPago", noPago.getFechaPago());
+                noPagoConVisitasHM.put("lat", noPago.getLat());
+                noPagoConVisitasHM.put("lng", noPago.getLng());
+                noPagoConVisitasHM.put("gerencia", this.agenciaService.findById(noPago.getAgente())
+                        .getGerenciaId());
 
-            noPagoConVisitasHM.put("numeroCelularGerente", this.usuarioService.findByGerenciaTipoAndStatus(gerencia,
-                    "Gerente", true).getNumeroCelular());
 
-            ArrayList<HashMap<String, Object>> visitas = new ArrayList<>();
-            visitaEntities.forEach(visita -> {
-                if (noPago.getPrestamoId().equals(visita.getPrestamoId())) {
-                    HashMap<String, Object> visitaHM = new HashMap<>();
-                    visitaHM.put("visitaId", visita.getVisitaId());
-                    visitaHM.put("prestamoId", visita.getPrestamoId());
-                    visitaHM.put("semana", visita.getSemana());
-                    visitaHM.put("anio", visita.getAnio());
-                    visitaHM.put("cliente", visita.getCliente());
-                    visitaHM.put("agente", visita.getAgente());
-                    visitaHM.put("fecha", visita.getFecha());
-                    visitaHM.put("lat", visita.getLat());
-                    visitaHM.put("lng", visita.getLng());
-                    visitas.add(visitaHM);
+                // To easy code
+                String agente = noPagoConVisitasHM.get("agente").toString();
+                String gerencia = noPagoConVisitasHM.get("gerencia").toString();
+                String numeroAgente = this.usuarioService.findByAgenciaAndStatus(agente, true).getNumeroCelular();
+                UsuarioModel gerenteUsuario = this.usuarioService.findByGerenciaTipoAndStatus(gerencia, "Gerente",
+                        true);
+                if (gerenteUsuario != null && gerenteUsuario.getNumeroCelular() != null
+                        && !gerenteUsuario.getNumeroCelular().isEmpty()) {
+                    noPagoConVisitasHM.put("numeroCelularGerente", gerenteUsuario.getNumeroCelular());
                 }
+
+
+                if(this.usuarioService.findByAgenciaAndStatus(agente, true).getNumeroCelular() != null){
+                    noPagoConVisitasHM.put("numeroCelularAgente", numeroAgente);
+                }else{
+                    noPagoConVisitasHM.put("numeroCelularAgente","Sin numero registrado");
+                }
+
+                ArrayList<HashMap<String, Object>> visitas = new ArrayList<>();
+                visitaEntities.forEach(visita -> {
+                    if (noPago.getPrestamoId().equals(visita.getPrestamoId())) {
+                        HashMap<String, Object> visitaHM = new HashMap<>();
+                        visitaHM.put("visitaId", visita.getVisitaId());
+                        visitaHM.put("prestamoId", visita.getPrestamoId());
+                        visitaHM.put("semana", visita.getSemana());
+                        visitaHM.put("anio", visita.getAnio());
+                        visitaHM.put("cliente", visita.getCliente());
+                        visitaHM.put("agente", visita.getAgente());
+                        visitaHM.put("fecha", visita.getFecha());
+                        visitaHM.put("lat", visita.getLat());
+                        visitaHM.put("lng", visita.getLng());
+                        visitas.add(visitaHM);
+                    }
+                });
+                noPagoConVisitasHM.put("visitas", visitas);
+
+                noPagosConVisitas.add(noPagoConVisitasHM);
             });
-            noPagoConVisitasHM.put("visitas", visitas);
 
-            noPagosConVisitas.add(noPagoConVisitasHM);
-        });
+            return new ResponseEntity<>(noPagosConVisitas, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    new ArrayList<HashMap<String, Object>>() {
+                        {
+                            add(new HashMap<String, Object>() {
+                                {
+                                    put("error", e.getMessage());
+                                }
+                            });
+                        }
+                    });
+        }
 
-        return new ResponseEntity<>(noPagosConVisitas, HttpStatus.OK);
+        
     }
 }
