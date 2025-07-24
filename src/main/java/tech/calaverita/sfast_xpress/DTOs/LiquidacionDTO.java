@@ -21,6 +21,7 @@ public class LiquidacionDTO {
     private Double saldoAlIniciarSemana;
     private Double excedente;
     private Double pagoSemanal;
+    private String recuperadoPor;
     private Double tarifa;
 
     public LiquidacionDTO() {
@@ -40,6 +41,7 @@ public class LiquidacionDTO {
         this.saldoAlIniciarSemana = 0.0;
         this.excedente = 0.0;
         this.pagoSemanal = 0.0;
+        this.recuperadoPor = "";
         this.tarifa = 0.0;
     }
 
