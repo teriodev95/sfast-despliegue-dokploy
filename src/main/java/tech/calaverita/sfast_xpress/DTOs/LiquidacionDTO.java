@@ -22,6 +22,7 @@ public class LiquidacionDTO {
     private Double excedente;
     private Double pagoSemanal;
     private String recuperadoPor;
+    private String quienPago;
     private Double tarifa;
 
     public LiquidacionDTO() {
@@ -42,6 +43,7 @@ public class LiquidacionDTO {
         this.excedente = 0.0;
         this.pagoSemanal = 0.0;
         this.recuperadoPor = "";
+        this.quienPago = "";
         this.tarifa = 0.0;
     }
 

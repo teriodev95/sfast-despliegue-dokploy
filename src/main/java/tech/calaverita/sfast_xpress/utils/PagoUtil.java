@@ -283,6 +283,7 @@ public final class PagoUtil {
             pagoModel.setCierraCon(0.0);
             pagoModel.setFechaPago(fechaActual);
             pagoModel.setRecuperadoPor(liquidacionDTO.getRecuperadoPor());
+            pagoModel.setQuienPago(liquidacionDTO.getQuienPago());
         }
         return pagoModel;
     }
