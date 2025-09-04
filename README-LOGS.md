@@ -67,6 +67,11 @@ curl https://sfast-api.terio.xyz/actuator/logfile
 curl https://sfast-api.terio.xyz/actuator/metrics
 ```
 
+### **Ver HTTP Exchanges (últimas 100 solicitudes HTTP):**
+```bash
+curl https://sfast-api.terio.xyz/actuator/httpexchanges
+```
+
 ### **Ver un logger específico:**
 ```bash
 curl https://sfast-api.terio.xyz/actuator/loggers/tech.calaverita.sfast_xpress.controllers.XpressController
