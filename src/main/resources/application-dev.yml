@@ -23,8 +23,6 @@ management:
       show-details: always
     loggers:
       enabled: true
-  server:
-    port: 8081
   security:
     enabled: false
 

@@ -27,10 +27,8 @@ management:
       show-details: never
     loggers:
       enabled: true
-  server:
-    port: 8081
   security:
-    enabled: true
+    enabled: false
 
 # Configuración de logging para producción
 logging:
