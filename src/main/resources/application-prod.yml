@@ -10,6 +10,34 @@ spring:
   data:
     mongodb:
       uri: mongodb+srv://reports_xpress_user_rw:ULh0VykDvetWM3JM@cluster0.zoa5e.gcp.mongodb.net/ReportsXpress
+
 sentry:
   dsn: https://91bb4322f0905e42c4acc5b9f3873975@o1037894.ingest.us.sentry.io/4508762622459904
   traces-sample-rate: 1.0
+
+# Configuración de Spring Boot Actuator para producción
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,loggers
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: never
+    loggers:
+      enabled: true
+  server:
+    port: 8081
+  security:
+    enabled: true
+
+# Configuración de logging para producción
+logging:
+  file:
+    name: logs/sfast-xpress-prod.log
+  level:
+    tech.calaverita.sfast_xpress: INFO
+    org.springframework: WARN
+    org.hibernate: WARN
+    org.springframework.security: WARN

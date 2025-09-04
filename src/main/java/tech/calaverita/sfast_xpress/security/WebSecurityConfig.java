@@ -27,6 +27,7 @@ public class WebSecurityConfig {
         return http
                 .csrf().disable()
                 .authorizeHttpRequests()
+                .requestMatchers("/actuator/**").permitAll() // Actuator endpoints completamente abiertos
                 .requestMatchers("/**").permitAll()
                 .anyRequest()
                 .authenticated()

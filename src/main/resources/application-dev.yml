@@ -10,3 +10,29 @@ spring:
   data:
     mongodb:
       uri: mongodb+srv://reports_xpress_user_rw:ULh0VykDvetWM3JM@cluster0.zoa5e.gcp.mongodb.net/ReportsXpress
+
+# Configuración de Spring Boot Actuator para desarrollo - TODOS los endpoints abiertos
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+    loggers:
+      enabled: true
+  server:
+    port: 8081
+  security:
+    enabled: false
+
+# Configuración de logging para desarrollo
+logging:
+  file:
+    name: logs/sfast-xpress-dev.log
+  level:
+    tech.calaverita.sfast_xpress: DEBUG
+    org.springframework: INFO
+    org.hibernate: INFO
