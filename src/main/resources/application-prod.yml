@@ -20,7 +20,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,loggers
+        include: health,info,loggers,logfile,metrics,httptrace
       base-path: /actuator
   endpoint:
     health:
