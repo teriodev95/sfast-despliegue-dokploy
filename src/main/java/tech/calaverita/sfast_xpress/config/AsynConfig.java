@@ -1,5 +1,7 @@
 package tech.calaverita.sfast_xpress.config;
 
+import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
+import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -19,5 +21,10 @@ public class AsynConfig {
         executor.setThreadNamePrefix("AsyncThread-");
         executor.initialize();
         return executor;
+    }
+
+    @Bean
+    public HttpTraceRepository httpTraceRepository() {
+        return new InMemoryHttpTraceRepository();
     }
 }
