@@ -103,9 +103,17 @@ public final class XpressController {
         }
 
         @GetMapping(path = "/cobranza/{agencia}/{anio}/{semana}")
-        public @ResponseBody ResponseEntity<CobranzaDTO> getCobranzaByAgencia(@PathVariable String agencia,
+        public @ResponseBody ResponseEntity<?> getCobranzaByAgencia(@RequestHeader String username,
+                        @PathVariable String agencia,
                         @PathVariable int anio,
                         @PathVariable int semana) {
+                // Validar que el usuario exista y esté activo
+                if (!this.usuarioService.existsByUsuario(username)) {
+                        return new ResponseEntity<>("Usuario no existe", HttpStatus.FORBIDDEN);
+                } else if (!this.usuarioService.existsByUsuarioAndStatus(username, true)) {
+                        return new ResponseEntity<>("Usuario deshabilitado. Contacta a Administracion", HttpStatus.UNAUTHORIZED);
+                }
+
                 CompletableFuture<ArrayList<PrestamoViewModel>> prestamoViewModels = this.prestamoViewService
                                 .findByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(agencia, 0D, anio,
                                                 semana);
