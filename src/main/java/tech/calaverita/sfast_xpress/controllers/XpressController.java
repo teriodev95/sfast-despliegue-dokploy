@@ -118,16 +118,31 @@ public final class XpressController {
                 CompletableFuture<ArrayList<PrestamoViewModel>> prestamoViewModels = this.prestamoViewService
                                 .findByAgenciaSaldoAlIniciarSemanaGreaterThanAndNotAnioAndSemana(agencia, 0D, anio,
                                                 semana);
-                CompletableFuture<GerenciaModel> gerenciaModel = this.gerenciaService.findByDeprecatedNameAndSucursal(
-                                prestamoViewModels.join().get(0).getGerencia(),
-                                prestamoViewModels.join().get(0).getSucursal());
 
-                InfoCobranzaDTO infoSemanaCobranzaDTO = new InfoCobranzaDTO(gerenciaModel.join().getGerenciaId(),
+                // Verificar que existan registros antes de continuar
+                ArrayList<PrestamoViewModel> prestamos = prestamoViewModels.join();
+                if (prestamos == null || prestamos.isEmpty()) {
+                        return new ResponseEntity<>("No se encontraron registros de cobranza para la agencia " + agencia +
+                                        " en la semana " + semana + " del año " + anio, HttpStatus.NOT_FOUND);
+                }
+
+                CompletableFuture<GerenciaModel> gerenciaModel = this.gerenciaService.findByDeprecatedNameAndSucursal(
+                                prestamos.get(0).getGerencia(),
+                                prestamos.get(0).getSucursal());
+
+                GerenciaModel gerencia = gerenciaModel.join();
+                if (gerencia == null) {
+                        return new ResponseEntity<>("No se encontró la gerencia para la agencia " + agencia +
+                                        ". Gerencia: " + prestamos.get(0).getGerencia() +
+                                        ", Sucursal: " + prestamos.get(0).getSucursal(), HttpStatus.NOT_FOUND);
+                }
+
+                InfoCobranzaDTO infoSemanaCobranzaDTO = new InfoCobranzaDTO(gerencia.getGerenciaId(),
                                 agencia, anio, semana,
-                                prestamoViewModels.join().size());
-                DebitosCobranzaDTO debitosCobranzaDTO = new DebitosCobranzaDTO(prestamoViewModels.join());
+                                prestamos.size());
+                DebitosCobranzaDTO debitosCobranzaDTO = new DebitosCobranzaDTO(prestamos);
                 CobranzaDTO cobranzaDTO = new CobranzaDTO(infoSemanaCobranzaDTO, debitosCobranzaDTO,
-                                prestamoViewModels.join());
+                                prestamos);
 
                 return new ResponseEntity<>(cobranzaDTO, HttpStatus.OK);
         }
