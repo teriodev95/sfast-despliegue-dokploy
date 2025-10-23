@@ -11,3 +11,4 @@ target/
 *.ipr
 
 ### Personalizado ###
+logs/
