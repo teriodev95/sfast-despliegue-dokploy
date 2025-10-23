@@ -1,5 +1,5 @@
 # Dockerfile multi-stage para Spring Boot - Conecta a BD externas
-# Etapa 1: Build con Maven*
+# Etapa 1: Build con Maven
 FROM maven:3.9.9-eclipse-temurin-17-alpine AS build
 
 WORKDIR /app
