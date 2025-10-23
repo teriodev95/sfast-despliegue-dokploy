@@ -3,17 +3,17 @@ spring:
     hibernate:
       ddl-auto: none
   datasource:
-    url: jdbc:mariadb://65.21.188.158:3306/xpress_dinero
-    username: xpress_admin
-    password: Xpr3ss@2024!Secure
+    url: ${DB_URL:jdbc:mariadb://65.21.188.158:3306/xpress_dinero}
+    username: ${DB_USERNAME:xpress_admin}
+    password: ${DB_PASSWORD:Xpr3ss@2024!Secure}
     driver-class-name: org.mariadb.jdbc.Driver
   data:
     mongodb:
-      uri: mongodb+srv://reports_xpress_user_rw:ULh0VykDvetWM3JM@cluster0.zoa5e.gcp.mongodb.net/ReportsXpress
+      uri: ${MONGODB_URI:mongodb+srv://reports_xpress_user_rw:ULh0VykDvetWM3JM@cluster0.zoa5e.gcp.mongodb.net/ReportsXpress}
 
 sentry:
-  dsn: https://91bb4322f0905e42c4acc5b9f3873975@o1037894.ingest.us.sentry.io/4508762622459904
-  traces-sample-rate: 1.0
+  dsn: ${SENTRY_DSN:https://91bb4322f0905e42c4acc5b9f3873975@o1037894.ingest.us.sentry.io/4508762622459904}
+  traces-sample-rate: ${SENTRY_TRACES_SAMPLE_RATE:1.0}
 
 # Configuración de Spring Boot Actuator para producción
 management:
@@ -33,9 +33,10 @@ management:
 # Configuración de logging para producción
 logging:
   file:
-    name: logs/sfast-xpress-prod.log
+    name: ${LOGGING_FILE_NAME:/app/logs/sfast-xpress-prod.log}
   level:
-    tech.calaverita.sfast_xpress: INFO
+    root: ${LOGGING_LEVEL_ROOT:INFO}
+    tech.calaverita.sfast_xpress: ${LOGGING_LEVEL_TECH_CALAVERITA:INFO}
     org.springframework: WARN
     org.hibernate: WARN
     org.springframework.security: WARN
