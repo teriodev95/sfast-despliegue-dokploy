@@ -32,9 +32,8 @@ fi
 echo "🔄 Creando rama temporal..."
 git checkout -b $TEMP_BRANCH
 
-# Eliminar el directorio .github/workflows/
-echo "🗑️  Eliminando directorio .github/workflows/..."
-rm -rf .github/
+# El directorio .github/ ya está excluido en .gitignore
+echo "✅ Directorio .github/ ya excluido del repositorio"
 
 # Hacer commit de los cambios
 echo "💾 Haciendo commit de los cambios..."
