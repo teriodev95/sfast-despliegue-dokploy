@@ -12,3 +12,6 @@ target/
 
 ### Personalizado ###
 logs/
+
+### GitHub Actions (excluido para dokploy) ###
+.github/
