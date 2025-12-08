@@ -79,7 +79,8 @@ public class WebSecurityConfig {
                 "https://p.xpress1.cc",
                 "https://sfast.xpress1.cc",
                 "http://localhost:3000",
-                "http://localhost:5173"));
+                "http://localhost:5173",
+                "https://dev.pgs-portal-gerentes-y-seguridad.pages.dev"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
